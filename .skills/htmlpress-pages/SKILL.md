@@ -1,6 +1,6 @@
 ---
 name: htmlpress-pages
-description: Use when writing or editing pages in an htmlpress project — a folder of HTML built into a site. Covers the page contract (title, order, head), the theme and hp-* components, htmlpress.toml, and checking the result with build --json and start.
+description: Use when writing or editing pages in an htmlpress project — a folder of HTML built into a site. Covers the page contract (title, order, head), the theme and htmlpress-* components, htmlpress.toml, and checking the result with build --json and start.
 ---
 
 # Htmlpress pages
@@ -38,25 +38,25 @@ The theme styles the elements themselves: headings, `<p>`, lists, `<table>`, `<p
 
 - No inline `style`, no classes for looks, no utility CSS. The point is that every page looks
   like the same site.
-- To change the look site-wide, override a token in a stylesheet: `--hp-accent`, `--hp-font`,
-  `--hp-mono`, `--hp-bg`, `--hp-surface`, `--hp-text`, `--hp-muted`, `--hp-border`,
-  `--hp-radius`, `--hp-width`.
+- To change the look site-wide, override a token in a stylesheet: `--htmlpress-accent`, `--htmlpress-font`,
+  `--htmlpress-mono`, `--htmlpress-bg`, `--htmlpress-surface`, `--htmlpress-text`, `--htmlpress-muted`, `--htmlpress-border`,
+  `--htmlpress-radius`, `--htmlpress-width`.
 - Escape code inside `<pre><code>`: `&lt;` and `&amp;`.
 
 ## Components
 
 Only these; anything else is plain HTML.
 
-| Element                                  | Use                                                                    |
-| ---------------------------------------- | ---------------------------------------------------------------------- |
-| `<hp-callout type="…" label="…">`        | a note; `type` is `info` (default), `success`, `warning`, `danger`     |
-| `<hp-grid cols="2">` + `<hp-card>`       | cards in columns (`cols` 2–4, else responsive); `<h3><a>` links a card |
-| `<hp-tabs sync="…">` + `<section title>` | tabs, one per `<section>`; tabs sharing `sync` switch together         |
-| `<hp-steps>` + `<ol>`                    | numbered steps, one per `<li>`, each led by an `<h3>`                  |
-| `<hp-badge type="…">`                    | an inline label; `type` as a callout's, or `neutral`                   |
-| `<hp-file-tree>` + nested `<ul>`         | a file tree; an `<li>` holding a `<ul>` is a folder                    |
-| `<hp-table>` + `<table>`                 | a table sorted by a click on a `<thead>` header                        |
-| `<hp-zoom>` + `<img>`                    | an image that opens full screen on click                               |
+| Element                                          | Use                                                                    |
+| ------------------------------------------------ | ---------------------------------------------------------------------- |
+| `<htmlpress-callout type="…" label="…">`         | a note; `type` is `info` (default), `success`, `warning`, `danger`     |
+| `<htmlpress-grid cols="2">` + `<htmlpress-card>` | cards in columns (`cols` 2–4, else responsive); `<h3><a>` links a card |
+| `<htmlpress-tabs sync="…">` + `<section title>`  | tabs, one per `<section>`; tabs sharing `sync` switch together         |
+| `<htmlpress-steps>` + `<ol>`                     | numbered steps, one per `<li>`, each led by an `<h3>`                  |
+| `<htmlpress-badge type="…">`                     | an inline label; `type` as a callout's, or `neutral`                   |
+| `<htmlpress-file-tree>` + nested `<ul>`          | a file tree; an `<li>` holding a `<ul>` is a folder                    |
+| `<htmlpress-table>` + `<table>`                  | a table sorted by a click on a `<thead>` header                        |
+| `<htmlpress-zoom>` + `<img>`                     | an image that opens full screen on click                               |
 
 Code blocks get a copy button and headings a link on their own; a plain `<details>` is
 already styled.
@@ -71,8 +71,8 @@ Put block content (`<p>`, `<h3>`, `<pre>`) inside a component, not bare text.
 - `.htmlpress/build/` is the output: never edit it, every build replaces it.
 - `.htmlpress/layout.html` replaces the built-in layout; only when the user asks for a
   different layout. It is plain HTML: htmlpress fills its `<head>` and replaces
-  `<hp-content>`, `<hp-brand>`, `<hp-nav>`, `<hp-links>`, `<hp-toc>`, `<hp-pager>` and
-  `<hp-edit>` at build time.
+  `<htmlpress-content>`, `<htmlpress-brand>`, `<htmlpress-nav>`, `<htmlpress-links>`, `<htmlpress-toc>`, `<htmlpress-pager>` and
+  `<htmlpress-edit>` at build time.
 
 ## Checking the result
 

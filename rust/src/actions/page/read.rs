@@ -168,14 +168,14 @@ fn create_slug(title: &str, taken: &mut Vec<String>) -> String {
 }
 
 const UNLISTED_HEADINGS: &[&str] = &[
-    "hp-callout h2",
-    "hp-callout h3",
-    "hp-card h2",
-    "hp-card h3",
-    "hp-steps h2",
-    "hp-steps h3",
-    "hp-tabs h2",
-    "hp-tabs h3",
+    "htmlpress-callout h2",
+    "htmlpress-callout h3",
+    "htmlpress-card h2",
+    "htmlpress-card h3",
+    "htmlpress-steps h2",
+    "htmlpress-steps h3",
+    "htmlpress-tabs h2",
+    "htmlpress-tabs h3",
 ];
 
 fn read_content(html: &str, headings: &[(Heading, bool)]) -> Result<String, String> {

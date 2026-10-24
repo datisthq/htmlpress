@@ -103,7 +103,7 @@ fn lists_the_headings_and_gives_each_an_id() -> crate::Result<()> {
 
 #[test]
 fn keeps_headings_inside_components_out_of_the_toc() -> crate::Result<()> {
-    let html = "<h2>Cards</h2>\n<hp-grid><hp-card><h3>One</h3></hp-card></hp-grid>\n<h3>After</h3>";
+    let html = "<h2>Cards</h2>\n<htmlpress-grid><htmlpress-card><h3>One</h3></htmlpress-card></htmlpress-grid>\n<h3>After</h3>";
     let page = read_page("guide.html", html)?;
     let ids: Vec<_> = page.toc.iter().map(|heading| heading.id.as_str()).collect();
     assert_eq!(ids, ["cards", "after"]);

@@ -49,12 +49,12 @@ fn reads_the_layout_escape() -> crate::Result<()> {
     write_file(
         root.path(),
         LAYOUT_ESCAPE,
-        "<main><hp-content></hp-content></main>",
+        "<main><htmlpress-content></htmlpress-content></main>",
     )?;
     let site = scan_site(root.path())?;
     assert_eq!(
         site.layout.as_deref(),
-        Some("<main><hp-content></hp-content></main>")
+        Some("<main><htmlpress-content></htmlpress-content></main>")
     );
     Ok(())
 }

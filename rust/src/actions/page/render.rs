@@ -9,7 +9,7 @@ use crate::models::site::Site;
 use crate::settings::{ASSETS_DIR, LAYOUT, RELOAD_PATH};
 
 /// Wrap one page of the site in the layout, the project's escape else the built-in one,
-/// filling its `<head>` and every `hp-*` placeholder element the layout holds.
+/// filling its `<head>` and every `htmlpress-*` placeholder element the layout holds.
 pub(crate) fn render_page(
     site: &Site,
     page: &Page,
@@ -24,11 +24,11 @@ pub(crate) fn render_page(
             el.append(&page.head, ContentType::Html);
             Ok(())
         }))
-        .append_element_content_handler(element!("hp-content", |el| {
+        .append_element_content_handler(element!("htmlpress-content", |el| {
             el.replace(&page.content, ContentType::Html);
             Ok(())
         }))
-        .append_element_content_handler(element!("hp-brand", |el| {
+        .append_element_content_handler(element!("htmlpress-brand", |el| {
             let title = escape_html(&site.title);
             el.set_inner_content(
                 &format!("<a href=\"/\">{title}</a>"),
@@ -36,23 +36,23 @@ pub(crate) fn render_page(
             );
             Ok(())
         }))
-        .append_element_content_handler(element!("hp-nav", |el| {
+        .append_element_content_handler(element!("htmlpress-nav", |el| {
             el.set_inner_content(&nav, ContentType::Html);
             Ok(())
         }))
-        .append_element_content_handler(element!("hp-links", |el| {
+        .append_element_content_handler(element!("htmlpress-links", |el| {
             fill_element(el, create_links(site));
             Ok(())
         }))
-        .append_element_content_handler(element!("hp-pager", |el| {
+        .append_element_content_handler(element!("htmlpress-pager", |el| {
             fill_element(el, create_pager(site, page));
             Ok(())
         }))
-        .append_element_content_handler(element!("hp-toc", |el| {
+        .append_element_content_handler(element!("htmlpress-toc", |el| {
             fill_element(el, create_toc(page));
             Ok(())
         }))
-        .append_element_content_handler(element!("hp-edit", |el| {
+        .append_element_content_handler(element!("htmlpress-edit", |el| {
             fill_element(el, create_edit(site, page));
             Ok(())
         }));
@@ -101,7 +101,7 @@ fn create_head(site: &Site, page: &Page, reload: bool) -> String {
     }
     // Set before the stylesheet applies, so a stored dark theme never flashes light
     head.push_str(
-        "<script>try { const theme = localStorage.getItem(\"hp-theme\"); \
+        "<script>try { const theme = localStorage.getItem(\"htmlpress-theme\"); \
          if (theme) document.documentElement.dataset.theme = theme } catch {}</script>\n",
     );
     let _ = writeln!(

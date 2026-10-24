@@ -72,7 +72,7 @@ A change is ready to push when `pnpm test` is green.
 - **Rust**: edition 2024 on the pinned stable toolchain, clippy-clean with no `unwrap`/`expect` outside tests; unit tests beside the module as `<module>_unit.rs`, run one with `cargo test <name>` from `rust/`.
 - **TypeScript**: strict mode is on. Don't use `any`, `as`-casts, or non-null `!` without permission. Full ESM imports with the `.ts` extension; tests beside the module as `<module>.unit.ts`.
 - **Comments**: docs on public items only. Skip narrative comments inside function bodies.
-- **Docs pages**: semantic HTML and the documented `hp-*` components, no inline styles.
+- **Docs pages**: semantic HTML and the documented `htmlpress-*` components, no inline styles.
 - **Formatting**: `pnpm format`. 2-space indent, no semicolons, double quotes (LF, UTF-8); rustfmt at 90 columns.
 
 ## Proposing a change

@@ -24,7 +24,7 @@ Htmlpress turns a folder of HTML pages into a site: one layout, one theme, a nav
 - Start a plan from a summary of the new or changed API (CLI flags, page contract, models) and the hardest points.
 - **Every plan ends by asking how to work it** (`AskUserQuestion`, before finalising): **the current branch** or **a `.worktrees/<name>` branch** (**`worktree-workflow`**).
 - **Behaviour lives in the binary only.** A wrapper resolves and runs it, nothing more; a feature added to `typescript/` or `python/` would exist for one channel and not the others.
-- **The page contract and the CLI are public API.** What a page's `<title>`, `<meta name="order">` and `<head>` mean, the `hp-*` components and `--hp-*` tokens, the layout elements an escape gets filled, `htmlpress.toml` keys and every command's flags and `--json` output: renaming one silently breaks every project and agent relying on it. Treat it like an export change (**`change-review`**).
+- **The page contract and the CLI are public API.** What a page's `<title>`, `<meta name="order">` and `<head>` mean, the `htmlpress-*` components and `--htmlpress-*` tokens, the layout elements an escape gets filled, `htmlpress.toml` keys and every command's flags and `--json` output: renaming one silently breaks every project and agent relying on it. Treat it like an export change (**`change-review`**).
 - **A platform entry is a release contract.** `PLATFORMS` in `typescript/settings.ts` and the build matrix in `.github/workflows/release.yaml` must list the same platforms with the same Rust targets; one missing from the matrix fails the npm pack (**`package-distribution`**).
 - Rust: each `actions/<entity>/<verb>.rs` holds one action, named `verb_noun` (`actions/site/build.rs` exports `build_site`); the module tree is declared inline in `rust/src/lib.rs`. TypeScript: the same `actions/<entity>/<verb>.ts` shape, full relative imports with the `.ts` extension, no barrels.
 - Don't destructure props in a TypeScript function signature — use `props.x`. Put higher-level items above the ones they compose, public before private.
@@ -96,7 +96,7 @@ Dot-directories hold non-package code: `.agents/` repo skills, `.skills/` shippe
 - `package.json` script names are `verb[:object]` (`check:lint`, `build:docs`), never noun-first
 - Specs: Vitest via `vite-plus/test`, `<module>.unit.ts`, no "Arrange / Act / Assert" comments
 - Rust: edition 2024, rustfmt (90 columns), clippy with `-D warnings`; snake_case **verb_noun** functions; no `unwrap` / `expect` / `unsafe` outside tests (**`rust-development`**)
-- HTML in `docs/` and `.skills/`: semantic elements and the documented `hp-*` components only, no inline styles — the docs are the first project htmlpress must serve well
+- HTML in `docs/` and `.skills/`: semantic elements and the documented `htmlpress-*` components only, no inline styles — the docs are the first project htmlpress must serve well
 - Commits: Conventional Commits, typed by what an installer gets (below)
 
 ## Releases

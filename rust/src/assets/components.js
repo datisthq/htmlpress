@@ -30,10 +30,10 @@ class HpTabs extends HTMLElement {
     this.buttons = buttons
     this.sections = sections
     const sync = this.getAttribute("sync")
-    const saved = sync ? readStorage(`hp-tabs:${sync}`) : null
+    const saved = sync ? readStorage(`htmlpress-tabs:${sync}`) : null
     this.select(Math.max(0, this.titles.indexOf(saved)))
     if (sync) {
-      window.addEventListener("hp-tabs-sync", event => {
+      window.addEventListener("htmlpress-tabs-sync", event => {
         const index = this.titles.indexOf(event.detail.title)
         if (event.detail.sync === sync && index >= 0) this.select(index)
       })
@@ -45,8 +45,10 @@ class HpTabs extends HTMLElement {
     const sync = this.getAttribute("sync")
     if (!sync) return
     const title = this.titles[index]
-    writeStorage(`hp-tabs:${sync}`, title)
-    window.dispatchEvent(new CustomEvent("hp-tabs-sync", { detail: { sync, title } }))
+    writeStorage(`htmlpress-tabs:${sync}`, title)
+    window.dispatchEvent(
+      new CustomEvent("htmlpress-tabs-sync", { detail: { sync, title } }),
+    )
   }
 
   select(index) {
@@ -87,7 +89,7 @@ class HpZoom extends HTMLElement {
     if (!image) return
     image.addEventListener("click", () => {
       const dialog = document.createElement("dialog")
-      dialog.className = "hp-zoom-dialog"
+      dialog.className = "htmlpress-zoom-dialog"
       const copy = image.cloneNode()
       copy.removeAttribute("width")
       copy.removeAttribute("height")
@@ -108,7 +110,7 @@ class HpThemeToggle extends HTMLElement {
       const dark = matchMedia("(prefers-color-scheme: dark)").matches
       const current = root.dataset.theme ?? (dark ? "dark" : "light")
       root.dataset.theme = current === "dark" ? "light" : "dark"
-      writeStorage("hp-theme", root.dataset.theme)
+      writeStorage("htmlpress-theme", root.dataset.theme)
     })
     this.replaceChildren(button)
   }
@@ -117,7 +119,7 @@ class HpThemeToggle extends HTMLElement {
 class HpNavToggle extends HTMLElement {
   connectedCallback() {
     const button = createButton("Menu", ICONS.menu)
-    button.setAttribute("aria-controls", "hp-sidebar")
+    button.setAttribute("aria-controls", "htmlpress-sidebar")
     button.setAttribute("aria-expanded", "false")
     const root = document.documentElement
     const toggle = open => {
@@ -167,10 +169,10 @@ class HpBackToTop extends HTMLElement {
 }
 
 function addCopyButtons() {
-  for (const pre of document.querySelectorAll(".hp-content pre")) {
-    if (pre.parentElement?.classList.contains("hp-code")) continue
+  for (const pre of document.querySelectorAll(".htmlpress-content pre")) {
+    if (pre.parentElement?.classList.contains("htmlpress-code")) continue
     const box = document.createElement("div")
-    box.className = "hp-code"
+    box.className = "htmlpress-code"
     pre.replaceWith(box)
     const button = document.createElement("button")
     button.type = "button"
@@ -185,10 +187,10 @@ function addCopyButtons() {
 }
 
 function addHeadingAnchors() {
-  for (const heading of document.querySelectorAll(".hp-content :is(h2, h3)[id]")) {
-    if (heading.querySelector(".hp-anchor")) continue
+  for (const heading of document.querySelectorAll(".htmlpress-content :is(h2, h3)[id]")) {
+    if (heading.querySelector(".htmlpress-anchor")) continue
     const anchor = document.createElement("a")
-    anchor.className = "hp-anchor"
+    anchor.className = "htmlpress-anchor"
     anchor.href = `#${heading.id}`
     anchor.setAttribute("aria-label", "Link to this section")
     anchor.textContent = "#"
@@ -223,12 +225,12 @@ function writeStorage(key, value) {
   } catch {}
 }
 
-customElements.define("hp-tabs", HpTabs)
-customElements.define("hp-table", HpTable)
-customElements.define("hp-zoom", HpZoom)
-customElements.define("hp-theme-toggle", HpThemeToggle)
-customElements.define("hp-nav-toggle", HpNavToggle)
-customElements.define("hp-toc", HpToc)
-customElements.define("hp-back-to-top", HpBackToTop)
+customElements.define("htmlpress-tabs", HpTabs)
+customElements.define("htmlpress-table", HpTable)
+customElements.define("htmlpress-zoom", HpZoom)
+customElements.define("htmlpress-theme-toggle", HpThemeToggle)
+customElements.define("htmlpress-nav-toggle", HpNavToggle)
+customElements.define("htmlpress-toc", HpToc)
+customElements.define("htmlpress-back-to-top", HpBackToTop)
 addCopyButtons()
 addHeadingAnchors()

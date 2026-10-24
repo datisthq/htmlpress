@@ -35,7 +35,9 @@ and `index.html` comes first. Every other file is copied as-is.
 
 <h1>Getting started</h1>
 <p>Plain HTML, styled by the built-in theme.</p>
-<hp-callout type="warning"><p>Light-DOM components cover what HTML lacks.</p></hp-callout>
+<htmlpress-callout type="warning"
+  ><p>Light-DOM components cover what HTML lacks.</p></htmlpress-callout
+>
 ```
 
 ## Documentation

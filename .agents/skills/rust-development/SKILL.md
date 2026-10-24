@@ -46,8 +46,8 @@ run from source: `cargo run --manifest-path rust/Cargo.toml -- build docs`.
    `<head>` exists, the extra head tags. lol_html builds no tree and adds no implied `<head>` or
    `<body>`: a fragment stays a fragment, which is why the head pass is skipped without one
 3. `render_page` runs lol_html over the layout, which is plain HTML: it fills `<head>` and
-   swaps each layout element (`hp-content`, `hp-nav`, `hp-toc`, `hp-pager`, …) for markup
-   built from the site. Inserted markup is never re-parsed, so a page's own `hp-*` tags
+   swaps each layout element (`htmlpress-content`, `htmlpress-nav`, `htmlpress-toc`, `htmlpress-pager`, …) for markup
+   built from the site. Inserted markup is never re-parsed, so a page's own `htmlpress-*` tags
    are left to the browser; an element with nothing to show is removed
 4. `build_site` refuses an output that holds the project or sits visible inside it, since it
    wipes the output first, then writes pages, copies files and adds `_htmlpress/` assets
@@ -73,17 +73,17 @@ under `--json` stdout carries only the result. Flags, defaults and output fields
 
 ## Assets
 
-`src/assets/` compiles into the binary. `theme.css` styles semantic elements and the `hp-*`
-components through `--hp-*` tokens; `components.js` holds light-DOM custom elements that must
+`src/assets/` compiles into the binary. `theme.css` styles semantic elements and the `htmlpress-*`
+components through `--htmlpress-*` tokens; `components.js` holds light-DOM custom elements that must
 leave readable HTML when the script never loads. A new component or token is public API: add
 it to `docs/components.html` and the `htmlpress-pages` skill in the same commit, and look at it
 in light, dark and phone width (**`change-verification`**).
 
 - A running `htmlpress start` serves the assets it was compiled with: rebuild and restart it
   after editing one, or copy the file into `<root>/.htmlpress/build/_htmlpress/` to preview
-- Mix colors `in oklab`, never `in oklch`: mixing a hue with the neutral `--hp-bg` in oklch
+- Mix colors `in oklab`, never `in oklch`: mixing a hue with the neutral `--htmlpress-bg` in oklch
   swings the hue, and every callout tint comes out pink
 - The theme toggle's dark set is written twice (media query and `[data-theme="dark"]`);
   change both
-- Mobile drawer rules hang off `:has(hp-nav-toggle:defined)`, which counts as a type plus a
+- Mobile drawer rules hang off `:has(htmlpress-nav-toggle:defined)`, which counts as a type plus a
   pseudo-class: an override needs the same `:has()` or it silently loses
