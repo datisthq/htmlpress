@@ -33,7 +33,7 @@ in it.
 **This repo's own invariants** — where a generic reviewer is blind:
 
 - behaviour added to a wrapper (`typescript/`, `python/`) instead of the binary;
-- a changed page contract, component, token, template variable, config key, flag or `--json`
+- a changed page contract, component, token, layout element, config key, flag or `--json`
   field without the matching `docs/` page and the `htmlpress-pages` skill;
 - `PLATFORMS` and the release matrix drifting apart (**`package-distribution`**);
 - an `unwrap`, `expect` or `unsafe` outside tests, or anything a command prints to stdout under

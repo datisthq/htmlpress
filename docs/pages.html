@@ -44,7 +44,11 @@
     <code>&lt;script&gt;</code> is added to the layout's head, after the theme.
   </dd>
   <dt>The body</dt>
-  <dd>Becomes the page's content inside the layout, untouched.</dd>
+  <dd>
+    Becomes the page's content inside the layout. Every <code>&lt;h2&gt;</code> and
+    <code>&lt;h3&gt;</code> without an <code>id</code> gets one from its text, and those
+    outside a component make the page's table of contents.
+  </dd>
 </dl>
 
 <h2>URLs and links</h2>
@@ -53,12 +57,21 @@
   keep working. <code>index.html</code> is served at its folder:
   <code>guides/index.html</code> at <code>/guides/</code>.
 </p>
+<p>
+  The navigation groups pages by their top folder, named by the folder's
+  <code>index.html</code> title, else the folder's name. Pages at the root come ungrouped.
+</p>
 
 <h2>Configuration</h2>
 <p>An optional <code>htmlpress.toml</code> at the project root sets the site:</p>
 <pre><code>title = "Htmlpress"
 description = "Turn a folder of HTML pages into a site."
-site = "https://htmlpress.dev"</code></pre>
+site = "https://htmlpress.dev"
+edit = "https://github.com/datisthq/htmlpress/edit/main/docs/"
+
+[[links]]
+title = "GitHub"
+url = "https://github.com/datisthq/htmlpress"</code></pre>
 <table>
   <thead>
     <tr>
@@ -82,6 +95,16 @@ site = "https://htmlpress.dev"</code></pre>
       <td><code>site</code></td>
       <td>none</td>
       <td>the public URL, for canonical links</td>
+    </tr>
+    <tr>
+      <td><code>edit</code></td>
+      <td>none</td>
+      <td>an "Edit this page" link: this URL followed by the page's path</td>
+    </tr>
+    <tr>
+      <td><code>links</code></td>
+      <td>none</td>
+      <td>header links, each a <code>title</code> and a <code>url</code></td>
     </tr>
   </tbody>
 </table>

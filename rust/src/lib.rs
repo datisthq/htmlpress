@@ -36,9 +36,9 @@ pub use actions::site::build::build_site;
 pub use actions::site::scan::scan_site;
 pub use actions::site::serve::serve_site;
 pub use models::build::{BuildOptions, BuildReport};
-pub use models::config::Config;
+pub use models::config::{Config, Link};
 pub use models::error::Error;
-pub use models::page::Page;
+pub use models::page::{Heading, Page};
 pub use models::site::Site;
 pub use program::create_program;
 

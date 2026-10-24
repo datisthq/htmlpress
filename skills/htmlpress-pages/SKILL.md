@@ -25,6 +25,9 @@ navigation and a theme, so a page carries content only: no `<nav>`, no site head
 - `<meta name="order" content="N">` (an integer) sorts the navigation, lower first.
   `index.html` always comes first; unordered pages follow by path.
 - Other `<head>` tags (`<link>`, `<style>`, `<script>`) are kept and added after the theme.
+- `<h2>` and `<h3>` outside components make the page's table of contents; one without an
+  `id` gets a slug of its text. Give a heading an `id` only when a link needs it fixed.
+- The navigation groups pages by top folder (`guides/…`), named by `guides/index.html`.
 - Pages are written to the same path, so link between them with relative hrefs
   (`guides/build.html`). Images and other files are copied as-is.
 
@@ -44,20 +47,32 @@ The theme styles the elements themselves: headings, `<p>`, lists, `<table>`, `<p
 
 Only these; anything else is plain HTML.
 
-| Element                         | Use                                                                |
-| ------------------------------- | ------------------------------------------------------------------ |
-| `<hp-callout type="…">`         | a note; `type` is `info` (default), `success`, `warning`, `danger` |
-| `<hp-grid>` + `<hp-card>`       | cards in responsive columns                                        |
-| `<hp-tabs>` + `<section title>` | tabs, one per `<section>`, named by its `title`                    |
+| Element                                  | Use                                                                    |
+| ---------------------------------------- | ---------------------------------------------------------------------- |
+| `<hp-callout type="…" label="…">`        | a note; `type` is `info` (default), `success`, `warning`, `danger`     |
+| `<hp-grid cols="2">` + `<hp-card>`       | cards in columns (`cols` 2–4, else responsive); `<h3><a>` links a card |
+| `<hp-tabs sync="…">` + `<section title>` | tabs, one per `<section>`; tabs sharing `sync` switch together         |
+| `<hp-steps>` + `<ol>`                    | numbered steps, one per `<li>`, each led by an `<h3>`                  |
+| `<hp-badge type="…">`                    | an inline label; `type` as a callout's, or `neutral`                   |
+| `<hp-file-tree>` + nested `<ul>`         | a file tree; an `<li>` holding a `<ul>` is a folder                    |
+| `<hp-table>` + `<table>`                 | a table sorted by a click on a `<thead>` header                        |
+| `<hp-zoom>` + `<img>`                    | an image that opens full screen on click                               |
+
+Code blocks get a copy button and headings a link on their own; a plain `<details>` is
+already styled.
 
 Put block content (`<p>`, `<h3>`, `<pre>`) inside a component, not bare text.
 
 ## Project files
 
-- `htmlpress.toml` (optional): `title`, `description`, `site`. An unknown key is an error.
+- `htmlpress.toml` (optional): `title`, `description`, `site`, `edit` (URL prefix for an
+  "Edit this page" link) and `[[links]]` (`title`, `url`: header links). An unknown key is
+  an error.
 - `.htmlpress/build/` is the output: never edit it, every build replaces it.
-- `.htmlpress/layout.html` replaces the built-in layout (a minijinja template); only when the
-  user asks for a different layout.
+- `.htmlpress/layout.html` replaces the built-in layout; only when the user asks for a
+  different layout. It is plain HTML: htmlpress fills its `<head>` and replaces
+  `<hp-content>`, `<hp-brand>`, `<hp-nav>`, `<hp-links>`, `<hp-toc>`, `<hp-pager>` and
+  `<hp-edit>` at build time.
 
 ## Checking the result
 

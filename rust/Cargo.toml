@@ -20,7 +20,6 @@ path = "src/main.rs"
 [dependencies]
 fireargs = "0.3.0"
 lol_html = "3.0.2"
-minijinja = { version = "3.0.3", features = ["serde"] }
 notify = "8.2.0"
 serde = { version = "1.0.229", features = ["derive"] }
 tiny_http = "0.12.0"

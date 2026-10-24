@@ -1,5 +1,8 @@
 <title>Components</title>
-<meta name="description" content="The built-in theme and the hp-* components." />
+<meta
+  name="description"
+  content="The built-in theme, the hp-* components and the layout."
+/>
 <meta name="order" content="3" />
 
 <h1>Components</h1>
@@ -18,43 +21,165 @@
     <code>warning</code> or <code>danger</code>.
   </p></hp-callout
 >
+<hp-callout type="success"><p>Every page built.</p></hp-callout>
+<hp-callout type="warning" label="Mind the gap"
+  ><p><code>label</code> replaces the heading the type gives.</p></hp-callout
+>
 <hp-callout type="danger"
   ><p>Never edit <code>.htmlpress/build</code>: every build replaces it.</p></hp-callout
 >
-<pre><code>&lt;hp-callout type="warning"&gt;&lt;p&gt;Mind the gap.&lt;/p&gt;&lt;/hp-callout&gt;</code></pre>
+<pre><code>&lt;hp-callout type="warning" label="Mind the gap"&gt;&lt;p&gt;…&lt;/p&gt;&lt;/hp-callout&gt;</code></pre>
 
 <h2>Grid and card</h2>
-<hp-grid>
+<p>
+  Cards fill responsive columns; <code>cols</code> fixes their number from 2 to 4. A link
+  in a card's heading makes the whole card clickable.
+</p>
+<hp-grid cols="2">
   <hp-card
-    ><h3>One</h3>
-    <p>Cards fill the grid's columns.</p></hp-card
+    ><h3><a href="pages.html">Pages</a></h3>
+    <p>What a page's title, order and head mean.</p></hp-card
   >
   <hp-card
-    ><h3>Two</h3>
-    <p>Columns wrap on narrow screens.</p></hp-card
+    ><h3><a href="cli.html">CLI</a></h3>
+    <p>Every command and flag.</p></hp-card
   >
 </hp-grid>
-<pre><code>&lt;hp-grid&gt;
-  &lt;hp-card&gt;&lt;h3&gt;One&lt;/h3&gt;&lt;p&gt;…&lt;/p&gt;&lt;/hp-card&gt;
-  &lt;hp-card&gt;&lt;h3&gt;Two&lt;/h3&gt;&lt;p&gt;…&lt;/p&gt;&lt;/hp-card&gt;
+<pre><code>&lt;hp-grid cols="2"&gt;
+  &lt;hp-card&gt;&lt;h3&gt;&lt;a href="pages.html"&gt;Pages&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;…&lt;/p&gt;&lt;/hp-card&gt;
+  &lt;hp-card&gt;&lt;h3&gt;CLI&lt;/h3&gt;&lt;p&gt;…&lt;/p&gt;&lt;/hp-card&gt;
 &lt;/hp-grid&gt;</code></pre>
 
 <h2>Tabs</h2>
-<hp-tabs>
-  <section title="First">
-    <p>Each <code>&lt;section&gt;</code> is a tab, named by its <code>title</code>.</p>
+<p>
+  Each <code>&lt;section&gt;</code> is a tab, named by its <code>title</code>. Tabs that
+  share a <code>sync</code> key switch together and remember the choice.
+</p>
+<hp-tabs sync="channel">
+  <section title="cargo">
+    <pre><code>cargo install htmlpress</code></pre>
   </section>
-  <section title="Second"><p>Without the script, the sections simply stack.</p></section>
+  <section title="npm">
+    <pre><code>npm install -g gethtmlpress</code></pre>
+  </section>
+  <section title="pip">
+    <pre><code>pip install htmlpress</code></pre>
+  </section>
 </hp-tabs>
-<pre><code>&lt;hp-tabs&gt;
+<hp-tabs sync="channel">
+  <section title="cargo"><p>From crates.io, built on your machine.</p></section>
+  <section title="npm"><p>A prebuilt binary per platform.</p></section>
+  <section title="pip"><p>A binary wheel.</p></section>
+</hp-tabs>
+<pre><code>&lt;hp-tabs sync="channel"&gt;
   &lt;section title="npm"&gt;…&lt;/section&gt;
-  &lt;section title="PyPI"&gt;…&lt;/section&gt;
+  &lt;section title="pip"&gt;…&lt;/section&gt;
 &lt;/hp-tabs&gt;</code></pre>
+
+<h2>Steps</h2>
+<hp-steps>
+  <ol>
+    <li>
+      <h3>Install</h3>
+      <p>Pick a channel above.</p>
+    </li>
+    <li>
+      <h3>Write a page</h3>
+      <p>Any <code>.html</code> file in the folder.</p>
+    </li>
+    <li>
+      <h3>Start</h3>
+      <p>Run <code>htmlpress start</code> and open the URL it prints.</p>
+    </li>
+  </ol>
+</hp-steps>
+<pre><code>&lt;hp-steps&gt;&lt;ol&gt;&lt;li&gt;&lt;h3&gt;Install&lt;/h3&gt;&lt;p&gt;…&lt;/p&gt;&lt;/li&gt;&lt;/ol&gt;&lt;/hp-steps&gt;</code></pre>
+
+<h2>Badge</h2>
+<p>
+  <hp-badge>New</hp-badge> <hp-badge type="success">Stable</hp-badge>
+  <hp-badge type="warning">Beta</hp-badge> <hp-badge type="danger">Removed</hp-badge>
+  <hp-badge type="neutral">v1</hp-badge> — <code>type</code> is <code>info</code>,
+  <code>success</code>, <code>warning</code>, <code>danger</code> or <code>neutral</code>;
+  without it, the accent.
+</p>
+<pre><code>&lt;hp-badge type="success"&gt;Stable&lt;/hp-badge&gt;</code></pre>
+
+<h2>File tree</h2>
+<p>A nested list; an item holding a list is a folder.</p>
+<hp-file-tree>
+  <ul>
+    <li>
+      docs
+      <ul>
+        <li>index.html</li>
+        <li>
+          guides
+          <ul>
+            <li>build.html</li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li>htmlpress.toml</li>
+  </ul>
+</hp-file-tree>
+<pre><code>&lt;hp-file-tree&gt;&lt;ul&gt;
+  &lt;li&gt;docs&lt;ul&gt;&lt;li&gt;index.html&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;
+  &lt;li&gt;htmlpress.toml&lt;/li&gt;
+&lt;/ul&gt;&lt;/hp-file-tree&gt;</code></pre>
+
+<h2>Sortable table</h2>
+<p>Wrap a table with a <code>&lt;thead&gt;</code>; a click on a header sorts by it.</p>
+<hp-table>
+  <table>
+    <thead>
+      <tr>
+        <th>Channel</th>
+        <th>Package</th>
+        <th>Platforms</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>crates.io</td>
+        <td><code>htmlpress</code></td>
+        <td>10</td>
+      </tr>
+      <tr>
+        <td>npm</td>
+        <td><code>gethtmlpress</code></td>
+        <td>6</td>
+      </tr>
+      <tr>
+        <td>PyPI</td>
+        <td><code>htmlpress</code></td>
+        <td>5</td>
+      </tr>
+    </tbody>
+  </table>
+</hp-table>
+<pre><code>&lt;hp-table&gt;&lt;table&gt;&lt;thead&gt;…&lt;/thead&gt;&lt;tbody&gt;…&lt;/tbody&gt;&lt;/table&gt;&lt;/hp-table&gt;</code></pre>
+
+<h2>Zoom</h2>
+<p>
+  An image inside <code>&lt;hp-zoom&gt;</code> opens full screen on click. Every code
+  block gets a copy button, and every <code>&lt;h2&gt;</code> and
+  <code>&lt;h3&gt;</code> a link.
+</p>
+<pre><code>&lt;hp-zoom&gt;&lt;img src="screenshot.png" alt="The docs site"&gt;&lt;/hp-zoom&gt;</code></pre>
+
+<h2>Expandable</h2>
+<details>
+  <summary>Plain <code>&lt;details&gt;</code></summary>
+  <p>No component needed: the theme styles the element.</p>
+</details>
 
 <h2>Theme tokens</h2>
 <p>
   Colors, fonts and widths are CSS custom properties on <code>:root</code>, with a dark
-  set under <code>prefers-color-scheme</code>. Override them from a page's own stylesheet:
+  set under <code>prefers-color-scheme</code> or the header's theme toggle. Override them
+  from a page's own stylesheet:
 </p>
 <pre><code>:root {
   --hp-accent: oklch(0.6 0.18 30);
@@ -62,12 +187,36 @@
   --hp-width: 52rem;
 }</code></pre>
 
-<h2>Layout escape</h2>
+<h2>Layout</h2>
 <p>
-  A <code>.htmlpress/layout.html</code> in the project replaces the built-in layout. It is
-  a <a href="https://docs.rs/minijinja">minijinja</a> template that gets
-  <code>site</code>, <code>page</code>, <code>nav</code>, <code>description</code>,
-  <code>assets</code> and <code>reload</code>; start from the
+  The layout is plain HTML. Htmlpress fills its <code>&lt;head&gt;</code> (charset,
+  viewport, title, description, canonical link, theme, scripts, then the page's own head
+  tags) and replaces these elements at build time:
+</p>
+<dl>
+  <dt><code>&lt;hp-content&gt;</code></dt>
+  <dd>The page's content.</dd>
+  <dt><code>&lt;hp-brand&gt;</code></dt>
+  <dd>The site title, linking home.</dd>
+  <dt><code>&lt;hp-nav&gt;</code></dt>
+  <dd>Every page, grouped by top folder; a folder's group is named by its index page.</dd>
+  <dt><code>&lt;hp-links&gt;</code></dt>
+  <dd>The <code>links</code> from <code>htmlpress.toml</code>.</dd>
+  <dt><code>&lt;hp-toc&gt;</code></dt>
+  <dd>
+    The page's <code>&lt;h2&gt;</code> and <code>&lt;h3&gt;</code>, highlighting the one
+    in view. A heading without an <code>id</code> gets one from its text.
+  </dd>
+  <dt><code>&lt;hp-pager&gt;</code></dt>
+  <dd>The previous and next pages in navigation order.</dd>
+  <dt><code>&lt;hp-edit&gt;</code></dt>
+  <dd>An "Edit this page" link from <code>edit</code> in <code>htmlpress.toml</code>.</dd>
+</dl>
+<p>
+  An element with nothing to show is removed. <code>&lt;hp-nav-toggle&gt;</code>,
+  <code>&lt;hp-theme-toggle&gt;</code> and <code>&lt;hp-back-to-top&gt;</code> are built
+  by the script in the browser. A <code>.htmlpress/layout.html</code> in the project
+  replaces the built-in layout; start from the
   <a href="https://github.com/datisthq/htmlpress/blob/main/rust/src/assets/layout.html"
     >built-in one</a
   >.

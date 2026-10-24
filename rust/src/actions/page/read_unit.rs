@@ -76,3 +76,37 @@ fn creates_urls() {
     assert_eq!(create_url("guides/build.html"), "/guides/build.html");
     assert_eq!(create_url("myindex.html"), "/myindex.html");
 }
+
+#[test]
+fn lists_the_headings_and_gives_each_an_id() -> crate::Result<()> {
+    let html = "<h1>Guide</h1>\n<h2>Install &amp; run</h2>\n<h3 id=\"flags\">The <code>--port</code> flag</h3>\n<h2>Install &amp; run</h2>\n<h2>Flags</h2>";
+    let page = read_page("guide.html", html)?;
+    let toc: Vec<_> = page
+        .toc
+        .iter()
+        .map(|heading| (heading.id.as_str(), heading.title.as_str(), heading.level))
+        .collect();
+    assert_eq!(
+        toc,
+        [
+            ("install-run", "Install & run", 2),
+            ("flags", "The --port flag", 3),
+            ("install-run-2", "Install & run", 2),
+            ("flags-2", "Flags", 2),
+        ]
+    );
+    assert!(page.content.contains("<h2 id=\"install-run\">"));
+    assert!(page.content.contains("<h3 id=\"flags\">"));
+    assert!(page.content.contains("<h2 id=\"install-run-2\">"));
+    Ok(())
+}
+
+#[test]
+fn keeps_headings_inside_components_out_of_the_toc() -> crate::Result<()> {
+    let html = "<h2>Cards</h2>\n<hp-grid><hp-card><h3>One</h3></hp-card></hp-grid>\n<h3>After</h3>";
+    let page = read_page("guide.html", html)?;
+    let ids: Vec<_> = page.toc.iter().map(|heading| heading.id.as_str()).collect();
+    assert_eq!(ids, ["cards", "after"]);
+    assert!(page.content.contains("<h3 id=\"one\">One</h3>"));
+    Ok(())
+}

@@ -19,6 +19,19 @@ fn reads_the_config_file() -> crate::Result<()> {
 }
 
 #[test]
+fn reads_the_links_and_the_edit_url() -> crate::Result<()> {
+    let root = tempfile::tempdir().map_err(Error::io("tempdir"))?;
+    let text = "edit = \"https://example.com/edit/\"\n\n[[links]]\ntitle = \"GitHub\"\nurl = \"https://github.com\"\n";
+    std::fs::write(root.path().join(CONFIG_FILE), text).map_err(Error::io("write"))?;
+    let config = load_config(root.path())?;
+    assert_eq!(config.edit.as_deref(), Some("https://example.com/edit/"));
+    assert_eq!(config.links.len(), 1);
+    assert_eq!(config.links[0].title, "GitHub");
+    assert_eq!(config.links[0].url, "https://github.com");
+    Ok(())
+}
+
+#[test]
 fn rejects_an_unknown_key() -> crate::Result<()> {
     let root = tempfile::tempdir().map_err(Error::io("tempdir"))?;
     std::fs::write(root.path().join(CONFIG_FILE), "titel = \"Docs\"\n")

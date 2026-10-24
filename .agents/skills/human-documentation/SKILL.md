@@ -27,7 +27,7 @@ files, and is no longer true.
 - **A new or deleted command, script or source folder.** The command list and code structure in
   `AGENTS.md` and the tables in `CONTRIBUTING.md` enumerate them.
 - **A changed default or contract.** A flag's default, how a page's title or order is read, a
-  `--json` field, a template variable.
+  `--json` field, a layout element.
 - **A removed mechanism.** Search the docs for the thing you deleted.
 
 ## Where to look

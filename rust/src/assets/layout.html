@@ -1,31 +1,33 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% if page.url == "/" %}{{ site.title }}{% else %}{{ page.title }} · {{ site.title }}{% endif %}</title>
-    {% if description %}<meta name="description" content="{{ description }}">{% endif %}
-    {% if site.url %}<link rel="canonical" href="{{ site.url | trim('/') }}{{ page.url }}">{% endif %}
-    <link rel="stylesheet" href="{{ assets }}/theme.css">
-    <script type="module" src="{{ assets }}/components.js"></script>
-    {% if reload %}<script type="module" src="{{ assets }}/reload.js" data-endpoint="{{ reload }}"></script>{% endif %}
-    {{ page.head | safe }}
   </head>
   <body>
     <a class="hp-skip" href="#content">Skip to content</a>
-    <header class="hp-header">
-      <a class="hp-brand" href="/">{{ site.title }}</a>
-    </header>
     <div class="hp-shell">
-      <nav class="hp-nav" aria-label="Pages">
-        <ul>
-          {% for item in nav %}<li><a href="{{ item.url }}"{% if item.current %} aria-current="page"{% endif %}>{{ item.title }}</a></li>
-          {% endfor %}
-        </ul>
-      </nav>
-      <main id="content" class="hp-content">
-{{ page.content | safe }}
-      </main>
+      <aside class="hp-sidebar" id="hp-sidebar">
+        <hp-brand></hp-brand>
+        <hp-nav></hp-nav>
+      </aside>
+      <div class="hp-main">
+        <header class="hp-header">
+          <hp-nav-toggle></hp-nav-toggle>
+          <hp-brand></hp-brand>
+          <hp-links></hp-links>
+          <hp-theme-toggle></hp-theme-toggle>
+        </header>
+        <div class="hp-page">
+          <main id="content" class="hp-content">
+            <hp-content></hp-content>
+            <hp-pager></hp-pager>
+          </main>
+          <aside class="hp-aside">
+            <hp-edit></hp-edit>
+            <hp-toc></hp-toc>
+          </aside>
+        </div>
+      </div>
     </div>
+    <hp-back-to-top></hp-back-to-top>
   </body>
 </html>

@@ -3,13 +3,19 @@ use std::cell::{Cell, RefCell};
 use lol_html::{RewriteStrSettings, doctype, element, rewrite_str, text};
 
 use crate::models::error::Error;
-use crate::models::page::Page;
+use crate::models::page::{Heading, Page};
 
 /// Split one HTML source into a [`Page`]. `path` is relative to the project root. A full
 /// document and a bare fragment both work: the wrappers are dropped, the content kept.
 pub fn read_page(path: &str, html: &str) -> crate::Result<Page> {
     let facts = read_facts(html).map_err(Error::page(path))?;
-    let content = read_content(html).map_err(Error::page(path))?;
+    let headings = create_ids(facts.headings);
+    let content = read_content(html, &headings).map_err(Error::page(path))?;
+    let toc = headings
+        .into_iter()
+        .filter(|(_, listed)| *listed)
+        .map(|(heading, _)| heading)
+        .collect();
     let head = match facts.has_head {
         true => read_head(html).map_err(Error::page(path))?,
         false => String::new(),
@@ -27,6 +33,7 @@ pub fn read_page(path: &str, html: &str) -> crate::Result<Page> {
         order: facts.order,
         head,
         content,
+        toc,
     })
 }
 
@@ -37,12 +44,14 @@ struct Facts {
     description: Option<String>,
     order: Option<i64>,
     has_head: bool,
+    /// Each heading, and whether it belongs in the table of contents.
+    headings: Vec<(Heading, bool)>,
 }
 
 fn read_facts(html: &str) -> Result<Facts, String> {
     let facts = RefCell::new(Facts::default());
     let headings = Cell::new(0);
-    let settings = RewriteStrSettings::new()
+    let mut settings = RewriteStrSettings::new()
         .append_element_content_handler(element!("head", |_| {
             facts.borrow_mut().has_head = true;
             Ok(())
@@ -61,6 +70,32 @@ fn read_facts(html: &str) -> Result<Facts, String> {
             }
             Ok(())
         }))
+        .append_element_content_handler(element!("h2, h3", |el| {
+            let heading = Heading {
+                id: el.get_attribute("id").unwrap_or_default(),
+                title: String::new(),
+                level: if el.tag_name() == "h2" { 2 } else { 3 },
+            };
+            facts.borrow_mut().headings.push((heading, true));
+            Ok(())
+        }))
+        .append_element_content_handler(text!("h2, h3", |chunk| {
+            if let Some((heading, _)) = facts.borrow_mut().headings.last_mut() {
+                heading.title.push_str(chunk.as_str());
+            }
+            Ok(())
+        }));
+    // Runs after the handler above on the same heading: a card's or a step's title is
+    // part of that block, not a section of the page
+    for selector in UNLISTED_HEADINGS {
+        settings = settings.append_element_content_handler(element!(selector, |_| {
+            if let Some((_, listed)) = facts.borrow_mut().headings.last_mut() {
+                *listed = false;
+            }
+            Ok(())
+        }));
+    }
+    settings = settings
         .append_element_content_handler(element!("meta[name='description']", |el| {
             facts.borrow_mut().description = el.get_attribute("content");
             Ok(())
@@ -77,8 +112,84 @@ fn read_facts(html: &str) -> Result<Facts, String> {
     Ok(facts.into_inner())
 }
 
-fn read_content(html: &str) -> Result<String, String> {
+// Ids already in the page are reserved first, so a generated slug never steals one that
+// a link elsewhere points at.
+fn create_ids(headings: Vec<(Heading, bool)>) -> Vec<(Heading, bool)> {
+    let mut taken: Vec<String> = headings
+        .iter()
+        .filter(|(heading, _)| !heading.id.is_empty())
+        .map(|(heading, _)| heading.id.clone())
+        .collect();
+    headings
+        .into_iter()
+        .map(|(heading, listed)| {
+            let title = decode_entities(
+                &heading
+                    .title
+                    .split_whitespace()
+                    .collect::<Vec<_>>()
+                    .join(" "),
+            );
+            let id = match heading.id.is_empty() {
+                true => create_slug(&title, &mut taken),
+                false => heading.id,
+            };
+            (
+                Heading {
+                    id,
+                    title,
+                    ..heading
+                },
+                listed,
+            )
+        })
+        .collect()
+}
+
+fn create_slug(title: &str, taken: &mut Vec<String>) -> String {
+    let words: Vec<String> = title
+        .to_lowercase()
+        .split(|char: char| !char.is_alphanumeric())
+        .filter(|word| !word.is_empty())
+        .map(str::to_owned)
+        .collect();
+    let base = match words.is_empty() {
+        true => "section".to_owned(),
+        false => words.join("-"),
+    };
+    let mut slug = base.clone();
+    let mut count = 1;
+    while taken.contains(&slug) {
+        count += 1;
+        slug = format!("{base}-{count}");
+    }
+    taken.push(slug.clone());
+    slug
+}
+
+const UNLISTED_HEADINGS: &[&str] = &[
+    "hp-callout h2",
+    "hp-callout h3",
+    "hp-card h2",
+    "hp-card h3",
+    "hp-steps h2",
+    "hp-steps h3",
+    "hp-tabs h2",
+    "hp-tabs h3",
+];
+
+fn read_content(html: &str, headings: &[(Heading, bool)]) -> Result<String, String> {
+    let index = Cell::new(0);
     let mut settings = RewriteStrSettings::new()
+        .append_element_content_handler(element!("h2, h3", |el| {
+            if let Some((heading, _)) = headings.get(index.get())
+                && el.get_attribute("id").is_none_or(|id| id.is_empty())
+            {
+                el.set_attribute("id", &heading.id)?;
+            }
+            index.set(index.get() + 1);
+            Ok(())
+        }))
         .append_document_content_handler(doctype!(|doctype| {
             doctype.remove();
             Ok(())
