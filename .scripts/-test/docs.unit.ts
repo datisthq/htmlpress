@@ -5,7 +5,7 @@ import { describe, expect, it } from "vite-plus/test"
 const ROOT = resolve(import.meta.dirname, "..", "..")
 const REPO_SKILLS = join(ROOT, ".agents", "skills")
 const SECTIONS = ["typescript", "python", "rust"]
-const SHIPPED_SKILLS = [join(ROOT, "skills")]
+const SHIPPED_SKILLS = [join(ROOT, ".skills")]
 
 describe("documentation stays true", () => {
   it("wires .claude/skills to .agents/skills", () => {
@@ -147,6 +147,7 @@ const WORKSPACE = new Set([
   ".github",
   ".release",
   ".scripts",
+  ".skills",
 ])
 
 // Code only: text and shell blocks hold real CLI output, which is as wide as it is
@@ -154,8 +155,8 @@ const SNIPPET = /```(?:ts|typescript|js|rust|rs|html)\b[^\n]*\n([\s\S]*?)```/g
 
 function readSnippetDocs() {
   const paths = ["README.md", ...SECTIONS.map(section => join(section, "README.md"))]
-  for (const entry of readdirSync(join(ROOT, "skills"), { recursive: true })) {
-    if (String(entry).endsWith(".md")) paths.push(join("skills", String(entry)))
+  for (const entry of readdirSync(join(ROOT, ".skills"), { recursive: true })) {
+    if (String(entry).endsWith(".md")) paths.push(join(".skills", String(entry)))
   }
   return paths
 }

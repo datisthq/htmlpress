@@ -39,7 +39,7 @@ htmlpress/
 │   └── settings.ts      #   the platform list
 ├── python/              # the PyPI package `htmlpress`: maturin binary wheels
 ├── docs/                # the docs site, HTML built by htmlpress itself
-├── skills/              # shipped agent skills for people who use htmlpress
+├── .skills/             # shipped agent skills for people who use htmlpress
 ├── .agents/skills/      # repo skills for coding agents (see AGENTS.md)
 ├── .scripts/            # repo-wide guards and the `pnpm squash` script
 └── vite.config.ts       # vite-plus shared config (format, lint, the guards' tests)
