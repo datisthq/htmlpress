@@ -1,0 +1,14 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 👀 Explore Discussions
+    url: https://github.com/datisthq/htmlpress/discussions
+    about: Before opening a discussion, please check if the topic has already been discussed. Please vote on existing discussions to show your support.
+  - name: 💡 Feature Request
+    url: https://github.com/datisthq/htmlpress/discussions/new?category=ideas
+    about: Suggest an improvement you'd like to see added to Htmlpress
+  - name: 🚀 Implementation
+    url: https://github.com/datisthq/htmlpress/discussions/new?category=show-and-tell
+    about: Share your Htmlpress related project with the community
+  - name: 💁 Question
+    url: https://github.com/datisthq/htmlpress/discussions/new?category=q-a
+    about: Ask a question about Htmlpress

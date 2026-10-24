@@ -1,0 +1,88 @@
+<title>Pages</title>
+<meta
+  name="description"
+  content="How htmlpress reads a page: title, order, head and content."
+/>
+<meta name="order" content="2" />
+
+<h1>Pages</h1>
+<p>
+  A project is a folder. Every <code>.html</code> file in it is a page, and every other
+  file is copied to the output as-is, at the same path. Dot-folders such as
+  <code>.git/</code> and <code>.htmlpress/</code>, and <code>node_modules/</code>, are
+  skipped.
+</p>
+
+<h2>A page</h2>
+<p>A page is a full document or a fragment; htmlpress reads both the same way:</p>
+<pre><code>&lt;title&gt;Getting started&lt;/title&gt;
+&lt;meta name="description" content="Install and run it."&gt;
+&lt;meta name="order" content="1"&gt;
+
+&lt;h1&gt;Getting started&lt;/h1&gt;
+&lt;p&gt;Plain HTML, styled by the theme.&lt;/p&gt;</code></pre>
+
+<dl>
+  <dt><code>&lt;title&gt;</code></dt>
+  <dd>
+    Names the page in the navigation and the browser tab. Without one, the first
+    <code>&lt;h1&gt;</code> does, and without that the file name.
+  </dd>
+  <dt><code>&lt;meta name="description"&gt;</code></dt>
+  <dd>
+    The page's description for search engines; the site's from
+    <code>htmlpress.toml</code> otherwise.
+  </dd>
+  <dt><code>&lt;meta name="order"&gt;</code></dt>
+  <dd>
+    An integer that sorts the navigation, lower first. <code>index.html</code> always
+    leads, ordered pages follow, the rest by path.
+  </dd>
+  <dt>Anything else in <code>&lt;head&gt;</code></dt>
+  <dd>
+    Kept: a page's own <code>&lt;link&gt;</code>, <code>&lt;style&gt;</code> or
+    <code>&lt;script&gt;</code> is added to the layout's head, after the theme.
+  </dd>
+  <dt>The body</dt>
+  <dd>Becomes the page's content inside the layout, untouched.</dd>
+</dl>
+
+<h2>URLs and links</h2>
+<p>
+  A page is written to the same path it was read from, so relative links between pages
+  keep working. <code>index.html</code> is served at its folder:
+  <code>guides/index.html</code> at <code>/guides/</code>.
+</p>
+
+<h2>Configuration</h2>
+<p>An optional <code>htmlpress.toml</code> at the project root sets the site:</p>
+<pre><code>title = "Htmlpress"
+description = "Turn a folder of HTML pages into a site."
+site = "https://htmlpress.dev"</code></pre>
+<table>
+  <thead>
+    <tr>
+      <th>Key</th>
+      <th>Default</th>
+      <th>Use</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>title</code></td>
+      <td>the folder name</td>
+      <td>the header and every tab title</td>
+    </tr>
+    <tr>
+      <td><code>description</code></td>
+      <td>none</td>
+      <td>for pages without their own</td>
+    </tr>
+    <tr>
+      <td><code>site</code></td>
+      <td>none</td>
+      <td>the public URL, for canonical links</td>
+    </tr>
+  </tbody>
+</table>
+<p>An unknown key is an error, so a typo never passes silently.</p>

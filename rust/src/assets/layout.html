@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% if page.url == "/" %}{{ site.title }}{% else %}{{ page.title }} · {{ site.title }}{% endif %}</title>
+    {% if description %}<meta name="description" content="{{ description }}">{% endif %}
+    {% if site.url %}<link rel="canonical" href="{{ site.url | trim('/') }}{{ page.url }}">{% endif %}
+    <link rel="stylesheet" href="{{ assets }}/theme.css">
+    <script type="module" src="{{ assets }}/components.js"></script>
+    {% if reload %}<script type="module" src="{{ assets }}/reload.js" data-endpoint="{{ reload }}"></script>{% endif %}
+    {{ page.head | safe }}
+  </head>
+  <body>
+    <a class="hp-skip" href="#content">Skip to content</a>
+    <header class="hp-header">
+      <a class="hp-brand" href="/">{{ site.title }}</a>
+    </header>
+    <div class="hp-shell">
+      <nav class="hp-nav" aria-label="Pages">
+        <ul>
+          {% for item in nav %}<li><a href="{{ item.url }}"{% if item.current %} aria-current="page"{% endif %}>{{ item.title }}</a></li>
+          {% endfor %}
+        </ul>
+      </nav>
+      <main id="content" class="hp-content">
+{{ page.content | safe }}
+      </main>
+    </div>
+  </body>
+</html>

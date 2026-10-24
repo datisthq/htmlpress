@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+title: Htmlpress
+abstract: Static site builder that turns a folder of HTML pages into a site with one layout, one theme and live reload, made for coding agents.
+authors:
+  - family-names: Karev
+    given-names: Evgeny
+    email: evgeny.karev@datist.io
+url: "https://htmlpress.dev"
+repository-code: "https://github.com/datisthq/htmlpress"
+license: MIT
+keywords:
+  - agents
+  - html
+  - htmlpress
+  - llm
+  - static-site

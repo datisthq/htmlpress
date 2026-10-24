@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Introduction</title>
+    <meta
+      name="description"
+      content="Htmlpress turns a folder of HTML pages into a site, made for coding agents."
+    />
+  </head>
+  <body>
+    <h1>Htmlpress</h1>
+    <p>
+      Htmlpress turns a folder of HTML pages into a site. Each page keeps its own markup,
+      and htmlpress adds one layout, one theme, a navigation and a live-reloading dev
+      server.
+    </p>
+    <p>
+      It is made for coding agents. They write plain semantic HTML, which they know better
+      than any templating language, and every page comes out looking like the same site:
+      no framework, no build config, no utility classes.
+    </p>
+
+    <hp-grid>
+      <hp-card>
+        <h3>Plain HTML in</h3>
+        <p>A page is any <code>.html</code> file, a full document or a bare fragment.</p>
+      </hp-card>
+      <hp-card>
+        <h3>A site out</h3>
+        <p>
+          One layout, a navigation and a theme styled from the HTML elements themselves.
+        </p>
+      </hp-card>
+      <hp-card>
+        <h3>One binary</h3>
+        <p>A single Rust binary, installed from npm, PyPI or crates.io.</p>
+      </hp-card>
+    </hp-grid>
+
+    <h2>Quick start</h2>
+    <pre><code>npx gethtmlpress start docs</code></pre>
+    <p>
+      That serves <code>docs/</code> on <code>http://127.0.0.1:8080</code> and rebuilds on
+      every save. When it looks right, build it:
+    </p>
+    <pre><code>npx gethtmlpress build docs</code></pre>
+    <p>
+      The site lands in <code>docs/.htmlpress/build</code>, ready for any static host.
+      This site is built that way from the
+      <a href="https://github.com/datisthq/htmlpress/tree/main/docs">docs/</a>
+      folder of the repository.
+    </p>
+
+    <hp-callout type="warning">
+      <p>
+        Htmlpress is in technical preview: the page contract may still change before 1.0.
+      </p>
+    </hp-callout>
+  </body>
+</html>

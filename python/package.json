@@ -1,0 +1,9 @@
+{
+  "name": "htmlpress-python",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "uvx maturin@1.15.0 build --release --out build",
+    "release": "uv publish build/*"
+  }
+}

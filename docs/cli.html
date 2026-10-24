@@ -1,0 +1,44 @@
+<title>CLI</title>
+<meta
+  name="description"
+  content="htmlpress build and start, with JSON output and an LLM manifest."
+/>
+<meta name="order" content="4" />
+
+<h1>CLI</h1>
+
+<h2><code>htmlpress build [root]</code></h2>
+<p>
+  Renders the project at <code>root</code> (default <code>.</code>) into
+  <code>root/.htmlpress/build</code>, replacing what is there. <code>--out</code> /
+  <code>-o</code> picks another folder; one that would hold the project, or a visible
+  folder inside it, is refused, since its pages would be read back as sources.
+</p>
+<pre><code>$ htmlpress build docs
+built 6 pages and 0 files into docs/.htmlpress/build</code></pre>
+
+<h2><code>htmlpress start [root]</code></h2>
+<p>
+  Builds the project, serves it on <code>http://127.0.0.1:8080</code> (<code>--port</code>
+  / <code>-p</code>; <code>0</code> picks a free one) and rebuilds on every change. Open
+  pages reload themselves after each build. A broken page prints its error and keeps the
+  last good build up.
+</p>
+
+<h2>For scripts and agents</h2>
+<p>
+  The CLI is built with <a href="https://fireargs.dev">Fireargs</a>, so every command
+  speaks JSON. <code>--json</code> prints the result as JSON, and with a value it also
+  takes the input as JSON:
+</p>
+<pre><code>$ htmlpress build docs --json
+{
+  "output": "docs/.htmlpress/build",
+  "pages": 6,
+  "files": 0
+}
+$ htmlpress build --json '{"root":"docs","out":"dist"}'</code></pre>
+<p>
+  <code>htmlpress --llms</code> prints every command's input and output schema as an
+  MCP-shaped tool list, so an agent learns the CLI without reading this page.
+</p>

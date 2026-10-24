@@ -1,0 +1,33 @@
+packages:
+  - typescript
+  - python
+  - rust
+
+# Supply-chain hardening. Quarantine freshly-published versions for seven days: a
+# compromised-maintainer publish is typically detected and yanked within hours, so a version
+# that survives the window is very unlikely to be the malicious one.
+#
+# When a genuine hotfix has to land sooner, pin that one version into minimumReleaseAgeExclude
+# (exact version, with a note saying why) rather than lowering this number for the whole tree.
+minimumReleaseAge: 10080
+
+allowBuilds:
+  esbuild: true
+  lefthook: true
+  sharp: true
+  workerd: true
+catalog:
+  vite: npm:@voidzero-dev/vite-plus-core@1.0.0
+  vitest: 5.0.1
+  vite-plus: 1.0.0
+  "@vitest/coverage-v8": 5.0.1
+overrides:
+  vite@*: "catalog:"
+  vitest@*: "catalog:"
+peerDependencyRules:
+  allowAny:
+    - vite
+    - vitest
+  allowedVersions:
+    vite: "*"
+    vitest: "*"

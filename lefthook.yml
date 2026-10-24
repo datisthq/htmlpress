@@ -1,0 +1,16 @@
+pre-commit:
+  jobs:
+    - name: format
+      exclude: ["**/*.rs"]
+      run: pnpm exec vp fmt --no-error-on-unmatched-pattern {staged_files}
+      stage_fixed: true
+    - name: format-rust
+      root: rust/
+      glob: "*.rs"
+      run: cargo fmt -- {staged_files}
+      stage_fixed: true
+
+pre-push:
+  jobs:
+    - name: test
+      run: pnpm test

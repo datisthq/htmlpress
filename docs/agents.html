@@ -1,0 +1,48 @@
+<title>Agents</title>
+<meta
+  name="description"
+  content="How a coding agent writes and checks htmlpress pages."
+/>
+<meta name="order" content="5" />
+
+<h1>Agents</h1>
+<p>
+  Htmlpress keeps an agent's job small: write semantic HTML, use a component only where
+  HTML has none, and leave the styling to the theme. The fewer choices a page offers, the
+  more pages look like one site.
+</p>
+
+<h2>The loop</h2>
+<ol>
+  <li>Run <code>htmlpress --llms</code> once to learn the commands.</li>
+  <li>Write or edit pages in the project folder.</li>
+  <li>
+    Run <code>htmlpress build &lt;root&gt; --json</code> and read <code>pages</code> and
+    any error on stderr.
+  </li>
+  <li>
+    For a visual check, run <code>htmlpress start &lt;root&gt;</code> and open the page in
+    a browser.
+  </li>
+</ol>
+
+<h2>Rules worth giving an agent</h2>
+<ul>
+  <li>
+    One <code>&lt;title&gt;</code> and one <code>&lt;h1&gt;</code> per page; a
+    <code>&lt;meta name="order"&gt;</code> where navigation order matters.
+  </li>
+  <li>
+    No inline <code>style</code>, no classes for looks: override a
+    <code>--hp-*</code> token instead.
+  </li>
+  <li>
+    Only the <a href="components.html">documented components</a>; anything else is plain
+    HTML.
+  </li>
+  <li>Never edit <code>.htmlpress/build</code>.</li>
+</ul>
+<p>
+  The repository ships these as an agent skill, <code>htmlpress-pages</code>, in
+  <a href="https://github.com/datisthq/htmlpress/tree/main/skills">skills/</a>.
+</p>

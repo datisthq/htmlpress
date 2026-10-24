@@ -1,0 +1,189 @@
+name: release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    uses: ./.github/workflows/test.yaml
+    secrets: inherit
+
+  release:
+    needs: [test]
+    runs-on: ubuntu-latest
+
+    outputs:
+      created: ${{ steps.release.outputs.release_created }}
+
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Release Packages
+        uses: googleapis/release-please-action@16a9c90856f42705d54a6fda1823352bdc62cf38 # v4.4.0
+        id: release
+        with:
+          config-file: .release/config.json
+          manifest-file: .release/manifest.json
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Assign Release PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr list --repo "$GITHUB_REPOSITORY" --state open --json number,headRefName \
+            --jq '.[] | select(.headRefName | startswith("release-please--")) | .number' |
+            xargs -r -I{} gh api "repos/$GITHUB_REPOSITORY/issues/{}/assignees" -f "assignees[]=roll"
+
+  # Each row's platform and target must match PLATFORMS in typescript/settings.ts; the docs
+  # guard compares them.
+  binaries:
+    needs: [release]
+    if: needs.release.outputs.created == 'true'
+    runs-on: ${{ matrix.os }}
+
+    permissions:
+      contents: read
+
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - platform: linux-x64
+            target: x86_64-unknown-linux-musl
+            os: ubuntu-latest
+            wheel: musllinux_1_2
+          - platform: linux-arm64
+            target: aarch64-unknown-linux-musl
+            os: ubuntu-24.04-arm
+            wheel: musllinux_1_2
+          - platform: darwin-x64
+            target: x86_64-apple-darwin
+            os: macos-latest
+          - platform: darwin-arm64
+            target: aarch64-apple-darwin
+            os: macos-latest
+          - platform: win32-x64
+            target: x86_64-pc-windows-msvc
+            os: windows-latest
+          - platform: win32-arm64
+            target: aarch64-pc-windows-msvc
+            os: windows-latest
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+      - name: Setup Musl
+        if: contains(matrix.target, 'musl')
+        run: sudo apt-get update && sudo apt-get install -y musl-tools
+      - name: Add Target
+        working-directory: rust
+        run: rustup target add ${{ matrix.target }}
+      - name: Build Binary
+        working-directory: rust
+        run: cargo build --release --target ${{ matrix.target }}
+      - name: Collect Binary
+        shell: bash
+        run: |
+          name=htmlpress
+          if [[ "${{ matrix.platform }}" == win32-* ]]; then name=htmlpress.exe; fi
+          mkdir -p "binaries/${{ matrix.platform }}"
+          cp "rust/target/${{ matrix.target }}/release/$name" "binaries/${{ matrix.platform }}/$name"
+      - name: Build Wheel
+        uses: PyO3/maturin-action@e83996d129638aa358a18fbd1dfb82f0b0fb5d3b # v1.51.0
+        with:
+          target: ${{ matrix.target }}
+          manylinux: ${{ matrix.wheel || 'auto' }}
+          working-directory: python
+          args: --release --out build
+      - name: Upload Binary
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: binary-${{ matrix.platform }}
+          path: binaries
+      - name: Upload Wheel
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: wheel-${{ matrix.platform }}
+          path: python/build/*.whl
+
+  npm:
+    needs: [binaries]
+    environment: release
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+      - name: Setup Pnpm
+        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          cache: pnpm
+          node-version-file: package.json
+          registry-url: https://registry.npmjs.org
+      - name: Install Dependencies
+        run: pnpm install
+      - name: Download Binaries
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: binary-*
+          path: binaries
+          merge-multiple: true
+      - name: Build Shim
+        run: pnpm -C typescript build
+      - name: Pack Packages
+        run: pnpm -C typescript pack:platforms --binaries ../binaries
+      - name: Publish Packages
+        run: pnpm -C typescript release
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  pypi:
+    needs: [binaries]
+    environment: release
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+
+    steps:
+      - name: Setup uv
+        uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86 # v5
+      - name: Download Wheels
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: wheel-*
+          path: build
+          merge-multiple: true
+      - name: Publish Packages
+        run: uv publish build/*.whl
+
+  crates:
+    needs: [binaries]
+    environment: release
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+      - name: Authenticate Crates
+        uses: rust-lang/crates-io-auth-action@c6f97d42243bad5fab37ca0427f495c86d5b1a18 # v1.0.5
+        id: auth
+      - name: Publish Packages
+        working-directory: rust
+        run: cargo publish
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ steps.auth.outputs.token }}

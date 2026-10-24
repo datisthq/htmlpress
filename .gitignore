@@ -1,0 +1,79 @@
+# Mac
+.DS_Store
+
+# Node
+node_modules/
+jspm_packages/
+.lock-wscript
+build/Release
+.node_repl_history
+*.tgz
+.npm
+*.so
+
+# Testing
+coverage
+htmlcov/
+lib-cov
+.tox/
+.coverage
+.coverage.*
+.cache
+.nyc_output
+coverage.xml
+coverage.json
+*,cover
+.pytest_cache/
+.ruff_cache/
+
+# Python
+.venv/
+__pycache__/
+.hypothesis/
+.eslintcache
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Translations
+*.mo
+*.pot
+
+# Storybook
+*storybook.log
+
+# Notebooks
+.ipynb_checkpoints/
+
+# User
+.vim/
+.idea/
+.next/
+.yarn/
+.cache/
+.clinic/
+.vscode/
+.wrangler/
+build/
+compile/
+dist/
+.astro/
+.cursor/
+.serena/
+.env.local
+messages.js
+.private/
+tmuxp.yaml
+/.claude/
+.htmlpress/build/
+.vitest/
+/.playwright-mcp/
+.worktrees/

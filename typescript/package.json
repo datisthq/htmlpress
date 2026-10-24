@@ -1,0 +1,48 @@
+{
+  "name": "gethtmlpress",
+  "version": "0.0.0",
+  "description": "Turn a folder of HTML pages into a site: one layout, one theme, live reload, made for agents",
+  "keywords": [
+    "agents",
+    "html",
+    "htmlpress",
+    "llm",
+    "static-site"
+  ],
+  "homepage": "https://htmlpress.dev",
+  "license": "MIT",
+  "author": "Evgeny Karev",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/datisthq/htmlpress.git",
+    "directory": "typescript"
+  },
+  "bin": {
+    "htmlpress": "./build/entrypoints/main.js"
+  },
+  "files": [
+    "build"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsgo --project tsconfig.build.json",
+    "check:types": "tsgo --noEmit",
+    "measure:coverage": "vp test --run --coverage",
+    "pack:platforms": "node scripts/pack.ts",
+    "release": "node scripts/release.ts",
+    "test": "pnpm check:types && pnpm test:unit",
+    "test:unit": "vp test"
+  },
+  "devDependencies": {
+    "@types/node": "24.2.0",
+    "@typescript/native-preview": "7.0.0-dev.20260316.1",
+    "@vitest/coverage-v8": "catalog:",
+    "vite": "catalog:",
+    "vite-plus": "catalog:",
+    "vitest": "catalog:"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

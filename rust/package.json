@@ -1,0 +1,16 @@
+{
+  "name": "htmlpress-rust",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "cargo build --release",
+    "check:lint": "cargo fmt --all --check && cargo clippy --all-targets -- -D warnings",
+    "check:types": "cargo check --all-targets",
+    "format": "cargo fmt --all",
+    "measure:coverage": "cargo llvm-cov --html",
+    "release": "cargo publish",
+    "setup": "cargo fetch",
+    "test": "pnpm check:types && pnpm test:unit",
+    "test:unit": "cargo test"
+  }
+}

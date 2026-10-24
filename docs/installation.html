@@ -1,0 +1,80 @@
+<title>Installation</title>
+<meta name="description" content="Install htmlpress from npm, PyPI or crates.io." />
+<meta name="order" content="1" />
+
+<h1>Installation</h1>
+<p>
+  Htmlpress is one Rust binary. Every channel ships the same binary at the same version,
+  so pick the package manager the project already uses.
+</p>
+
+<hp-tabs>
+  <section title="npm">
+    <pre><code>npm install --global gethtmlpress
+# or run it without installing
+npx gethtmlpress --version</code></pre>
+    <p>
+      The <code>gethtmlpress</code> package pulls in one platform package, such as
+      <code>gethtmlpress-linux-x64</code>, through an optional dependency. Installing with
+      <code>--omit=optional</code> leaves the binary out.
+    </p>
+  </section>
+  <section title="PyPI">
+    <pre><code>pip install htmlpress
+# or run it without installing
+uvx htmlpress --version</code></pre>
+    <p>The wheel for your platform carries the binary; no Python code runs.</p>
+  </section>
+  <section title="Cargo">
+    <pre><code>cargo install htmlpress</code></pre>
+    <p>Builds from source with the Rust toolchain, 1.88 or newer.</p>
+  </section>
+</hp-tabs>
+
+<h2>Platforms</h2>
+<p>Prebuilt binaries cover Linux, macOS and Windows on x64 and arm64.</p>
+<table>
+  <thead>
+    <tr>
+      <th>Platform</th>
+      <th>npm package</th>
+      <th>Rust target</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Linux x64</td>
+      <td><code>gethtmlpress-linux-x64</code></td>
+      <td><code>x86_64-unknown-linux-musl</code></td>
+    </tr>
+    <tr>
+      <td>Linux arm64</td>
+      <td><code>gethtmlpress-linux-arm64</code></td>
+      <td><code>aarch64-unknown-linux-musl</code></td>
+    </tr>
+    <tr>
+      <td>macOS x64</td>
+      <td><code>gethtmlpress-darwin-x64</code></td>
+      <td><code>x86_64-apple-darwin</code></td>
+    </tr>
+    <tr>
+      <td>macOS arm64</td>
+      <td><code>gethtmlpress-darwin-arm64</code></td>
+      <td><code>aarch64-apple-darwin</code></td>
+    </tr>
+    <tr>
+      <td>Windows x64</td>
+      <td><code>gethtmlpress-win32-x64</code></td>
+      <td><code>x86_64-pc-windows-msvc</code></td>
+    </tr>
+    <tr>
+      <td>Windows arm64</td>
+      <td><code>gethtmlpress-win32-arm64</code></td>
+      <td><code>aarch64-pc-windows-msvc</code></td>
+    </tr>
+  </tbody>
+</table>
+<p>
+  On any other platform, build with <code>cargo install htmlpress</code> and, for the npm
+  package, point <code>HTMLPRESS_BINARY</code> at the result.
+</p>

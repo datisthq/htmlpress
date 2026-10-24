@@ -1,0 +1,19 @@
+{
+  "name": "htmlpress",
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "compatibility_date": "2026-04-01",
+  "preview_urls": true,
+  "workers_dev": true,
+  "build": {
+    "command": "pnpm build:docs",
+  },
+  "assets": {
+    "directory": "docs/.htmlpress/build",
+  },
+  "routes": [
+    {
+      "pattern": "htmlpress.dev",
+      "custom_domain": true,
+    },
+  ],
+}

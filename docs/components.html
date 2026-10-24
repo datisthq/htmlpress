@@ -1,0 +1,74 @@
+<title>Components</title>
+<meta name="description" content="The built-in theme and the hp-* components." />
+<meta name="order" content="3" />
+
+<h1>Components</h1>
+<p>
+  The theme styles HTML elements directly: headings, paragraphs, lists, tables, code,
+  <code>&lt;details&gt;</code>, <code>&lt;figure&gt;</code>, <code>&lt;kbd&gt;</code>.
+  Write semantic HTML and it already looks right. A few <code>hp-*</code> elements cover
+  what HTML has no element for. They are light-DOM custom elements, so their content stays
+  plain HTML that reads well even before the script loads.
+</p>
+
+<h2>Callout</h2>
+<hp-callout
+  ><p>
+    A note. <code>type</code> is <code>info</code> (the default), <code>success</code>,
+    <code>warning</code> or <code>danger</code>.
+  </p></hp-callout
+>
+<hp-callout type="danger"
+  ><p>Never edit <code>.htmlpress/build</code>: every build replaces it.</p></hp-callout
+>
+<pre><code>&lt;hp-callout type="warning"&gt;&lt;p&gt;Mind the gap.&lt;/p&gt;&lt;/hp-callout&gt;</code></pre>
+
+<h2>Grid and card</h2>
+<hp-grid>
+  <hp-card
+    ><h3>One</h3>
+    <p>Cards fill the grid's columns.</p></hp-card
+  >
+  <hp-card
+    ><h3>Two</h3>
+    <p>Columns wrap on narrow screens.</p></hp-card
+  >
+</hp-grid>
+<pre><code>&lt;hp-grid&gt;
+  &lt;hp-card&gt;&lt;h3&gt;One&lt;/h3&gt;&lt;p&gt;…&lt;/p&gt;&lt;/hp-card&gt;
+  &lt;hp-card&gt;&lt;h3&gt;Two&lt;/h3&gt;&lt;p&gt;…&lt;/p&gt;&lt;/hp-card&gt;
+&lt;/hp-grid&gt;</code></pre>
+
+<h2>Tabs</h2>
+<hp-tabs>
+  <section title="First">
+    <p>Each <code>&lt;section&gt;</code> is a tab, named by its <code>title</code>.</p>
+  </section>
+  <section title="Second"><p>Without the script, the sections simply stack.</p></section>
+</hp-tabs>
+<pre><code>&lt;hp-tabs&gt;
+  &lt;section title="npm"&gt;…&lt;/section&gt;
+  &lt;section title="PyPI"&gt;…&lt;/section&gt;
+&lt;/hp-tabs&gt;</code></pre>
+
+<h2>Theme tokens</h2>
+<p>
+  Colors, fonts and widths are CSS custom properties on <code>:root</code>, with a dark
+  set under <code>prefers-color-scheme</code>. Override them from a page's own stylesheet:
+</p>
+<pre><code>:root {
+  --hp-accent: oklch(0.6 0.18 30);
+  --hp-font: "Inter", system-ui, sans-serif;
+  --hp-width: 52rem;
+}</code></pre>
+
+<h2>Layout escape</h2>
+<p>
+  A <code>.htmlpress/layout.html</code> in the project replaces the built-in layout. It is
+  a <a href="https://docs.rs/minijinja">minijinja</a> template that gets
+  <code>site</code>, <code>page</code>, <code>nav</code>, <code>description</code>,
+  <code>assets</code> and <code>reload</code>; start from the
+  <a href="https://github.com/datisthq/htmlpress/blob/main/rust/src/assets/layout.html"
+    >built-in one</a
+  >.
+</p>

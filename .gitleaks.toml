@@ -1,0 +1,10 @@
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Test fixtures may contain placeholder credentials"
+paths = ['''(^|\/)fixtures\/.*''']
+
+[[allowlists]]
+description = "Tests may contain placeholder credentials"
+paths = ['''\.unit\.ts$''', '''\.spec\.ts$''']

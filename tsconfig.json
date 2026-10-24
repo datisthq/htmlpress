@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+
+  "include": ["${configDir}/**/*.ts", "${configDir}/.scripts/**/*.ts"],
+  "exclude": [
+    "${configDir}/*.config.ts",
+    "${configDir}/**/build/",
+    "${configDir}/**/compile/",
+    "${configDir}/**/fixtures/",
+    "${configDir}/**/examples/",
+    "${configDir}/docs/",
+    "${configDir}/typescript/",
+    "${configDir}/python/",
+    "${configDir}/rust/"
+  ],
+
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "outDir": "${configDir}/build",
+
+    "lib": ["ESNext"],
+    "types": ["node"],
+
+    "strict": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "erasableSyntaxOnly": true,
+    "noUncheckedIndexedAccess": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "inlineSourceMap": true,
+    "inlineSources": true,
+    "skipLibCheck": true,
+
+    "declaration": true,
+    "rewriteRelativeImportExtensions": true
+  }
+}

@@ -1,0 +1,32 @@
+[project]
+name = "htmlpress"
+description = "Turn a folder of HTML pages into a site: one layout, one theme, live reload, made for agents"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE.md"]
+requires-python = ">=3.9"
+keywords = ["agents", "html", "htmlpress", "llm", "static-site"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "Programming Language :: Rust",
+  "Topic :: Internet :: WWW/HTTP :: Site Management",
+]
+# The version is the crate's: maturin reads it from rust/Cargo.toml
+dynamic = ["version"]
+
+[[project.authors]]
+name = "Evgeny Karev"
+
+[project.urls]
+homepage = "https://htmlpress.dev"
+repository = "https://github.com/datisthq/htmlpress"
+
+[build-system]
+requires = ["maturin>=1.15,<2"]
+build-backend = "maturin"
+
+[tool.maturin]
+bindings = "bin"
+manifest-path = "../rust/Cargo.toml"

@@ -1,0 +1,40 @@
+{
+  "name": "htmlpress-repo",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "pnpm -C rust build && pnpm -C typescript build && pnpm -C python build",
+    "build:docs": "cargo run --quiet --release --manifest-path rust/Cargo.toml -- build docs",
+    "check": "pnpm check:lint && pnpm check:types",
+    "check:lint": "vp fmt --check && vp lint && pnpm -C rust check:lint",
+    "check:types": "tsgo --noEmit && pnpm -C typescript check:types && pnpm -C rust check:types",
+    "format": "vp fmt --no-error-on-unmatched-pattern && pnpm -C rust format",
+    "measure:coverage": "pnpm -C typescript measure:coverage && pnpm -C rust measure:coverage",
+    "prepare": "lefthook install && node .scripts/link-skills.ts && (command -v cargo >/dev/null && pnpm -C rust setup || true)",
+    "scan": "pnpm scan:leaks && pnpm scan:vulns",
+    "scan:leaks": "gitleaks git --config=.gitleaks.toml --verbose --redact",
+    "scan:vulns": "semgrep --config=p/typescript --config=p/nodejs --config=p/rust --config=p/owasp-top-ten --config=p/secrets --exclude=\"**/fixtures/**\" --metrics=off",
+    "squash": "node .scripts/squash-branch.ts",
+    "start": "cargo run --quiet --manifest-path rust/Cargo.toml -- start docs",
+    "test": "pnpm check && pnpm test:unit",
+    "test:unit": "vp test && pnpm -C typescript test:unit && pnpm -C rust test:unit",
+    "update:deps": "ncu -ws --root -u --cooldown 7d"
+  },
+  "devDependencies": {
+    "@types/node": "24.2.0",
+    "@typescript/native-preview": "7.0.0-dev.20260316.1",
+    "@vitest/coverage-v8": "catalog:",
+    "lefthook": "2.1.1",
+    "npm-check-updates": "23.1.0",
+    "tempy": "3.2.0",
+    "vite": "catalog:",
+    "vite-plus": "catalog:",
+    "vitest": "catalog:",
+    "wrangler": "4.85.0"
+  },
+  "engines": {
+    "node": "^24.11.0",
+    "pnpm": "^11.0.0"
+  },
+  "packageManager": "pnpm@11.26.0+sha512.fc0e2bf890b9f983611f1ab68c0637bce914390653699f83c1a78b005ed25f2c81e77920c8fd8eee2ecf0b58b28cdcb00a84d97f69bcf7c56b2f344710238664"
+}
