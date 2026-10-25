@@ -6,6 +6,7 @@ use lol_html::html_content::ContentType;
 use lol_html::{RewriteStrSettings, element, rewrite_str};
 
 use crate::actions::page::convert::create_markdown_path;
+use crate::actions::page::prefix::prefix_urls;
 use crate::models::config::{Link, Position};
 use crate::models::error::Error;
 use crate::models::page::Page;
@@ -139,7 +140,12 @@ pub(crate) fn render_page(
                 Ok(())
             }));
     }
-    rewrite_str(layout, settings).map_err(|error| fail(error.to_string()))
+    let html = rewrite_str(layout, settings).map_err(|error| fail(error.to_string()))?;
+    let base = site.config.read_base();
+    match base.is_empty() {
+        true => Ok(html),
+        false => prefix_urls(&html, &base).map_err(fail),
+    }
 }
 
 // The page's content is pasted into the layout unparsed, so its own project component tags
@@ -221,7 +227,7 @@ fn create_head(
             let _ = writeln!(head, "<meta {attribute}=\"{key}\" content=\"{content}\">");
         }
     }
-    if let Some(origin) = read_origin(site) {
+    if let Some(origin) = site.config.read_origin() {
         let url = escape_html(&format!("{origin}{}", page.url));
         let _ = writeln!(head, "<link rel=\"canonical\" href=\"{url}\">");
     }
@@ -293,7 +299,8 @@ fn create_head(
 
 // Crawlers read og:url and og:image as absolute URLs only, so both need `site`.
 fn create_metas(site: &Site, page: &Page) -> Vec<(&'static str, &'static str, String)> {
-    let origin = read_origin(site);
+    let origin = site.config.read_origin();
+    let origin = origin.as_deref();
     let mut metas = vec![(
         "name",
         "viewport",
@@ -339,13 +346,6 @@ fn create_attributes(tag: &std::collections::BTreeMap<String, String>) -> String
         let _ = write!(html, " {}=\"{}\"", escape_html(name), escape_html(value));
     }
     html
-}
-
-fn read_origin(site: &Site) -> Option<&str> {
-    site.config
-        .site
-        .as_deref()
-        .map(|url| url.trim_end_matches('/'))
 }
 
 fn create_brand(site: &Site) -> String {

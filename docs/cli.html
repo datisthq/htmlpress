@@ -27,8 +27,10 @@ built 6 pages and 0 files into docs/.htmlpress/build</code></pre>
   When 8000 is taken it tries 8001 and on to 8009, and prints the URL it got.
   <code>--port</code> / <code>-p</code> names one port instead (<code>0</code> picks any
   free one). <code>--host</code> alone serves on every address, so a phone on the same
-  network can open the site, and prints that URL too; <code>--host &lt;address&gt;</code>
-  serves on one.
+  network can open the site, and prints that URL too;
+  <code>--host &lt;address&gt;</code> serves on one. With <code>base</code> in
+  <code>htmlpress.yaml</code> the site is served under it, the printed URLs include it,
+  and <code>/</code> leads there; restart after changing <code>base</code>.
 </p>
 <pre><code>$ htmlpress start docs --host
 serving http://localhost:8000

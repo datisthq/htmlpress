@@ -1,7 +1,8 @@
 use std::sync::Arc;
 
+use crate::actions::config::load::load_config;
 use crate::actions::site::build::build_site;
-use crate::actions::site::serve::{Reload, answer_requests, open_server};
+use crate::actions::site::serve::{Reload, add_base, answer_requests, open_server};
 use crate::models::build::BuildOptions;
 
 /// Build the project for production and serve the output, with no watching or reloading.
@@ -19,7 +20,9 @@ pub fn preview_site(
     };
     build_site(&options)?;
     let (server, urls) = open_server(host, port)?;
-    on_ready(&urls);
-    answer_requests(&server, &options.output, &Arc::new(Reload::default()));
+    let base = load_config(&options.root)?.read_base();
+    on_ready(&add_base(urls, &base));
+    let state = Arc::new(Reload::default());
+    answer_requests(&server, &options.output, &base, &state);
     Ok(())
 }

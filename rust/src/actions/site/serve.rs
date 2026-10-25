@@ -7,6 +7,7 @@ use std::time::Duration;
 use notify::{RecursiveMode, Watcher};
 use tiny_http::{Header, Request, Response, Server};
 
+use crate::actions::config::load::load_config;
 use crate::actions::site::build::build_site;
 use crate::models::build::BuildOptions;
 use crate::models::error::Error;
@@ -27,6 +28,7 @@ pub fn serve_site(
     };
     build_site(&options)?;
     let (server, urls) = open_server(host, port)?;
+    let base = load_config(&options.root)?.read_base();
     let state = Arc::new(Reload::default());
 
     let (sender, events) = channel();
@@ -41,8 +43,8 @@ pub fn serve_site(
         rebuild_on_change(&rebuild_options, &events, &rebuild_state)
     });
 
-    on_ready(&urls);
-    answer_requests(&server, &options.output, &state);
+    on_ready(&add_base(urls, &base));
+    answer_requests(&server, &options.output, &base, &state);
     Ok(())
 }
 
@@ -62,11 +64,30 @@ pub(crate) fn open_server(
     Ok((server, urls))
 }
 
-pub(crate) fn answer_requests(server: &Server, output: &Path, state: &Arc<Reload>) {
+/// Answer every request from the files in `output`, served under `base` (`/repo`, or
+/// empty for the root), until the server stops.
+pub(crate) fn answer_requests(
+    server: &Server,
+    output: &Path,
+    base: &str,
+    state: &Arc<Reload>,
+) {
     for request in server.incoming_requests() {
         let output = output.to_owned();
+        let base = base.to_owned();
         let state = state.clone();
-        std::thread::spawn(move || answer_request(request, &output, &state));
+        std::thread::spawn(move || answer_request(request, &output, &base, &state));
+    }
+}
+
+/// The URLs to print, each followed by the base the site is served under.
+pub(crate) fn add_base(urls: Vec<String>, base: &str) -> Vec<String> {
+    match base.is_empty() {
+        true => urls,
+        false => urls
+            .into_iter()
+            .map(|url| format!("{url}{base}/"))
+            .collect(),
     }
 }
 
@@ -138,9 +159,20 @@ fn is_source_event(
     })
 }
 
-fn answer_request(request: Request, output: &Path, state: &Reload) {
+fn answer_request(request: Request, output: &Path, base: &str, state: &Reload) {
     let url = request.url().to_owned();
     let (path, query) = url.split_once('?').unwrap_or((&url, ""));
+    let Some(path) = strip_base(path, base) else {
+        // The root of a sub-path site has nothing of its own, so it leads to the site
+        let result = match path {
+            "/" => answer_redirect(request, &format!("{base}/")),
+            _ => answer_missing(request, output),
+        };
+        if let Err(error) = result {
+            eprintln!("error: {url}: {error}");
+        }
+        return;
+    };
     let result = match path == RELOAD_PATH {
         true => {
             let version = wait_for_change(state, read_since(query));
@@ -177,12 +209,35 @@ fn read_since(query: &str) -> Option<u64> {
         .and_then(|value| value.parse().ok())
 }
 
+pub(crate) fn strip_base<'a>(path: &'a str, base: &str) -> Option<&'a str> {
+    if base.is_empty() {
+        return Some(path);
+    }
+    match path.strip_prefix(base)? {
+        "" => Some("/"),
+        rest if rest.starts_with('/') => Some(rest),
+        _ => None,
+    }
+}
+
+fn answer_redirect(request: Request, location: &str) -> std::io::Result<()> {
+    let response = Response::empty(302);
+    match Header::from_bytes(&b"Location"[..], location.as_bytes()) {
+        Ok(header) => request.respond(response.with_header(header)),
+        Err(()) => request.respond(response),
+    }
+}
+
+fn answer_missing(request: Request, output: &Path) -> std::io::Result<()> {
+    let missing = output.join("404.html");
+    let body = std::fs::read(&missing).unwrap_or_else(|_| b"Not found".to_vec());
+    let response = Response::from_data(body).with_status_code(404);
+    request.respond(add_headers(response, "404.html"))
+}
+
 fn answer_file(request: Request, output: &Path, path: &str) -> std::io::Result<()> {
     let Some(file) = resolve_file(output, path) else {
-        let missing = output.join("404.html");
-        let body = std::fs::read(&missing).unwrap_or_else(|_| b"Not found".to_vec());
-        let response = Response::from_data(body).with_status_code(404);
-        return request.respond(add_headers(response, "404.html"));
+        return answer_missing(request, output);
     };
     match std::fs::File::open(&file) {
         Ok(handle) => {

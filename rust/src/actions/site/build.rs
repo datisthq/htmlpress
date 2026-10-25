@@ -86,7 +86,7 @@ fn create_robots(site: &Site) -> String {
         flag(signals.ai_input),
         flag(signals.ai_train),
     );
-    if let Some(origin) = read_origin(site) {
+    if let Some(origin) = site.config.read_origin() {
         robots.push_str(&format!("\nSitemap: {origin}/sitemap.xml\n"));
     }
     robots
@@ -94,7 +94,7 @@ fn create_robots(site: &Site) -> String {
 
 // A sitemap lists absolute URLs only, so a project without `site` gets none.
 fn create_sitemap(site: &Site) -> Option<String> {
-    let origin = read_origin(site)?;
+    let origin = site.config.read_origin()?;
     let mut sitemap = String::from(
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
          <urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n",
@@ -107,13 +107,6 @@ fn create_sitemap(site: &Site) -> Option<String> {
     }
     sitemap.push_str("</urlset>\n");
     Some(sitemap)
-}
-
-fn read_origin(site: &Site) -> Option<&str> {
-    site.config
-        .site
-        .as_deref()
-        .map(|url| url.trim_end_matches('/'))
 }
 
 // The output is wiped before each build, so one that holds the project would delete it.

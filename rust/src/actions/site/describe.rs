@@ -54,8 +54,7 @@ fn create_llms(site: &Site, pages: &[&Page]) -> String {
     if let Some(description) = &site.config.description {
         lines.extend([String::new(), format!("> {description}")]);
     }
-    let origin =
-        (site.config.site.as_deref()).map_or("", |url| url.trim_end_matches('/'));
+    let origin = (site.config.read_origin()).unwrap_or_else(|| site.config.read_base());
     for (folder, items) in groups {
         let title = match folder {
             Some(folder) => (site.pages.iter())
@@ -77,6 +76,7 @@ fn create_llms(site: &Site, pages: &[&Page]) -> String {
 }
 
 fn create_skills_index(site: &Site) -> crate::Result<String> {
+    let base = site.config.read_base();
     let skills: Vec<serde_json::Value> = (site.skills.iter())
         .map(|skill| {
             let digest: String = Sha256::digest(&skill.source)
@@ -87,7 +87,7 @@ fn create_skills_index(site: &Site) -> crate::Result<String> {
                 "name": skill.name,
                 "type": "skill-md",
                 "description": skill.description,
-                "url": format!("/.well-known/agent-skills/{}/SKILL.md", skill.name),
+                "url": format!("{base}/.well-known/agent-skills/{}/SKILL.md", skill.name),
                 "digest": format!("sha256:{digest}"),
             })
         })
@@ -100,17 +100,18 @@ fn create_skills_index(site: &Site) -> crate::Result<String> {
 
 // Cloudflare and Netlify read _headers; the project's own rules are kept, ours follow.
 fn create_headers(site: &Site) -> crate::Result<String> {
+    let base = site.config.read_base();
     let mut links = vec![
-        "</llms.txt>; rel=\"describedby\"; type=\"text/plain\"",
-        "</index.md>; rel=\"alternate\"; type=\"text/markdown\"",
+        format!("<{base}/llms.txt>; rel=\"describedby\"; type=\"text/plain\""),
+        format!("<{base}/index.md>; rel=\"alternate\"; type=\"text/markdown\""),
     ];
     if !site.skills.is_empty() {
-        links.push(
-            "</.well-known/agent-skills/index.json>; rel=\"describedby\"; \
-             type=\"application/json\"",
-        );
+        links.push(format!(
+            "<{base}/.well-known/agent-skills/index.json>; rel=\"describedby\"; \
+             type=\"application/json\""
+        ));
     }
-    let rule = format!("/\n  Link: {}\n", links.join(", "));
+    let rule = format!("{base}/\n  Link: {}\n", links.join(", "));
     if !site.files.iter().any(|file| file == "_headers") {
         return Ok(rule);
     }

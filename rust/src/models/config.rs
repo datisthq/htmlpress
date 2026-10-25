@@ -9,6 +9,9 @@ use serde::{Deserialize, Serialize};
 pub struct Config {
     /// The public URL the site is served at, such as `https://htmlpress.dev`.
     pub site: Option<String>,
+    /// The sub-path the site is served under, such as `/repo/` on GitHub Pages; every
+    /// root-relative URL in the build gets it as a prefix.
+    pub base: Option<String>,
     /// The site icon's URL, such as `/favicon.svg`; defaults to the logo.
     pub favicon: Option<String>,
     /// An image's URL shown before the site title in the brand.
@@ -47,6 +50,24 @@ fn read_patterns<'de, D: serde::Deserializer<'de>>(
         Patterns::One(pattern) => vec![pattern],
         Patterns::Many(patterns) => patterns,
     })
+}
+
+impl Config {
+    /// The base without its trailing slash, `/repo`, or empty when the site is at the root.
+    pub(crate) fn read_base(&self) -> String {
+        let base = self.base.as_deref().unwrap_or_default().trim_matches('/');
+        match base.is_empty() {
+            true => String::new(),
+            false => format!("/{base}"),
+        }
+    }
+
+    /// `site` and the base, without a trailing slash: what a page's URL follows to be
+    /// absolute. None without `site`, since an absolute URL needs a host.
+    pub(crate) fn read_origin(&self) -> Option<String> {
+        let site = self.site.as_deref()?.trim_end_matches('/');
+        Some(format!("{site}{}", self.read_base()))
+    }
 }
 
 /// One link from the config.

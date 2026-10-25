@@ -77,6 +77,15 @@
   The navigation groups pages by their top folder, named by the folder's
   <code>index.html</code> title, else the folder's name. Pages at the root come ungrouped.
 </p>
+<p>
+  With <code>base</code> set, every root-relative URL in the build (in <code>href</code>,
+  <code>src</code>, <code>srcset</code>, <code>poster</code> and <code>action</code>, in
+  pages, the layout and the config's HTML alike) gets it as a prefix: write
+  <code>/guide.html</code> and the site links to <code>/repo/guide.html</code>. Relative
+  and absolute URLs are left alone, and so are <code>url()</code>s in a page's own CSS.
+  <code>start</code> and <code>preview</code> serve the site under the base too, and send
+  <code>/</code> there.
+</p>
 
 <h2>Configuration</h2>
 <p>
@@ -114,6 +123,14 @@ edit: https://github.com/datisthq/htmlpress/edit/main/docs/</code></pre>
       <td><code>site</code></td>
       <td>none</td>
       <td>the public URL, for canonical and social links and <code>sitemap.xml</code></td>
+    </tr>
+    <tr>
+      <td><code>base</code></td>
+      <td>none</td>
+      <td>
+        the sub-path the site is served under, such as <code>/repo/</code> on GitHub
+        Pages; see <a href="#urls-and-links">URLs and links</a>
+      </td>
     </tr>
     <tr>
       <td><code>title</code></td>

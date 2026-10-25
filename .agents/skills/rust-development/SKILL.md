@@ -60,7 +60,10 @@ run from source: `cargo run --manifest-path rust/Cargo.toml -- build docs`.
    fills `<head>` and
    swaps each layout element (`htmlpress-content`, `htmlpress-nav`, `htmlpress-toc`, `htmlpress-pager`, …) for markup
    built from the site. Inserted markup is never re-parsed, so a page's own `htmlpress-*` tags
-   are left to the browser; an element with nothing to show is removed
+   are left to the browser; an element with nothing to show is removed. With `base`, a last
+   pass (`page/prefix`) prefixes every root-relative URL attribute of the finished page,
+   so no URL builder needs to know the base; absolute URLs take it through
+   `Config::read_origin`, and the text outputs through `Config::read_base`
 4. `build_site` refuses an output that holds the project or sits visible inside it, since it
    wipes the output first, then writes pages, copies files and adds `_htmlpress/` assets,
    `robots.txt`, `sitemap.xml` and, when the project has none, the built-in `404.html`
@@ -72,6 +75,7 @@ run from source: `cargo run --manifest-path rust/Cargo.toml -- build docs`.
 
 ## The dev server
 
+Both servers strip the base from each request (`strip_base`) and redirect `/` to it.
 `preview_site` builds without reload and serves through the same request loop, minus the
 watcher. `serve_site` builds with `reload: true`, serves the output with tiny_http (a thread per
 request) and rebuilds on notify events. Reload is a **long poll**, not SSE: tiny_http buffers

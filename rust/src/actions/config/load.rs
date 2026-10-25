@@ -15,14 +15,27 @@ pub fn load_config(root: &Path) -> crate::Result<Config> {
     if text.trim().is_empty() {
         return Ok(Config::default());
     }
-    serde_saphyr::from_str(&text).map_err(|error| {
+    let config: Config = serde_saphyr::from_str(&text).map_err(|error| {
         let message = error.to_string();
         let message = message
             .strip_prefix("error: ")
             .unwrap_or(&message)
             .to_owned();
-        Error::Config { path, message }
-    })
+        Error::Config {
+            path: path.clone(),
+            message,
+        }
+    })?;
+    // A base without its leading slash would be read as relative to every page
+    if let Some(base) = &config.base
+        && !base.starts_with('/')
+    {
+        return Err(Error::Config {
+            path,
+            message: format!("base must start with \"/\", got \"{base}\""),
+        });
+    }
+    Ok(config)
 }
 
 #[cfg(test)]

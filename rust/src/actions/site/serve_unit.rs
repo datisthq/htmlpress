@@ -108,3 +108,13 @@ fn shows_loopback_as_localhost() {
     assert_eq!(urls[0], "http://localhost:8000");
     assert!(urls.iter().skip(1).all(|url| !url.contains("localhost")));
 }
+
+#[test]
+fn strips_the_base_from_request_paths() {
+    assert_eq!(strip_base("/guide.html", ""), Some("/guide.html"));
+    assert_eq!(strip_base("/repo", "/repo"), Some("/"));
+    assert_eq!(strip_base("/repo/", "/repo"), Some("/"));
+    assert_eq!(strip_base("/repo/a/b.html", "/repo"), Some("/a/b.html"));
+    assert_eq!(strip_base("/repository/", "/repo"), None);
+    assert_eq!(strip_base("/", "/repo"), None);
+}

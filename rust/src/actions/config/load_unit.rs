@@ -64,3 +64,22 @@ fn reads_head_tags_and_an_empty_file() -> crate::Result<()> {
     assert_eq!(load_config(root.path())?, Config::default());
     Ok(())
 }
+
+#[test]
+fn reads_the_base_and_rejects_one_without_a_leading_slash() -> crate::Result<()> {
+    let root = tempfile::tempdir().map_err(Error::io("tempdir"))?;
+    let write = |text: &str| {
+        std::fs::write(root.path().join(CONFIG_FILE), text).map_err(Error::io("write"))
+    };
+    write("site: https://x.dev/\nbase: /repo/\n")?;
+    let config = load_config(root.path())?;
+    assert_eq!(config.read_base(), "/repo");
+    assert_eq!(config.read_origin().as_deref(), Some("https://x.dev/repo"));
+    write("base: repo/\n")?;
+    assert!(matches!(
+        load_config(root.path()),
+        Err(Error::Config { .. })
+    ));
+    assert_eq!(Config::default().read_base(), "");
+    Ok(())
+}

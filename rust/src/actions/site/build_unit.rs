@@ -181,3 +181,83 @@ fn writes_agent_files_and_keeps_the_projects_own() -> crate::Result<()> {
     assert!(headers.starts_with("/*\n  X-Frame-Options: DENY\n\n/\n  Link: "));
     Ok(())
 }
+
+// Every URL the build writes must carry the base, or the site breaks on a sub-path host
+#[test]
+fn prefixes_every_url_with_the_base() -> crate::Result<()> {
+    let root = tempfile::tempdir().map_err(Error::io("tempdir"))?;
+    let root = root.path();
+    write_source(
+        root,
+        "htmlpress.yaml",
+        "site: https://x.dev\nbase: /repo/\nlogo: /logo.svg\n\
+         banner: '<a href=\"/news.html\">News</a>'\n\
+         links:\n  - title: Chat\n    url: /chat.html\n    position: sidebar\n\
+         skills: skills/*/SKILL.md\n",
+    )?;
+    write_source(
+        root,
+        "index.html",
+        "<h1>Home</h1><img src=\"/a.png\" srcset=\"/a.png 2x\">",
+    )?;
+    write_source(
+        root,
+        "guides/index.html",
+        "<title>Guides</title><a href=\"/\">Home</a>",
+    )?;
+    write_source(
+        root,
+        "guides/build.html",
+        "<title>Build</title><a href=\"../index.html\">Up</a>",
+    )?;
+    write_source(
+        root,
+        "skills/one/SKILL.md",
+        "---\nname: one\ndescription: First.\n---\n",
+    )?;
+    let options = BuildOptions {
+        reload: true,
+        ..BuildOptions::new(root)
+    };
+    build_site(&options)?;
+    let read = |path: &str| {
+        std::fs::read_to_string(options.output.join(path)).unwrap_or_default()
+    };
+
+    for page in [
+        "index.html",
+        "guides/index.html",
+        "guides/build.html",
+        "404.html",
+    ] {
+        let html = read(page);
+        for attribute in ["href=\"/", "src=\"/", "srcset=\"/", "data-endpoint=\"/"] {
+            for (at, _) in html.match_indices(attribute) {
+                let url = &html[at + attribute.len() - 1..];
+                assert!(
+                    url.starts_with("/repo/"),
+                    "{page}: {}",
+                    &url[..url.len().min(40)]
+                );
+            }
+        }
+        assert!(html.contains("../index.html") || page != "guides/build.html");
+    }
+    assert!(
+        read("index.html")
+            .contains(r#"<link rel="canonical" href="https://x.dev/repo/">"#)
+    );
+    assert!(
+        read("guides/build.html")
+            .contains(r#"content="https://x.dev/repo/guides/build.html""#)
+    );
+    assert!(read("sitemap.xml").contains("<loc>https://x.dev/repo/guides/</loc>"));
+    assert!(read("robots.txt").contains("Sitemap: https://x.dev/repo/sitemap.xml"));
+    assert!(read("llms.txt").contains("(https://x.dev/repo/guides/build.md)"));
+    assert!(read("_headers").starts_with("/repo/\n  Link: </repo/llms.txt>"));
+    assert!(
+        read(".well-known/agent-skills/index.json")
+            .contains("\"url\": \"/repo/.well-known/agent-skills/one/SKILL.md\"")
+    );
+    Ok(())
+}
