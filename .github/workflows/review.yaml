@@ -3,19 +3,14 @@ name: review
 on:
   pull_request:
     types: [opened, synchronize, ready_for_review, reopened]
-  issue_comment:
-    types: [created]
 
 jobs:
   claude:
-    if: |
-      (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) ||
-      (github.event_name == 'issue_comment' && github.event.issue.pull_request != null && contains(github.event.comment.body, '@claude/review') && contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.comment.author_association))
+    if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     permissions:
       actions: read
       contents: read
-      id-token: write
       pull-requests: write
 
     steps:
@@ -23,31 +18,28 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 1
-          ref: ${{ github.event_name == 'issue_comment' && format('refs/pull/{0}/merge', github.event.issue.number) || '' }}
 
       - name: Review Changes
         uses: anthropics/claude-code-action@020e931323e467e00b803ad64e03410d3796b8f7 # v1.0.220
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          allowed_bots: "*"
           track_progress: true
           prompt: |
             REPO: ${{ github.repository }}
-            PR NUMBER: ${{ github.event.pull_request.number || github.event.issue.number }}
+            PR NUMBER: ${{ github.event.pull_request.number }}
 
             Review this pull request using the `change-review` skill in this repository
             (`.agents/skills/change-review/SKILL.md`), which carries the checklist and the severity
             scale. Follow it rather than reviewing from general principles.
 
+          # Read-only on purpose: the reviewer reads the change and comments, but never runs it
+          # (no pnpm, which would execute the PR's own scripts) or writes to it.
           claude_args: >-
             --allowedTools
             "mcp__github_inline_comment__create_inline_comment,
             Bash(gh pr comment:*),
             Bash(gh pr diff:*),
             Bash(gh pr view:*),
-            Bash(pnpm:*),
-            Edit,
             Glob,
             Grep,
-            Read,
-            Write"
+            Read"
