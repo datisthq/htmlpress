@@ -1,0 +1,14 @@
+@scope (htmlpress-brand) {
+  :scope {
+    display: block;
+    min-width: 0;
+  }
+  a {
+    display: block;
+    color: inherit;
+    font-size: 1.0625rem;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+  }
+}

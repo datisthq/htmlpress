@@ -1,0 +1,43 @@
+@scope (htmlpress-pager) {
+  :scope {
+    display: block;
+    margin-top: 4rem;
+  }
+  nav {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  a {
+    display: block;
+    padding: 1rem;
+    border: 1px solid var(--htmlpress-border);
+    border-radius: var(--htmlpress-radius);
+    box-shadow: var(--htmlpress-shadow);
+    color: var(--htmlpress-text);
+    font-weight: 500;
+    line-height: 1.5;
+    text-decoration: none;
+  }
+  a:hover {
+    background: var(--htmlpress-surface);
+  }
+  small {
+    display: block;
+    color: var(--htmlpress-muted);
+    font-size: 0.875rem;
+    font-weight: 400;
+  }
+  [rel="next"] {
+    grid-column: 2;
+    text-align: right;
+  }
+  @media (max-width: 56rem) {
+    nav {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    [rel="next"] {
+      grid-column: 1;
+    }
+  }
+}

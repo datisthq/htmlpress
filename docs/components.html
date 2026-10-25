@@ -194,8 +194,9 @@
 <h2>Layout</h2>
 <p>
   The layout is plain HTML. Htmlpress fills its <code>&lt;head&gt;</code> (charset,
-  viewport, title, description, canonical link, theme, scripts, then the page's own head
-  tags) and replaces these elements at build time:
+  viewport, title, description, canonical link, the theme, the styles and scripts of the
+  components the page uses, then the page's own head tags) and replaces these elements at
+  build time:
 </p>
 <dl>
   <dt><code>&lt;htmlpress-content&gt;</code></dt>
@@ -220,9 +221,7 @@
   An element with nothing to show is removed. <code>&lt;htmlpress-nav-toggle&gt;</code>,
   <code>&lt;htmlpress-theme-toggle&gt;</code> and
   <code>&lt;htmlpress-back-to-top&gt;</code> are built by the script in the browser. A
-  <code>.htmlpress/layout.html</code> in the project replaces the built-in layout; start
-  from the
-  <a href="https://github.com/datisthq/htmlpress/blob/main/rust/src/assets/layout.html"
-    >built-in one</a
-  >.
+  <code>.htmlpress/layout.html</code> in the project replaces the built-in layout, and
+  every component's styles and script can be replaced or added the same way: see
+  <a href="escaping.html">Escaping</a>.
 </p>

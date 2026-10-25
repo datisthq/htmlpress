@@ -27,6 +27,38 @@ fn builds_pages_files_and_assets() -> crate::Result<()> {
 }
 
 #[test]
+fn serves_escapes_and_project_components() -> crate::Result<()> {
+    let root = tempfile::tempdir().map_err(Error::io("tempdir"))?;
+    let root = root.path();
+    write_source(root, "index.html", "<h1>Home</h1>")?;
+    write_source(root, ".htmlpress/styles/tokens.css", ":root { --mine: 1 }")?;
+    write_source(root, ".htmlpress/components/htmlpress-tabs.js", "// mine")?;
+    write_source(
+        root,
+        ".htmlpress/components/site-footer.html",
+        "<footer></footer>",
+    )?;
+    write_source(root, ".htmlpress/components/site-footer.css", "footer {}")?;
+    let options = BuildOptions::new(root);
+    build_site(&options)?;
+    let read = |path: &str| std::fs::read_to_string(options.output.join(path)).ok();
+    let theme = read("_htmlpress/theme.css").unwrap_or_default();
+    assert!(theme.starts_with(":root { --mine: 1 }") && theme.contains("h1"));
+    assert_eq!(
+        read("_htmlpress/components/htmlpress-tabs.js").as_deref(),
+        Some("// mine")
+    );
+    assert_eq!(
+        read("_htmlpress/components/site-footer.css").as_deref(),
+        Some("footer {}")
+    );
+    assert!(read("_htmlpress/components/htmlpress-callout.css").is_some());
+    assert!(read("_htmlpress/components/site-footer.html").is_none());
+    assert!(read("_htmlpress/layout.html").is_none());
+    Ok(())
+}
+
+#[test]
 fn refuses_an_output_that_holds_the_project() -> crate::Result<()> {
     let root = tempfile::tempdir().map_err(Error::io("tempdir"))?;
     let project = root.path().join("docs");

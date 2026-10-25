@@ -1,0 +1,23 @@
+@scope (htmlpress-table) {
+  :scope {
+    display: block;
+  }
+  th {
+    cursor: pointer;
+    user-select: none;
+  }
+  th::after {
+    content: "↕";
+    margin-left: 0.375rem;
+    color: var(--htmlpress-muted);
+    opacity: 0.5;
+  }
+  th[aria-sort="ascending"]::after {
+    content: "↑";
+    opacity: 1;
+  }
+  th[aria-sort="descending"]::after {
+    content: "↓";
+    opacity: 1;
+  }
+}

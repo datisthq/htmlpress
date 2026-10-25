@@ -4,7 +4,7 @@ use crate::actions::page::render::render_page;
 use crate::actions::site::scan::scan_site;
 use crate::models::build::{BuildOptions, BuildReport};
 use crate::models::error::Error;
-use crate::settings::{ASSETS_DIR, COMPONENTS, RELOAD, THEME};
+use crate::settings::{ASSETS_DIR, RELOAD, THEME_STYLES};
 
 /// Build the project at `options.root` into `options.output`, replacing what is there.
 pub fn build_site(options: &BuildOptions) -> crate::Result<BuildReport> {
@@ -25,8 +25,18 @@ pub fn build_site(options: &BuildOptions) -> crate::Result<BuildReport> {
         std::fs::copy(&source, &target).map_err(Error::io(&source))?;
     }
     let assets = options.output.join(ASSETS_DIR);
-    write_file(&assets.join("theme.css"), THEME.as_bytes())?;
-    write_file(&assets.join("components.js"), COMPONENTS.as_bytes())?;
+    let theme: Vec<&str> = THEME_STYLES
+        .iter()
+        .filter_map(|path| site.assets.get(*path).map(String::as_str))
+        .collect();
+    write_file(&assets.join("theme.css"), theme.join("\n").as_bytes())?;
+    for (path, text) in &site.assets {
+        let served = path.starts_with("scripts/")
+            || path.starts_with("components/") && !path.ends_with(".html");
+        if served {
+            write_file(&assets.join(path), text.as_bytes())?;
+        }
+    }
     if options.reload {
         write_file(&assets.join("reload.js"), RELOAD.as_bytes())?;
     }

@@ -9,7 +9,8 @@ Htmlpress turns a folder of HTML pages into a site: one layout, one theme, a nav
 - **platform package** — `gethtmlpress-<os>-<arch>`, one per entry in `PLATFORMS` (`typescript/settings.ts`), each carrying one binary; the main `gethtmlpress` package pins them all as `optionalDependencies` at its own version
 - **project** — a folder htmlpress builds: HTML pages, other files copied as-is, an optional `htmlpress.toml`, and `.htmlpress/` holding the build output and escapes
 - **page** — an `.html` file in a project, read by `rust/src/actions/page/read.rs` into title, order, head and content
-- **escape** — a project file under `.htmlpress/` replacing a built-in one; today only `.htmlpress/layout.html` (`LAYOUT_ESCAPE` in `rust/src/settings.rs`)
+- **escape** — a project file under `.htmlpress/` at a built-in asset's path (`ASSETS` in `rust/src/settings.rs`), replacing it: `layout.html`, `styles/*.css`, `scripts/*.js`, `components/<tag>.{css,js}`
+- **component** — a custom element tag with up to three files, `components/<tag>.{html,css,js}`: its CSS scoped with `@scope (<tag>)`, its JS defining only that element, linked only on pages that use the tag; a project's own tag adds one, and its `.html` replaces the tag at build time
 - **docs site** — `docs/`, this repo's own htmlpress project, built by `pnpm build:docs` and deployed to htmlpress.dev
 
 ## Rules
@@ -24,7 +25,7 @@ Htmlpress turns a folder of HTML pages into a site: one layout, one theme, a nav
 - Start a plan from a summary of the new or changed API (CLI flags, page contract, models) and the hardest points.
 - **Every plan ends by asking how to work it** (`AskUserQuestion`, before finalising): **the current branch** or **a `.worktrees/<name>` branch** (**`worktree-workflow`**).
 - **Behaviour lives in the binary only.** A wrapper resolves and runs it, nothing more; a feature added to `typescript/` or `python/` would exist for one channel and not the others.
-- **The page contract and the CLI are public API.** What a page's `<title>`, `<meta name="order">` and `<head>` mean, the `htmlpress-*` components and `--htmlpress-*` tokens, the layout elements an escape gets filled, `htmlpress.toml` keys and every command's flags and `--json` output: renaming one silently breaks every project and agent relying on it. Treat it like an export change (**`change-review`**).
+- **The page contract and the CLI are public API.** What a page's `<title>`, `<meta name="order">` and `<head>` mean, the `htmlpress-*` components and `--htmlpress-*` tokens, the layout elements an escape gets filled, the escapable asset paths, `htmlpress.toml` keys and every command's flags and `--json` output: renaming one silently breaks every project and agent relying on it. Treat it like an export change (**`change-review`**).
 - **A platform entry is a release contract.** `PLATFORMS` in `typescript/settings.ts` and the build matrix in `.github/workflows/release.yaml` must list the same platforms with the same Rust targets; one missing from the matrix fails the npm pack (**`package-distribution`**).
 - Rust: each `actions/<entity>/<verb>.rs` holds one action, named `verb_noun` (`actions/site/build.rs` exports `build_site`); the module tree is declared inline in `rust/src/lib.rs`. TypeScript: the same `actions/<entity>/<verb>.ts` shape, full relative imports with the `.ts` extension, no barrels.
 - Don't destructure props in a TypeScript function signature — use `props.x`. Put higher-level items above the ones they compose, public before private.
@@ -76,9 +77,9 @@ Shipped skills live in `.skills/` and teach coding agents to **use** htmlpress; 
 The root is a private pnpm workspace (`package.json`, `pnpm-workspace.yaml`): format, lint, the repo guards and the scripts that chain each section with `pnpm -C <section>` — never `pnpm -r`.
 
 - `rust/` — the crates.io package and the binary, a cargo project on the toolchain `rust/rust-toolchain.toml` pins (**`rust-development`**)
-  - `src/actions/<entity>/<verb>.rs` — `config/load`, `page/read` and `page/render`, `site/scan`, `site/build` and `site/serve`
-  - `src/commands/` — the fireargs commands `build` and `start`; `src/program.rs` the CLI; `src/main.rs` runs it
-  - `src/models/`, `src/settings.rs` (paths and the embedded assets), `src/lib.rs` the façade; `src/assets/` the layout, theme, components and reload script compiled into the binary
+  - `src/actions/<entity>/<verb>.rs` — `asset/escape` and `asset/list`, `config/load`, `page/read` and `page/render`, `site/scan`, `site/build` and `site/serve`
+  - `src/commands/` — the fireargs commands `build`, `start` and `escape`; `src/program.rs` the CLI; `src/main.rs` runs it
+  - `src/models/`, `src/settings.rs` (paths and the embedded assets), `src/lib.rs` the façade; `src/assets/` the layout, `styles/`, `scripts/`, `components/` and the reload script compiled into the binary
   - Unit tests beside their module as `<module>_unit.rs`; `tests/` the CLI integration tests
 - `typescript/` — the npm package `gethtmlpress`: `entrypoints/main.ts` runs the binary `actions/binary/resolve.ts` finds; `settings.ts` lists the platforms; `scripts/` packs and publishes the platform packages into `typescript/compile/` (**`package-distribution`**)
 - `python/` — the PyPI package `htmlpress`: only `pyproject.toml`, which points maturin at `rust/Cargo.toml` with `bindings = "bin"`

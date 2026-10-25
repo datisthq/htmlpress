@@ -3,6 +3,7 @@ use std::path::PathBuf;
 use super::*;
 use crate::actions::page::read::read_page;
 use crate::models::config::{Config, Link};
+use crate::settings::ASSETS;
 
 fn create_site() -> crate::Result<Site> {
     Ok(Site {
@@ -19,7 +20,10 @@ fn create_site() -> crate::Result<Site> {
             read_page("api/cli.html", "<title>CLI</title><p>Flags.</p>")?,
         ],
         files: vec![],
-        layout: None,
+        assets: ASSETS
+            .iter()
+            .map(|asset| (asset.path.to_owned(), asset.content.to_owned()))
+            .collect(),
     })
 }
 
@@ -99,8 +103,57 @@ fn adds_the_reload_script_for_the_dev_server() -> crate::Result<()> {
 #[test]
 fn uses_the_layout_escape() -> crate::Result<()> {
     let mut site = create_site()?;
-    site.layout = Some("<main><htmlpress-content></htmlpress-content></main>".to_owned());
+    let layout = "<main><htmlpress-content></htmlpress-content></main>";
+    site.assets
+        .insert("layout.html".to_owned(), layout.to_owned());
     let html = render_page(&site, &site.pages[0], false)?;
     assert_eq!(html, "<main><h1>Home</h1></main>");
+    Ok(())
+}
+
+#[test]
+fn links_only_the_components_a_page_uses() -> crate::Result<()> {
+    let mut site = create_site()?;
+    site.pages[0] = read_page(
+        "index.html",
+        "<htmlpress-tabs><section></section></htmlpress-tabs>",
+    )?;
+    let html = render_page(&site, &site.pages[0], false)?;
+    assert!(html.contains(
+        r#"<link rel="stylesheet" href="/_htmlpress/components/htmlpress-tabs.css">"#
+    ));
+    assert!(html.contains(
+        r#"<script type="module" src="/_htmlpress/components/htmlpress-tabs.js">"#
+    ));
+    assert!(html.contains(r#"href="/_htmlpress/components/htmlpress-nav.css""#));
+    assert!(html.contains(r#"src="/_htmlpress/scripts/code.js""#));
+    assert!(
+        !html.contains("htmlpress-callout.css") && !html.contains("htmlpress-zoom.js")
+    );
+    Ok(())
+}
+
+#[test]
+fn swaps_a_project_component_in_for_its_tag() -> crate::Result<()> {
+    let mut site = create_site()?;
+    let footer = "<footer><htmlpress-badge>v1</htmlpress-badge></footer>";
+    site.assets
+        .insert("components/site-footer.html".to_owned(), footer.to_owned());
+    site.assets.insert(
+        "components/site-footer.css".to_owned(),
+        "footer {}".to_owned(),
+    );
+    site.assets.insert(
+        "components/htmlpress-brand.html".to_owned(),
+        "<b>Mine</b>".to_owned(),
+    );
+    let layout = "<head></head><htmlpress-brand></htmlpress-brand><htmlpress-content></htmlpress-content><site-footer></site-footer>";
+    site.assets
+        .insert("layout.html".to_owned(), layout.to_owned());
+    let html = render_page(&site, &site.pages[0], false)?;
+    assert!(html.contains("<b>Mine</b><h1>Home</h1><footer>"));
+    assert!(html.contains("href=\"/_htmlpress/components/site-footer.css\""));
+    assert!(html.contains("href=\"/_htmlpress/components/htmlpress-badge.css\""));
+    assert!(!html.contains("<site-footer>") && !html.contains("<htmlpress-brand>"));
     Ok(())
 }

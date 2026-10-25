@@ -69,15 +69,23 @@ Put block content (`<p>`, `<h3>`, `<pre>`) inside a component, not bare text.
   "Edit this page" link) and `[[links]]` (`title`, `url`: header links). An unknown key is
   an error.
 - `.htmlpress/build/` is the output: never edit it, every build replaces it.
-- `.htmlpress/layout.html` replaces the built-in layout; only when the user asks for a
-  different layout. It is plain HTML: htmlpress fills its `<head>` and replaces
-  `<htmlpress-content>`, `<htmlpress-brand>`, `<htmlpress-nav>`, `<htmlpress-links>`, `<htmlpress-toc>`, `<htmlpress-pager>` and
-  `<htmlpress-edit>` at build time.
+- Escapes, only when the user asks for a different look or a new block: a file under
+  `.htmlpress/` at a built-in's path replaces it. `htmlpress escape <name>` copies the
+  default to start from (a path, or a component's tag); `htmlpress escape` lists them all.
+  - `layout.html` is plain HTML: htmlpress fills its `<head>` and replaces
+    `<htmlpress-content>`, `<htmlpress-brand>`, `<htmlpress-nav>`, `<htmlpress-links>`,
+    `<htmlpress-toc>`, `<htmlpress-pager>` and `<htmlpress-edit>` at build time.
+  - `styles/tokens.css`, `layout.css`, `content.css` are the global theme;
+    `components/<tag>.css` and `.js` one component each, its CSS inside `@scope (<tag>)`.
+  - A new tag adds a component: `components/site-footer.html` replaces every
+    `<site-footer>` at build time; its `.css`/`.js` load where the tag appears. The
+    `htmlpress-` prefix is reserved, and a file that replaces nothing fails the build.
 
 ## Checking the result
 
 ```sh
 htmlpress build <root> --json   # {"output": "...", "pages": N, "files": N}; errors on stderr
+htmlpress escape -r <root>      # every escapable file, marking the project's own
 htmlpress start <root>          # http://127.0.0.1:8080, rebuilds and reloads on save
 htmlpress --llms                # every command's input and output schema
 ```

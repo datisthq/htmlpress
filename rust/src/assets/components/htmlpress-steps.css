@@ -1,0 +1,49 @@
+@scope (htmlpress-steps) {
+  :scope {
+    display: block;
+    margin: 0 0 1.25em;
+  }
+  :scope > ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: step;
+  }
+  :scope > ol > li {
+    position: relative;
+    margin: 0;
+    padding: 0 0 1.5rem 2.75rem;
+    counter-increment: step;
+  }
+  :scope > ol > li::before {
+    content: counter(step);
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: grid;
+    place-items: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 999px;
+    background: var(--htmlpress-accent);
+    color: var(--htmlpress-accent-text);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    line-height: 1;
+  }
+  :scope > ol > li:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: 2.25rem;
+    bottom: 0.5rem;
+    left: 0.875rem;
+    border-left: 1px solid var(--htmlpress-border);
+  }
+  :scope > ol > li > :first-child {
+    margin-top: 0;
+    line-height: 1.75rem;
+  }
+  :scope > ol > li > :last-child {
+    margin-bottom: 0;
+  }
+}

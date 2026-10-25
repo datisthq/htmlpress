@@ -1,3 +1,5 @@
+use std::cell::RefCell;
+use std::collections::BTreeSet;
 use std::fmt::Write;
 
 use lol_html::html_content::ContentType;
@@ -6,58 +8,127 @@ use lol_html::{RewriteStrSettings, element, rewrite_str};
 use crate::models::error::Error;
 use crate::models::page::Page;
 use crate::models::site::Site;
-use crate::settings::{ASSETS_DIR, LAYOUT, RELOAD_PATH};
+use crate::settings::{ASSETS_DIR, RELOAD_PATH};
 
-/// Wrap one page of the site in the layout, the project's escape else the built-in one,
-/// filling its `<head>` and every `htmlpress-*` placeholder element the layout holds.
+/// Wrap one page of the site in the layout, filling its `<head>`, swapping each project
+/// component's `.html` in for its tag, and filling every `htmlpress-*` layout element.
 pub(crate) fn render_page(
     site: &Site,
     page: &Page,
     reload: bool,
 ) -> crate::Result<String> {
-    let layout = site.layout.as_deref().unwrap_or(LAYOUT);
+    let fail = |error: String| Error::page(&page.path)(error);
+    let layout = site.assets.get("layout.html").map_or("", String::as_str);
+    let fragments: Vec<(&str, &str)> = site
+        .assets
+        .iter()
+        .filter_map(|(path, html)| {
+            let tag = path.strip_prefix("components/")?.strip_suffix(".html")?;
+            Some((tag, html.as_str()))
+        })
+        .collect();
+    let tags = list_tags(&[layout, &page.content], &fragments).map_err(fail)?;
+    let head = create_head(site, page, &tags, reload);
     let nav = create_nav(site, page);
-    let head = create_head(site, page, reload);
-    let settings = RewriteStrSettings::new()
-        .append_element_content_handler(element!("head", |el| {
+    let replaced = |tag: &str| fragments.iter().any(|(name, _)| *name == tag);
+
+    let mut settings = RewriteStrSettings::new().append_element_content_handler(
+        element!("head", |el| {
             el.prepend(&head, ContentType::Html);
             el.append(&page.head, ContentType::Html);
             Ok(())
-        }))
-        .append_element_content_handler(element!("htmlpress-content", |el| {
-            el.replace(&page.content, ContentType::Html);
-            Ok(())
-        }))
-        .append_element_content_handler(element!("htmlpress-brand", |el| {
-            let title = escape_html(&site.title);
-            el.set_inner_content(
-                &format!("<a href=\"/\">{title}</a>"),
-                ContentType::Html,
-            );
-            Ok(())
-        }))
-        .append_element_content_handler(element!("htmlpress-nav", |el| {
-            el.set_inner_content(&nav, ContentType::Html);
-            Ok(())
-        }))
-        .append_element_content_handler(element!("htmlpress-links", |el| {
-            fill_element(el, create_links(site));
-            Ok(())
-        }))
-        .append_element_content_handler(element!("htmlpress-pager", |el| {
-            fill_element(el, create_pager(site, page));
-            Ok(())
-        }))
-        .append_element_content_handler(element!("htmlpress-toc", |el| {
-            fill_element(el, create_toc(page));
-            Ok(())
-        }))
-        .append_element_content_handler(element!("htmlpress-edit", |el| {
-            fill_element(el, create_edit(site, page));
+        }),
+    );
+    for (tag, html) in &fragments {
+        settings = settings.append_element_content_handler(element!(tag, |el| {
+            el.replace(html, ContentType::Html);
             Ok(())
         }));
-    rewrite_str(layout, settings)
-        .map_err(|error| Error::page(&page.path)(error.to_string()))
+    }
+    if !replaced("htmlpress-content") {
+        settings = settings.append_element_content_handler(element!(
+            "htmlpress-content",
+            |el| {
+                el.replace(&page.content, ContentType::Html);
+                Ok(())
+            }
+        ));
+    }
+    if !replaced("htmlpress-brand") {
+        settings =
+            settings.append_element_content_handler(element!("htmlpress-brand", |el| {
+                let title = escape_html(&site.title);
+                let html = format!("<a href=\"/\">{title}</a>");
+                el.set_inner_content(&html, ContentType::Html);
+                Ok(())
+            }));
+    }
+    if !replaced("htmlpress-nav") {
+        settings =
+            settings.append_element_content_handler(element!("htmlpress-nav", |el| {
+                el.set_inner_content(&nav, ContentType::Html);
+                Ok(())
+            }));
+    }
+    if !replaced("htmlpress-links") {
+        settings =
+            settings.append_element_content_handler(element!("htmlpress-links", |el| {
+                fill_element(el, create_links(site));
+                Ok(())
+            }));
+    }
+    if !replaced("htmlpress-pager") {
+        settings =
+            settings.append_element_content_handler(element!("htmlpress-pager", |el| {
+                fill_element(el, create_pager(site, page));
+                Ok(())
+            }));
+    }
+    if !replaced("htmlpress-toc") {
+        settings =
+            settings.append_element_content_handler(element!("htmlpress-toc", |el| {
+                fill_element(el, create_toc(page));
+                Ok(())
+            }));
+    }
+    if !replaced("htmlpress-edit") {
+        settings =
+            settings.append_element_content_handler(element!("htmlpress-edit", |el| {
+                fill_element(el, create_edit(site, page));
+                Ok(())
+            }));
+    }
+    rewrite_str(layout, settings).map_err(|error| fail(error.to_string()))
+}
+
+// A component's .html is pasted in after parsing, so the tags inside it are read here
+// too; one level deep, since pasted markup is never rewritten again.
+fn list_tags(
+    sources: &[&str],
+    fragments: &[(&str, &str)],
+) -> Result<BTreeSet<String>, String> {
+    let mut tags = BTreeSet::new();
+    for source in sources {
+        read_tags(source, &mut tags)?;
+    }
+    for (tag, html) in fragments {
+        if tags.contains(*tag) {
+            read_tags(html, &mut tags)?;
+        }
+    }
+    Ok(tags)
+}
+
+fn read_tags(html: &str, tags: &mut BTreeSet<String>) -> Result<(), String> {
+    let found = RefCell::new(BTreeSet::new());
+    let settings =
+        RewriteStrSettings::new().append_element_content_handler(element!("*", |el| {
+            found.borrow_mut().insert(el.tag_name());
+            Ok(())
+        }));
+    rewrite_str(html, settings).map_err(|error| error.to_string())?;
+    tags.extend(found.into_inner());
+    Ok(())
 }
 
 // A placeholder with nothing to show is removed, so a layout can style or hide the
@@ -69,7 +140,12 @@ fn fill_element(el: &mut lol_html::html_content::Element, html: Option<String>) 
     }
 }
 
-fn create_head(site: &Site, page: &Page, reload: bool) -> String {
+fn create_head(
+    site: &Site,
+    page: &Page,
+    tags: &BTreeSet<String>,
+    reload: bool,
+) -> String {
     let title = match page.url.as_str() {
         "/" => escape_html(&site.title),
         _ => format!(
@@ -108,10 +184,28 @@ fn create_head(site: &Site, page: &Page, reload: bool) -> String {
         head,
         "<link rel=\"stylesheet\" href=\"/{ASSETS_DIR}/theme.css\">"
     );
-    let _ = writeln!(
-        head,
-        "<script type=\"module\" src=\"/{ASSETS_DIR}/components.js\"></script>"
-    );
+    let used = |extension: &str| -> Vec<String> {
+        tags.iter()
+            .map(|tag| format!("components/{tag}.{extension}"))
+            .filter(|path| site.assets.contains_key(path))
+            .collect()
+    };
+    for path in used("css") {
+        let _ = writeln!(
+            head,
+            "<link rel=\"stylesheet\" href=\"/{ASSETS_DIR}/{path}\">"
+        );
+    }
+    let scripts = site
+        .assets
+        .keys()
+        .filter(|path| path.starts_with("scripts/"));
+    for path in scripts.cloned().chain(used("js")) {
+        let _ = writeln!(
+            head,
+            "<script type=\"module\" src=\"/{ASSETS_DIR}/{path}\"></script>"
+        );
+    }
     if reload {
         let _ = writeln!(
             head,

@@ -1,0 +1,41 @@
+/* Icons from Lucide (ISC), used as masks so they take the current color */
+@scope (htmlpress-file-tree) {
+  :scope {
+    --file: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z'/%3E%3Cpath d='M14 2v4a2 2 0 0 0 2 2h4'/%3E%3C/svg%3E");
+    --folder: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z'/%3E%3C/svg%3E");
+    display: block;
+    margin: 0 0 1.25em;
+    padding: 1rem;
+    border: 1px solid var(--htmlpress-border);
+    border-radius: var(--htmlpress-radius);
+    font: 0.875rem/1.9 var(--htmlpress-mono);
+  }
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  ul ul {
+    margin-left: 0.5rem;
+    padding-left: 1rem;
+    border-left: 1px solid var(--htmlpress-border);
+  }
+  li,
+  li + li {
+    margin: 0;
+  }
+  li::before {
+    content: "";
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    margin-right: 0.5rem;
+    background: var(--htmlpress-muted);
+    vertical-align: -0.2em;
+    mask: var(--file) center / contain no-repeat;
+  }
+  li:has(> ul)::before {
+    background: var(--htmlpress-accent);
+    mask-image: var(--folder);
+  }
+}

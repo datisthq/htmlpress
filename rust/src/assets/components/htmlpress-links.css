@@ -1,0 +1,21 @@
+@scope (htmlpress-links) {
+  :scope {
+    display: block;
+    min-width: 0;
+  }
+  nav {
+    display: flex;
+    gap: 1.5rem;
+    overflow-x: auto;
+    font-size: 0.9375rem;
+    scrollbar-width: none;
+  }
+  a {
+    color: var(--htmlpress-text);
+    white-space: nowrap;
+    text-decoration: none;
+  }
+  a:hover {
+    color: var(--htmlpress-accent);
+  }
+}

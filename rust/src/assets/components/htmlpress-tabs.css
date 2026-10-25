@@ -1,0 +1,35 @@
+@scope (htmlpress-tabs) {
+  :scope {
+    display: block;
+    margin: 0 0 1.25em;
+  }
+  [role="tablist"] {
+    display: flex;
+    gap: 0.25rem;
+    margin-bottom: 1rem;
+    overflow-x: auto;
+    border-bottom: 1px solid var(--htmlpress-border);
+    scrollbar-width: none;
+  }
+  [role="tab"] {
+    margin-bottom: -1px;
+    padding: 0.5rem 0.75rem;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    background: none;
+    color: var(--htmlpress-muted);
+    font: 500 0.875rem var(--htmlpress-font);
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  [role="tab"]:hover {
+    color: var(--htmlpress-text);
+  }
+  [role="tab"][aria-selected="true"] {
+    border-bottom-color: var(--htmlpress-accent);
+    color: var(--htmlpress-accent);
+  }
+  :scope > section > :last-child {
+    margin-bottom: 0;
+  }
+}

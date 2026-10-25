@@ -1,3 +1,4 @@
+use std::collections::BTreeMap;
 use std::path::PathBuf;
 
 use crate::models::config::Config;
@@ -13,6 +14,7 @@ pub struct Site {
     pub pages: Vec<Page>,
     /// Every non-page file, relative to the root with `/` separators, copied as-is.
     pub files: Vec<String>,
-    /// The project's `.htmlpress/layout.html`, when it replaces the built-in layout.
-    pub layout: Option<String>,
+    /// Every asset the build uses, by its path under `.htmlpress/`: the built-in ones with
+    /// the project's escapes and own components laid over them.
+    pub assets: BTreeMap<String, String>,
 }

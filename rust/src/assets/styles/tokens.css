@@ -1,0 +1,57 @@
+:root {
+  color-scheme: light;
+  --htmlpress-font:
+    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+    sans-serif;
+  --htmlpress-mono: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
+  --htmlpress-bg: oklch(1 0 0);
+  --htmlpress-surface: oklch(0.985 0 0);
+  --htmlpress-text: oklch(0.145 0 0);
+  --htmlpress-muted: oklch(0.5 0 0);
+  --htmlpress-border: oklch(0.922 0 0);
+  --htmlpress-accent: oklch(0.546 0.245 262.881);
+  --htmlpress-accent-text: oklch(0.985 0 0);
+  --htmlpress-info: oklch(0.6 0.18 255);
+  --htmlpress-success: oklch(0.6 0.17 140);
+  --htmlpress-warning: oklch(0.7 0.16 70);
+  --htmlpress-danger: oklch(0.58 0.22 25);
+  --htmlpress-shadow: 0 1px 3px 0 oklch(0 0 0 / 0.08), 0 1px 2px -1px oklch(0 0 0 / 0.08);
+  --htmlpress-radius: 1rem;
+  --htmlpress-width: 48rem;
+  --htmlpress-nav-width: 16rem;
+}
+
+/* The dark set twice: once for the system preference, once for the theme toggle's
+   choice, which wins over the preference either way. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --htmlpress-bg: oklch(0.145 0 0);
+    --htmlpress-surface: oklch(0.185 0 0);
+    --htmlpress-text: oklch(0.985 0 0);
+    --htmlpress-muted: oklch(0.708 0 0);
+    --htmlpress-border: oklch(0.269 0 0);
+    --htmlpress-accent: oklch(0.68 0.17 259.815);
+    --htmlpress-accent-text: oklch(0.145 0 0);
+    --htmlpress-info: oklch(0.72 0.14 250);
+    --htmlpress-success: oklch(0.78 0.18 135);
+    --htmlpress-warning: oklch(0.82 0.16 85);
+    --htmlpress-danger: oklch(0.7 0.18 25);
+    --htmlpress-shadow: 0 1px 3px 0 oklch(0 0 0 / 0.4);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --htmlpress-bg: oklch(0.145 0 0);
+  --htmlpress-surface: oklch(0.185 0 0);
+  --htmlpress-text: oklch(0.985 0 0);
+  --htmlpress-muted: oklch(0.708 0 0);
+  --htmlpress-border: oklch(0.269 0 0);
+  --htmlpress-accent: oklch(0.68 0.17 259.815);
+  --htmlpress-accent-text: oklch(0.145 0 0);
+  --htmlpress-info: oklch(0.72 0.14 250);
+  --htmlpress-success: oklch(0.78 0.18 135);
+  --htmlpress-warning: oklch(0.82 0.16 85);
+  --htmlpress-danger: oklch(0.7 0.18 25);
+  --htmlpress-shadow: 0 1px 3px 0 oklch(0 0 0 / 0.4);
+}

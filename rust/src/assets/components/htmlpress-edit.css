@@ -1,0 +1,13 @@
+@scope (htmlpress-edit) {
+  :scope {
+    display: block;
+    margin-bottom: 2rem;
+  }
+  a {
+    color: var(--htmlpress-muted);
+    text-decoration: none;
+  }
+  a:hover {
+    color: var(--htmlpress-text);
+  }
+}

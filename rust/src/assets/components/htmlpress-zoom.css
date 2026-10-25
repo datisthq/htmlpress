@@ -1,0 +1,27 @@
+@scope (htmlpress-zoom) {
+  :scope {
+    display: block;
+    margin: 0 0 1.25em;
+  }
+  img {
+    cursor: zoom-in;
+  }
+  dialog {
+    max-width: 95vw;
+    max-height: 95vh;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: zoom-out;
+  }
+  dialog::backdrop {
+    background: oklch(0 0 0 / 0.7);
+  }
+  dialog img {
+    display: block;
+    max-width: 95vw;
+    max-height: 95vh;
+    object-fit: contain;
+    cursor: zoom-out;
+  }
+}

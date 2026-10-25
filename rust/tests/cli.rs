@@ -44,7 +44,7 @@ fn builds_a_project_as_json() -> TestResult {
 }
 
 #[test]
-fn lists_build_and_start_for_agents() -> TestResult {
+fn lists_build_start_and_escape_for_agents() -> TestResult {
     let (code, out) = run_cli(&["--llms"])?;
     assert_eq!(code, 0);
     let manifest: serde_json::Value = serde_json::from_str(&out)?;
@@ -57,6 +57,44 @@ fn lists_build_and_start_for_agents() -> TestResult {
                 .collect()
         })
         .unwrap_or_default();
-    assert!(names.contains(&"build") && names.contains(&"start"));
+    assert!(
+        ["build", "start", "escape"]
+            .iter()
+            .all(|name| names.contains(name))
+    );
+    Ok(())
+}
+
+#[test]
+fn escapes_a_component_and_builds_with_it() -> TestResult {
+    let root = tempfile::tempdir()?;
+    write_page(
+        root.path(),
+        "index.html",
+        "<htmlpress-badge>New</htmlpress-badge>",
+    )?;
+    let path = root.path().to_string_lossy().into_owned();
+
+    let (code, out) = run_cli(&["escape", "htmlpress-badge", "--root", &path, "--json"])?;
+    assert_eq!(code, 0);
+    let report: serde_json::Value = serde_json::from_str(&out)?;
+    assert_eq!(
+        report["escaped"][0],
+        ".htmlpress/components/htmlpress-badge.css"
+    );
+    let escaped = root
+        .path()
+        .join(".htmlpress/components/htmlpress-badge.css");
+    std::fs::write(&escaped, "/* mine */")?;
+
+    let (code, _) = run_cli(&["build", &path])?;
+    assert_eq!(code, 0);
+    let output = root.path().join(".htmlpress/build/_htmlpress/components");
+    assert_eq!(
+        std::fs::read_to_string(output.join("htmlpress-badge.css"))?,
+        "/* mine */"
+    );
+    let again = run_cli(&["escape", "htmlpress-badge", "--root", &path]);
+    assert!(again.is_err_and(|error| error.to_string().contains("already escaped")));
     Ok(())
 }

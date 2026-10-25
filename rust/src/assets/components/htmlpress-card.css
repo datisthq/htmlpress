@@ -1,0 +1,39 @@
+@scope (htmlpress-card) {
+  :scope {
+    position: relative;
+    display: block;
+    padding: 1rem 1rem 1.125rem;
+    border: 1px solid var(--htmlpress-border);
+    border-radius: var(--htmlpress-radius);
+    background: var(--htmlpress-bg);
+    box-shadow: var(--htmlpress-shadow);
+    font-size: 0.9375rem;
+    line-height: 1.6;
+  }
+  :scope > :is(h2, h3, h4) {
+    margin: 0 0 0.5rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    letter-spacing: 0;
+  }
+  :scope > :is(h2, h3, h4) > a {
+    color: inherit;
+    text-decoration: none;
+  }
+  /* A heading link stretches over the whole card, so the card is one click target */
+  :scope > :is(h2, h3, h4) > a::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+  }
+  :scope:has(> :is(h2, h3, h4) > a):hover {
+    background: var(--htmlpress-surface);
+  }
+  :scope > :first-child {
+    margin-top: 0;
+  }
+  :scope > :last-child {
+    margin-bottom: 0;
+  }
+}

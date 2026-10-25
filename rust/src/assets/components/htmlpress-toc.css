@@ -1,0 +1,38 @@
+@scope (htmlpress-toc) {
+  :scope {
+    display: block;
+  }
+  p {
+    margin: 0 0 0.75rem;
+    color: var(--htmlpress-text);
+    font-weight: 500;
+  }
+  ul {
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--htmlpress-border);
+    list-style: none;
+  }
+  li {
+    margin: 0;
+  }
+  a {
+    display: block;
+    margin-left: -1px;
+    padding: 0.375rem 0 0.375rem 0.75rem;
+    border-left: 1px solid transparent;
+    color: var(--htmlpress-muted);
+    text-decoration: none;
+  }
+  a:hover {
+    color: var(--htmlpress-text);
+  }
+  a[data-level="3"] {
+    padding-left: 1.5rem;
+  }
+  a[aria-current="true"] {
+    border-left-color: var(--htmlpress-accent);
+    color: var(--htmlpress-accent);
+    font-weight: 500;
+  }
+}

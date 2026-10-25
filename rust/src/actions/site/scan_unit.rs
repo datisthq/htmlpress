@@ -39,22 +39,85 @@ fn skips_dot_folders_and_the_config_and_keeps_other_files() -> crate::Result<()>
     assert_eq!(site.title, "Docs");
     assert_eq!(site.pages.len(), 1);
     assert_eq!(site.files, ["images/logo.svg"]);
-    assert!(site.layout.is_none());
+    assert_eq!(site.assets.len(), ASSETS.len());
     Ok(())
 }
 
 #[test]
-fn reads_the_layout_escape() -> crate::Result<()> {
+fn lays_the_projects_assets_over_the_built_in_ones() -> crate::Result<()> {
     let root = tempfile::tempdir().map_err(Error::io("tempdir"))?;
+    let root = root.path();
+    let layout = "<main><htmlpress-content></htmlpress-content></main>";
+    write_file(root, ".htmlpress/layout.html", layout)?;
     write_file(
-        root.path(),
-        LAYOUT_ESCAPE,
-        "<main><htmlpress-content></htmlpress-content></main>",
+        root,
+        ".htmlpress/components/htmlpress-tabs.css",
+        "/* mine */",
     )?;
-    let site = scan_site(root.path())?;
+    write_file(
+        root,
+        ".htmlpress/components/site-footer.html",
+        "<footer></footer>",
+    )?;
+    write_file(root, ".htmlpress/notes.md", "kept out")?;
+    let site = scan_site(root)?;
+    assert_eq!(site.assets["layout.html"], layout);
+    assert_eq!(site.assets["components/htmlpress-tabs.css"], "/* mine */");
     assert_eq!(
-        site.layout.as_deref(),
-        Some("<main><htmlpress-content></htmlpress-content></main>")
+        site.assets["components/site-footer.html"],
+        "<footer></footer>"
     );
+    assert!(site.assets.contains_key("components/htmlpress-tabs.js"));
+    assert_eq!(site.assets.len(), ASSETS.len() + 1);
+    Ok(())
+}
+
+#[test]
+fn rejects_an_asset_that_replaces_nothing() -> crate::Result<()> {
+    for (path, needle) in [
+        (
+            ".htmlpress/styles/tokns.css",
+            "no built-in styles/tokns.css",
+        ),
+        (
+            ".htmlpress/components/htmlpress-calout.css",
+            "no built-in htmlpress-calout",
+        ),
+        (".htmlpress/components/footer.html", "custom element name"),
+        (
+            ".htmlpress/components/site-footer.txt",
+            ".html, .css or .js",
+        ),
+    ] {
+        let root = tempfile::tempdir().map_err(Error::io("tempdir"))?;
+        write_file(root.path(), path, "x")?;
+        let error = scan_site(root.path()).err().map(|error| error.to_string());
+        assert!(
+            error
+                .as_deref()
+                .is_some_and(|message| message.contains(needle)),
+            "{path}: {error:?}"
+        );
+    }
+    Ok(())
+}
+
+#[test]
+fn registers_every_built_in_asset_file() -> crate::Result<()> {
+    let assets = Path::new(env!("CARGO_MANIFEST_DIR")).join("src/assets");
+    let mut paths = vec!["layout.html".to_owned()];
+    for folder in ["styles", "scripts", "components"] {
+        let entries =
+            std::fs::read_dir(assets.join(folder)).map_err(Error::io(folder))?;
+        for entry in entries {
+            let entry = entry.map_err(Error::io(folder))?;
+            paths.push(format!("{folder}/{}", entry.file_name().to_string_lossy()));
+        }
+    }
+    paths.sort();
+    let mut registered: Vec<_> =
+        ASSETS.iter().map(|asset| asset.path.to_owned()).collect();
+    registered.sort();
+    assert_eq!(paths, registered);
     Ok(())
 }

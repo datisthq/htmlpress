@@ -1,0 +1,181 @@
+/* The chrome around the page; each htmlpress-* element styles itself in its own file,
+   this only places it. */
+
+@view-transition {
+  navigation: auto;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-padding-top: 5.5rem;
+  scrollbar-gutter: stable;
+}
+
+body {
+  margin: 0;
+  background: var(--htmlpress-bg);
+  color: var(--htmlpress-text);
+  font: 1rem/1.75 var(--htmlpress-font);
+}
+
+/* Layout */
+
+.htmlpress-skip {
+  position: absolute;
+  left: -100vw;
+}
+.htmlpress-skip:focus {
+  left: 1rem;
+  top: 1rem;
+  z-index: 50;
+}
+
+.htmlpress-shell {
+  display: grid;
+  grid-template-columns: var(--htmlpress-nav-width) minmax(0, 1fr);
+  min-height: 100dvh;
+}
+
+.htmlpress-sidebar {
+  position: sticky;
+  top: 0;
+  height: 100dvh;
+  overflow-y: auto;
+  padding: 1rem 0.75rem 2rem;
+  border-right: 1px solid var(--htmlpress-border);
+  background: var(--htmlpress-surface);
+  font-size: 0.875rem;
+  line-height: 1.43;
+  scrollbar-width: thin;
+}
+
+.htmlpress-sidebar htmlpress-brand {
+  padding: 0.25rem 0.75rem 1.25rem;
+}
+
+.htmlpress-main {
+  min-width: 0;
+}
+
+.htmlpress-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  height: 4rem;
+  padding: 0 1.5rem;
+  border-bottom: 1px solid var(--htmlpress-border);
+  background: color-mix(in oklab, var(--htmlpress-bg) 85%, transparent);
+  backdrop-filter: blur(8px);
+}
+.htmlpress-header htmlpress-brand,
+htmlpress-nav-toggle {
+  display: none;
+}
+htmlpress-theme-toggle {
+  margin-left: auto;
+}
+
+.htmlpress-page {
+  display: grid;
+  grid-template-columns: minmax(0, var(--htmlpress-width)) 14rem;
+  gap: 4rem;
+  padding: 2.5rem 4.5rem 5rem;
+}
+
+.htmlpress-content {
+  min-width: 0;
+  max-width: var(--htmlpress-width);
+  color: color-mix(in oklab, var(--htmlpress-text) 82%, var(--htmlpress-bg));
+  overflow-wrap: break-word;
+}
+
+.htmlpress-aside {
+  position: sticky;
+  top: 6.5rem;
+  align-self: start;
+  max-height: calc(100dvh - 8rem);
+  overflow-y: auto;
+  font-size: 0.875rem;
+  line-height: 1.43;
+  scrollbar-width: none;
+}
+.htmlpress-aside:not(:has(> *)) {
+  display: none;
+}
+
+@media (max-width: 80rem) {
+  .htmlpress-page {
+    grid-template-columns: minmax(0, var(--htmlpress-width));
+    padding-inline: 3rem;
+  }
+  .htmlpress-aside {
+    display: none;
+  }
+}
+
+@media (max-width: 56rem) {
+  .htmlpress-shell {
+    display: block;
+  }
+  .htmlpress-sidebar {
+    position: static;
+    height: auto;
+    border-right: 0;
+    border-bottom: 1px solid var(--htmlpress-border);
+  }
+  :root:not(:has(htmlpress-nav-toggle:defined)) .htmlpress-sidebar htmlpress-brand {
+    display: none;
+  }
+  .htmlpress-header {
+    gap: 1rem;
+    padding: 0 1rem 0 0.5rem;
+  }
+  .htmlpress-header htmlpress-brand {
+    display: block;
+    flex-shrink: 0;
+  }
+  .htmlpress-page {
+    padding: 1.5rem 1rem 4rem;
+  }
+
+  /* With the script the sidebar becomes a drawer; without it, it stays above the page */
+  :root:has(htmlpress-nav-toggle:defined) .htmlpress-sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 40;
+    width: min(18rem, 85vw);
+    height: 100dvh;
+    border-right: 1px solid var(--htmlpress-border);
+    translate: -100%;
+    transition: translate 0.2s;
+  }
+  :root:has(htmlpress-nav-toggle:defined)[data-nav-open] .htmlpress-sidebar {
+    translate: 0;
+    box-shadow: 0 0 2rem oklch(0 0 0 / 0.2);
+  }
+  :root[data-nav-open] body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    background: oklch(0 0 0 / 0.3);
+  }
+  htmlpress-nav-toggle:defined {
+    display: block;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @view-transition {
+    navigation: none;
+  }
+}

@@ -1,0 +1,31 @@
+@scope (htmlpress-badge) {
+  :scope {
+    --tone: var(--htmlpress-accent);
+    display: inline-block;
+    padding: 0 0.5rem;
+    border: 1px solid color-mix(in oklab, var(--tone) 30%, transparent);
+    border-radius: 999px;
+    background: color-mix(in oklab, var(--tone) 10%, var(--htmlpress-bg));
+    color: color-mix(in oklab, var(--tone) 70%, var(--htmlpress-text));
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1.6;
+    vertical-align: 0.1em;
+    white-space: nowrap;
+  }
+  :scope[type="info"] {
+    --tone: var(--htmlpress-info);
+  }
+  :scope[type="success"] {
+    --tone: var(--htmlpress-success);
+  }
+  :scope[type="warning"] {
+    --tone: var(--htmlpress-warning);
+  }
+  :scope[type="danger"] {
+    --tone: var(--htmlpress-danger);
+  }
+  :scope[type="neutral"] {
+    --tone: var(--htmlpress-muted);
+  }
+}

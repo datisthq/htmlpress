@@ -29,9 +29,11 @@ run from source: `cargo run --manifest-path rust/Cargo.toml -- build docs`.
 
 - `src/actions/<entity>/<verb>.rs` exports `verb_noun`; the module tree is declared inline in
   `lib.rs`, so there is no `mod.rs`
-- `src/models/` — `Config`, `Page`, `Site`, `BuildOptions` / `BuildReport`, `Error`
+- `src/models/` — `Asset` / `AssetStatus`, `Config`, `Page`, `Site`, `BuildOptions` /
+  `BuildReport`, `Error`
 - `src/commands/` — one fireargs command per file; `src/program.rs` mounts them
-- `src/settings.rs` — every path constant and the four assets, embedded with `include_str!`
+- `src/settings.rs` — every path constant, and `ASSETS`: each built-in asset embedded with
+  `include_str!` through the `asset!` macro, keyed by its path under `.htmlpress/`
 - Unit tests sit beside their module as `<module>_unit.rs`, wired in with
   `#[cfg(test)] #[path = "<module>_unit.rs"] mod unit;`; they return `crate::Result<()>` and use
   `?` instead of `unwrap`, which clippy denies
@@ -62,7 +64,7 @@ chunked responses, so a stream would sit unsent. `reload.js` asks
 The watcher's filter is load-bearing: a build reads every source (inotify `Access` events) and
 rewrites the output, so counting either would rebuild forever. `is_source_event` drops access
 events, the output, other dot-folders and the bare `.htmlpress` folder, but keeps files inside
-`.htmlpress/` such as the layout escape.
+`.htmlpress/` such as an escape.
 
 ## The CLI
 
@@ -73,11 +75,23 @@ under `--json` stdout carries only the result. Flags, defaults and output fields
 
 ## Assets
 
-`src/assets/` compiles into the binary. `theme.css` styles semantic elements and the `htmlpress-*`
-components through `--htmlpress-*` tokens; `components.js` holds light-DOM custom elements that must
-leave readable HTML when the script never loads. A new component or token is public API: add
-it to `docs/components.html` and the `htmlpress-pages` skill in the same commit, and look at it
+`src/assets/` compiles into the binary, and every file there is an escapable asset listed in
+`ASSETS` (a unit test fails on one missing). `styles/` joins, in `THEME_STYLES` order, into the
+global `theme.css`; `components/<tag>.css` and `.js` are served one file each, and
+`render_page` links only those whose tag the layout, the page or a project component's
+`.html` holds. A component's CSS sits in `@scope (<tag>)` and its JS is a module that
+defines that element alone, with its own copies of any helper: an escaped file must never
+depend on another. Components are light DOM and must leave readable HTML when the script
+never loads. A new component, token or asset path is public API: add it to
+`docs/components.html` and the `htmlpress-pages` skill in the same commit, and look at it
 in light, dark and phone width (**`change-verification`**).
+
+- Inside `@scope`, a bare `ul` ties the global `ul` on specificity and wins on scope
+  proximity, but a global `li + li` still beats a scoped `li`: match the global selector's
+  weight when a component resets it
+- `styles/layout.css` only places components (`.htmlpress-header htmlpress-brand`); one
+  that sets `display` on its own `:scope` beats a layout rule hiding it unless the layout
+  rule carries a class
 
 - A running `htmlpress start` serves the assets it was compiled with: rebuild and restart it
   after editing one, or copy the file into `<root>/.htmlpress/build/_htmlpress/` to preview
