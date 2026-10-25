@@ -4,6 +4,7 @@ use crate::actions::page::render::render_page;
 use crate::actions::site::scan::scan_site;
 use crate::models::build::{BuildOptions, BuildReport};
 use crate::models::error::Error;
+use crate::models::site::Site;
 use crate::settings::{ASSETS_DIR, RELOAD, THEME_STYLES};
 
 /// Build the project at `options.root` into `options.output`, replacing what is there.
@@ -40,6 +41,19 @@ pub fn build_site(options: &BuildOptions) -> crate::Result<BuildReport> {
     if options.reload {
         write_file(&assets.join("reload.js"), RELOAD.as_bytes())?;
     }
+    // A project's own robots.txt or sitemap.xml was copied above and wins
+    let shipped = |name: &str| site.files.iter().any(|file| file == name);
+    if !shipped("robots.txt") {
+        write_file(
+            &options.output.join("robots.txt"),
+            create_robots(&site).as_bytes(),
+        )?;
+    }
+    if let Some(sitemap) = create_sitemap(&site)
+        && !shipped("sitemap.xml")
+    {
+        write_file(&options.output.join("sitemap.xml"), sitemap.as_bytes())?;
+    }
 
     Ok(BuildReport {
         output: options.output.clone(),
@@ -48,8 +62,48 @@ pub fn build_site(options: &BuildOptions) -> crate::Result<BuildReport> {
     })
 }
 
+// Agents read Content-Signal only inside a user-agent group, so it must follow one.
+fn create_robots(site: &Site) -> String {
+    let signals = &site.config.content_signals;
+    let flag = |allowed: bool| if allowed { "yes" } else { "no" };
+    let mut robots = format!(
+        "User-agent: *\nContent-Signal: search={}, ai-input={}, ai-train={}\nAllow: /\n",
+        flag(signals.search),
+        flag(signals.ai_input),
+        flag(signals.ai_train),
+    );
+    if let Some(origin) = read_origin(site) {
+        robots.push_str(&format!("\nSitemap: {origin}/sitemap.xml\n"));
+    }
+    robots
+}
+
+// A sitemap lists absolute URLs only, so a project without `site` gets none.
+fn create_sitemap(site: &Site) -> Option<String> {
+    let origin = read_origin(site)?;
+    let mut sitemap = String::from(
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
+         <urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n",
+    );
+    for page in site.pages.iter().filter(|page| page.path != "404.html") {
+        let url = format!("{origin}{}", page.url)
+            .replace('&', "&amp;")
+            .replace('<', "&lt;");
+        sitemap.push_str(&format!("  <url><loc>{url}</loc></url>\n"));
+    }
+    sitemap.push_str("</urlset>\n");
+    Some(sitemap)
+}
+
+fn read_origin(site: &Site) -> Option<&str> {
+    site.config
+        .site
+        .as_deref()
+        .map(|url| url.trim_end_matches('/'))
+}
+
 // The output is wiped before each build, so one that holds the project would delete it.
-fn check_output(root: &Path, output: &Path) -> crate::Result<()> {
+pub(crate) fn check_output(root: &Path, output: &Path) -> crate::Result<()> {
     let root = std::path::absolute(root).map_err(Error::io(root))?;
     let output = std::path::absolute(output).map_err(Error::io(output))?;
     if root.starts_with(&output) {

@@ -1,0 +1,24 @@
+@scope (htmlpress-footer) {
+  :scope {
+    display: block;
+    padding: 2rem 4.5rem;
+    border-top: 1px solid var(--htmlpress-border);
+    color: var(--htmlpress-muted);
+    font-size: 0.875rem;
+    text-align: center;
+  }
+  p {
+    margin: 0;
+  }
+  a {
+    color: inherit;
+  }
+  a:hover {
+    color: var(--htmlpress-text);
+  }
+  @media (max-width: 56rem) {
+    :scope {
+      padding-inline: 1rem;
+    }
+  }
+}

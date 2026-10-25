@@ -30,6 +30,7 @@ pub fn read_page(path: &str, html: &str) -> crate::Result<Page> {
         url: create_url(path),
         title,
         description: facts.description,
+        image: facts.image,
         order: facts.order,
         head,
         content,
@@ -42,6 +43,7 @@ struct Facts {
     title: String,
     heading: String,
     description: Option<String>,
+    image: Option<String>,
     order: Option<i64>,
     has_head: bool,
     /// Each heading, and whether it belongs in the table of contents.
@@ -98,6 +100,10 @@ fn read_facts(html: &str) -> Result<Facts, String> {
     settings = settings
         .append_element_content_handler(element!("meta[name='description']", |el| {
             facts.borrow_mut().description = el.get_attribute("content");
+            Ok(())
+        }))
+        .append_element_content_handler(element!("meta[name='image']", |el| {
+            facts.borrow_mut().image = el.get_attribute("content");
             Ok(())
         }))
         .append_element_content_handler(element!("meta[name='order']", |el| {
@@ -224,6 +230,7 @@ const OWNED_BY_LAYOUT: &[&str] = &[
     "meta[charset]",
     "meta[name='viewport']",
     "meta[name='description']",
+    "meta[name='image']",
     "meta[name='order']",
 ];
 

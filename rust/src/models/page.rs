@@ -11,6 +11,8 @@ pub struct Page {
     pub title: String,
     /// `<meta name="description">`.
     pub description: Option<String>,
+    /// `<meta name="image">`: the social preview image's URL.
+    pub image: Option<String>,
     /// `<meta name="order">`: lower comes first in the navigation.
     pub order: Option<i64>,
     /// What the page's `<head>` holds besides its title and the metas htmlpress reads.

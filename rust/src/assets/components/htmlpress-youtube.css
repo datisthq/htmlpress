@@ -1,0 +1,13 @@
+@scope (htmlpress-youtube) {
+  :scope {
+    display: block;
+    margin: 0 0 1.25em;
+  }
+  iframe {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 0;
+    border-radius: var(--htmlpress-radius);
+  }
+}

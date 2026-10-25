@@ -3,6 +3,7 @@
 function addCopyButtons() {
   for (const pre of document.querySelectorAll(".htmlpress-content pre")) {
     if (pre.parentElement?.classList.contains("htmlpress-code")) continue
+    if (pre.closest("htmlpress-mermaid")) continue
     const box = document.createElement("div")
     box.className = "htmlpress-code"
     pre.replaceWith(box)

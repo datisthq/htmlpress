@@ -9,7 +9,7 @@ pub enum Error {
         path: PathBuf,
         source: std::io::Error,
     },
-    /// `htmlpress.toml` is not valid.
+    /// `htmlpress.config.yaml` is not valid.
     Config { path: PathBuf, message: String },
     /// A page could not be parsed or rendered.
     Page { path: String, message: String },

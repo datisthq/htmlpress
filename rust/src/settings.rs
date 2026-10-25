@@ -1,7 +1,7 @@
 use crate::models::asset::Asset;
 
 /// The project's config file, read from the project root.
-pub const CONFIG_FILE: &str = "htmlpress.toml";
+pub const CONFIG_FILE: &str = "htmlpress.config.yaml";
 
 /// The project's own folder: build output and escapes. Never scanned for pages.
 pub const PROJECT_DIR: &str = ".htmlpress";
@@ -38,17 +38,24 @@ pub const ASSETS: &[Asset] = &[
     asset!("components/htmlpress-back-to-top.css"),
     asset!("components/htmlpress-back-to-top.js"),
     asset!("components/htmlpress-badge.css"),
+    asset!("components/htmlpress-banner.css"),
     asset!("components/htmlpress-brand.css"),
+    asset!("components/htmlpress-breadcrumbs.css"),
     asset!("components/htmlpress-callout.css"),
     asset!("components/htmlpress-card.css"),
     asset!("components/htmlpress-edit.css"),
     asset!("components/htmlpress-file-tree.css"),
+    asset!("components/htmlpress-footer.css"),
     asset!("components/htmlpress-grid.css"),
     asset!("components/htmlpress-links.css"),
+    asset!("components/htmlpress-mermaid.css"),
+    asset!("components/htmlpress-mermaid.js"),
     asset!("components/htmlpress-nav-toggle.css"),
     asset!("components/htmlpress-nav-toggle.js"),
     asset!("components/htmlpress-nav.css"),
     asset!("components/htmlpress-pager.css"),
+    asset!("components/htmlpress-soundcloud.css"),
+    asset!("components/htmlpress-soundcloud.js"),
     asset!("components/htmlpress-steps.css"),
     asset!("components/htmlpress-table.css"),
     asset!("components/htmlpress-table.js"),
@@ -58,6 +65,8 @@ pub const ASSETS: &[Asset] = &[
     asset!("components/htmlpress-theme-toggle.js"),
     asset!("components/htmlpress-toc.css"),
     asset!("components/htmlpress-toc.js"),
+    asset!("components/htmlpress-youtube.css"),
+    asset!("components/htmlpress-youtube.js"),
     asset!("components/htmlpress-zoom.css"),
     asset!("components/htmlpress-zoom.js"),
 ];
@@ -71,9 +80,12 @@ pub const THEME_STYLES: &[&str] = &[
 
 /// The layout elements the build fills; a project component may replace one by name.
 pub const LAYOUT_ELEMENTS: &[&str] = &[
+    "htmlpress-banner",
     "htmlpress-brand",
+    "htmlpress-breadcrumbs",
     "htmlpress-content",
     "htmlpress-edit",
+    "htmlpress-footer",
     "htmlpress-links",
     "htmlpress-nav",
     "htmlpress-pager",

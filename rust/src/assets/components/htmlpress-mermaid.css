@@ -1,0 +1,12 @@
+@scope (htmlpress-mermaid) {
+  :scope {
+    display: block;
+    margin: 0 0 1.25em;
+  }
+  svg {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto;
+  }
+}

@@ -12,6 +12,10 @@
   li + li {
     margin-top: 0.125rem;
   }
+  ul[data-links] {
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--htmlpress-border);
+  }
   a {
     display: block;
     padding: 0.375rem 0.75rem;

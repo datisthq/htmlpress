@@ -2,7 +2,7 @@ use std::path::PathBuf;
 
 use super::*;
 use crate::actions::page::read::read_page;
-use crate::models::config::{Config, Link};
+use crate::models::config::{Config, Link, Position};
 use crate::settings::ASSETS;
 
 fn create_site() -> crate::Result<Site> {
@@ -82,6 +82,7 @@ fn adds_the_links_and_the_edit_link_from_the_config() -> crate::Result<()> {
     site.config.links = vec![Link {
         title: "GitHub".to_owned(),
         url: "https://github.com/x".to_owned(),
+        position: Position::Header,
     }];
     site.config.edit = Some("https://github.com/x/edit/main/docs/".to_owned());
     let html = render_page(&site, &site.pages[1], false)?;
@@ -155,5 +156,99 @@ fn swaps_a_project_component_in_for_its_tag() -> crate::Result<()> {
     assert!(html.contains("href=\"/_htmlpress/components/site-footer.css\""));
     assert!(html.contains("href=\"/_htmlpress/components/htmlpress-badge.css\""));
     assert!(!html.contains("<site-footer>") && !html.contains("<htmlpress-brand>"));
+    Ok(())
+}
+
+#[test]
+fn adds_the_favicon_social_tags_and_head_from_the_config() -> crate::Result<()> {
+    let mut site = create_site()?;
+    site.config.site = Some("https://example.com/".to_owned());
+    site.config.favicon = Some("/favicon.svg".to_owned());
+    site.config.head.scripts = vec![
+        [("src", "/stats.js"), ("defer", "")]
+            .map(|(name, value)| (name.to_owned(), value.to_owned()))
+            .into(),
+    ];
+    site.config.head.meta = vec![
+        [("property", "og:type"), ("content", "article")]
+            .map(|(name, value)| (name.to_owned(), value.to_owned()))
+            .into(),
+    ];
+    site.pages[1] = read_page(
+        "guide.html",
+        "<title>Guide</title><meta name=\"image\" content=\"/cover.png\"><p>Hi.</p>",
+    )?;
+    let html = render_page(&site, &site.pages[1], false)?;
+    assert!(html.contains(r#"<link rel="icon" href="/favicon.svg">"#));
+    assert!(html.contains(r#"<meta property="og:title" content="Guide">"#));
+    assert!(html.contains(
+        r#"<meta property="og:url" content="https://example.com/guide.html">"#
+    ));
+    assert!(html.contains(
+        r#"<meta property="og:image" content="https://example.com/cover.png">"#
+    ));
+    assert!(html.contains(r#"<meta name="twitter:card" content="summary_large_image">"#));
+    assert!(html.contains(r#"<script defer="" src="/stats.js"></script>"#));
+    assert!(html.contains(r#"<meta content="article" property="og:type">"#));
+    assert!(!html.contains(r#"content="website""#));
+    assert!(!html.contains(r#"<meta name="image""#));
+    let home = render_page(&site, &site.pages[0], false)?;
+    assert!(home.contains(r#"<meta name="twitter:card" content="summary">"#));
+    Ok(())
+}
+
+#[test]
+fn fills_the_logo_banner_and_footer() -> crate::Result<()> {
+    let mut site = create_site()?;
+    let html = render_page(&site, &site.pages[0], false)?;
+    assert!(!html.contains("<htmlpress-banner") && !html.contains("rel=\"icon\""));
+    assert!(html.contains(r#"<a href="https://htmlpress.dev">Htmlpress</a>"#));
+    site.config.logo = Some("/logo.svg".to_owned());
+    site.config.banner = Some("<a href=\"/new\">New</a>".to_owned());
+    let html = render_page(&site, &site.pages[0], false)?;
+    assert!(html.contains(r#"<a href="/"><img src="/logo.svg" alt="">Docs"#));
+    assert!(html.contains(r#"<link rel="icon" href="/logo.svg">"#));
+    assert!(
+        html.contains(r#"<htmlpress-banner><a href="/new">New</a></htmlpress-banner>"#)
+    );
+    Ok(())
+}
+
+#[test]
+fn puts_each_link_in_its_position() -> crate::Result<()> {
+    let mut site = create_site()?;
+    site.config.links = vec![
+        Link {
+            title: "GitHub".to_owned(),
+            url: "https://github.com/x".to_owned(),
+            position: Position::Header,
+        },
+        Link {
+            title: "Chat".to_owned(),
+            url: "https://chat.x".to_owned(),
+            position: Position::Sidebar,
+        },
+    ];
+    let html = render_page(&site, &site.pages[0], false)?;
+    assert!(html.contains(r#"<nav aria-label="Links"><a href="https://github.com/x">"#));
+    assert!(html.contains(r#"<ul data-links><li><a href="https://chat.x">Chat</a>"#));
+    Ok(())
+}
+
+#[test]
+fn fills_the_breadcrumbs_from_the_folders() -> crate::Result<()> {
+    let mut site = create_site()?;
+    site.pages
+        .push(read_page("api/v1/auth.html", "<title>Auth</title>")?);
+    let home = render_page(&site, &site.pages[0], false)?;
+    assert!(!home.contains("<htmlpress-breadcrumbs"));
+    let auth = render_page(&site, &site.pages[4], false)?;
+    assert!(auth.contains(
+        r#"<ol><li><a href="/">Docs &lt;&amp;&gt;</a></li><li><a href="/api/">API</a></li><li>v1</li><li aria-current="page">Auth</li></ol>"#
+    ));
+    let index = render_page(&site, &site.pages[2], false)?;
+    assert!(index.contains(
+        r#"<li><a href="/">Docs &lt;&amp;&gt;</a></li><li aria-current="page">API</li>"#
+    ));
     Ok(())
 }

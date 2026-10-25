@@ -87,3 +87,47 @@ fn builds_into_a_sibling_folder() -> crate::Result<()> {
     assert_eq!(report.pages, 1);
     Ok(())
 }
+
+#[test]
+fn writes_robots_and_a_sitemap_unless_the_project_ships_them() -> crate::Result<()> {
+    let root = tempfile::tempdir().map_err(Error::io("tempdir"))?;
+    let root = root.path();
+    write_source(root, "index.html", "<h1>Home</h1>")?;
+    write_source(root, "guide.html", "<h1>Guide</h1>")?;
+    write_source(root, "404.html", "<h1>Missing</h1>")?;
+    let options = BuildOptions::new(root);
+    let read = |path: &str| std::fs::read_to_string(options.output.join(path)).ok();
+
+    build_site(&options)?;
+    assert_eq!(
+        read("robots.txt").as_deref(),
+        Some(
+            "User-agent: *\nContent-Signal: search=yes, ai-input=yes, ai-train=yes\nAllow: /\n"
+        )
+    );
+    assert!(read("sitemap.xml").is_none());
+
+    write_source(
+        root,
+        "htmlpress.config.yaml",
+        "site: https://example.com/\ncontentSignals:\n  aiTrain: false\n",
+    )?;
+    build_site(&options)?;
+    let robots = read("robots.txt").unwrap_or_default();
+    assert!(robots.contains("ai-train=no"));
+    assert!(robots.ends_with("\nSitemap: https://example.com/sitemap.xml\n"));
+    let sitemap = read("sitemap.xml").unwrap_or_default();
+    assert!(sitemap.contains("<loc>https://example.com/</loc>"));
+    assert!(sitemap.contains("<loc>https://example.com/guide.html</loc>"));
+    assert!(!sitemap.contains("404"));
+
+    write_source(root, "robots.txt", "User-agent: *\nDisallow: /\n")?;
+    write_source(root, "sitemap.xml", "<urlset/>")?;
+    build_site(&options)?;
+    assert_eq!(
+        read("robots.txt").as_deref(),
+        Some("User-agent: *\nDisallow: /\n")
+    );
+    assert_eq!(read("sitemap.xml").as_deref(), Some("<urlset/>"));
+    Ok(())
+}

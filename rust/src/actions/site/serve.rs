@@ -23,9 +23,7 @@ pub fn serve_site(
         ..options.clone()
     };
     build_site(&options)?;
-    let server = Server::http(("127.0.0.1", port)).map_err(|error| {
-        Error::Usage(format!("cannot listen on port {port}: {error}"))
-    })?;
+    let server = open_server(port)?;
     let state = Arc::new(Reload::default());
 
     let (sender, events) = channel();
@@ -41,16 +39,25 @@ pub fn serve_site(
     });
 
     on_ready(&format!("http://127.0.0.1:{}", read_port(&server, port)));
-    for request in server.incoming_requests() {
-        let output = options.output.clone();
-        let state = state.clone();
-        std::thread::spawn(move || answer_request(request, &output, &state));
-    }
+    answer_requests(&server, &options.output, &state);
     Ok(())
 }
 
+pub(crate) fn open_server(port: u16) -> crate::Result<Server> {
+    Server::http(("127.0.0.1", port))
+        .map_err(|error| Error::Usage(format!("cannot listen on port {port}: {error}")))
+}
+
+pub(crate) fn answer_requests(server: &Server, output: &Path, state: &Arc<Reload>) {
+    for request in server.incoming_requests() {
+        let output = output.to_owned();
+        let state = state.clone();
+        std::thread::spawn(move || answer_request(request, &output, &state));
+    }
+}
+
 #[derive(Default)]
-struct Reload {
+pub(crate) struct Reload {
     version: Mutex<u64>,
     changed: Condvar,
 }
@@ -239,7 +246,7 @@ fn add_headers<R: std::io::Read>(response: Response<R>, name: &str) -> Response<
     )
 }
 
-fn read_port(server: &Server, fallback: u16) -> u16 {
+pub(crate) fn read_port(server: &Server, fallback: u16) -> u16 {
     server
         .server_addr()
         .to_ip()

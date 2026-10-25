@@ -16,13 +16,17 @@ mod actions {
     }
     pub(crate) mod site {
         pub(crate) mod build;
+        pub(crate) mod clear;
+        pub(crate) mod preview;
         pub(crate) mod scan;
         pub(crate) mod serve;
     }
 }
 mod commands {
     pub(crate) mod build;
+    pub(crate) mod clear;
     pub(crate) mod escape;
+    pub(crate) mod preview;
     pub(crate) mod start;
 }
 mod models {
@@ -41,11 +45,13 @@ pub use actions::asset::list::list_assets;
 pub use actions::config::load::load_config;
 pub use actions::page::read::read_page;
 pub use actions::site::build::build_site;
+pub use actions::site::clear::clear_site;
+pub use actions::site::preview::preview_site;
 pub use actions::site::scan::scan_site;
 pub use actions::site::serve::serve_site;
 pub use models::asset::{Asset, AssetStatus};
 pub use models::build::{BuildOptions, BuildReport};
-pub use models::config::{Config, Link};
+pub use models::config::{Config, ContentSignals, Head, Link, Position};
 pub use models::error::Error;
 pub use models::page::{Heading, Page};
 pub use models::site::Site;

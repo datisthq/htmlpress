@@ -32,7 +32,7 @@ fn skips_dot_folders_and_the_config_and_keeps_other_files() -> crate::Result<()>
     let root = root.path();
     write_file(root, "index.html", "<h1>Home</h1>")?;
     write_file(root, "images/logo.svg", "<svg></svg>")?;
-    write_file(root, CONFIG_FILE, "title = \"Docs\"\n")?;
+    write_file(root, CONFIG_FILE, "title: Docs\n")?;
     write_file(root, ".htmlpress/build/index.html", "<h1>Old</h1>")?;
     write_file(root, "node_modules/x/index.html", "<h1>Dep</h1>")?;
     let site = scan_site(root)?;

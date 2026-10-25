@@ -1,7 +1,7 @@
 <title>CLI</title>
 <meta
   name="description"
-  content="htmlpress build, start and escape, with JSON output and an LLM manifest."
+  content="htmlpress build, start, preview, clear and escape, with JSON output and an LLM manifest."
 />
 <meta name="order" content="5" />
 
@@ -23,6 +23,18 @@ built 6 pages and 0 files into docs/.htmlpress/build</code></pre>
   / <code>-p</code>; <code>0</code> picks a free one) and rebuilds on every change. Open
   pages reload themselves after each build. A broken page prints its error and keeps the
   last good build up.
+</p>
+
+<h2><code>htmlpress preview [root]</code></h2>
+<p>
+  Builds the project for production and serves it as it will be deployed: no watching, no
+  reload. Takes <code>--port</code> and <code>--out</code> like <code>start</code>.
+</p>
+
+<h2><code>htmlpress clear [root]</code></h2>
+<p>
+  Removes the build output (<code>--out</code> to name another), with the same guard as
+  <code>build</code>.
 </p>
 
 <h2><code>htmlpress escape [names…]</code></h2>

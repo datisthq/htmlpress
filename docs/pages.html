@@ -31,7 +31,12 @@
   <dt><code>&lt;meta name="description"&gt;</code></dt>
   <dd>
     The page's description for search engines; the site's from
-    <code>htmlpress.toml</code> otherwise.
+    <code>htmlpress.config.yaml</code> otherwise.
+  </dd>
+  <dt><code>&lt;meta name="image"&gt;</code></dt>
+  <dd>
+    The image shown when the page is shared, as <code>og:image</code>; a root-relative URL
+    is made absolute with <code>site</code>.
   </dd>
   <dt><code>&lt;meta name="order"&gt;</code></dt>
   <dd>
@@ -63,15 +68,28 @@
 </p>
 
 <h2>Configuration</h2>
-<p>An optional <code>htmlpress.toml</code> at the project root sets the site:</p>
-<pre><code>title = "Htmlpress"
-description = "Turn a folder of HTML pages into a site."
-site = "https://htmlpress.dev"
-edit = "https://github.com/datisthq/htmlpress/edit/main/docs/"
-
-[[links]]
-title = "GitHub"
-url = "https://github.com/datisthq/htmlpress"</code></pre>
+<p>
+  An optional <code>htmlpress.config.yaml</code> at the project root sets the site. Its
+  keys follow <a href="https://livemark.dev">Livemark</a>'s config:
+</p>
+<pre><code>site: https://htmlpress.dev
+title: Htmlpress
+description: Turn a folder of HTML pages into a site.
+logo: /logo.svg
+banner: 'Version 1 is out: &lt;a href="/changelog.html"&gt;read more&lt;/a&gt;'
+links:
+  - title: GitHub
+    url: https://github.com/datisthq/htmlpress
+  - title: Chat
+    url: https://discord.gg/example
+    position: sidebar
+head:
+  scripts:
+    - src: https://stats.example.com/script.js
+      defer: ""
+contentSignals:
+  aiTrain: false
+edit: https://github.com/datisthq/htmlpress/edit/main/docs/</code></pre>
 <table>
   <thead>
     <tr>
@@ -81,6 +99,11 @@ url = "https://github.com/datisthq/htmlpress"</code></pre>
     </tr>
   </thead>
   <tbody>
+    <tr>
+      <td><code>site</code></td>
+      <td>none</td>
+      <td>the public URL, for canonical and social links and <code>sitemap.xml</code></td>
+    </tr>
     <tr>
       <td><code>title</code></td>
       <td>the folder name</td>
@@ -92,20 +115,55 @@ url = "https://github.com/datisthq/htmlpress"</code></pre>
       <td>for pages without their own</td>
     </tr>
     <tr>
-      <td><code>site</code></td>
+      <td><code>logo</code></td>
       <td>none</td>
-      <td>the public URL, for canonical links</td>
+      <td>an image's URL, shown before the site title</td>
+    </tr>
+    <tr>
+      <td><code>favicon</code></td>
+      <td>the logo</td>
+      <td>the site icon's URL</td>
+    </tr>
+    <tr>
+      <td><code>banner</code></td>
+      <td>none</td>
+      <td>HTML for an announcement bar above the header</td>
+    </tr>
+    <tr>
+      <td><code>links</code></td>
+      <td>none</td>
+      <td>
+        links, each a <code>title</code>, a <code>url</code> and a <code>position</code>:
+        <code>header</code> (default) or <code>sidebar</code>
+      </td>
+    </tr>
+    <tr>
+      <td><code>head</code></td>
+      <td>none</td>
+      <td>
+        <code>meta</code>, <code>links</code> and <code>scripts</code>: lists of attribute
+        maps added to every page's head; a script's <code>children</code> is its inline
+        source, and a meta sharing a built-in one's <code>name</code> or
+        <code>property</code> replaces it
+      </td>
+    </tr>
+    <tr>
+      <td><code>contentSignals</code></td>
+      <td>all <code>true</code></td>
+      <td>
+        <code>search</code>, <code>aiInput</code> and <code>aiTrain</code>: how automated
+        systems may use the content, written to <code>robots.txt</code>
+      </td>
     </tr>
     <tr>
       <td><code>edit</code></td>
       <td>none</td>
       <td>an "Edit this page" link: this URL followed by the page's path</td>
     </tr>
-    <tr>
-      <td><code>links</code></td>
-      <td>none</td>
-      <td>header links, each a <code>title</code> and a <code>url</code></td>
-    </tr>
   </tbody>
 </table>
 <p>An unknown key is an error, so a typo never passes silently.</p>
+<p>
+  Every build writes a <code>robots.txt</code> and, when <code>site</code> is set, a
+  <code>sitemap.xml</code> of every page; a project file of the same name wins.
+</p>

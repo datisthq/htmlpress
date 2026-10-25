@@ -1,6 +1,6 @@
 ---
 name: htmlpress-pages
-description: Use when writing or editing pages in an htmlpress project — a folder of HTML built into a site. Covers the page contract (title, order, head), the theme and htmlpress-* components, htmlpress.toml, and checking the result with build --json and start.
+description: Use when writing or editing pages in an htmlpress project — a folder of HTML built into a site. Covers the page contract (title, order, head), the theme and htmlpress-* components, the config, and checking the result with build --json and start.
 ---
 
 # Htmlpress pages
@@ -57,6 +57,9 @@ Only these; anything else is plain HTML.
 | `<htmlpress-file-tree>` + nested `<ul>`          | a file tree; an `<li>` holding a `<ul>` is a folder                    |
 | `<htmlpress-table>` + `<table>`                  | a table sorted by a click on a `<thead>` header                        |
 | `<htmlpress-zoom>` + `<img>`                     | an image that opens full screen on click                               |
+| `<htmlpress-youtube>` + `<a href>`               | a YouTube video player for the linked video                            |
+| `<htmlpress-soundcloud>` + `<a href>`            | a SoundCloud player for the linked track                               |
+| `<htmlpress-mermaid>` + `<pre>`                  | a Mermaid diagram from the source in `<pre>` (escape `<` and `&`)      |
 
 Code blocks get a copy button and headings a link on their own; a plain `<details>` is
 already styled.
@@ -65,16 +68,23 @@ Put block content (`<p>`, `<h3>`, `<pre>`) inside a component, not bare text.
 
 ## Project files
 
-- `htmlpress.toml` (optional): `title`, `description`, `site`, `edit` (URL prefix for an
-  "Edit this page" link) and `[[links]]` (`title`, `url`: header links). An unknown key is
-  an error.
+- `htmlpress.config.yaml` (optional, keys as in Livemark's config): `site`, `title`,
+  `description`, `logo` and `favicon` (URLs), `banner` (HTML), `links` (each `title`,
+  `url`, `position: header | sidebar`), `head` (`meta`, `links`, `scripts`: lists of
+  attribute maps; a script's `children` is its source), `contentSignals` (`search`,
+  `aiInput`, `aiTrain` for `robots.txt`) and `edit` (URL prefix for an "Edit this page"
+  link). An unknown key is an error.
+- `<meta name="image" content="/cover.png">` in a page is its social preview image.
+- A build writes `robots.txt` and, with `site`, `sitemap.xml`; a project file of the same
+  name wins.
 - `.htmlpress/build/` is the output: never edit it, every build replaces it.
 - Escapes, only when the user asks for a different look or a new block: a file under
   `.htmlpress/` at a built-in's path replaces it. `htmlpress escape <name>` copies the
   default to start from (a path, or a component's tag); `htmlpress escape` lists them all.
   - `layout.html` is plain HTML: htmlpress fills its `<head>` and replaces
-    `<htmlpress-content>`, `<htmlpress-brand>`, `<htmlpress-nav>`, `<htmlpress-links>`,
-    `<htmlpress-toc>`, `<htmlpress-pager>` and `<htmlpress-edit>` at build time.
+    `<htmlpress-content>`, `<htmlpress-brand>`, `<htmlpress-banner>`, `<htmlpress-nav>`,
+    `<htmlpress-links>`, `<htmlpress-breadcrumbs>`, `<htmlpress-toc>`, `<htmlpress-pager>`,
+    `<htmlpress-edit>` and `<htmlpress-footer>` at build time.
   - `styles/tokens.css`, `layout.css`, `content.css` are the global theme;
     `components/<tag>.css` and `.js` one component each, its CSS inside `@scope (<tag>)`.
   - A new tag adds a component: `components/site-footer.html` replaces every
@@ -87,6 +97,8 @@ Put block content (`<p>`, `<h3>`, `<pre>`) inside a component, not bare text.
 htmlpress build <root> --json   # {"output": "...", "pages": N, "files": N}; errors on stderr
 htmlpress escape -r <root>      # every escapable file, marking the project's own
 htmlpress start <root>          # http://127.0.0.1:8080, rebuilds and reloads on save
+htmlpress preview <root>        # the production build, served without reload
+htmlpress clear <root>          # remove .htmlpress/build
 htmlpress --llms                # every command's input and output schema
 ```
 

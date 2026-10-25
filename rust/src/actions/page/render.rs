@@ -5,6 +5,7 @@ use std::fmt::Write;
 use lol_html::html_content::ContentType;
 use lol_html::{RewriteStrSettings, element, rewrite_str};
 
+use crate::models::config::{Link, Position};
 use crate::models::error::Error;
 use crate::models::page::Page;
 use crate::models::site::Site;
@@ -57,9 +58,30 @@ pub(crate) fn render_page(
     if !replaced("htmlpress-brand") {
         settings =
             settings.append_element_content_handler(element!("htmlpress-brand", |el| {
-                let title = escape_html(&site.title);
-                let html = format!("<a href=\"/\">{title}</a>");
-                el.set_inner_content(&html, ContentType::Html);
+                el.set_inner_content(&create_brand(site), ContentType::Html);
+                Ok(())
+            }));
+    }
+    if !replaced("htmlpress-banner") {
+        settings =
+            settings.append_element_content_handler(element!("htmlpress-banner", |el| {
+                fill_element(el, site.config.banner.clone());
+                Ok(())
+            }));
+    }
+    if !replaced("htmlpress-breadcrumbs") {
+        settings = settings.append_element_content_handler(element!(
+            "htmlpress-breadcrumbs",
+            |el| {
+                fill_element(el, create_breadcrumbs(site, page));
+                Ok(())
+            }
+        ));
+    }
+    if !replaced("htmlpress-footer") {
+        settings =
+            settings.append_element_content_handler(element!("htmlpress-footer", |el| {
+                el.set_inner_content(FOOTER, ContentType::Html);
                 Ok(())
             }));
     }
@@ -154,26 +176,26 @@ fn create_head(
             escape_html(&site.title)
         ),
     };
-    let mut head = String::from(
-        "<meta charset=\"utf-8\">\n<meta name=\"viewport\" \
-         content=\"width=device-width, initial-scale=1\">\n",
-    );
+    let mut head = String::from("<meta charset=\"utf-8\">\n");
     let _ = writeln!(head, "<title>{title}</title>");
-    let description = page
-        .description
-        .as_ref()
-        .or(site.config.description.as_ref());
-    if let Some(description) = description {
-        let description = escape_html(description);
-        let _ = writeln!(
-            head,
-            "<meta name=\"description\" content=\"{description}\">"
-        );
+    let custom = &site.config.head;
+    for (attribute, key, content) in create_metas(site, page) {
+        let replaced = custom
+            .meta
+            .iter()
+            .any(|meta| meta.get(attribute).is_some_and(|value| value == key));
+        if !replaced {
+            let content = escape_html(&content);
+            let _ = writeln!(head, "<meta {attribute}=\"{key}\" content=\"{content}\">");
+        }
     }
-    if let Some(url) = &site.config.site {
-        let url = escape_html(url.trim_end_matches('/'));
-        let path = escape_html(&page.url);
-        let _ = writeln!(head, "<link rel=\"canonical\" href=\"{url}{path}\">");
+    if let Some(origin) = read_origin(site) {
+        let url = escape_html(&format!("{origin}{}", page.url));
+        let _ = writeln!(head, "<link rel=\"canonical\" href=\"{url}\">");
+    }
+    if let Some(favicon) = site.config.favicon.as_ref().or(site.config.logo.as_ref()) {
+        let favicon = escape_html(favicon);
+        let _ = writeln!(head, "<link rel=\"icon\" href=\"{favicon}\">");
     }
     // Set before the stylesheet applies, so a stored dark theme never flashes light
     head.push_str(
@@ -213,7 +235,121 @@ fn create_head(
              data-endpoint=\"{RELOAD_PATH}\"></script>"
         );
     }
+    for meta in &custom.meta {
+        let _ = writeln!(head, "<meta{}>", create_attributes(meta));
+    }
+    for link in &custom.links {
+        let _ = writeln!(head, "<link{}>", create_attributes(link));
+    }
+    for script in &custom.scripts {
+        let source = script.get("children").map_or("", String::as_str);
+        let _ = writeln!(
+            head,
+            "<script{}>{source}</script>",
+            create_attributes(script)
+        );
+    }
     head
+}
+
+// Crawlers read og:url and og:image as absolute URLs only, so both need `site`.
+fn create_metas(site: &Site, page: &Page) -> Vec<(&'static str, &'static str, String)> {
+    let origin = read_origin(site);
+    let mut metas = vec![(
+        "name",
+        "viewport",
+        "width=device-width, initial-scale=1".to_owned(),
+    )];
+    let description = page
+        .description
+        .as_ref()
+        .or(site.config.description.as_ref());
+    if let Some(description) = description {
+        metas.push(("name", "description", description.clone()));
+    }
+    metas.push(("property", "og:type", "website".to_owned()));
+    metas.push(("property", "og:site_name", site.title.clone()));
+    metas.push(("property", "og:title", page.title.clone()));
+    if let Some(description) = description {
+        metas.push(("property", "og:description", description.clone()));
+    }
+    if let Some(origin) = origin {
+        metas.push(("property", "og:url", format!("{origin}{}", page.url)));
+    }
+    let image = page
+        .image
+        .as_ref()
+        .map(|image| match (origin, image.starts_with('/')) {
+            (Some(origin), true) => format!("{origin}{image}"),
+            _ => image.clone(),
+        });
+    let card = match image {
+        Some(image) => {
+            metas.push(("property", "og:image", image));
+            "summary_large_image"
+        }
+        None => "summary",
+    };
+    metas.push(("name", "twitter:card", card.to_owned()));
+    metas
+}
+
+fn create_attributes(tag: &std::collections::BTreeMap<String, String>) -> String {
+    let mut html = String::new();
+    for (name, value) in tag.iter().filter(|(name, _)| *name != "children") {
+        let _ = write!(html, " {}=\"{}\"", escape_html(name), escape_html(value));
+    }
+    html
+}
+
+fn read_origin(site: &Site) -> Option<&str> {
+    site.config
+        .site
+        .as_deref()
+        .map(|url| url.trim_end_matches('/'))
+}
+
+fn create_brand(site: &Site) -> String {
+    let title = escape_html(&site.title);
+    let logo = site.config.logo.as_ref().map_or(String::new(), |logo| {
+        format!("<img src=\"{}\" alt=\"\">", escape_html(logo))
+    });
+    format!("<a href=\"/\">{logo}{title}</a>")
+}
+
+// Every folder above the page, named and linked by its index page when it has one.
+fn create_breadcrumbs(site: &Site, page: &Page) -> Option<String> {
+    let folders: Vec<&str> = page.path.split('/').collect();
+    let mut folders = folders.split_last()?.1.to_vec();
+    if page.path.ends_with("/index.html") {
+        folders.pop();
+    }
+    if folders.is_empty() && page.url == "/" {
+        return None;
+    }
+    let mut html = String::from("<nav aria-label=\"Breadcrumbs\"><ol>");
+    let _ = write!(
+        html,
+        "<li><a href=\"/\">{}</a></li>",
+        escape_html(&site.title)
+    );
+    for depth in 1..=folders.len() {
+        let folder = folders[..depth].join("/");
+        let index = format!("{folder}/index.html");
+        let name = folders[depth - 1];
+        let crumb = match site.pages.iter().find(|item| item.path == index) {
+            Some(item) => format!(
+                "<a href=\"{}\">{}</a>",
+                escape_html(&item.url),
+                escape_html(&item.title)
+            ),
+            None => escape_html(name),
+        };
+        let _ = write!(html, "<li>{crumb}</li>");
+    }
+    let title = escape_html(&page.title);
+    let _ = write!(html, "<li aria-current=\"page\">{title}</li></ol></nav>");
+    Some(html)
 }
 
 // Pages group by their top folder, titled by that folder's index page, else its name;
@@ -247,6 +383,18 @@ fn create_nav(site: &Site, page: &Page) -> String {
             None => html.push_str(&list),
         }
     }
+    let links: Vec<&Link> = (site.config.links.iter())
+        .filter(|link| link.position == Position::Sidebar)
+        .collect();
+    if !links.is_empty() {
+        html.push_str("<ul data-links>");
+        for link in links {
+            let url = escape_html(&link.url);
+            let title = escape_html(&link.title);
+            let _ = write!(html, "<li><a href=\"{url}\">{title}</a></li>");
+        }
+        html.push_str("</ul>");
+    }
     html.push_str("</nav>");
     html
 }
@@ -266,8 +414,13 @@ fn create_list(items: &[&Page], page: &Page) -> String {
     html
 }
 
+const FOOTER: &str = "<p>Created with <span aria-label=\"love\">❤</span> and \
+     <a href=\"https://htmlpress.dev\">Htmlpress</a></p>";
+
 fn create_links(site: &Site) -> Option<String> {
-    let links = &site.config.links;
+    let links: Vec<&Link> = (site.config.links.iter())
+        .filter(|link| link.position == Position::Header)
+        .collect();
     if links.is_empty() {
         return None;
     }

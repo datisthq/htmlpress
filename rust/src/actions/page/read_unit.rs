@@ -110,3 +110,12 @@ fn keeps_headings_inside_components_out_of_the_toc() -> crate::Result<()> {
     assert!(page.content.contains("<h3 id=\"one\">One</h3>"));
     Ok(())
 }
+
+#[test]
+fn reads_the_image_and_keeps_it_out_of_the_head() -> crate::Result<()> {
+    let html = "<html><head><title>A</title><meta name=\"image\" content=\"/a.png\"></head><body><p>A</p></body></html>";
+    let page = read_page("a.html", html)?;
+    assert_eq!(page.image.as_deref(), Some("/a.png"));
+    assert!(!page.head.contains("image"));
+    Ok(())
+}

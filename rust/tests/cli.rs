@@ -44,7 +44,7 @@ fn builds_a_project_as_json() -> TestResult {
 }
 
 #[test]
-fn lists_build_start_and_escape_for_agents() -> TestResult {
+fn lists_every_command_for_agents() -> TestResult {
     let (code, out) = run_cli(&["--llms"])?;
     assert_eq!(code, 0);
     let manifest: serde_json::Value = serde_json::from_str(&out)?;
@@ -58,7 +58,7 @@ fn lists_build_start_and_escape_for_agents() -> TestResult {
         })
         .unwrap_or_default();
     assert!(
-        ["build", "start", "escape"]
+        ["build", "start", "preview", "clear", "escape"]
             .iter()
             .all(|name| names.contains(name))
     );
@@ -96,5 +96,19 @@ fn escapes_a_component_and_builds_with_it() -> TestResult {
     );
     let again = run_cli(&["escape", "htmlpress-badge", "--root", &path]);
     assert!(again.is_err_and(|error| error.to_string().contains("already escaped")));
+    Ok(())
+}
+
+#[test]
+fn clears_the_build_as_json() -> TestResult {
+    let root = tempfile::tempdir()?;
+    write_page(root.path(), "index.html", "<h1>Home</h1>")?;
+    let path = root.path().to_string_lossy().into_owned();
+    run_cli(&["build", &path])?;
+    let (code, out) = run_cli(&["clear", &path, "--json"])?;
+    assert_eq!(code, 0);
+    let clear: serde_json::Value = serde_json::from_str(&out)?;
+    assert_eq!(clear["removed"], true);
+    assert!(!root.path().join(".htmlpress/build").exists());
     Ok(())
 }

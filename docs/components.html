@@ -125,12 +125,12 @@
         </li>
       </ul>
     </li>
-    <li>htmlpress.toml</li>
+    <li>htmlpress.config.yaml</li>
   </ul>
 </htmlpress-file-tree>
 <pre><code>&lt;htmlpress-file-tree&gt;&lt;ul&gt;
   &lt;li&gt;docs&lt;ul&gt;&lt;li&gt;index.html&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;
-  &lt;li&gt;htmlpress.toml&lt;/li&gt;
+  &lt;li&gt;htmlpress.config.yaml&lt;/li&gt;
 &lt;/ul&gt;&lt;/htmlpress-file-tree&gt;</code></pre>
 
 <h2>Sortable table</h2>
@@ -173,6 +173,36 @@
 </p>
 <pre><code>&lt;htmlpress-zoom&gt;&lt;img src="screenshot.png" alt="The docs site"&gt;&lt;/htmlpress-zoom&gt;</code></pre>
 
+<h2>Embeds</h2>
+<p>
+  A link inside <code>&lt;htmlpress-youtube&gt;</code> or
+  <code>&lt;htmlpress-soundcloud&gt;</code> becomes the video or track player; without the
+  script it stays a link.
+</p>
+<pre><code>&lt;htmlpress-youtube&gt;
+  &lt;a href="https://www.youtube.com/watch?v=VIDEO_ID"&gt;The talk&lt;/a&gt;
+&lt;/htmlpress-youtube&gt;
+&lt;htmlpress-soundcloud&gt;
+  &lt;a href="https://soundcloud.com/artist/track"&gt;The track&lt;/a&gt;
+&lt;/htmlpress-soundcloud&gt;</code></pre>
+
+<h2>Diagram</h2>
+<p>
+  A <code>&lt;pre&gt;</code> inside <code>&lt;htmlpress-mermaid&gt;</code> holds
+  <a href="https://mermaid.js.org">Mermaid</a> source, drawn in the current theme. The
+  library loads from jsDelivr only on a page that has a diagram; offline, the source shows
+  instead.
+</p>
+<htmlpress-mermaid>
+  <pre>
+flowchart LR
+  pages[HTML pages] --&gt; build[htmlpress build] --&gt; site[Static site]</pre>
+</htmlpress-mermaid>
+<pre><code>&lt;htmlpress-mermaid&gt;
+  &lt;pre&gt;flowchart LR
+  pages[HTML pages] --&amp;gt; build[htmlpress build] --&amp;gt; site[Static site]&lt;/pre&gt;
+&lt;/htmlpress-mermaid&gt;</code></pre>
+
 <h2>Expandable</h2>
 <details>
   <summary>Plain <code>&lt;details&gt;</code></summary>
@@ -194,19 +224,30 @@
 <h2>Layout</h2>
 <p>
   The layout is plain HTML. Htmlpress fills its <code>&lt;head&gt;</code> (charset,
-  viewport, title, description, canonical link, the theme, the styles and scripts of the
-  components the page uses, then the page's own head tags) and replaces these elements at
-  build time:
+  viewport, title, description, social preview tags, canonical link, favicon, the theme,
+  the styles and scripts of the components the page uses, the <code>head</code> tags from
+  <code>htmlpress.config.yaml</code>, then the page's own head tags) and replaces these
+  elements at build time:
 </p>
 <dl>
   <dt><code>&lt;htmlpress-content&gt;</code></dt>
   <dd>The page's content.</dd>
   <dt><code>&lt;htmlpress-brand&gt;</code></dt>
-  <dd>The site title, linking home.</dd>
+  <dd>The site title, after the <code>logo</code> when set, linking home.</dd>
+  <dt><code>&lt;htmlpress-banner&gt;</code></dt>
+  <dd>The <code>banner</code> from <code>htmlpress.config.yaml</code>.</dd>
+  <dt><code>&lt;htmlpress-breadcrumbs&gt;</code></dt>
+  <dd>
+    Home, every folder above the page (named and linked by its index page when it has
+    one), then the page.
+  </dd>
   <dt><code>&lt;htmlpress-nav&gt;</code></dt>
-  <dd>Every page, grouped by top folder; a folder's group is named by its index page.</dd>
+  <dd>
+    Every page, grouped by top folder; a folder's group is named by its index page. The
+    sidebar <code>links</code> close it.
+  </dd>
   <dt><code>&lt;htmlpress-links&gt;</code></dt>
-  <dd>The <code>links</code> from <code>htmlpress.toml</code>.</dd>
+  <dd>The header <code>links</code> from <code>htmlpress.config.yaml</code>.</dd>
   <dt><code>&lt;htmlpress-toc&gt;</code></dt>
   <dd>
     The page's <code>&lt;h2&gt;</code> and <code>&lt;h3&gt;</code>, highlighting the one
@@ -215,7 +256,11 @@
   <dt><code>&lt;htmlpress-pager&gt;</code></dt>
   <dd>The previous and next pages in navigation order.</dd>
   <dt><code>&lt;htmlpress-edit&gt;</code></dt>
-  <dd>An "Edit this page" link from <code>edit</code> in <code>htmlpress.toml</code>.</dd>
+  <dd>
+    An "Edit this page" link from <code>edit</code> in <code>htmlpress.config.yaml</code>.
+  </dd>
+  <dt><code>&lt;htmlpress-footer&gt;</code></dt>
+  <dd>A "Created with Htmlpress" credit.</dd>
 </dl>
 <p>
   An element with nothing to show is removed. <code>&lt;htmlpress-nav-toggle&gt;</code>,

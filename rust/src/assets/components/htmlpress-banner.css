@@ -1,0 +1,18 @@
+@scope (htmlpress-banner) {
+  :scope {
+    display: block;
+    padding: 0.5rem 1.5rem;
+    border-bottom: 1px solid color-mix(in oklab, var(--htmlpress-accent) 20%, transparent);
+    background: color-mix(in oklab, var(--htmlpress-accent) 8%, var(--htmlpress-bg));
+    font-size: 0.875rem;
+    text-align: center;
+  }
+  a {
+    color: var(--htmlpress-accent);
+  }
+  @media (max-width: 56rem) {
+    :scope {
+      padding-inline: 1rem;
+    }
+  }
+}

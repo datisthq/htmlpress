@@ -5,7 +5,7 @@ use crate::models::build::BuildOptions;
 
 #[fireargs::input]
 pub(crate) struct StartInput {
-    /// The project folder holding htmlpress.toml and the HTML pages.
+    /// The project folder holding htmlpress.config.yaml and the HTML pages.
     #[fireargs(argument, default = ".")]
     root: String,
     /// The port to serve on; 0 picks a free one.

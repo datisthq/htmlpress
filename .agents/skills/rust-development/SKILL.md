@@ -31,6 +31,9 @@ run from source: `cargo run --manifest-path rust/Cargo.toml -- build docs`.
   `lib.rs`, so there is no `mod.rs`
 - `src/models/` — `Asset` / `AssetStatus`, `Config`, `Page`, `Site`, `BuildOptions` /
   `BuildReport`, `Error`
+- `Config` mirrors Livemark's config keys and is read from `htmlpress.config.yaml` by
+  `serde-saphyr` (only its `deserialize` feature); `deny_unknown_fields` everywhere, and an
+  empty file means the defaults, since an empty YAML document is not a mapping
 - `src/commands/` — one fireargs command per file; `src/program.rs` mounts them
 - `src/settings.rs` — every path constant, and `ASSETS`: each built-in asset embedded with
   `include_str!` through the `asset!` macro, keyed by its path under `.htmlpress/`
@@ -56,7 +59,8 @@ run from source: `cargo run --manifest-path rust/Cargo.toml -- build docs`.
 
 ## The dev server
 
-`serve_site` builds with `reload: true`, serves the output with tiny_http (a thread per
+`preview_site` builds without reload and serves through the same request loop, minus the
+watcher. `serve_site` builds with `reload: true`, serves the output with tiny_http (a thread per
 request) and rebuilds on notify events. Reload is a **long poll**, not SSE: tiny_http buffers
 chunked responses, so a stream would sit unsent. `reload.js` asks
 `/_htmlpress/reload?since=<version>` and the server answers when the build counter moves.

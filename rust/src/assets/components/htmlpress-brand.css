@@ -11,4 +11,10 @@
     letter-spacing: -0.01em;
     text-decoration: none;
   }
+  img {
+    width: auto;
+    height: 1.5rem;
+    margin-right: 0.5rem;
+    vertical-align: middle;
+  }
 }
