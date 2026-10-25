@@ -109,7 +109,7 @@ fn writes_robots_and_a_sitemap_unless_the_project_ships_them() -> crate::Result<
 
     write_source(
         root,
-        "htmlpress.config.yaml",
+        "htmlpress.yaml",
         "site: https://example.com/\ncontentSignals:\n  aiTrain: false\n",
     )?;
     build_site(&options)?;

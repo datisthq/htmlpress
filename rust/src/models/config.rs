@@ -2,7 +2,7 @@ use std::collections::BTreeMap;
 
 use serde::{Deserialize, Serialize};
 
-/// The project's `htmlpress.config.yaml`, shaped like Livemark's config. Every key is
+/// The project's `htmlpress.yaml`, shaped like Livemark's config. Every key is
 /// optional.
 #[derive(Debug, Clone, Default, PartialEq, Deserialize, Serialize)]
 #[serde(default, deny_unknown_fields, rename_all = "camelCase")]

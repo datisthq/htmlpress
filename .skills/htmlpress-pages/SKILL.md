@@ -68,7 +68,7 @@ Put block content (`<p>`, `<h3>`, `<pre>`) inside a component, not bare text.
 
 ## Project files
 
-- `htmlpress.config.yaml` (optional, keys as in Livemark's config): `site`, `title`,
+- `htmlpress.yaml` (optional, keys as in Livemark's config): `site`, `title`,
   `description`, `logo` and `favicon` (URLs), `banner` (HTML), `links` (each `title`,
   `url`, `position: header | sidebar`), `head` (`meta`, `links`, `scripts`: lists of
   attribute maps; a script's `children` is its source), `contentSignals` (`search`,

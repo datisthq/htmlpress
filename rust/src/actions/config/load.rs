@@ -4,7 +4,7 @@ use crate::models::config::Config;
 use crate::models::error::Error;
 use crate::settings::CONFIG_FILE;
 
-/// Read `htmlpress.config.yaml` from the project root; a project without one gets the defaults.
+/// Read `htmlpress.yaml` from the project root; a project without one gets the defaults.
 pub fn load_config(root: &Path) -> crate::Result<Config> {
     let path = root.join(CONFIG_FILE);
     if !path.is_file() {

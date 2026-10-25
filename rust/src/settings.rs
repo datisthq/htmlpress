@@ -1,7 +1,7 @@
 use crate::models::asset::Asset;
 
 /// The project's config file, read from the project root.
-pub const CONFIG_FILE: &str = "htmlpress.config.yaml";
+pub const CONFIG_FILE: &str = "htmlpress.yaml";
 
 /// The project's own folder: build output and escapes. Never scanned for pages.
 pub const PROJECT_DIR: &str = ".htmlpress";

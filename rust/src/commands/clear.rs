@@ -5,7 +5,7 @@ use crate::models::build::BuildOptions;
 
 #[fireargs::input]
 pub(crate) struct ClearInput {
-    /// The project folder holding htmlpress.config.yaml and the HTML pages.
+    /// The project folder holding htmlpress.yaml and the HTML pages.
     #[fireargs(argument, default = ".")]
     root: String,
     /// The output folder; defaults to .htmlpress/build inside the project.

@@ -125,12 +125,12 @@
         </li>
       </ul>
     </li>
-    <li>htmlpress.config.yaml</li>
+    <li>htmlpress.yaml</li>
   </ul>
 </htmlpress-file-tree>
 <pre><code>&lt;htmlpress-file-tree&gt;&lt;ul&gt;
   &lt;li&gt;docs&lt;ul&gt;&lt;li&gt;index.html&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;
-  &lt;li&gt;htmlpress.config.yaml&lt;/li&gt;
+  &lt;li&gt;htmlpress.yaml&lt;/li&gt;
 &lt;/ul&gt;&lt;/htmlpress-file-tree&gt;</code></pre>
 
 <h2>Sortable table</h2>
@@ -226,8 +226,8 @@ flowchart LR
   The layout is plain HTML. Htmlpress fills its <code>&lt;head&gt;</code> (charset,
   viewport, title, description, social preview tags, canonical link, favicon, the theme,
   the styles and scripts of the components the page uses, the <code>head</code> tags from
-  <code>htmlpress.config.yaml</code>, then the page's own head tags) and replaces these
-  elements at build time:
+  <code>htmlpress.yaml</code>, then the page's own head tags) and replaces these elements
+  at build time:
 </p>
 <dl>
   <dt><code>&lt;htmlpress-content&gt;</code></dt>
@@ -235,7 +235,7 @@ flowchart LR
   <dt><code>&lt;htmlpress-brand&gt;</code></dt>
   <dd>The site title, after the <code>logo</code> when set, linking home.</dd>
   <dt><code>&lt;htmlpress-banner&gt;</code></dt>
-  <dd>The <code>banner</code> from <code>htmlpress.config.yaml</code>.</dd>
+  <dd>The <code>banner</code> from <code>htmlpress.yaml</code>.</dd>
   <dt><code>&lt;htmlpress-breadcrumbs&gt;</code></dt>
   <dd>
     Home, every folder above the page (named and linked by its index page when it has
@@ -247,7 +247,7 @@ flowchart LR
     sidebar <code>links</code> close it.
   </dd>
   <dt><code>&lt;htmlpress-links&gt;</code></dt>
-  <dd>The header <code>links</code> from <code>htmlpress.config.yaml</code>.</dd>
+  <dd>The header <code>links</code> from <code>htmlpress.yaml</code>.</dd>
   <dt><code>&lt;htmlpress-toc&gt;</code></dt>
   <dd>
     The page's <code>&lt;h2&gt;</code> and <code>&lt;h3&gt;</code>, highlighting the one
@@ -256,9 +256,7 @@ flowchart LR
   <dt><code>&lt;htmlpress-pager&gt;</code></dt>
   <dd>The previous and next pages in navigation order.</dd>
   <dt><code>&lt;htmlpress-edit&gt;</code></dt>
-  <dd>
-    An "Edit this page" link from <code>edit</code> in <code>htmlpress.config.yaml</code>.
-  </dd>
+  <dd>An "Edit this page" link from <code>edit</code> in <code>htmlpress.yaml</code>.</dd>
   <dt><code>&lt;htmlpress-footer&gt;</code></dt>
   <dd>A "Created with Htmlpress" credit.</dd>
 </dl>

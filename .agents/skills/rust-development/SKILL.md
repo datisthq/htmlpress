@@ -31,7 +31,7 @@ run from source: `cargo run --manifest-path rust/Cargo.toml -- build docs`.
   `lib.rs`, so there is no `mod.rs`
 - `src/models/` — `Asset` / `AssetStatus`, `Config`, `Page`, `Site`, `BuildOptions` /
   `BuildReport`, `Error`
-- `Config` mirrors Livemark's config keys and is read from `htmlpress.config.yaml` by
+- `Config` mirrors Livemark's config keys and is read from `htmlpress.yaml` by
   `serde-saphyr` (only its `deserialize` feature); `deny_unknown_fields` everywhere, and an
   empty file means the defaults, since an empty YAML document is not a mapping
 - `src/commands/` — one fireargs command per file; `src/program.rs` mounts them
