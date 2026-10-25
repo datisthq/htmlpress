@@ -18,6 +18,12 @@
       <ul>
         <li>layout.html</li>
         <li>
+          layouts
+          <ul>
+            <li>landing.html</li>
+          </ul>
+        </li>
+        <li>
           styles
           <ul>
             <li>tokens.css</li>
@@ -82,6 +88,30 @@ $ htmlpress escape layout.html styles/tokens.css</code></pre>
   </dd>
 </dl>
 
+<h2 id="layouts">Your own layouts</h2>
+<p>
+  A file under <code>layouts/</code> is a layout of its own, and a page picks it by name.
+  It is plain HTML like <code>layout.html</code> and may hold any of its layout elements,
+  so a landing page can keep the header and drop the sidebar:
+</p>
+<pre><code>&lt;!-- index.html --&gt;
+&lt;meta name="layout" content="landing"&gt;
+
+&lt;!-- .htmlpress/layouts/landing.html --&gt;
+&lt;body&gt;
+  &lt;header class="htmlpress-header"&gt;
+    &lt;htmlpress-brand&gt;&lt;/htmlpress-brand&gt;
+    &lt;htmlpress-theme-toggle&gt;&lt;/htmlpress-theme-toggle&gt;
+  &lt;/header&gt;
+  &lt;main&gt;&lt;htmlpress-content&gt;&lt;/htmlpress-content&gt;&lt;/main&gt;
+&lt;/body&gt;</code></pre>
+<p>
+  A name is lowercase letters, digits and hyphens. A page naming a layout that is not
+  there fails the build. This site's
+  <a href="https://github.com/datisthq/htmlpress/tree/main/docs/.htmlpress">home page</a>
+  is built this way.
+</p>
+
 <h2>Your own components</h2>
 <p>
   A file under <code>components/</code> with a new tag adds a component. Its
@@ -100,6 +130,9 @@ $ htmlpress escape layout.html styles/tokens.css</code></pre>
   <code>layout.html</code> or any page. A tag needs a hyphen and lowercase letters, as
   every custom element does. A component's <code>.html</code> may hold other components,
   but not another project component's tag: it is pasted in once, never rewritten again.
+  The tag itself is gone once replaced, so the <code>.css</code> of a component with an
+  <code>.html</code> scopes to a class on that markup, <code>@scope (.site-footer)</code>,
+  not to the tag.
 </p>
 
 <htmlpress-callout type="warning"

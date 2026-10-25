@@ -1,60 +1,611 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <title>Introduction</title>
-    <meta
-      name="description"
-      content="Htmlpress turns a folder of HTML pages into a site, made for coding agents."
-    />
-  </head>
-  <body>
-    <h1>Htmlpress</h1>
-    <p>
-      Htmlpress turns a folder of HTML pages into a site. Each page keeps its own markup,
-      and htmlpress adds one layout, one theme, a navigation and a live-reloading dev
-      server.
-    </p>
-    <p>
-      It is made for coding agents. They write plain semantic HTML, which they know better
-      than any templating language, and every page comes out looking like the same site:
-      no framework, no build config, no utility classes.
-    </p>
+<title>Home</title>
+<meta
+  name="description"
+  content="Turn a folder of HTML pages into a site: one layout, one theme, live reload, made for agents."
+/>
+<meta name="layout" content="landing" />
 
-    <htmlpress-grid>
-      <htmlpress-card>
-        <h3>Plain HTML in</h3>
-        <p>A page is any <code>.html</code> file, a full document or a bare fragment.</p>
-      </htmlpress-card>
-      <htmlpress-card>
-        <h3>A site out</h3>
-        <p>
-          One layout, a navigation and a theme styled from the HTML elements themselves.
-        </p>
-      </htmlpress-card>
-      <htmlpress-card>
-        <h3>One binary</h3>
-        <p>A single Rust binary, installed from npm, PyPI or crates.io.</p>
-      </htmlpress-card>
-    </htmlpress-grid>
-
-    <h2>Quick start</h2>
-    <pre><code>npx gethtmlpress start docs</code></pre>
-    <p>
-      That serves <code>docs/</code> on <code>http://localhost:8000</code> and rebuilds on
-      every save. When it looks right, build it:
-    </p>
-    <pre><code>npx gethtmlpress build docs</code></pre>
-    <p>
-      The site lands in <code>docs/.htmlpress/build</code>, ready for any static host.
-      This site is built that way from the
-      <a href="https://github.com/datisthq/htmlpress/tree/main/docs">docs/</a>
-      folder of the repository.
-    </p>
-
-    <htmlpress-callout type="warning">
+<landing-hero>
+  <landing-backdrop></landing-backdrop>
+  <section>
+    <div>
+      <hgroup>
+        <p>For coding agents</p>
+        <h1>Beautiful sites<br />from plain HTML,<br /><mark>your way.</mark></h1>
+      </hgroup>
       <p>
-        Htmlpress is in technical preview: the page contract may still change before 1.0.
+        Write semantic HTML pages, or let your agent write them. Htmlpress adds one
+        layout, one theme, a navigation and a live-reloading dev server, and every part of
+        it can be escaped.
       </p>
-    </htmlpress-callout>
-  </body>
-</html>
+      <landing-actions>
+        <a href="/introduction.html"
+          ><svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" />
+            <path
+              d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09"
+            />
+            <path
+              d="M9 12a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.4 22.4 0 0 1-4 2z"
+            />
+            <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 .05 5 .05" /></svg
+          >Get started</a
+        >
+        <a href="https://github.com/datisthq/htmlpress"
+          ><svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"
+            />
+            <path d="M9 18c-4.51 2-5-2-7-2" /></svg
+          >View source</a
+        >
+      </landing-actions>
+    </div>
+    <landing-carousel>
+      <section title="Docs">
+        <div>
+          <img
+            src="/screenshots/docs.webp"
+            data-scheme="light"
+            alt="An htmlpress docs page with the navigation, a code block and the table of contents"
+            width="1440"
+            height="900"
+          />
+          <img
+            src="/screenshots/docs-dark.webp"
+            data-scheme="dark"
+            alt="An htmlpress docs page with the navigation, a code block and the table of contents"
+            width="1440"
+            height="900"
+            loading="lazy"
+          />
+        </div>
+        <figure>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"
+            />
+            <path d="M14 2v5a1 1 0 0 0 1 1h5" />
+            <path d="M10 9H8" />
+            <path d="M16 13H8" />
+            <path d="M16 17H8" />
+          </svg>
+          <figcaption><strong>Written in plain HTML</strong>docs/pages.html</figcaption>
+          <landing-code syntax="html">
+            <pre><code>&lt;title&gt;Pages&lt;/title&gt;
+&lt;meta name="order" content="2" /&gt;
+&lt;h1&gt;Pages&lt;/h1&gt;</code></pre>
+          </landing-code>
+        </figure>
+      </section>
+      <section title="Components">
+        <div>
+          <img
+            src="/screenshots/components.webp"
+            data-scheme="light"
+            alt="The htmlpress components page with callouts in four colors"
+            width="1440"
+            height="900"
+            loading="lazy"
+          />
+          <img
+            src="/screenshots/components-dark.webp"
+            data-scheme="dark"
+            alt="The htmlpress components page with callouts in four colors"
+            width="1440"
+            height="900"
+            loading="lazy"
+          />
+        </div>
+        <figure>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"
+            />
+            <path d="M14 2v5a1 1 0 0 0 1 1h5" />
+            <path d="M10 9H8" />
+            <path d="M16 13H8" />
+            <path d="M16 17H8" />
+          </svg>
+          <figcaption>
+            <strong>Written in plain HTML</strong>docs/components.html
+          </figcaption>
+          <landing-code syntax="html">
+            <pre><code>&lt;htmlpress-callout type="success"&gt;
+  &lt;p&gt;Every page built.&lt;/p&gt;
+&lt;/htmlpress-callout&gt;</code></pre>
+          </landing-code>
+        </figure>
+      </section>
+      <section title="Escaping">
+        <div>
+          <img
+            src="/screenshots/escaping.webp"
+            data-scheme="light"
+            alt="The htmlpress escaping page with a file tree of the .htmlpress folder"
+            width="1440"
+            height="900"
+            loading="lazy"
+          />
+          <img
+            src="/screenshots/escaping-dark.webp"
+            data-scheme="dark"
+            alt="The htmlpress escaping page with a file tree of the .htmlpress folder"
+            width="1440"
+            height="900"
+            loading="lazy"
+          />
+        </div>
+        <figure>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"
+            />
+            <path d="M14 2v5a1 1 0 0 0 1 1h5" />
+            <path d="M10 9H8" />
+            <path d="M16 13H8" />
+            <path d="M16 17H8" />
+          </svg>
+          <figcaption>
+            <strong>Written in plain HTML</strong>docs/.htmlpress/layouts/landing.html
+          </figcaption>
+          <landing-code syntax="html">
+            <pre><code>&lt;header class="htmlpress-header"&gt;
+  &lt;htmlpress-brand&gt;&lt;/htmlpress-brand&gt;
+&lt;/header&gt;</code></pre>
+          </landing-code>
+        </figure>
+      </section>
+      <section title="Mobile" phones>
+        <div>
+          <img
+            src="/screenshots/mobile-nav.webp"
+            data-scheme="light"
+            alt="The htmlpress navigation open as a drawer on a phone"
+            width="780"
+            height="1688"
+            loading="lazy"
+          />
+          <img
+            src="/screenshots/mobile-nav-dark.webp"
+            data-scheme="dark"
+            alt="The htmlpress navigation open as a drawer on a phone"
+            width="780"
+            height="1688"
+            loading="lazy"
+          />
+        </div>
+        <div>
+          <img
+            src="/screenshots/mobile-page.webp"
+            data-scheme="light"
+            alt="An htmlpress docs page on a phone"
+            width="780"
+            height="1688"
+            loading="lazy"
+          />
+          <img
+            src="/screenshots/mobile-page-dark.webp"
+            data-scheme="dark"
+            alt="An htmlpress docs page on a phone"
+            width="780"
+            height="1688"
+            loading="lazy"
+          />
+        </div>
+        <div>
+          <img
+            src="/screenshots/mobile-steps.webp"
+            data-scheme="light"
+            alt="Steps and a badge on a phone"
+            width="780"
+            height="1688"
+            loading="lazy"
+          />
+          <img
+            src="/screenshots/mobile-steps-dark.webp"
+            data-scheme="dark"
+            alt="Steps and a badge on a phone"
+            width="780"
+            height="1688"
+            loading="lazy"
+          />
+        </div>
+        <figure>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"
+            />
+            <path d="M14 2v5a1 1 0 0 0 1 1h5" />
+            <path d="M10 9H8" />
+            <path d="M16 13H8" />
+            <path d="M16 17H8" />
+          </svg>
+          <figcaption>
+            <strong>Written in plain HTML</strong>docs/components.html
+          </figcaption>
+          <landing-code syntax="html">
+            <pre><code>&lt;htmlpress-steps&gt;
+  &lt;ol&gt;&lt;li&gt;&lt;h3&gt;Install&lt;/h3&gt;&lt;/li&gt;&lt;/ol&gt;
+&lt;/htmlpress-steps&gt;</code></pre>
+          </landing-code>
+        </figure>
+      </section>
+    </landing-carousel>
+  </section>
+</landing-hero>
+
+<landing-section>
+  <section>
+    <header>
+      <h2>Stays out of your way</h2>
+      <p>
+        No framework, no build config, no required structure. A folder of HTML is already
+        a project.
+      </p>
+    </header>
+    <div>
+      <landing-points
+        ><ul>
+          <li>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M20 10a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1h-2.5a1 1 0 0 1-.8-.4l-.9-1.2A1 1 0 0 0 15 3h-2a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1Z"
+              />
+              <path
+                d="M20 21a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1h-2.9a1 1 0 0 1-.88-.55l-.42-.85a1 1 0 0 0-.92-.6H13a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1Z"
+              />
+              <path d="M3 5a2 2 0 0 0 2 2h3" />
+              <path d="M3 3v13a2 2 0 0 0 2 2h3" />
+            </svg>
+            <h3>Any folder of HTML</h3>
+            <p>
+              A page is any <code>.html</code> file, a full document or a bare fragment.
+              Folders become navigation groups, and every other file is copied as it is.
+            </p>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M15.39 4.39a1 1 0 0 0 1.68-.474 2.5 2.5 0 1 1 3.014 3.015 1 1 0 0 0-.474 1.68l1.683 1.682a2.414 2.414 0 0 1 0 3.414L19.61 15.39a1 1 0 0 1-1.68-.474 2.5 2.5 0 1 0-3.014 3.015 1 1 0 0 1 .474 1.68l-1.683 1.682a2.414 2.414 0 0 1-3.414 0L8.61 19.61a1 1 0 0 0-1.68.474 2.5 2.5 0 1 1-3.014-3.015 1 1 0 0 0 .474-1.68l-1.683-1.682a2.414 2.414 0 0 1 0-3.414L4.39 8.61a1 1 0 0 1 1.68.474 2.5 2.5 0 1 0 3.014-3.015 1 1 0 0 1-.474-1.68l1.683-1.682a2.414 2.414 0 0 1 3.414 0z"
+              />
+            </svg>
+            <h3>Your own components</h3>
+            <p>
+              A file in <code>.htmlpress/components/</code> names a new tag: its HTML is
+              pasted in, its CSS and JS load only on the pages that use it.
+            </p>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m14.622 17.897-10.68-2.913" />
+              <path
+                d="M18.376 2.622a1 1 0 1 1 3.002 3.002L17.36 9.643a.5.5 0 0 0 0 .707l.944.944a2.41 2.41 0 0 1 0 3.408l-.944.944a.5.5 0 0 1-.707 0L8.354 7.348a.5.5 0 0 1 0-.707l.944-.944a2.41 2.41 0 0 1 3.408 0l.944.944a.5.5 0 0 0 .707 0z"
+              />
+              <path
+                d="M9 8c-1.804 2.71-3.97 3.46-6.583 3.948a.507.507 0 0 0-.302.819l7.32 8.883a1 1 0 0 0 1.185.204C12.735 20.405 16 16.792 16 15"
+              />
+            </svg>
+            <h3>Escape anything</h3>
+            <p>
+              Replace the layout, the theme or any built-in component from
+              <code>.htmlpress/</code>, or give one page
+              <a href="/escaping.html">its own layout</a>. This landing page is one.
+            </p>
+          </li>
+        </ul></landing-points
+      >
+      <landing-window label="your-project"
+        ><landing-code syntax="tree">
+          <pre><code>.htmlpress/
+├─ layouts/
+│  └─ landing.html    ← this page's chrome
+└─ components/
+   └─ site-hero.css   ← your own component
+guides/
+├─ setup.html
+└─ faq.html
+images/               ← copied as they are
+index.html            ← a page too
+htmlpress.config.yaml</code></pre>
+        </landing-code></landing-window
+      >
+    </div>
+  </section>
+</landing-section>
+
+<landing-section>
+  <section>
+    <header>
+      <h2>Beautiful by default</h2>
+      <p>
+        A polished theme, the components docs need and sensible defaults. Customize only
+        what you want.
+      </p>
+    </header>
+    <landing-features
+      ><htmlpress-grid cols="3">
+        <htmlpress-card
+          ><svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"
+            />
+            <path d="M14 2v5a1 1 0 0 0 1 1h5" />
+            <path d="M10 12.5 8 15l2 2.5" />
+            <path d="m14 12.5 2 2.5-2 2.5" />
+          </svg>
+          <h3>Styled from the elements</h3>
+          <p>
+            Headings, lists, tables, code, <code>&lt;details&gt;</code>,
+            <code>&lt;figure&gt;</code> and <code>&lt;kbd&gt;</code> look right with no
+            classes at all.
+          </p></htmlpress-card
+        >
+        <htmlpress-card
+          ><svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M10 22V7a1 1 0 0 0-1-1H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5a1 1 0 0 0-1-1H2"
+            />
+            <rect x="14" y="2" width="8" height="8" rx="1" />
+          </svg>
+          <h3>Components where HTML has none</h3>
+          <p>
+            Callouts, tabs, steps, cards, file trees, badges, sortable tables and zoomable
+            images, as light-DOM custom elements.
+          </p></htmlpress-card
+        >
+        <htmlpress-card
+          ><svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M13 5h8" />
+            <path d="M13 12h8" />
+            <path d="M13 19h8" />
+            <path d="m3 17 2 2 4-4" />
+            <path d="m3 7 2 2 4-4" />
+          </svg>
+          <h3>Readable before the script</h3>
+          <p>
+            Every component leaves plain HTML in place, so a page reads well before any
+            script loads, and to any agent that fetches it.
+          </p></htmlpress-card
+        >
+        <htmlpress-card
+          ><svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect width="7" height="18" x="3" y="3" rx="1" />
+            <rect width="7" height="7" x="14" y="3" rx="1" />
+            <rect width="7" height="7" x="14" y="14" rx="1" />
+          </svg>
+          <h3>Navigation from the folder</h3>
+          <p>
+            Grouped by folder, ordered by <code>&lt;meta name="order"&gt;</code>, with a
+            table of contents and previous and next links.
+          </p></htmlpress-card
+        >
+        <htmlpress-card
+          ><svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect width="14" height="20" x="5" y="2" rx="2" ry="2" />
+            <path d="M12 18h.01" />
+          </svg>
+          <h3>At home on a phone</h3>
+          <p>
+            The navigation turns into a drawer, the table of contents steps aside, and
+            nothing scrolls sideways.
+          </p></htmlpress-card
+        >
+        <htmlpress-card
+          ><svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"
+            />
+          </svg>
+          <h3>Dark mode and theme tokens</h3>
+          <p>
+            A dark theme from the system or the toggle, and every color, font and width a
+            <code>--htmlpress-*</code> token.
+          </p></htmlpress-card
+        >
+        <htmlpress-card
+          ><svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+            <path d="M21 3v5h-5" />
+            <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+            <path d="M8 16H3v5" />
+          </svg>
+          <h3>Live reload</h3>
+          <p>
+            <code>htmlpress start</code> rebuilds on every save and reloads the browser,
+            escapes and components included.
+          </p></htmlpress-card
+        >
+        <htmlpress-card
+          ><svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"
+            />
+          </svg>
+          <h3>Static output</h3>
+          <p>
+            <code>htmlpress build</code> writes plain files to
+            <code>.htmlpress/build</code>, with canonical links, ready for any static
+            host.
+          </p></htmlpress-card
+        >
+        <htmlpress-card
+          ><svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"
+            />
+            <path d="M12 22V12" />
+            <polyline points="3.29 7 12 12 20.71 7" />
+            <path d="m7.5 4.27 9 5.15" />
+          </svg>
+          <h3>One binary, three channels</h3>
+          <p>
+            A single Rust executable, installed from npm, PyPI or crates.io. Nothing else
+            to install.
+          </p></htmlpress-card
+        >
+      </htmlpress-grid></landing-features
+    >
+  </section>
+</landing-section>
+
+<landing-section tone="tint">
+  <section>
+    <header>
+      <h2>Write HTML. Ship a website.</h2>
+      <p>Your <code>.html</code> files stay as they are. Htmlpress does the rest.</p>
+    </header>
+    <div>
+      <landing-window label="quickstart.html"
+        ><landing-code syntax="html">
+          <pre><code>&lt;title&gt;Quickstart&lt;/title&gt;
+&lt;meta name="order" content="1" /&gt;
+
+&lt;h1&gt;Quickstart&lt;/h1&gt;
+&lt;p&gt;Install the binary:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;npm install -g gethtmlpress&lt;/code&gt;&lt;/pre&gt;
+
+&lt;htmlpress-callout label="Tip"&gt;
+  &lt;p&gt;Run &lt;code&gt;htmlpress start&lt;/code&gt; and open the browser.&lt;/p&gt;
+&lt;/htmlpress-callout&gt;
+
+&lt;h2&gt;Features&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;strong&gt;Fast&lt;/strong&gt; rebuilds on save&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Components&lt;/strong&gt; when HTML has none&lt;/li&gt;
+  &lt;li&gt;&lt;em&gt;Beautiful&lt;/em&gt; out of the box&lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+        </landing-code></landing-window
+      >
+      <landing-window label="rendered">
+        <article>
+          <h3>Quickstart</h3>
+          <p>Install the binary:</p>
+          <pre><code>npm install -g gethtmlpress</code></pre>
+          <htmlpress-callout label="Tip"
+            ><p>
+              Run <code>htmlpress start</code> and open the browser.
+            </p></htmlpress-callout
+          >
+          <h4>Features</h4>
+          <ul>
+            <li><strong>Fast</strong> rebuilds on save</li>
+            <li><strong>Components</strong> when HTML has none</li>
+            <li><em>Beautiful</em> out of the box</li>
+          </ul>
+        </article>
+      </landing-window>
+    </div>
+  </section>
+</landing-section>
+
+<landing-section>
+  <section>
+    <header>
+      <h2>Made for coding agents</h2>
+      <p>
+        Agents know HTML better than any templating language. Htmlpress keeps their job
+        small and every answer machine-readable.
+      </p>
+    </header>
+    <div>
+      <landing-window label="terminal"
+        ><landing-code syntax="shell">
+          <pre><code>$ htmlpress build docs --json
+{
+  "output": "docs/.htmlpress/build",
+  "pages": 8,
+  "files": 12
+}
+
+$ htmlpress build --json '{"root":"docs","out":"dist"}'
+
+$ htmlpress --llms</code></pre>
+        </landing-code></landing-window
+      >
+      <landing-points
+        ><ul>
+          <li>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"
+              />
+              <path d="M14 2v5a1 1 0 0 0 1 1h5" />
+              <path d="M10 9H8" />
+              <path d="M16 13H8" />
+              <path d="M16 17H8" />
+            </svg>
+            <h3>Plain semantic HTML in</h3>
+            <p>
+              No framework, no syntax to learn, no utility classes: the fewer choices a
+              page offers, the more pages look like one site.
+            </p>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5c0 1.1.9 2 2 2h1"
+              />
+              <path
+                d="M16 21h1a2 2 0 0 0 2-2v-5c0-1.1.9-2 2-2a2 2 0 0 1-2-2V5a2 2 0 0 0-2-2h-1"
+              />
+            </svg>
+            <h3>Every command speaks JSON</h3>
+            <p>
+              <code>--json</code> prints the result on stdout and takes the input as JSON;
+              logs and errors go to stderr.
+            </p>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 19h8" />
+              <path d="m4 17 6-6-6-6" />
+            </svg>
+            <h3>The CLI in one read</h3>
+            <p>
+              <code>htmlpress --llms</code> lists every command's input and output schema
+              as MCP-shaped tools.
+            </p>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 8V4H8" />
+              <rect width="16" height="12" x="4" y="8" rx="2" />
+              <path d="M2 14h2" />
+              <path d="M20 14h2" />
+              <path d="M15 13v2" />
+              <path d="M9 13v2" />
+            </svg>
+            <h3>A skill for your agent</h3>
+            <p>
+              The <code>htmlpress-pages</code> skill teaches Claude Code, Cursor or Codex
+              to <a href="/agents.html">write and check pages</a>.
+            </p>
+          </li>
+        </ul></landing-points
+      >
+    </div>
+    <p><a href="/agents.html">How agents use htmlpress →</a></p>
+  </section>
+</landing-section>
+
+<landing-cta>
+  <section>
+    <h2>Start writing. <em>Let htmlpress handle the rest.</em></h2>
+    <p>
+      Point htmlpress at a folder of HTML, escape what you want to own, deploy. That's the
+      whole setup.
+    </p>
+    <landing-actions align="center">
+      <a href="/introduction.html"
+        ><svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 7v14" />
+          <path
+            d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"
+          /></svg
+        >Read the docs</a
+      >
+      <a href="/installation.html">Install it</a>
+    </landing-actions>
+  </section>
+</landing-cta>

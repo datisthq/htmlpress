@@ -1,0 +1,101 @@
+@scope (landing-hero) {
+  :scope {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    border-bottom: 1px solid var(--htmlpress-border);
+  }
+  :scope > section {
+    position: relative;
+    display: grid;
+    grid-template-columns: 27rem minmax(0, 1fr);
+    align-items: center;
+    gap: 3.5rem;
+    width: 100%;
+    max-width: var(--landing-width);
+    margin: 0 auto;
+    padding: 2rem var(--landing-gutter) 3.5rem;
+  }
+  :scope > section > * {
+    min-width: 0;
+    animation: landing-rise 0.7s ease-out both;
+  }
+  :scope > section > :first-child {
+    align-self: start;
+    padding-top: 4rem;
+  }
+  /* Wider than its column on a wide screen: the window runs off the right edge */
+  @media (min-width: 80rem) {
+    :scope > section > :last-child {
+      width: 60rem;
+    }
+  }
+  hgroup > p {
+    margin: 0;
+    color: var(--htmlpress-accent);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+  h1 {
+    margin: 1.25rem 0 0;
+    font-size: 3rem;
+    font-weight: 650;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+  }
+  mark {
+    padding: 0;
+    color: inherit;
+    background: linear-gradient(
+        color-mix(in oklab, var(--htmlpress-accent) 22%, transparent),
+        color-mix(in oklab, var(--htmlpress-accent) 22%, transparent)
+      )
+      0 88% / 100% 0.3em no-repeat;
+    box-decoration-break: clone;
+  }
+  :scope > section > div > p {
+    max-width: 52ch;
+    margin: 1.5rem 0 0;
+    color: var(--htmlpress-muted);
+    font-size: 1.125rem;
+    line-height: 1.65;
+  }
+  @media (max-width: 64rem) {
+    :scope > section {
+      display: block;
+      padding-block: 4.5rem 5rem;
+    }
+    :scope > section > :first-child {
+      padding-top: 0;
+    }
+    :scope > section > :last-child {
+      width: auto;
+      margin-top: 3rem;
+    }
+    h1 {
+      font-size: clamp(2rem, 7vw, 3.75rem);
+    }
+  }
+  @media (max-width: 40rem) {
+    :scope > section {
+      padding-block: 3rem;
+    }
+    :scope > section > div > p {
+      font-size: 1rem;
+    }
+  }
+}
+
+@keyframes landing-rise {
+  from {
+    opacity: 0;
+    translate: 0 1rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  landing-hero > section > * {
+    animation: none;
+  }
+}

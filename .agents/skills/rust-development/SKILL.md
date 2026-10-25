@@ -50,7 +50,11 @@ run from source: `cargo run --manifest-path rust/Cargo.toml -- build docs`.
    whether a `<head>` exists), content (wrappers and layout-owned tags removed) and, only when a
    `<head>` exists, the extra head tags. lol_html builds no tree and adds no implied `<head>` or
    `<body>`: a fragment stays a fragment, which is why the head pass is skipped without one
-3. `render_page` runs lol_html over the layout, which is plain HTML: it fills `<head>` and
+3. `render_page` runs lol_html over the layout, which is plain HTML: `layout.html`, or
+   `layouts/<name>.html` for a page with `<meta name="layout">` (`scan_site` fails a page
+   naming a missing one). The page's own project component tags are swapped first, since
+   its content goes in unparsed, but the tags it links CSS for are read before the swap. It
+   fills `<head>` and
    swaps each layout element (`htmlpress-content`, `htmlpress-nav`, `htmlpress-toc`, `htmlpress-pager`, …) for markup
    built from the site. Inserted markup is never re-parsed, so a page's own `htmlpress-*` tags
    are left to the browser; an element with nothing to show is removed

@@ -54,6 +54,24 @@ fn keeps_a_fragments_title_and_metas_out_of_the_content() -> crate::Result<()> {
 }
 
 #[test]
+fn reads_the_layout_and_keeps_it_out_of_the_content() -> crate::Result<()> {
+    let html = "<meta name=\"layout\" content=\"landing\">\n<p>Hi.</p>";
+    let page = read_page("index.html", html)?;
+    assert_eq!(page.layout.as_deref(), Some("landing"));
+    assert_eq!(page.content, "<p>Hi.</p>");
+    Ok(())
+}
+
+#[test]
+fn rejects_a_layout_that_is_not_a_name() {
+    let html = r#"<meta name="layout" content="../layout">"#;
+    let error = read_page("a.html", html)
+        .err()
+        .map(|error| error.to_string());
+    assert!(error.is_some_and(|message| message.contains("lowercase letters")));
+}
+
+#[test]
 fn falls_back_to_the_file_name() -> crate::Result<()> {
     let page = read_page("notes/todo.html", "<p>Nothing to see.</p>")?;
     assert_eq!(page.title, "todo");

@@ -2,7 +2,7 @@ use std::collections::BTreeMap;
 use std::path::Path;
 
 use crate::actions::config::load::load_config;
-use crate::actions::page::read::read_page;
+use crate::actions::page::read::{is_layout_name, read_page};
 use crate::models::error::Error;
 use crate::models::site::Site;
 use crate::settings::{ASSETS, CONFIG_FILE, LAYOUT_ELEMENTS, PROJECT_DIR};
@@ -36,6 +36,15 @@ pub fn scan_site(root: &Path) -> crate::Result<Site> {
     });
 
     let assets = read_assets(root)?;
+    for page in &pages {
+        if let Some(layout) = &page.layout
+            && !assets.contains_key(&format!("layouts/{layout}.html"))
+        {
+            return Err(Error::page(&page.path)(format!(
+                "no layout \"{layout}\": add {PROJECT_DIR}/layouts/{layout}.html"
+            )));
+        }
+    }
     let title = config
         .title
         .clone()
@@ -50,8 +59,8 @@ pub fn scan_site(root: &Path) -> crate::Result<Site> {
     })
 }
 
-// Only `layout.html` and the files directly in `styles/`, `scripts/` and `components/`
-// are read, so the build output and anything else kept in `.htmlpress/` stay out.
+// Only `layout.html` and the files directly in `styles/`, `scripts/`, `components/` and
+// `layouts/` are read, so the build output and anything else kept in `.htmlpress/` stay out.
 fn read_assets(root: &Path) -> crate::Result<BTreeMap<String, String>> {
     let mut assets: BTreeMap<String, String> = ASSETS
         .iter()
@@ -62,7 +71,7 @@ fn read_assets(root: &Path) -> crate::Result<BTreeMap<String, String>> {
     if project.join("layout.html").is_file() {
         paths.push("layout.html".to_owned());
     }
-    for folder in ["styles", "scripts", "components"] {
+    for folder in ["styles", "scripts", "components", "layouts"] {
         let path = project.join(folder);
         if !path.is_dir() {
             continue;
@@ -90,6 +99,15 @@ fn read_assets(root: &Path) -> crate::Result<BTreeMap<String, String>> {
 
 fn check_asset(path: &str) -> Result<(), String> {
     let known = ASSETS.iter().any(|asset| asset.path == path);
+    if let Some(name) = path.strip_prefix("layouts/") {
+        return match name.strip_suffix(".html") {
+            Some(name) if is_layout_name(name) => Ok(()),
+            _ => Err(
+                "a layout is a .html file named in lowercase letters, digits and hyphens"
+                    .to_owned(),
+            ),
+        };
+    }
     let Some(name) = path.strip_prefix("components/") else {
         return match known || path == "layout.html" {
             true => Ok(()),

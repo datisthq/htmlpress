@@ -1,0 +1,87 @@
+/* A landing band: a centered heading and lead, then its body. Without `tone` it is plain,
+   with `tone="tint"` it sits on the accent tint. */
+@scope (landing-section) {
+  :scope {
+    display: block;
+    border-bottom: 1px solid var(--htmlpress-border);
+  }
+  :scope[tone="tint"] {
+    background: var(--landing-tint);
+  }
+  :scope > section {
+    max-width: var(--landing-width);
+    margin: 0 auto;
+    padding: 6rem var(--landing-gutter);
+  }
+  :scope > section > header {
+    max-width: 42rem;
+    margin: 0 auto 4rem;
+    text-align: center;
+  }
+  h2 {
+    margin: 0;
+    font-size: 2.25rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+  }
+  header > p {
+    margin: 1rem 0 0;
+    color: var(--htmlpress-muted);
+    font-size: 1.125rem;
+  }
+  /* Two columns, the list beside a window, stacked on a phone */
+  :scope > section > div {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: center;
+    gap: 3rem;
+  }
+  :scope > section > p:last-child {
+    margin: 3rem 0 0;
+    text-align: center;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+  :scope > section > p:last-child > a {
+    text-decoration: none;
+  }
+  :scope > section > p:last-child > a:hover {
+    text-decoration: underline;
+  }
+  @media (max-width: 48rem) {
+    :scope > section {
+      padding-block: 4rem;
+    }
+    :scope > section > header {
+      margin-bottom: 2.5rem;
+    }
+    h2 {
+      font-size: 1.875rem;
+    }
+    :scope > section > div {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 2.5rem;
+    }
+  }
+  /* Each block rises in as it scrolls into view, where the browser can tie it to scroll */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      :scope > section > header,
+      :scope > section > div > *,
+      :scope > section > p:last-child,
+      li,
+      htmlpress-card {
+        animation: landing-reveal linear both;
+        animation-timeline: view();
+        animation-range: entry 0% entry 70%;
+      }
+    }
+  }
+}
+
+@keyframes landing-reveal {
+  from {
+    opacity: 0;
+    translate: 0 1rem;
+  }
+}

@@ -1,0 +1,60 @@
+/* The landing's own chrome: no sidebar, so the header carries the brand at every width */
+@scope (landing-page) {
+  :scope {
+    --landing-width: 72rem;
+    --landing-gutter: 1.5rem;
+    --landing-tint: color-mix(in oklab, var(--htmlpress-accent) 5%, var(--htmlpress-bg));
+    --landing-violet: oklch(0.55 0.22 293);
+    display: block;
+  }
+  .htmlpress-header htmlpress-brand {
+    display: block;
+    flex-shrink: 0;
+  }
+  .htmlpress-header {
+    padding-inline: max(var(--landing-gutter), calc((100% - var(--landing-width)) / 2));
+  }
+  main {
+    display: flex;
+    flex-direction: column;
+    overflow-x: clip;
+  }
+  svg[aria-hidden] {
+    width: 1.25rem;
+    height: 1.25rem;
+    flex-shrink: 0;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) landing-page {
+    --landing-violet: oklch(0.79 0.1 296);
+  }
+}
+:root[data-theme="dark"] landing-page {
+  --landing-violet: oklch(0.79 0.1 296);
+}
+
+/* One image per theme, as the screenshots are: a media query alone misses the toggle */
+img[data-scheme="dark"] {
+  display: none;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) img[data-scheme="light"] {
+    display: none;
+  }
+  :root:not([data-theme="light"]) img[data-scheme="dark"] {
+    display: block;
+  }
+}
+:root[data-theme="dark"] img[data-scheme="light"] {
+  display: none;
+}
+:root[data-theme="dark"] img[data-scheme="dark"] {
+  display: block;
+}

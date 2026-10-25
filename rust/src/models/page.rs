@@ -15,6 +15,9 @@ pub struct Page {
     pub image: Option<String>,
     /// `<meta name="order">`: lower comes first in the navigation.
     pub order: Option<i64>,
+    /// `<meta name="layout">`: the page is wrapped in `.htmlpress/layouts/<name>.html`
+    /// instead of `layout.html`.
+    pub layout: Option<String>,
     /// What the page's `<head>` holds besides its title and the metas htmlpress reads.
     pub head: String,
     /// The page's body, without the `<html>`, `<head>` and `<body>` wrappers.

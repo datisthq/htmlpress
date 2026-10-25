@@ -85,10 +85,14 @@ Put block content (`<p>`, `<h3>`, `<pre>`) inside a component, not bare text.
     `<htmlpress-content>`, `<htmlpress-brand>`, `<htmlpress-banner>`, `<htmlpress-nav>`,
     `<htmlpress-links>`, `<htmlpress-breadcrumbs>`, `<htmlpress-toc>`, `<htmlpress-pager>`,
     `<htmlpress-edit>` and `<htmlpress-footer>` at build time.
+  - `layouts/<name>.html` is another layout, used by a page with
+    `<meta name="layout" content="<name>">` (a landing page without the sidebar); a
+    missing one fails the build.
   - `styles/tokens.css`, `layout.css`, `content.css` are the global theme;
     `components/<tag>.css` and `.js` one component each, its CSS inside `@scope (<tag>)`.
   - A new tag adds a component: `components/site-footer.html` replaces every
-    `<site-footer>` at build time; its `.css`/`.js` load where the tag appears. The
+    `<site-footer>` at build time; its `.css`/`.js` load where the tag appears, and since
+    the tag is gone, its CSS scopes to a class on the pasted markup. The
     `htmlpress-` prefix is reserved, and a file that replaces nothing fails the build.
 
 ## Checking the result

@@ -1,0 +1,35 @@
+/* The closing call to action, centered */
+@scope (landing-cta) {
+  :scope {
+    display: block;
+  }
+  :scope > section {
+    max-width: 48rem;
+    margin: 0 auto;
+    padding: 6rem var(--landing-gutter);
+    text-align: center;
+  }
+  h2 {
+    margin: 0;
+    font-size: 3rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+  }
+  h2 > em {
+    color: var(--htmlpress-accent);
+    font-style: normal;
+  }
+  p {
+    margin: 1.5rem 0 0;
+    color: var(--htmlpress-muted);
+    font-size: 1.125rem;
+  }
+  @media (max-width: 48rem) {
+    :scope > section {
+      padding-block: 4rem;
+    }
+    h2 {
+      font-size: 1.875rem;
+    }
+  }
+}

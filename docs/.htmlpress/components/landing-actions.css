@@ -1,0 +1,56 @@
+/* Links as buttons: the first one filled, the others outlined */
+@scope (landing-actions) {
+  :scope {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 2.5rem;
+  }
+  :scope[align="center"] {
+    justify-content: center;
+  }
+  a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    height: 2.75rem;
+    padding: 0 1.25rem;
+    border: 1px solid var(--htmlpress-border);
+    border-radius: 0.75rem;
+    background: var(--htmlpress-bg);
+    color: var(--htmlpress-text);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    text-decoration: none;
+    white-space: nowrap;
+    box-shadow: var(--htmlpress-shadow);
+    transition:
+      background 0.2s,
+      border-color 0.2s;
+  }
+  a:hover {
+    background: var(--htmlpress-surface);
+  }
+  a:first-child {
+    border-color: var(--htmlpress-accent);
+    background: var(--htmlpress-accent);
+    color: var(--htmlpress-accent-text);
+  }
+  a:first-child:hover {
+    background: color-mix(in oklab, var(--htmlpress-accent) 88%, var(--htmlpress-text));
+  }
+  svg[aria-hidden] {
+    width: 1rem;
+    height: 1rem;
+  }
+  @media (max-width: 40rem) {
+    :scope {
+      margin-top: 2rem;
+    }
+    a {
+      flex: 1;
+      padding-inline: 0.75rem;
+    }
+  }
+}

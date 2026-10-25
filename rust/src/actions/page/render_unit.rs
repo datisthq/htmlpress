@@ -113,6 +113,27 @@ fn uses_the_layout_escape() -> crate::Result<()> {
 }
 
 #[test]
+fn uses_the_layout_a_page_names() -> crate::Result<()> {
+    let mut site = create_site()?;
+    let layout = "<header><htmlpress-brand></htmlpress-brand></header>\
+                  <main><htmlpress-content></htmlpress-content></main>";
+    site.assets
+        .insert("layouts/landing.html".to_owned(), layout.to_owned());
+    site.pages[0] = read_page(
+        "index.html",
+        r#"<meta name="layout" content="landing"><h1>Home</h1>"#,
+    )?;
+    let html = render_page(&site, &site.pages[0], false)?;
+    assert_eq!(
+        html,
+        r#"<header><htmlpress-brand><a href="/">Docs &lt;&amp;&gt;</a></htmlpress-brand></header><main><h1>Home</h1></main>"#
+    );
+    let other = render_page(&site, &site.pages[1], false)?;
+    assert!(other.contains("<htmlpress-nav>"));
+    Ok(())
+}
+
+#[test]
 fn links_only_the_components_a_page_uses() -> crate::Result<()> {
     let mut site = create_site()?;
     site.pages[0] = read_page(
@@ -148,11 +169,25 @@ fn swaps_a_project_component_in_for_its_tag() -> crate::Result<()> {
         "components/htmlpress-brand.html".to_owned(),
         "<b>Mine</b>".to_owned(),
     );
+    site.pages[0] = read_page("index.html", "<h1>Home</h1><site-footer></site-footer>")?;
+    site.assets.insert(
+        "components/site-header.html".to_owned(),
+        "<header></header>".to_owned(),
+    );
+    site.assets.insert(
+        "components/site-header.css".to_owned(),
+        "header {}".to_owned(),
+    );
+    site.pages[0]
+        .content
+        .push_str("<site-header></site-header>");
     let layout = "<head></head><htmlpress-brand></htmlpress-brand><htmlpress-content></htmlpress-content><site-footer></site-footer>";
     site.assets
         .insert("layout.html".to_owned(), layout.to_owned());
     let html = render_page(&site, &site.pages[0], false)?;
     assert!(html.contains("<b>Mine</b><h1>Home</h1><footer>"));
+    assert_eq!(html.matches("<footer>").count(), 2);
+    assert!(html.contains("href=\"/_htmlpress/components/site-header.css\""));
     assert!(html.contains("href=\"/_htmlpress/components/site-footer.css\""));
     assert!(html.contains("href=\"/_htmlpress/components/htmlpress-badge.css\""));
     assert!(!html.contains("<site-footer>") && !html.contains("<htmlpress-brand>"));

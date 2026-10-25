@@ -1,0 +1,116 @@
+/* Drifting vertical strata, two light scans crossing them in turn, and a soft blob.
+   The markup is pasted in for the tag, so the scope is the class it carries. */
+@scope (.landing-backdrop) {
+  :scope {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  :scope > div {
+    position: absolute;
+    inset: 0;
+    mask-image: linear-gradient(to bottom, black 55%, transparent 98%);
+  }
+  :scope > div > span {
+    position: absolute;
+  }
+  :scope > div > :nth-child(1) {
+    inset: 0 -44px;
+    opacity: 0.5;
+    background-image: repeating-linear-gradient(
+      90deg,
+      var(--htmlpress-border) 0 1px,
+      transparent 1px 44px
+    );
+    animation: landing-strata 14s linear infinite;
+  }
+  :scope > div > :nth-child(2) {
+    inset-block: 0;
+    width: 40%;
+    background: linear-gradient(
+      to right,
+      transparent,
+      color-mix(in oklab, var(--htmlpress-accent) 16%, transparent),
+      transparent
+    );
+    animation: landing-scan-x 18s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  :scope > div > :nth-child(3) {
+    inset-inline: 0;
+    height: 40%;
+    background: linear-gradient(
+      to bottom,
+      transparent,
+      color-mix(in oklab, var(--landing-violet) 16%, transparent),
+      transparent
+    );
+    animation: landing-scan-y 18s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  :scope > span {
+    position: absolute;
+    top: -10rem;
+    right: -10rem;
+    width: 32rem;
+    height: 32rem;
+    border-radius: 50%;
+    background: color-mix(in oklab, var(--htmlpress-accent) 15%, transparent);
+    filter: blur(64px);
+    animation: landing-drift 18s ease-in-out infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :scope span {
+      animation: none;
+    }
+    :scope > div > :is(:nth-child(2), :nth-child(3)) {
+      opacity: 0;
+    }
+  }
+}
+
+@keyframes landing-strata {
+  to {
+    translate: 44px 0;
+  }
+}
+@keyframes landing-scan-x {
+  0% {
+    translate: -55% 0;
+    opacity: 0;
+  }
+  5%,
+  45% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    translate: 155% 0;
+    opacity: 0;
+  }
+}
+@keyframes landing-scan-y {
+  0%,
+  50% {
+    translate: 0 -55%;
+    opacity: 0;
+  }
+  55%,
+  95% {
+    opacity: 1;
+  }
+  100% {
+    translate: 0 155%;
+    opacity: 0;
+  }
+}
+@keyframes landing-drift {
+  0%,
+  100% {
+    translate: 0 0;
+    scale: 1;
+  }
+  50% {
+    translate: 6% -8%;
+    scale: 1.08;
+  }
+}

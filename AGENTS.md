@@ -9,7 +9,7 @@ Htmlpress turns a folder of HTML pages into a site: one layout, one theme, a nav
 - **platform package** — `gethtmlpress-<os>-<arch>`, one per entry in `PLATFORMS` (`typescript/settings.ts`), each carrying one binary; the main `gethtmlpress` package pins them all as `optionalDependencies` at its own version
 - **project** — a folder htmlpress builds: HTML pages, other files copied as-is, an optional `htmlpress.config.yaml`, and `.htmlpress/` holding the build output and escapes
 - **page** — an `.html` file in a project, read by `rust/src/actions/page/read.rs` into title, order, head and content
-- **escape** — a project file under `.htmlpress/` at a built-in asset's path (`ASSETS` in `rust/src/settings.rs`), replacing it: `layout.html`, `styles/*.css`, `scripts/*.js`, `components/<tag>.{css,js}`
+- **escape** — a project file under `.htmlpress/` at a built-in asset's path (`ASSETS` in `rust/src/settings.rs`), replacing it: `layout.html`, `styles/*.css`, `scripts/*.js`, `components/<tag>.{css,js}`; beside escapes a project may add its own `components/<tag>.{html,css,js}` and `layouts/<name>.html`, which a page picks with `<meta name="layout">`
 - **component** — a custom element tag with up to three files, `components/<tag>.{html,css,js}`: its CSS scoped with `@scope (<tag>)`, its JS defining only that element, linked only on pages that use the tag; a project's own tag adds one, and its `.html` replaces the tag at build time
 - **docs site** — `docs/`, this repo's own htmlpress project, built by `pnpm build:docs` and deployed to htmlpress.dev
 
@@ -25,7 +25,7 @@ Htmlpress turns a folder of HTML pages into a site: one layout, one theme, a nav
 - Start a plan from a summary of the new or changed API (CLI flags, page contract, models) and the hardest points.
 - **Every plan ends by asking how to work it** (`AskUserQuestion`, before finalising): **the current branch** or **a `.worktrees/<name>` branch** (**`worktree-workflow`**).
 - **Behaviour lives in the binary only.** A wrapper resolves and runs it, nothing more; a feature added to `typescript/` or `python/` would exist for one channel and not the others.
-- **The page contract and the CLI are public API.** What a page's `<title>`, `<meta name="order">` and `<head>` mean, the `htmlpress-*` components and `--htmlpress-*` tokens, the layout elements an escape gets filled, the escapable asset paths, `htmlpress.config.yaml` keys and every command's flags and `--json` output: renaming one silently breaks every project and agent relying on it. Treat it like an export change (**`change-review`**).
+- **The page contract and the CLI are public API.** What a page's `<title>`, `<meta name="order">`, `<meta name="layout">` and `<head>` mean, the `htmlpress-*` components and `--htmlpress-*` tokens, the layout elements an escape gets filled, the escapable asset paths, `htmlpress.config.yaml` keys and every command's flags and `--json` output: renaming one silently breaks every project and agent relying on it. Treat it like an export change (**`change-review`**).
 - **A platform entry is a release contract.** `PLATFORMS` in `typescript/settings.ts` and the build matrix in `.github/workflows/release.yaml` must list the same platforms with the same Rust targets; one missing from the matrix fails the npm pack (**`package-distribution`**).
 - Rust: each `actions/<entity>/<verb>.rs` holds one action, named `verb_noun` (`actions/site/build.rs` exports `build_site`); the module tree is declared inline in `rust/src/lib.rs`. TypeScript: the same `actions/<entity>/<verb>.ts` shape, full relative imports with the `.ts` extension, no barrels.
 - Don't destructure props in a TypeScript function signature — use `props.x`. Put higher-level items above the ones they compose, public before private.
@@ -97,7 +97,7 @@ Dot-directories hold non-package code: `.agents/` repo skills, `.skills/` shippe
 - `package.json` script names are `verb[:object]` (`check:lint`, `build:docs`), never noun-first
 - Specs: Vitest via `vite-plus/test`, `<module>.unit.ts`, no "Arrange / Act / Assert" comments
 - Rust: edition 2024, rustfmt (90 columns), clippy with `-D warnings`; snake_case **verb_noun** functions; no `unwrap` / `expect` / `unsafe` outside tests (**`rust-development`**)
-- HTML in `docs/` and `.skills/`: semantic elements and the documented `htmlpress-*` components only, no inline styles — the docs are the first project htmlpress must serve well
+- HTML in `docs/` and `.skills/`: semantic elements and the documented `htmlpress-*` components only, no inline styles — the docs are the first project htmlpress must serve well. The one exception is the home page, `docs/index.html`: it uses the `landing` layout and the `landing-*` components in `docs/.htmlpress/`, the way any project builds its own look
 - Commits: Conventional Commits, typed by what an installer gets (below)
 
 ## Releases

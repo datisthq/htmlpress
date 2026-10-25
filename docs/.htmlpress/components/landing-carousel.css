@@ -1,0 +1,225 @@
+@scope (landing-carousel) {
+  :scope {
+    position: relative;
+    display: block;
+  }
+  :scope:not(:defined) > section:not(:first-of-type) {
+    display: none;
+  }
+  :scope > figure {
+    margin: 0;
+    overflow: hidden;
+    border: 1px solid var(--htmlpress-border);
+    border-radius: var(--htmlpress-radius);
+    background: var(--htmlpress-bg);
+    box-shadow: 0 20px 40px -12px oklch(0 0 0 / 0.25);
+  }
+  header {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid var(--htmlpress-border);
+    background: var(--htmlpress-surface);
+  }
+  header > span {
+    flex-shrink: 0;
+    width: 2.375rem;
+    height: 0.625rem;
+    background: radial-gradient(circle closest-side, var(--htmlpress-border) 92%, #0000) 0
+      0 / 0.625rem 0.625rem space no-repeat;
+  }
+  [role="tablist"] {
+    display: flex;
+    gap: 0.25rem;
+    min-width: 0;
+  }
+  [role="tab"] {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.375rem 0.75rem;
+    border: 0;
+    border-radius: 0.625rem;
+    background: none;
+    color: var(--htmlpress-muted);
+    font: inherit;
+    font-size: 0.875rem;
+    line-height: 1.43;
+    white-space: nowrap;
+    cursor: pointer;
+    overflow: hidden;
+    transition:
+      color 0.2s,
+      background 0.2s;
+  }
+  [role="tab"]:hover {
+    color: var(--htmlpress-text);
+  }
+  [role="tab"][aria-selected="true"] {
+    background: var(--htmlpress-bg);
+    color: var(--htmlpress-text);
+    font-weight: 500;
+    box-shadow: var(--htmlpress-shadow);
+  }
+  [role="tab"] > span:first-child {
+    font: 0.75rem var(--htmlpress-mono);
+  }
+  [role="tab"][aria-selected="true"] > span:first-child {
+    color: var(--htmlpress-accent);
+  }
+  [role="tab"] > span[aria-hidden] {
+    position: absolute;
+    inset-inline: 0.75rem;
+    bottom: 0.125rem;
+    height: 0.125rem;
+    border-radius: 999px;
+    background: color-mix(in oklab, var(--htmlpress-accent) 70%, transparent);
+    transform-origin: left;
+    animation: landing-progress 6s linear;
+  }
+  :scope[paused] [role="tab"] > span[aria-hidden] {
+    animation-play-state: paused;
+  }
+  :scope[stopped] [role="tab"] > span[aria-hidden] {
+    animation: none;
+  }
+  :scope > figure > div {
+    display: grid;
+  }
+  :scope > figure > div > section,
+  :scope > aside > figure {
+    grid-area: 1 / 1;
+    transition: opacity 0.7s;
+  }
+  :scope > figure > div > section[inert],
+  :scope > aside > figure[inert] {
+    opacity: 0;
+  }
+  section:not([phones]) > div {
+    aspect-ratio: 16 / 10;
+  }
+  section > div > img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+  }
+  section[phones] {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 4%;
+    aspect-ratio: 16 / 10;
+    padding-top: 5%;
+    overflow: hidden;
+    background: var(--landing-tint);
+  }
+  section[phones] > div {
+    flex-shrink: 0;
+    width: 24%;
+    overflow: hidden;
+    border: 3px solid color-mix(in oklab, var(--htmlpress-text) 80%, transparent);
+    border-bottom: 0;
+    border-radius: 0.75rem 0.75rem 0 0;
+    box-shadow: 0 25px 50px -12px oklch(0 0 0 / 0.35);
+  }
+  section[phones] > div:not(:nth-of-type(2)) {
+    margin-top: 6%;
+  }
+  section[phones] > div > img {
+    height: auto;
+  }
+  :scope > aside {
+    display: grid;
+    margin-top: 1rem;
+  }
+  :scope figure:has(> figcaption) {
+    display: grid;
+    grid-template-columns: 2rem minmax(0, 1fr);
+    align-content: start;
+    column-gap: 0.75rem;
+    height: 100%;
+    margin: 0;
+    padding: 1rem;
+    border: 1px solid color-mix(in oklab, var(--htmlpress-accent) 25%, transparent);
+    border-radius: var(--htmlpress-radius);
+    background: var(--htmlpress-bg);
+    box-shadow: 0 10px 24px -8px oklch(0 0 0 / 0.2);
+  }
+  figure > svg[aria-hidden] {
+    grid-row: span 2;
+    width: 2rem;
+    height: 2rem;
+    padding: 0.4375rem;
+    border-radius: 0.5rem;
+    background: color-mix(in oklab, var(--htmlpress-accent) 10%, transparent);
+    color: var(--htmlpress-accent);
+  }
+  figcaption {
+    margin: 0;
+    color: var(--htmlpress-muted);
+    font: 0.75rem/1.6 var(--htmlpress-mono);
+  }
+  figcaption > strong {
+    display: block;
+    margin-bottom: 0.25rem;
+    color: var(--htmlpress-accent);
+    font: 600 0.75rem/1.4 var(--htmlpress-font);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  figure > landing-code {
+    grid-column: 2;
+    margin-top: 0.5rem;
+  }
+  @media (min-width: 40rem) {
+    section[phones] > div {
+      border-width: 6px;
+      border-bottom: 0;
+      border-radius: 1.75rem 1.75rem 0 0;
+    }
+  }
+  @media (max-width: 40rem) {
+    header > span,
+    [role="tab"]:not([aria-selected="true"]) > span:nth-child(2) {
+      display: none;
+    }
+  }
+  @media (min-width: 64rem) {
+    :scope > aside {
+      position: absolute;
+      bottom: -2.5rem;
+      left: -2.5rem;
+      width: 24rem;
+      margin: 0;
+    }
+  }
+  @media (min-width: 80rem) {
+    section[phones] {
+      justify-content: flex-start;
+      gap: 3%;
+      padding-left: 6%;
+    }
+    section[phones] > div {
+      width: 22%;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    [role="tab"] > span[aria-hidden] {
+      animation: none;
+    }
+    :scope > figure > div > section,
+    :scope > aside > figure {
+      transition: none;
+    }
+  }
+}
+
+@keyframes landing-progress {
+  from {
+    scale: 0 1;
+  }
+}

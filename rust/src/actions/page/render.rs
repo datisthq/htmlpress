@@ -11,7 +11,7 @@ use crate::models::page::Page;
 use crate::models::site::Site;
 use crate::settings::{ASSETS_DIR, RELOAD_PATH};
 
-/// Wrap one page of the site in the layout, filling its `<head>`, swapping each project
+/// Wrap one page of the site in its layout, filling its `<head>`, swapping each project
 /// component's `.html` in for its tag, and filling every `htmlpress-*` layout element.
 pub(crate) fn render_page(
     site: &Site,
@@ -19,7 +19,15 @@ pub(crate) fn render_page(
     reload: bool,
 ) -> crate::Result<String> {
     let fail = |error: String| Error::page(&page.path)(error);
-    let layout = site.assets.get("layout.html").map_or("", String::as_str);
+    let layout = match &page.layout {
+        Some(name) => format!("layouts/{name}.html"),
+        None => "layout.html".to_owned(),
+    };
+    let layout = site
+        .assets
+        .get(&layout)
+        .ok_or_else(|| fail(format!("no layout {layout}")))?
+        .as_str();
     let fragments: Vec<(&str, &str)> = site
         .assets
         .iter()
@@ -28,6 +36,7 @@ pub(crate) fn render_page(
             Some((tag, html.as_str()))
         })
         .collect();
+    let content = swap_components(&page.content, &fragments).map_err(fail)?;
     let tags = list_tags(&[layout, &page.content], &fragments).map_err(fail)?;
     let head = create_head(site, page, &tags, reload);
     let nav = create_nav(site, page);
@@ -50,7 +59,7 @@ pub(crate) fn render_page(
         settings = settings.append_element_content_handler(element!(
             "htmlpress-content",
             |el| {
-                el.replace(&page.content, ContentType::Html);
+                el.replace(&content, ContentType::Html);
                 Ok(())
             }
         ));
@@ -121,6 +130,19 @@ pub(crate) fn render_page(
             }));
     }
     rewrite_str(layout, settings).map_err(|error| fail(error.to_string()))
+}
+
+// The page's content is pasted into the layout unparsed, so its own project component tags
+// are swapped here, before it goes in.
+fn swap_components(content: &str, fragments: &[(&str, &str)]) -> Result<String, String> {
+    let mut settings = RewriteStrSettings::new();
+    for (tag, html) in fragments {
+        settings = settings.append_element_content_handler(element!(tag, |el| {
+            el.replace(html, ContentType::Html);
+            Ok(())
+        }));
+    }
+    rewrite_str(content, settings).map_err(|error| error.to_string())
 }
 
 // A component's .html is pasted in after parsing, so the tags inside it are read here

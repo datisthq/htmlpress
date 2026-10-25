@@ -32,6 +32,7 @@ pub fn read_page(path: &str, html: &str) -> crate::Result<Page> {
         description: facts.description,
         image: facts.image,
         order: facts.order,
+        layout: facts.layout,
         head,
         content,
         toc,
@@ -45,6 +46,7 @@ struct Facts {
     description: Option<String>,
     image: Option<String>,
     order: Option<i64>,
+    layout: Option<String>,
     has_head: bool,
     /// Each heading, and whether it belongs in the table of contents.
     headings: Vec<(Heading, bool)>,
@@ -112,6 +114,19 @@ fn read_facts(html: &str) -> Result<Facts, String> {
                 format!("<meta name=\"order\"> must be an integer, got \"{order}\"")
             })?;
             facts.borrow_mut().order = Some(order);
+            Ok(())
+        }))
+        .append_element_content_handler(element!("meta[name='layout']", |el| {
+            let layout = el.get_attribute("content").unwrap_or_default();
+            let layout = layout.trim();
+            if !is_layout_name(layout) {
+                return Err(format!(
+                    "<meta name=\"layout\"> must be lowercase letters, digits and \
+                     hyphens, got \"{layout}\""
+                )
+                .into());
+            }
+            facts.borrow_mut().layout = Some(layout.to_owned());
             Ok(())
         }));
     rewrite_str(html, settings).map_err(|error| error.to_string())?;
@@ -232,6 +247,7 @@ const OWNED_BY_LAYOUT: &[&str] = &[
     "meta[name='description']",
     "meta[name='image']",
     "meta[name='order']",
+    "meta[name='layout']",
 ];
 
 fn read_head(html: &str) -> Result<String, String> {
@@ -269,6 +285,14 @@ fn read_head(html: &str) -> Result<String, String> {
         .filter(|line| !line.is_empty())
         .collect::<Vec<_>>()
         .join("\n"))
+}
+
+/// A layout's name, as `<meta name="layout">` gives it and `.htmlpress/layouts/` files it.
+pub(crate) fn is_layout_name(name: &str) -> bool {
+    name.starts_with(|char: char| char.is_ascii_lowercase())
+        && name
+            .chars()
+            .all(|char| char.is_ascii_lowercase() || char.is_ascii_digit() || char == '-')
 }
 
 pub(crate) fn create_url(path: &str) -> String {

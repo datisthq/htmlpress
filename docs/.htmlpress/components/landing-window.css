@@ -1,0 +1,58 @@
+/* A window around a sample: three dots and the `label` in its title bar */
+@scope (landing-window) {
+  :scope {
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid
+      color-mix(in oklab, var(--htmlpress-accent) 20%, var(--htmlpress-border));
+    border-radius: var(--htmlpress-radius);
+    background: var(--htmlpress-bg);
+  }
+  :scope::before {
+    content: attr(label);
+    display: block;
+    padding: 0.5rem 1rem 0.5rem 4.25rem;
+    border-bottom: 1px solid
+      color-mix(in oklab, var(--htmlpress-accent) 20%, var(--htmlpress-border));
+    background:
+      radial-gradient(circle closest-side, oklch(0.7 0.19 22 / 0.6) 92%, #0000) 1rem 50% /
+        0.625rem 0.625rem no-repeat,
+      radial-gradient(circle closest-side, oklch(0.85 0.17 90 / 0.6) 92%, #0000) 1.5rem
+        50% / 0.625rem 0.625rem no-repeat,
+      radial-gradient(circle closest-side, oklch(0.8 0.18 150 / 0.6) 92%, #0000) 2rem 50%
+        / 0.625rem 0.625rem no-repeat,
+      var(--htmlpress-surface);
+    color: var(--htmlpress-muted);
+    font: 0.75rem/1.5 var(--htmlpress-mono);
+  }
+  :scope > landing-code {
+    padding: 1.25rem;
+    overflow-x: auto;
+  }
+  /* A rendered sample: the page's real components, a little smaller */
+  :scope > article {
+    padding: 1.5rem;
+    font-size: 0.875rem;
+    line-height: 1.6;
+  }
+  article > h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+  article > h4 {
+    margin: 1.25rem 0 0.5rem;
+  }
+  article > p {
+    margin: 0.75rem 0;
+    color: var(--htmlpress-muted);
+  }
+  article > pre {
+    margin: 0.75rem 0;
+  }
+  article > ul {
+    margin: 0;
+    padding-left: 1.25rem;
+  }
+}

@@ -1,0 +1,60 @@
+/* The built-in grid and cards, each card led by an icon and lifted on hover */
+@scope (landing-features) {
+  :scope {
+    display: block;
+  }
+  :scope htmlpress-card {
+    height: 100%;
+    padding: 1.5rem;
+    font-size: 0.875rem;
+    color: var(--htmlpress-muted);
+    transition:
+      border-color 0.2s,
+      translate 0.2s,
+      box-shadow 0.2s;
+  }
+  :scope htmlpress-card:hover {
+    border-color: color-mix(
+      in oklab,
+      var(--htmlpress-accent) 40%,
+      var(--htmlpress-border)
+    );
+    translate: 0 -0.125rem;
+    box-shadow: 0 12px 24px -8px oklch(0 0 0 / 0.15);
+  }
+  :scope htmlpress-card > svg[aria-hidden] {
+    width: 2.5rem;
+    height: 2.5rem;
+    margin-bottom: 1rem;
+    padding: 0.625rem;
+    border-radius: 0.625rem;
+    background: color-mix(in oklab, var(--htmlpress-accent) 10%, transparent);
+    color: var(--htmlpress-accent);
+    transition: background 0.2s;
+  }
+  :scope htmlpress-card:hover > svg[aria-hidden] {
+    background: color-mix(in oklab, var(--htmlpress-accent) 15%, transparent);
+  }
+  :scope htmlpress-card > h3 {
+    margin: 0 0 0.5rem;
+    font-size: 1.125rem;
+  }
+  :scope htmlpress-grid {
+    margin: 0;
+  }
+  @media (max-width: 64rem) {
+    :scope htmlpress-grid[cols="3"] {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 40rem) {
+    :scope htmlpress-grid[cols="3"] {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :scope htmlpress-card {
+      transition: none;
+    }
+  }
+}

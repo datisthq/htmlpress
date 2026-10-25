@@ -1,7 +1,7 @@
 <title>Pages</title>
 <meta
   name="description"
-  content="How htmlpress reads a page: title, order, head and content."
+  content="How htmlpress reads a page: title, order, layout, head and content."
 />
 <meta name="order" content="2" />
 
@@ -42,6 +42,12 @@
   <dd>
     An integer that sorts the navigation, lower first. <code>index.html</code> always
     leads, ordered pages follow, the rest by path.
+  </dd>
+  <dt><code>&lt;meta name="layout"&gt;</code></dt>
+  <dd>
+    Wraps the page in <code>.htmlpress/layouts/&lt;name&gt;.html</code> instead of the
+    site's layout, for a page that wants different chrome, such as a landing page without
+    the sidebar. See <a href="escaping.html#layouts">Escaping</a>.
   </dd>
   <dt>Anything else in <code>&lt;head&gt;</code></dt>
   <dd>

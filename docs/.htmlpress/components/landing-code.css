@@ -1,0 +1,81 @@
+/* Catppuccin Latte in light, Mocha in dark */
+@scope (landing-code) {
+  :scope {
+    --landing-code-text: #4c4f69;
+    --landing-code-dim: #8c8fa1;
+    --landing-code-key: #8839ef;
+    --landing-code-string: #40a02b;
+    --landing-code-tag: #d20f39;
+    --landing-code-flag: #df8e1d;
+    --landing-code-folder: #179299;
+    --landing-code-number: #fe640b;
+    display: block;
+    min-width: 0;
+  }
+  pre {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+    color: var(--landing-code-text);
+    font-size: 0.875rem;
+    line-height: 1.65;
+  }
+  [data-token="dim"],
+  [data-token="note"],
+  [data-token="punct"],
+  [data-token="comment"] {
+    color: var(--landing-code-dim);
+  }
+  [data-token="tag"] {
+    color: var(--landing-code-tag);
+  }
+  [data-token="attr"],
+  [data-token="key"],
+  [data-token="command"] {
+    color: var(--landing-code-key);
+  }
+  [data-token="string"],
+  [data-token="page"] {
+    color: var(--landing-code-string);
+  }
+  [data-token="flag"] {
+    color: var(--landing-code-flag);
+  }
+  [data-token="folder"] {
+    color: var(--landing-code-folder);
+  }
+  [data-token="number"] {
+    color: var(--landing-code-number);
+  }
+  @media (max-width: 40rem) {
+    [data-token="note"] {
+      display: none;
+    }
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) landing-code {
+    --landing-code-text: #cdd6f4;
+    --landing-code-dim: #7f849c;
+    --landing-code-key: #cba6f7;
+    --landing-code-string: #a6e3a1;
+    --landing-code-tag: #f38ba8;
+    --landing-code-flag: #f9e2af;
+    --landing-code-folder: #94e2d5;
+    --landing-code-number: #fab387;
+  }
+}
+:root[data-theme="dark"] landing-code {
+  --landing-code-text: #cdd6f4;
+  --landing-code-dim: #7f849c;
+  --landing-code-key: #cba6f7;
+  --landing-code-string: #a6e3a1;
+  --landing-code-tag: #f38ba8;
+  --landing-code-flag: #f9e2af;
+  --landing-code-folder: #94e2d5;
+  --landing-code-number: #fab387;
+}
