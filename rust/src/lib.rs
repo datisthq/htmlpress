@@ -10,6 +10,9 @@ mod actions {
     pub(crate) mod config {
         pub(crate) mod load;
     }
+    pub(crate) mod package {
+        pub(crate) mod convert;
+    }
     pub(crate) mod page {
         pub(crate) mod read;
         pub(crate) mod render;

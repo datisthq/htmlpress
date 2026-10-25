@@ -49,7 +49,10 @@ run from source: `cargo run --manifest-path rust/Cargo.toml -- build docs`.
 2. `read_page` runs lol_html over the source three times — facts (title, first `<h1>`, metas,
    whether a `<head>` exists), content (wrappers and layout-owned tags removed) and, only when a
    `<head>` exists, the extra head tags. lol_html builds no tree and adds no implied `<head>` or
-   `<body>`: a fragment stays a fragment, which is why the head pass is skipped without one
+   `<body>`: a fragment stays a fragment, which is why the head pass is skipped without one.
+   The content pass also expands `htmlpress-package-tabs` into `htmlpress-tabs`: its text
+   is collected, removed, and the sections are written from an end-tag handler, since the
+   text is only complete there; the asset loader then sees the `htmlpress-tabs` tag
 3. `render_page` runs lol_html over the layout, which is plain HTML: `layout.html`, or
    `layouts/<name>.html` for a page with `<meta name="layout">` (`scan_site` fails a page
    naming a missing one). The page's own project component tags are swapped first, since
@@ -59,7 +62,9 @@ run from source: `cargo run --manifest-path rust/Cargo.toml -- build docs`.
    built from the site. Inserted markup is never re-parsed, so a page's own `htmlpress-*` tags
    are left to the browser; an element with nothing to show is removed
 4. `build_site` refuses an output that holds the project or sits visible inside it, since it
-   wipes the output first, then writes pages, copies files and adds `_htmlpress/` assets
+   wipes the output first, then writes pages, copies files and adds `_htmlpress/` assets,
+   `robots.txt`, `sitemap.xml` and, when the project has none, the built-in `404.html`
+   (`NOT_FOUND`), which the nav and pager never list
 
 ## The dev server
 

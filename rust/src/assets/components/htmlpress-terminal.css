@@ -1,0 +1,76 @@
+/* Dark in both themes, like a real terminal; `title` names the window. */
+@scope (htmlpress-terminal) {
+  :scope {
+    --dot: 0.375rem;
+    display: block;
+    overflow: hidden;
+    margin: 0 0 1.25em;
+    border: 1px solid oklch(0.3 0 0);
+    border-radius: var(--htmlpress-radius);
+    background: oklch(0.18 0 0);
+    box-shadow: var(--htmlpress-shadow);
+    color: oklch(0.92 0 0);
+  }
+  :scope::before {
+    content: attr(title);
+    display: block;
+    padding: 0.5rem 1rem 0.5rem 4.25rem;
+    border-bottom: 1px solid oklch(0.3 0 0);
+    background:
+      radial-gradient(
+        circle at 1.25rem 50%,
+        oklch(0.68 0.2 25) var(--dot),
+        transparent calc(var(--dot) + 0.5px)
+      ),
+      radial-gradient(
+        circle at 2.25rem 50%,
+        oklch(0.8 0.16 85) var(--dot),
+        transparent calc(var(--dot) + 0.5px)
+      ),
+      radial-gradient(
+        circle at 3.25rem 50%,
+        oklch(0.75 0.18 145) var(--dot),
+        transparent calc(var(--dot) + 0.5px)
+      );
+    color: oklch(0.65 0 0);
+    font: 500 0.75rem var(--htmlpress-font);
+    min-height: 1rem;
+  }
+  pre {
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+    color: inherit;
+  }
+  .htmlpress-code {
+    margin: 0;
+  }
+  kbd {
+    padding: 0;
+    border: 0;
+    color: oklch(0.98 0 0);
+    font-size: inherit;
+    font-weight: 600;
+  }
+  kbd::before {
+    content: "$ ";
+    color: oklch(0.75 0.18 145);
+  }
+  samp {
+    color: oklch(0.7 0 0);
+  }
+  ins {
+    color: oklch(0.78 0.18 145);
+    text-decoration: none;
+  }
+  del {
+    color: oklch(0.7 0.19 25);
+    text-decoration: none;
+  }
+  mark {
+    background: none;
+    color: oklch(0.85 0.15 85);
+  }
+}

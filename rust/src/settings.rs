@@ -18,6 +18,14 @@ pub const PORTS: std::ops::RangeInclusive<u16> = 8000..=8009;
 /// The dev server's long-poll endpoint the reload script waits on.
 pub const RELOAD_PATH: &str = "/_htmlpress/reload";
 
+/// Where a host looks for the page it serves on a missing URL; never listed in the
+/// navigation or the sitemap.
+pub const NOT_FOUND_PAGE: &str = "404.html";
+
+/// The page a project without its own `404.html` gets; never escaped, since a project
+/// replaces it with a page of the same name.
+pub const NOT_FOUND: &str = include_str!("assets/404.html");
+
 /// The dev server's reload script; never escaped.
 pub const RELOAD: &str = include_str!("assets/reload.js");
 
@@ -38,12 +46,14 @@ pub const ASSETS: &[Asset] = &[
     asset!("styles/layout.css"),
     asset!("styles/content.css"),
     asset!("scripts/code.js"),
+    asset!("scripts/hints.js"),
     asset!("components/htmlpress-back-to-top.css"),
     asset!("components/htmlpress-back-to-top.js"),
     asset!("components/htmlpress-badge.css"),
     asset!("components/htmlpress-banner.css"),
     asset!("components/htmlpress-brand.css"),
     asset!("components/htmlpress-breadcrumbs.css"),
+    asset!("components/htmlpress-button.css"),
     asset!("components/htmlpress-callout.css"),
     asset!("components/htmlpress-card.css"),
     asset!("components/htmlpress-edit.css"),
@@ -64,6 +74,7 @@ pub const ASSETS: &[Asset] = &[
     asset!("components/htmlpress-table.js"),
     asset!("components/htmlpress-tabs.css"),
     asset!("components/htmlpress-tabs.js"),
+    asset!("components/htmlpress-terminal.css"),
     asset!("components/htmlpress-theme-toggle.css"),
     asset!("components/htmlpress-theme-toggle.js"),
     asset!("components/htmlpress-toc.css"),

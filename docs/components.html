@@ -77,6 +77,40 @@
   &lt;section title="npm"&gt;…&lt;/section&gt;
   &lt;section title="pip"&gt;…&lt;/section&gt;
 &lt;/htmlpress-tabs&gt;</code></pre>
+<p>
+  Tabs that hold only code blocks, like the first set above, join into one framed block.
+</p>
+
+<h2>Package tabs</h2>
+<p>
+  Write one <code>npm</code> or <code>npx</code> command and the build turns it into tabs
+  for npm, pnpm, yarn and bun, synced across the site. Other lines stay as written.
+</p>
+<htmlpress-package-tabs>
+  <pre><code>npm install --save-dev gethtmlpress</code></pre>
+</htmlpress-package-tabs>
+<pre><code>&lt;htmlpress-package-tabs&gt;
+  &lt;pre&gt;&lt;code&gt;npm install --save-dev gethtmlpress&lt;/code&gt;&lt;/pre&gt;
+&lt;/htmlpress-package-tabs&gt;</code></pre>
+
+<h2>Terminal</h2>
+<p>
+  A <code>&lt;pre&gt;</code> inside <code>&lt;htmlpress-terminal&gt;</code> looks like a
+  terminal window, named by <code>title</code>. Inside it, <code>&lt;kbd&gt;</code> is a
+  typed command (the prompt is added), <code>&lt;samp&gt;</code> plain output, and
+  <code>&lt;ins&gt;</code>, <code>&lt;del&gt;</code> and <code>&lt;mark&gt;</code> green,
+  red and yellow output.
+</p>
+<htmlpress-terminal title="zsh">
+  <pre><kbd>htmlpress build docs</kbd>
+<samp>built 7 pages and 0 files into docs/.htmlpress/build</samp>
+<ins>✓ ready</ins></pre>
+</htmlpress-terminal>
+<pre><code>&lt;htmlpress-terminal title="zsh"&gt;
+  &lt;pre&gt;&lt;kbd&gt;htmlpress build docs&lt;/kbd&gt;
+&lt;samp&gt;built 7 pages…&lt;/samp&gt;
+&lt;ins&gt;✓ ready&lt;/ins&gt;&lt;/pre&gt;
+&lt;/htmlpress-terminal&gt;</code></pre>
 
 <h2>Steps</h2>
 <htmlpress-steps>
@@ -165,6 +199,20 @@
 </htmlpress-table>
 <pre><code>&lt;htmlpress-table&gt;&lt;table&gt;&lt;thead&gt;…&lt;/thead&gt;&lt;tbody&gt;…&lt;/tbody&gt;&lt;/table&gt;&lt;/htmlpress-table&gt;</code></pre>
 
+<h2>Button</h2>
+<p>
+  A link inside <code>&lt;htmlpress-button&gt;</code> is a call to action;
+  <code>type="secondary"</code> makes it quieter.
+</p>
+<p>
+  <htmlpress-button><a href="installation.html">Get started</a></htmlpress-button>
+  <htmlpress-button type="secondary"
+    ><a href="https://github.com/datisthq/htmlpress">GitHub</a></htmlpress-button
+  >
+</p>
+<pre><code>&lt;htmlpress-button&gt;&lt;a href="installation.html"&gt;Get started&lt;/a&gt;&lt;/htmlpress-button&gt;
+&lt;htmlpress-button type="secondary"&gt;&lt;a href="…"&gt;GitHub&lt;/a&gt;&lt;/htmlpress-button&gt;</code></pre>
+
 <h2>Zoom</h2>
 <p>
   An image inside <code>&lt;htmlpress-zoom&gt;</code> opens full screen on click. Every
@@ -202,6 +250,20 @@ flowchart LR
   &lt;pre&gt;flowchart LR
   pages[HTML pages] --&amp;gt; build[htmlpress build] --&amp;gt; site[Static site]&lt;/pre&gt;
 &lt;/htmlpress-mermaid&gt;</code></pre>
+
+<h2>Abbreviations and footnotes</h2>
+<p>
+  No component needed. An <abbr title="HyperText Markup Language">HTML</abbr>
+  <code>&lt;abbr title&gt;</code> shows its full form on hover or focus, and a footnote
+  reference<sup><a href="#note-1" id="ref-1">1</a></sup> (a <code>&lt;sup&gt;</code> link
+  to an <code>&lt;li&gt;</code>) previews its note.
+</p>
+<ol>
+  <li id="note-1">The note, shown on hover. <a href="#ref-1">↩</a></li>
+</ol>
+<pre><code>&lt;abbr title="HyperText Markup Language"&gt;HTML&lt;/abbr&gt;
+…reference&lt;sup&gt;&lt;a href="#note-1" id="ref-1"&gt;1&lt;/a&gt;&lt;/sup&gt;…
+&lt;ol&gt;&lt;li id="note-1"&gt;The note. &lt;a href="#ref-1"&gt;↩&lt;/a&gt;&lt;/li&gt;&lt;/ol&gt;</code></pre>
 
 <h2>Expandable</h2>
 <details>

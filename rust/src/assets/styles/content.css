@@ -220,3 +220,32 @@ dd {
   margin: 0.25rem 0 0 1.5rem;
   color: var(--htmlpress-muted);
 }
+
+abbr[title],
+abbr[data-title] {
+  text-decoration: underline dotted;
+  text-decoration-color: var(--htmlpress-muted);
+  text-underline-offset: 0.2em;
+  cursor: help;
+}
+
+.htmlpress-hint {
+  position: absolute;
+  z-index: 50;
+  max-width: min(24rem, calc(100vw - 1rem));
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--htmlpress-border);
+  border-radius: 0.75rem;
+  background: var(--htmlpress-bg);
+  box-shadow: 0 4px 16px oklch(0 0 0 / 0.12);
+  color: var(--htmlpress-text);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  pointer-events: none;
+}
+.htmlpress-hint > :first-child {
+  margin-top: 0;
+}
+.htmlpress-hint > :last-child {
+  margin-bottom: 0;
+}

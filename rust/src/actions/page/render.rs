@@ -9,7 +9,7 @@ use crate::models::config::{Link, Position};
 use crate::models::error::Error;
 use crate::models::page::Page;
 use crate::models::site::Site;
-use crate::settings::{ASSETS_DIR, RELOAD_PATH};
+use crate::settings::{ASSETS_DIR, NOT_FOUND_PAGE, RELOAD_PATH};
 
 /// Wrap one page of the site in its layout, filling its `<head>`, swapping each project
 /// component's `.html` in for its tag, and filling every `htmlpress-*` layout element.
@@ -378,7 +378,7 @@ fn create_breadcrumbs(site: &Site, page: &Page) -> Option<String> {
 // groups keep the order their first page has in the navigation.
 fn create_nav(site: &Site, page: &Page) -> String {
     let mut groups: Vec<(Option<&str>, Vec<&Page>)> = vec![];
-    for item in &site.pages {
+    for item in list_pages(site) {
         let folder = item.path.split_once('/').map(|(folder, _)| folder);
         match groups.iter_mut().find(|(key, _)| *key == folder) {
             Some((_, items)) => items.push(item),
@@ -421,6 +421,11 @@ fn create_nav(site: &Site, page: &Page) -> String {
     html
 }
 
+fn list_pages(site: &Site) -> Vec<&Page> {
+    let listed = |page: &&Page| page.path != NOT_FOUND_PAGE;
+    site.pages.iter().filter(listed).collect()
+}
+
 fn create_list(items: &[&Page], page: &Page) -> String {
     let mut html = String::from("<ul>");
     for item in items {
@@ -457,9 +462,12 @@ fn create_links(site: &Site) -> Option<String> {
 }
 
 fn create_pager(site: &Site, page: &Page) -> Option<String> {
-    let index = site.pages.iter().position(|item| item.path == page.path)?;
-    let prev = index.checked_sub(1).and_then(|index| site.pages.get(index));
-    let next = site.pages.get(index + 1);
+    let pages = list_pages(site);
+    let index = pages.iter().position(|item| item.path == page.path)?;
+    let prev = index
+        .checked_sub(1)
+        .and_then(|index| pages.get(index).copied());
+    let next = pages.get(index + 1).copied();
     if prev.is_none() && next.is_none() {
         return None;
     }

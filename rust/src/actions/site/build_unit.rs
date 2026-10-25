@@ -131,3 +131,25 @@ fn writes_robots_and_a_sitemap_unless_the_project_ships_them() -> crate::Result<
     assert_eq!(read("sitemap.xml").as_deref(), Some("<urlset/>"));
     Ok(())
 }
+
+#[test]
+fn writes_a_404_page_unless_the_project_has_one() -> crate::Result<()> {
+    let root = tempfile::tempdir().map_err(Error::io("tempdir"))?;
+    let root = root.path();
+    write_source(root, "index.html", "<h1>Home</h1>")?;
+    let options = BuildOptions::new(root);
+    let read = |path: &str| std::fs::read_to_string(options.output.join(path)).ok();
+
+    let report = build_site(&options)?;
+    assert_eq!(report.pages, 1);
+    let missing = read("404.html").unwrap_or_default();
+    assert!(missing.contains("<title>Page not found · "));
+    assert!(missing.contains("htmlpress-button.css"));
+    assert!(!read("index.html").unwrap_or_default().contains("404.html"));
+
+    write_source(root, "404.html", "<title>Lost</title><h1>Lost</h1>")?;
+    build_site(&options)?;
+    assert!(read("404.html").is_some_and(|html| html.contains("<h1>Lost</h1>")));
+    assert!(!read("index.html").unwrap_or_default().contains("404.html"));
+    Ok(())
+}

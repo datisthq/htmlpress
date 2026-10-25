@@ -137,3 +137,21 @@ fn reads_the_image_and_keeps_it_out_of_the_head() -> crate::Result<()> {
     assert!(!page.head.contains("image"));
     Ok(())
 }
+
+#[test]
+fn expands_package_tabs_into_tabs() -> crate::Result<()> {
+    let html = "<htmlpress-package-tabs><pre><code>npm install a &amp;&amp; npx b</code></pre></htmlpress-package-tabs>";
+    let page = read_page("a.html", html)?;
+    assert_eq!(
+        page.content,
+        concat!(
+            r#"<htmlpress-tabs sync="package-manager">"#,
+            r#"<section title="npm"><pre><code>npm install a &amp;&amp; npx b</code></pre></section>"#,
+            r#"<section title="pnpm"><pre><code>pnpm add a &amp;&amp; npx b</code></pre></section>"#,
+            r#"<section title="yarn"><pre><code>yarn add a &amp;&amp; npx b</code></pre></section>"#,
+            r#"<section title="bun"><pre><code>bun add a &amp;&amp; npx b</code></pre></section>"#,
+            "</htmlpress-tabs>"
+        )
+    );
+    Ok(())
+}

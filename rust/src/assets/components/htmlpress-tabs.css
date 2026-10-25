@@ -32,4 +32,28 @@
   :scope > section > :last-child {
     margin-bottom: 0;
   }
+
+  /* Tabs over nothing but code blocks frame them as one block */
+  :scope:has(> section > :is(pre, .htmlpress-code)):not(
+      :has(> section > :not(pre, .htmlpress-code))
+    ) {
+    overflow: hidden;
+    border: 1px solid var(--htmlpress-border);
+    border-radius: var(--htmlpress-radius);
+    background: var(--htmlpress-surface);
+    box-shadow: var(--htmlpress-shadow);
+    [role="tablist"] {
+      margin: 0;
+      padding: 0 0.5rem;
+    }
+    pre {
+      margin: 0;
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+    }
+    .htmlpress-code {
+      margin: 0;
+    }
+  }
 }

@@ -1,11 +1,12 @@
 use std::path::Path;
 
+use crate::actions::page::read::read_page;
 use crate::actions::page::render::render_page;
 use crate::actions::site::scan::scan_site;
 use crate::models::build::{BuildOptions, BuildReport};
 use crate::models::error::Error;
 use crate::models::site::Site;
-use crate::settings::{ASSETS_DIR, RELOAD, THEME_STYLES};
+use crate::settings::{ASSETS_DIR, NOT_FOUND, NOT_FOUND_PAGE, RELOAD, THEME_STYLES};
 
 /// Build the project at `options.root` into `options.output`, replacing what is there.
 pub fn build_site(options: &BuildOptions) -> crate::Result<BuildReport> {
@@ -18,6 +19,13 @@ pub fn build_site(options: &BuildOptions) -> crate::Result<BuildReport> {
     for page in &site.pages {
         let html = render_page(&site, page, options.reload)?;
         write_file(&options.output.join(&page.path), html.as_bytes())?;
+    }
+    if !site.pages.iter().any(|page| page.path == NOT_FOUND_PAGE) {
+        let page = read_page(NOT_FOUND_PAGE, NOT_FOUND)?;
+        let mut built_in = site.clone();
+        built_in.config.edit = None;
+        let html = render_page(&built_in, &page, options.reload)?;
+        write_file(&options.output.join(NOT_FOUND_PAGE), html.as_bytes())?;
     }
     for file in &site.files {
         let source = options.root.join(file);
@@ -85,7 +93,7 @@ fn create_sitemap(site: &Site) -> Option<String> {
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
          <urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n",
     );
-    for page in site.pages.iter().filter(|page| page.path != "404.html") {
+    for page in site.pages.iter().filter(|page| page.path != NOT_FOUND_PAGE) {
         let url = format!("{origin}{}", page.url)
             .replace('&', "&amp;")
             .replace('<', "&lt;");

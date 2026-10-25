@@ -1,7 +1,10 @@
 use std::cell::{Cell, RefCell};
+use std::rc::Rc;
 
+use lol_html::html_content::ContentType;
 use lol_html::{RewriteStrSettings, doctype, element, rewrite_str, text};
 
+use crate::actions::package::convert::{MANAGERS, convert_command};
 use crate::models::error::Error;
 use crate::models::page::{Heading, Page};
 
@@ -201,7 +204,33 @@ const UNLISTED_HEADINGS: &[&str] = &[
 
 fn read_content(html: &str, headings: &[(Heading, bool)]) -> Result<String, String> {
     let index = Cell::new(0);
+    let commands = Rc::new(RefCell::new(String::new()));
     let mut settings = RewriteStrSettings::new()
+        // Expanded here, not in the browser, so the tabs component and the copy buttons
+        // treat each manager's command like any other code block
+        .append_element_content_handler(element!("htmlpress-package-tabs", |el| {
+            el.set_tag_name("htmlpress-tabs")?;
+            if !el.has_attribute("sync") {
+                el.set_attribute("sync", "package-manager")?;
+            }
+            commands.borrow_mut().clear();
+            let commands = commands.clone();
+            let handler: lol_html::EndTagHandler<'static> = Box::new(move |end| {
+                let commands = commands.borrow();
+                end.before(&create_package_tabs(commands.trim()), ContentType::Html);
+                Ok(())
+            });
+            el.on_end_tag(handler)
+        }))
+        .append_element_content_handler(element!("htmlpress-package-tabs *", |el| {
+            el.remove_and_keep_content();
+            Ok(())
+        }))
+        .append_element_content_handler(text!("htmlpress-package-tabs", |chunk| {
+            commands.borrow_mut().push_str(chunk.as_str());
+            chunk.remove();
+            Ok(())
+        }))
         .append_element_content_handler(element!("h2, h3", |el| {
             if let Some((heading, _)) = headings.get(index.get())
                 && el.get_attribute("id").is_none_or(|id| id.is_empty())
@@ -285,6 +314,17 @@ fn read_head(html: &str) -> Result<String, String> {
         .filter(|line| !line.is_empty())
         .collect::<Vec<_>>()
         .join("\n"))
+}
+
+fn create_package_tabs(commands: &str) -> String {
+    let mut html = String::new();
+    for manager in MANAGERS {
+        let command = convert_command(commands, manager);
+        html.push_str(&format!(
+            "<section title=\"{manager}\"><pre><code>{command}</code></pre></section>"
+        ));
+    }
+    html
 }
 
 /// A layout's name, as `<meta name="layout">` gives it and `.htmlpress/layouts/` files it.

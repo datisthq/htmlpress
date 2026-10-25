@@ -47,22 +47,28 @@ The theme styles the elements themselves: headings, `<p>`, lists, `<table>`, `<p
 
 Only these; anything else is plain HTML.
 
-| Element                                          | Use                                                                    |
-| ------------------------------------------------ | ---------------------------------------------------------------------- |
-| `<htmlpress-callout type="…" label="…">`         | a note; `type` is `info` (default), `success`, `warning`, `danger`     |
-| `<htmlpress-grid cols="2">` + `<htmlpress-card>` | cards in columns (`cols` 2–4, else responsive); `<h3><a>` links a card |
-| `<htmlpress-tabs sync="…">` + `<section title>`  | tabs, one per `<section>`; tabs sharing `sync` switch together         |
-| `<htmlpress-steps>` + `<ol>`                     | numbered steps, one per `<li>`, each led by an `<h3>`                  |
-| `<htmlpress-badge type="…">`                     | an inline label; `type` as a callout's, or `neutral`                   |
-| `<htmlpress-file-tree>` + nested `<ul>`          | a file tree; an `<li>` holding a `<ul>` is a folder                    |
-| `<htmlpress-table>` + `<table>`                  | a table sorted by a click on a `<thead>` header                        |
-| `<htmlpress-zoom>` + `<img>`                     | an image that opens full screen on click                               |
-| `<htmlpress-youtube>` + `<a href>`               | a YouTube video player for the linked video                            |
-| `<htmlpress-soundcloud>` + `<a href>`            | a SoundCloud player for the linked track                               |
-| `<htmlpress-mermaid>` + `<pre>`                  | a Mermaid diagram from the source in `<pre>` (escape `<` and `&`)      |
+| Element                                          | Use                                                                                 |
+| ------------------------------------------------ | ----------------------------------------------------------------------------------- |
+| `<htmlpress-callout type="…" label="…">`         | a note; `type` is `info` (default), `success`, `warning`, `danger`                  |
+| `<htmlpress-grid cols="2">` + `<htmlpress-card>` | cards in columns (`cols` 2–4, else responsive); `<h3><a>` links a card              |
+| `<htmlpress-tabs sync="…">` + `<section title>`  | tabs, one per `<section>`; tabs sharing `sync` switch together                      |
+| `<htmlpress-steps>` + `<ol>`                     | numbered steps, one per `<li>`, each led by an `<h3>`                               |
+| `<htmlpress-badge type="…">`                     | an inline label; `type` as a callout's, or `neutral`                                |
+| `<htmlpress-file-tree>` + nested `<ul>`          | a file tree; an `<li>` holding a `<ul>` is a folder                                 |
+| `<htmlpress-table>` + `<table>`                  | a table sorted by a click on a `<thead>` header                                     |
+| `<htmlpress-zoom>` + `<img>`                     | an image that opens full screen on click                                            |
+| `<htmlpress-button type="…">` + `<a>`            | a call-to-action link; `type="secondary"` for the quieter one                       |
+| `<htmlpress-package-tabs>` + `<pre><code>`       | one `npm`/`npx` command, built into npm, pnpm, yarn and bun tabs                    |
+| `<htmlpress-terminal title="…">` + `<pre>`       | terminal output: `<kbd>` command, `<samp>` output, `<ins>`/`<del>`/`<mark>` colours |
+| `<htmlpress-youtube>` + `<a href>`               | a YouTube video player for the linked video                                         |
+| `<htmlpress-soundcloud>` + `<a href>`            | a SoundCloud player for the linked track                                            |
+| `<htmlpress-mermaid>` + `<pre>`                  | a Mermaid diagram from the source in `<pre>` (escape `<` and `&`)                   |
 
 Code blocks get a copy button and headings a link on their own; a plain `<details>` is
-already styled.
+already styled. Tabs holding only code blocks join into one framed block. `<abbr title>`
+and footnote references (`<sup><a href="#n1">` to an `<li id="n1">`) show a hover hint.
+A root `404.html` is the not-found page, kept out of the navigation; without one a
+built-in is used.
 
 Put block content (`<p>`, `<h3>`, `<pre>`) inside a component, not bare text.
 

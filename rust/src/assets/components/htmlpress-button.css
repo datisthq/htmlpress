@@ -1,0 +1,30 @@
+@scope (htmlpress-button) {
+  :scope {
+    display: inline-block;
+    margin: 0 0.5rem 1.25em 0;
+  }
+  a {
+    display: inline-block;
+    padding: 0.625rem 1.25rem;
+    border: 1px solid var(--htmlpress-accent);
+    border-radius: 999px;
+    background: var(--htmlpress-accent);
+    color: var(--htmlpress-accent-text);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    line-height: 1.25;
+    text-decoration: none;
+    transition: background 0.15s;
+  }
+  a:hover {
+    background: color-mix(in oklab, var(--htmlpress-accent) 85%, var(--htmlpress-text));
+  }
+  :scope[type="secondary"] a {
+    border-color: var(--htmlpress-border);
+    background: var(--htmlpress-bg);
+    color: var(--htmlpress-text);
+  }
+  :scope[type="secondary"] a:hover {
+    background: var(--htmlpress-surface);
+  }
+}
