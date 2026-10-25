@@ -73,3 +73,38 @@ fn keeps_watching_sources_and_the_project_folder_only() {
         output
     ));
 }
+
+#[test]
+fn takes_the_first_free_port() -> crate::Result<()> {
+    let bind =
+        || std::net::TcpListener::bind(("127.0.0.1", 0)).map_err(Error::io("bind"));
+    let read = |listener: &std::net::TcpListener| {
+        listener
+            .local_addr()
+            .map(|address| address.port())
+            .map_err(Error::io("port"))
+    };
+    let taken = bind()?;
+    let free = bind()?;
+    let ports = [read(&taken)?, read(&free)?];
+    drop(free);
+    let server = bind_server("127.0.0.1", &ports)?;
+    assert_eq!(read_port(&server), ports[1]);
+    let error = bind_server("127.0.0.1", &ports[..1])
+        .err()
+        .map(|error| error.to_string());
+    assert!(error.is_some_and(|message| message.contains(&format!("port {}", ports[0]))));
+    Ok(())
+}
+
+#[test]
+fn shows_loopback_as_localhost() {
+    assert_eq!(create_urls("127.0.0.1", 8000), ["http://localhost:8000"]);
+    assert_eq!(
+        create_urls("192.168.1.5", 8001),
+        ["http://192.168.1.5:8001"]
+    );
+    let urls = create_urls("0.0.0.0", 8000);
+    assert_eq!(urls[0], "http://localhost:8000");
+    assert!(urls.iter().skip(1).all(|url| !url.contains("localhost")));
+}

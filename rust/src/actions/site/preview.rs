@@ -1,23 +1,25 @@
 use std::sync::Arc;
 
 use crate::actions::site::build::build_site;
-use crate::actions::site::serve::{Reload, answer_requests, open_server, read_port};
+use crate::actions::site::serve::{Reload, answer_requests, open_server};
 use crate::models::build::BuildOptions;
 
-/// Build the project for production and serve the output on `127.0.0.1:port`, with no
-/// watching or reloading. Calls `on_ready` with the URL once listening; runs until killed.
+/// Build the project for production and serve the output, with no watching or reloading.
+/// `host` and `port` default as for `serve_site`. Calls `on_ready` with the URLs once
+/// listening, the local one first; runs until killed.
 pub fn preview_site(
     options: &BuildOptions,
-    port: u16,
-    on_ready: impl FnOnce(&str),
+    host: Option<&str>,
+    port: Option<u16>,
+    on_ready: impl FnOnce(&[String]),
 ) -> crate::Result<()> {
     let options = BuildOptions {
         reload: false,
         ..options.clone()
     };
     build_site(&options)?;
-    let server = open_server(port)?;
-    on_ready(&format!("http://127.0.0.1:{}", read_port(&server, port)));
+    let (server, urls) = open_server(host, port)?;
+    on_ready(&urls);
     answer_requests(&server, &options.output, &Arc::new(Reload::default()));
     Ok(())
 }

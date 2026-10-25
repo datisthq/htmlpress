@@ -96,7 +96,7 @@ Put block content (`<p>`, `<h3>`, `<pre>`) inside a component, not bare text.
 ```sh
 htmlpress build <root> --json   # {"output": "...", "pages": N, "files": N}; errors on stderr
 htmlpress escape -r <root>      # every escapable file, marking the project's own
-htmlpress start <root>          # http://127.0.0.1:8080, rebuilds and reloads on save
+htmlpress start <root>          # http://localhost:8000 (or the next free port to 8009); --host for the network
 htmlpress preview <root>        # the production build, served without reload
 htmlpress clear <root>          # remove .htmlpress/build
 htmlpress --llms                # every command's input and output schema

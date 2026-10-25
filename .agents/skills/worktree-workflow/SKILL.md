@@ -23,10 +23,10 @@ invisible to the session and the pre-commit format never runs.
 
 ## Ports
 
-The root owns the docs server's default port, 8080. `htmlpress start` binds it strictly, so a
-second server on it fails with `cannot listen on port 8080`. From a worktree, pass a free port
-or let htmlpress pick one: `pnpm start --port 0`, then read the URL it prints on stderr
-(`serving http://127.0.0.1:<port>`) and point Claude in Chrome and `curl` at that. Never stop a
+`htmlpress start` takes the first free port from 8000 to 8009, so a worktree's server lands
+next to the root's on its own. Read the URL it prints on stderr
+(`serving http://localhost:<port>`) and point Claude in Chrome and `curl` at that; with all
+ten taken, pass `pnpm start --port 0` for any free one. Never stop a
 process listening on a port you did not start: it is another session's server.
 
 ## Running the docs site

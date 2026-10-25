@@ -19,16 +19,26 @@ built 6 pages and 0 files into docs/.htmlpress/build</code></pre>
 
 <h2><code>htmlpress start [root]</code></h2>
 <p>
-  Builds the project, serves it on <code>http://127.0.0.1:8080</code> (<code>--port</code>
-  / <code>-p</code>; <code>0</code> picks a free one) and rebuilds on every change. Open
-  pages reload themselves after each build. A broken page prints its error and keeps the
-  last good build up.
+  Builds the project, serves it on <code>http://localhost:8000</code> and rebuilds on
+  every change. Open pages reload themselves after each build. A broken page prints its
+  error and keeps the last good build up.
 </p>
+<p>
+  When 8000 is taken it tries 8001 and on to 8009, and prints the URL it got.
+  <code>--port</code> / <code>-p</code> names one port instead (<code>0</code> picks any
+  free one). <code>--host</code> alone serves on every address, so a phone on the same
+  network can open the site, and prints that URL too; <code>--host &lt;address&gt;</code>
+  serves on one.
+</p>
+<pre><code>$ htmlpress start docs --host
+serving http://localhost:8000
+network http://192.168.1.107:8000</code></pre>
 
 <h2><code>htmlpress preview [root]</code></h2>
 <p>
   Builds the project for production and serves it as it will be deployed: no watching, no
-  reload. Takes <code>--port</code> and <code>--out</code> like <code>start</code>.
+  reload. Takes <code>--port</code>, <code>--host</code> and <code>--out</code> like
+  <code>start</code>.
 </p>
 
 <h2><code>htmlpress clear [root]</code></h2>

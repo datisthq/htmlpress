@@ -1,3 +1,4 @@
+use std::net::{IpAddr, UdpSocket};
 use std::path::{Component, Path, PathBuf};
 use std::sync::mpsc::{Receiver, RecvTimeoutError, channel};
 use std::sync::{Arc, Condvar, Mutex};
@@ -9,21 +10,23 @@ use tiny_http::{Header, Request, Response, Server};
 use crate::actions::site::build::build_site;
 use crate::models::build::BuildOptions;
 use crate::models::error::Error;
-use crate::settings::{PROJECT_DIR, RELOAD_PATH};
+use crate::settings::{PORTS, PROJECT_DIR, RELOAD_PATH};
 
-/// Build the project, serve the output on `127.0.0.1:port` and rebuild on every change,
-/// reloading open pages. Calls `on_ready` with the URL once listening; runs until killed.
+/// Build the project, serve the output and rebuild on every change, reloading open pages.
+/// `host` defaults to localhost and `port` to the first free one of [`PORTS`]. Calls
+/// `on_ready` with the URLs once listening, the local one first; runs until killed.
 pub fn serve_site(
     options: &BuildOptions,
-    port: u16,
-    on_ready: impl FnOnce(&str),
+    host: Option<&str>,
+    port: Option<u16>,
+    on_ready: impl FnOnce(&[String]),
 ) -> crate::Result<()> {
     let options = BuildOptions {
         reload: true,
         ..options.clone()
     };
     build_site(&options)?;
-    let server = open_server(port)?;
+    let (server, urls) = open_server(host, port)?;
     let state = Arc::new(Reload::default());
 
     let (sender, events) = channel();
@@ -38,14 +41,25 @@ pub fn serve_site(
         rebuild_on_change(&rebuild_options, &events, &rebuild_state)
     });
 
-    on_ready(&format!("http://127.0.0.1:{}", read_port(&server, port)));
+    on_ready(&urls);
     answer_requests(&server, &options.output, &state);
     Ok(())
 }
 
-pub(crate) fn open_server(port: u16) -> crate::Result<Server> {
-    Server::http(("127.0.0.1", port))
-        .map_err(|error| Error::Usage(format!("cannot listen on port {port}: {error}")))
+/// Listen on `host`, localhost by default, and `port`, else the first free one of
+/// [`PORTS`]; returns the server and the URLs it answers at, the local one first.
+pub(crate) fn open_server(
+    host: Option<&str>,
+    port: Option<u16>,
+) -> crate::Result<(Server, Vec<String>)> {
+    let address = host.unwrap_or("127.0.0.1");
+    let ports: Vec<u16> = match port {
+        Some(port) => vec![port],
+        None => PORTS.collect(),
+    };
+    let server = bind_server(address, &ports)?;
+    let urls = create_urls(address, read_port(&server));
+    Ok((server, urls))
 }
 
 pub(crate) fn answer_requests(server: &Server, output: &Path, state: &Arc<Reload>) {
@@ -246,12 +260,57 @@ fn add_headers<R: std::io::Read>(response: Response<R>, name: &str) -> Response<
     )
 }
 
-pub(crate) fn read_port(server: &Server, fallback: u16) -> u16 {
+// The first port that binds wins, so a second server, in a worktree say, takes the next
+fn bind_server(address: &str, ports: &[u16]) -> crate::Result<Server> {
+    let mut failure = String::new();
+    for port in ports {
+        match Server::http((address, *port)) {
+            Ok(server) => return Ok(server),
+            Err(error) => failure = error.to_string(),
+        }
+    }
+    let ports = match ports {
+        [port] => format!("port {port}"),
+        [first, .., last] => format!("any port from {first} to {last}"),
+        [] => "no port".to_owned(),
+    };
+    Err(Error::Usage(format!(
+        "cannot listen on {address}, {ports}: {failure}; pick one with --port"
+    )))
+}
+
+fn read_port(server: &Server) -> u16 {
     server
         .server_addr()
         .to_ip()
-        .map(|address| address.port())
-        .unwrap_or(fallback)
+        .map_or(0, |address| address.port())
+}
+
+// Loopback shows as localhost; every interface shows as localhost plus the address the
+// local network reaches this machine at, when it has one.
+fn create_urls(address: &str, port: u16) -> Vec<String> {
+    let ip = address.parse::<IpAddr>().ok();
+    let host = match ip {
+        Some(ip) if ip.is_loopback() || ip.is_unspecified() => "localhost".to_owned(),
+        Some(IpAddr::V6(ip)) => format!("[{ip}]"),
+        _ => address.to_owned(),
+    };
+    let mut urls = vec![format!("http://{host}:{port}")];
+    if ip.is_some_and(|ip| ip.is_unspecified())
+        && let Some(network) = read_network_ip()
+    {
+        urls.push(format!("http://{network}:{port}"));
+    }
+    urls
+}
+
+// Connecting a UDP socket sends nothing; it only makes the system pick the interface that
+// would route out, whose address the network sees.
+fn read_network_ip() -> Option<IpAddr> {
+    let socket = UdpSocket::bind(("0.0.0.0", 0)).ok()?;
+    socket.connect(("192.0.2.1", 80)).ok()?;
+    let ip = socket.local_addr().ok()?.ip();
+    (!ip.is_loopback() && !ip.is_unspecified()).then_some(ip)
 }
 
 #[cfg(test)]

@@ -12,6 +12,9 @@ pub const OUTPUT_DIR: &str = ".htmlpress/build";
 /// Where the built-in theme and components are written in the output.
 pub const ASSETS_DIR: &str = "_htmlpress";
 
+/// The dev server's ports, tried in order when `--port` names none.
+pub const PORTS: std::ops::RangeInclusive<u16> = 8000..=8009;
+
 /// The dev server's long-poll endpoint the reload script waits on.
 pub const RELOAD_PATH: &str = "/_htmlpress/reload";
 

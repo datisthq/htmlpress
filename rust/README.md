@@ -15,7 +15,7 @@ cargo install htmlpress
 
 ```bash
 htmlpress build docs        # render docs/ into docs/.htmlpress/build
-htmlpress start docs        # serve it on http://127.0.0.1:8080, rebuilding on save
+htmlpress start docs        # serve it on http://localhost:8000, rebuilding on save
 htmlpress build docs --json # the result as JSON, for scripts and agents
 htmlpress --llms            # every command's input and output schema, for agents
 ```
