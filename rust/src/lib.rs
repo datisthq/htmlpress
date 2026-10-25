@@ -14,12 +14,17 @@ mod actions {
         pub(crate) mod convert;
     }
     pub(crate) mod page {
+        pub(crate) mod convert;
         pub(crate) mod read;
         pub(crate) mod render;
+    }
+    pub(crate) mod skill {
+        pub(crate) mod load;
     }
     pub(crate) mod site {
         pub(crate) mod build;
         pub(crate) mod clear;
+        pub(crate) mod describe;
         pub(crate) mod preview;
         pub(crate) mod scan;
         pub(crate) mod serve;
@@ -39,6 +44,7 @@ mod models {
     pub(crate) mod error;
     pub(crate) mod page;
     pub(crate) mod site;
+    pub(crate) mod skill;
 }
 mod program;
 mod settings;
@@ -52,12 +58,14 @@ pub use actions::site::clear::clear_site;
 pub use actions::site::preview::preview_site;
 pub use actions::site::scan::scan_site;
 pub use actions::site::serve::serve_site;
+pub use actions::skill::load::load_skills;
 pub use models::asset::{Asset, AssetStatus};
 pub use models::build::{BuildOptions, BuildReport};
 pub use models::config::{Config, ContentSignals, Head, Link, Position};
 pub use models::error::Error;
 pub use models::page::{Heading, Page};
 pub use models::site::Site;
+pub use models::skill::Skill;
 pub use program::create_program;
 
 /// A result whose error is [`Error`].

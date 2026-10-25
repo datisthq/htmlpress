@@ -25,9 +25,28 @@ pub struct Config {
     pub head: Head,
     /// How automated systems may use the content, written to `robots.txt`.
     pub content_signals: ContentSignals,
+    /// Globs of `SKILL.md` files, relative to the project, published for agents under
+    /// `.well-known/agent-skills/`; one pattern or a list.
+    #[serde(deserialize_with = "read_patterns")]
+    pub skills: Vec<String>,
     /// A URL each page's source path is appended to for its "Edit this page" link, such
     /// as `https://github.com/owner/repo/edit/main/docs/`.
     pub edit: Option<String>,
+}
+
+fn read_patterns<'de, D: serde::Deserializer<'de>>(
+    deserializer: D,
+) -> Result<Vec<String>, D::Error> {
+    #[derive(Deserialize)]
+    #[serde(untagged)]
+    enum Patterns {
+        One(String),
+        Many(Vec<String>),
+    }
+    Ok(match Patterns::deserialize(deserializer)? {
+        Patterns::One(pattern) => vec![pattern],
+        Patterns::Many(patterns) => patterns,
+    })
 }
 
 /// One link from the config.

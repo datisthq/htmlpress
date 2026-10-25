@@ -153,3 +153,31 @@ fn writes_a_404_page_unless_the_project_has_one() -> crate::Result<()> {
     assert!(!read("index.html").unwrap_or_default().contains("404.html"));
     Ok(())
 }
+
+#[test]
+fn writes_agent_files_and_keeps_the_projects_own() -> crate::Result<()> {
+    let root = tempfile::tempdir().map_err(Error::io("tempdir"))?;
+    let root = root.path();
+    write_source(root, "index.html", "<h1>Home</h1>")?;
+    write_source(root, "guide.html", "<title>Guide</title><p>Hi.</p>")?;
+    write_source(root, "guide.md", "my own")?;
+    write_source(root, "_headers", "/*\n  X-Frame-Options: DENY\n")?;
+    write_source(
+        root,
+        "skills/one/SKILL.md",
+        "---\nname: one\ndescription: First.\n---\n",
+    )?;
+    write_source(root, "htmlpress.yaml", "skills: skills/*/SKILL.md\n")?;
+    let options = BuildOptions::new(root);
+    let read = |path: &str| std::fs::read_to_string(options.output.join(path)).ok();
+
+    build_site(&options)?;
+    assert_eq!(read("index.md").as_deref(), Some("# Home\n"));
+    assert_eq!(read("guide.md").as_deref(), Some("my own"));
+    assert!(read("llms.txt").is_some_and(|llms| llms.contains("- [Guide](/guide.md)")));
+    assert!(read(".well-known/agent-skills/one/SKILL.md").is_some());
+    assert!(read(".well-known/agent-skills/index.json").is_some());
+    let headers = read("_headers").unwrap_or_default();
+    assert!(headers.starts_with("/*\n  X-Frame-Options: DENY\n\n/\n  Link: "));
+    Ok(())
+}

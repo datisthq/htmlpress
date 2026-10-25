@@ -3,6 +3,9 @@
     display: block;
     margin-bottom: 2rem;
   }
+  :scope:has(+ htmlpress-toolbar) {
+    margin-bottom: 0.25rem;
+  }
   a {
     color: var(--htmlpress-muted);
     text-decoration: none;

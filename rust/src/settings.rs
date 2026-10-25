@@ -79,6 +79,8 @@ pub const ASSETS: &[Asset] = &[
     asset!("components/htmlpress-theme-toggle.js"),
     asset!("components/htmlpress-toc.css"),
     asset!("components/htmlpress-toc.js"),
+    asset!("components/htmlpress-toolbar.css"),
+    asset!("components/htmlpress-toolbar.js"),
     asset!("components/htmlpress-youtube.css"),
     asset!("components/htmlpress-youtube.js"),
     asset!("components/htmlpress-zoom.css"),
@@ -104,4 +106,5 @@ pub const LAYOUT_ELEMENTS: &[&str] = &[
     "htmlpress-nav",
     "htmlpress-pager",
     "htmlpress-toc",
+    "htmlpress-toolbar",
 ];

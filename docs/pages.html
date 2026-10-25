@@ -167,6 +167,14 @@ edit: https://github.com/datisthq/htmlpress/edit/main/docs/</code></pre>
       </td>
     </tr>
     <tr>
+      <td><code>skills</code></td>
+      <td>none</td>
+      <td>
+        one glob or a list of <code>SKILL.md</code> files, relative to the project, to
+        publish for agents (see <a href="agents.html">Agents</a>)
+      </td>
+    </tr>
+    <tr>
       <td><code>edit</code></td>
       <td>none</td>
       <td>an "Edit this page" link: this URL followed by the page's path</td>
@@ -175,6 +183,8 @@ edit: https://github.com/datisthq/htmlpress/edit/main/docs/</code></pre>
 </table>
 <p>An unknown key is an error, so a typo never passes silently.</p>
 <p>
-  Every build writes a <code>robots.txt</code> and, when <code>site</code> is set, a
-  <code>sitemap.xml</code> of every page; a project file of the same name wins.
+  Every build writes a <code>robots.txt</code>, when <code>site</code> is set a
+  <code>sitemap.xml</code> of every page, and the files for agents on the
+  <a href="agents.html">Agents</a> page; a project file of the same name wins, except
+  <code>_headers</code>, whose rules are kept and extended.
 </p>

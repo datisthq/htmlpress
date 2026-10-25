@@ -1,0 +1,24 @@
+@scope (htmlpress-toolbar) {
+  :scope {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+    margin-bottom: 2rem;
+  }
+  a,
+  button {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--htmlpress-muted);
+    font: inherit;
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  a:hover,
+  button:hover {
+    color: var(--htmlpress-text);
+  }
+}

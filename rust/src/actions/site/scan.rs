@@ -3,6 +3,7 @@ use std::path::Path;
 
 use crate::actions::config::load::load_config;
 use crate::actions::page::read::{is_layout_name, read_page};
+use crate::actions::skill::load::load_skills;
 use crate::models::error::Error;
 use crate::models::site::Site;
 use crate::settings::{ASSETS, CONFIG_FILE, LAYOUT_ELEMENTS, PROJECT_DIR};
@@ -49,6 +50,7 @@ pub fn scan_site(root: &Path) -> crate::Result<Site> {
         .title
         .clone()
         .unwrap_or_else(|| read_folder_name(root));
+    let skills = load_skills(root, &config.skills)?;
     Ok(Site {
         root: root.to_owned(),
         config,
@@ -56,6 +58,7 @@ pub fn scan_site(root: &Path) -> crate::Result<Site> {
         pages,
         files,
         assets,
+        skills,
     })
 }
 

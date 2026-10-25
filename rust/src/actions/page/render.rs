@@ -5,6 +5,7 @@ use std::fmt::Write;
 use lol_html::html_content::ContentType;
 use lol_html::{RewriteStrSettings, element, rewrite_str};
 
+use crate::actions::page::convert::create_markdown_path;
 use crate::models::config::{Link, Position};
 use crate::models::error::Error;
 use crate::models::page::Page;
@@ -122,6 +123,15 @@ pub(crate) fn render_page(
                 Ok(())
             }));
     }
+    if !replaced("htmlpress-toolbar") {
+        settings = settings.append_element_content_handler(element!(
+            "htmlpress-toolbar",
+            |el| {
+                fill_element(el, create_toolbar(page));
+                Ok(())
+            }
+        ));
+    }
     if !replaced("htmlpress-edit") {
         settings =
             settings.append_element_content_handler(element!("htmlpress-edit", |el| {
@@ -214,6 +224,13 @@ fn create_head(
     if let Some(origin) = read_origin(site) {
         let url = escape_html(&format!("{origin}{}", page.url));
         let _ = writeln!(head, "<link rel=\"canonical\" href=\"{url}\">");
+    }
+    if page.path != NOT_FOUND_PAGE {
+        let href = escape_html(&create_markdown_path(&page.path));
+        let _ = writeln!(
+            head,
+            "<link rel=\"alternate\" type=\"text/markdown\" href=\"/{href}\">"
+        );
     }
     if let Some(favicon) = site.config.favicon.as_ref().or(site.config.logo.as_ref()) {
         let favicon = escape_html(favicon);
@@ -502,6 +519,17 @@ fn create_toc(page: &Page) -> Option<String> {
     }
     html.push_str("</ul>");
     Some(html)
+}
+
+// A link that works without the script, which adds copying and opening in a chat
+fn create_toolbar(page: &Page) -> Option<String> {
+    if page.path == NOT_FOUND_PAGE {
+        return None;
+    }
+    let href = escape_html(&create_markdown_path(&page.path));
+    Some(format!(
+        "<a href=\"/{href}\" type=\"text/markdown\">View as Markdown</a>"
+    ))
 }
 
 fn create_edit(site: &Site, page: &Page) -> Option<String> {

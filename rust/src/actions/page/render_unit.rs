@@ -24,6 +24,7 @@ fn create_site() -> crate::Result<Site> {
             .iter()
             .map(|asset| (asset.path.to_owned(), asset.content.to_owned()))
             .collect(),
+        skills: vec![],
     })
 }
 
@@ -285,5 +286,18 @@ fn fills_the_breadcrumbs_from_the_folders() -> crate::Result<()> {
     assert!(index.contains(
         r#"<li><a href="/">Docs &lt;&amp;&gt;</a></li><li aria-current="page">API</li>"#
     ));
+    Ok(())
+}
+
+#[test]
+fn links_the_markdown_from_the_head_and_the_toolbar() -> crate::Result<()> {
+    let site = create_site()?;
+    let html = render_page(&site, &site.pages[3], false)?;
+    assert!(
+        html.contains(
+            r#"<link rel="alternate" type="text/markdown" href="/api/cli.md">"#
+        )
+    );
+    assert!(html.contains(r#"<htmlpress-toolbar><a href="/api/cli.md" type="text/markdown">View as Markdown</a></htmlpress-toolbar>"#));
     Ok(())
 }

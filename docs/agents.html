@@ -1,7 +1,7 @@
 <title>Agents</title>
 <meta
   name="description"
-  content="How a coding agent writes and checks htmlpress pages."
+  content="How a coding agent writes and checks htmlpress pages, and what a site publishes for agents."
 />
 <meta name="order" content="6" />
 
@@ -42,7 +42,44 @@
   </li>
   <li>Never edit <code>.htmlpress/build</code>.</li>
 </ul>
+<h2>What a site publishes for agents</h2>
+<p>Every build also writes the site in the form agents read best, beside the HTML:</p>
+<dl>
+  <dt>A Markdown copy of each page</dt>
+  <dd>
+    <code>guides/build.html</code> gets <code>guides/build.md</code>: its title,
+    description and content, with each component reduced to plain Markdown (a callout to a
+    quote, tabs to bold headings). Each page links it from its head as
+    <code>rel="alternate"</code>.
+  </dd>
+  <dt><code>llms.txt</code></dt>
+  <dd>
+    The site title and description, then every page's Markdown copy with its description,
+    grouped as the navigation groups them. A project without an
+    <code>index.html</code> gets it as <code>index.md</code> too.
+  </dd>
+  <dt>Agent skills</dt>
+  <dd>
+    The <code>SKILL.md</code> files the <code>skills</code> key matches, each with a
+    frontmatter <code>name</code> and <code>description</code>, under
+    <code>.well-known/agent-skills/</code> with an <code>index.json</code> that lists them
+    with a digest.
+  </dd>
+  <dt><code>_headers</code></dt>
+  <dd>
+    For Cloudflare and Netlify: a <code>Link</code> on the home page pointing at
+    <code>llms.txt</code>, <code>index.md</code> and the skills index.
+  </dd>
+</dl>
+<p>
+  The page toolbar beside each page links its Markdown copy and, with the script, copies
+  it or opens the page in ChatGPT or Claude.
+</p>
+
+<h2>The htmlpress skill</h2>
 <p>
   The repository ships these as an agent skill, <code>htmlpress-pages</code>, in
-  <a href="https://github.com/datisthq/htmlpress/tree/main/.skills">.skills/</a>.
+  <a href="https://github.com/datisthq/htmlpress/tree/main/.skills">.skills/</a>, and this
+  site publishes it at
+  <a href="/.well-known/agent-skills/index.json">/.well-known/agent-skills/</a>.
 </p>

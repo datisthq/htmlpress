@@ -78,11 +78,13 @@ Put block content (`<p>`, `<h3>`, `<pre>`) inside a component, not bare text.
   `description`, `logo` and `favicon` (URLs), `banner` (HTML), `links` (each `title`,
   `url`, `position: header | sidebar`), `head` (`meta`, `links`, `scripts`: lists of
   attribute maps; a script's `children` is its source), `contentSignals` (`search`,
-  `aiInput`, `aiTrain` for `robots.txt`) and `edit` (URL prefix for an "Edit this page"
-  link). An unknown key is an error.
+  `aiInput`, `aiTrain` for `robots.txt`), `skills` (globs of `SKILL.md` files to publish
+  for agents) and `edit` (URL prefix for an "Edit this page" link). An unknown key is an
+  error.
 - `<meta name="image" content="/cover.png">` in a page is its social preview image.
-- A build writes `robots.txt` and, with `site`, `sitemap.xml`; a project file of the same
-  name wins.
+- A build writes `robots.txt`, with `site` a `sitemap.xml`, and for agents a Markdown copy
+  of each page (`a.html` → `a.md`), `llms.txt`, the skills under `.well-known/agent-skills/`
+  and `_headers`; a project file of the same name wins (`_headers` is extended instead).
 - `.htmlpress/build/` is the output: never edit it, every build replaces it.
 - Escapes, only when the user asks for a different look or a new block: a file under
   `.htmlpress/` at a built-in's path replaces it. `htmlpress escape <name>` copies the
@@ -90,7 +92,7 @@ Put block content (`<p>`, `<h3>`, `<pre>`) inside a component, not bare text.
   - `layout.html` is plain HTML: htmlpress fills its `<head>` and replaces
     `<htmlpress-content>`, `<htmlpress-brand>`, `<htmlpress-banner>`, `<htmlpress-nav>`,
     `<htmlpress-links>`, `<htmlpress-breadcrumbs>`, `<htmlpress-toc>`, `<htmlpress-pager>`,
-    `<htmlpress-edit>` and `<htmlpress-footer>` at build time.
+    `<htmlpress-edit>`, `<htmlpress-toolbar>` and `<htmlpress-footer>` at build time.
   - `layouts/<name>.html` is another layout, used by a page with
     `<meta name="layout" content="<name>">` (a landing page without the sidebar); a
     missing one fails the build.
