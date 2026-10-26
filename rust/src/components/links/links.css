@@ -34,6 +34,16 @@
     color: var(--htmlpress-text);
     font-weight: 500;
   }
+  small {
+    color: var(--htmlpress-muted);
+    font-size: inherit;
+  }
+  small::before {
+    content: "(";
+  }
+  small::after {
+    content: ")";
+  }
   a > svg {
     width: 0.875rem;
     height: 0.875rem;
