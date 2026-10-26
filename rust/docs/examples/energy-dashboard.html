@@ -4,11 +4,9 @@
   content="An operations-style dashboard of the world's electricity mix: KPI tiles with sparklines, a 100% stacked column chart, a donut and a sortable table, from Ember data."
 />
 <meta name="order" content="3" />
+<meta name="icon" content="zap" />
 <meta name="toc" content="false" />
 <style>
-  :root {
-    --htmlpress-width: 60rem;
-  }
   .nrg {
     --nrg-coal: #6250d6;
     --nrg-gas: #e34948;
@@ -77,6 +75,7 @@
     border-radius: 50%;
   }
   .nrg-grid {
+    container-type: inline-size;
     display: grid;
     grid-template-columns: repeat(12, minmax(0, 1fr));
     gap: 0.75rem;
@@ -95,15 +94,15 @@
     flex-direction: column;
     gap: 0.35rem;
   }
-  @media (min-width: 64rem) {
+  @container (min-width: 40rem) {
     .nrg-kpi {
       grid-column: span 3;
     }
     .nrg-wide {
-      grid-column: span 8;
+      grid-column: span 7;
     }
     .nrg-side {
-      grid-column: span 4;
+      grid-column: span 5;
     }
   }
   .nrg-kpi > span {
@@ -353,10 +352,9 @@
 <h2>How it's built</h2>
 <ul>
   <li>
-    <strong>The layout</strong> is a twelve-column CSS grid: KPI tiles span six columns on
-    a phone and three on a wide screen, and the column chart and donut share a row 8 + 4.
-    The page widens the site's content column with one line,
-    <code>:root { --htmlpress-width: 60rem }</code>, in its own style block.
+    <strong>The layout</strong> is a twelve-column CSS grid inside the site's standard
+    content column: a container query, not the viewport, decides that KPI tiles span three
+    columns and the column chart and donut share a row 7 + 5 once the grid is 40rem wide.
   </li>
   <li>
     <strong>Status color</strong> is used only for the deltas, always with an arrow and
