@@ -332,3 +332,40 @@ pre code mark {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
+.htmlpress-code-figure > figcaption svg {
+  width: 0.875rem;
+  height: 0.875rem;
+  margin-right: 0.5rem;
+  vertical-align: -0.125rem;
+}
+
+/* A block of N lines shows that many; without the script it scrolls, with it the rest
+   waits behind an Expand bar */
+pre[data-collapse] {
+  max-height: calc(var(--htmlpress-code-lines) * 1lh + 2rem);
+  overflow-y: auto;
+}
+pre[data-collapse][data-collapsible] {
+  overflow-y: hidden;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+pre[data-collapse][data-expanded] {
+  max-height: none;
+  border-radius: var(--htmlpress-radius);
+}
+.htmlpress-code > .htmlpress-expand {
+  position: static;
+  display: block;
+  width: 100%;
+  padding: 0.375rem;
+  border: 1px solid var(--htmlpress-border);
+  border-top: 0;
+  border-radius: 0 0 var(--htmlpress-radius) var(--htmlpress-radius);
+  background: var(--htmlpress-surface);
+  color: var(--htmlpress-muted);
+  opacity: 1;
+}
+.htmlpress-code > .htmlpress-expand:hover {
+  color: var(--htmlpress-text);
+}

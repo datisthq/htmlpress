@@ -18,17 +18,28 @@ pub(crate) fn highlight_code(
     light: &str,
     dark: &str,
 ) -> Result<String, String> {
+    let html = highlight_selector(html, "pre > code", light, dark)?;
+    // Inline code, `<code class="language-js">` in prose, takes the same colors
+    highlight_selector(&html, ":not(pre) > code", light, dark)
+}
+
+fn highlight_selector(
+    html: &str,
+    selector: &str,
+    light: &str,
+    dark: &str,
+) -> Result<String, String> {
     let Some(registry) = load_registry() else {
         return Ok(html.to_owned());
     };
-    let blocks = list_blocks(html)?;
+    let blocks = list_blocks(html, selector)?;
     if blocks.iter().all(Option::is_none) {
         return Ok(html.to_owned());
     }
     let index = RefCell::new(0usize);
     let current: Rc<RefCell<Option<(Block, String)>>> = Rc::new(RefCell::new(None));
     let settings = RewriteStrSettings::new()
-        .append_element_content_handler(element!("pre > code", |el| {
+        .append_element_content_handler(element!(selector, |el| {
             let block = blocks.get(*index.borrow()).cloned().flatten();
             *index.borrow_mut() += 1;
             let Some(block) = block else {
@@ -49,7 +60,7 @@ pub(crate) fn highlight_code(
             });
             el.on_end_tag(handler)
         }))
-        .append_element_content_handler(text!("pre > code", |chunk| {
+        .append_element_content_handler(text!(selector, |chunk| {
             if let Some((_, source)) = current.borrow_mut().as_mut() {
                 source.push_str(chunk.as_str());
                 chunk.remove();
@@ -97,10 +108,11 @@ const LINE_MARKS: &[(&str, &str, &str)] = &[
 
 // For each `pre > code` in document order: its language, when it names one and holds only
 // text, since a block with its own markup (`<mark>`, links) would lose it to the colors
-fn list_blocks(html: &str) -> Result<Vec<Option<Block>>, String> {
+fn list_blocks(html: &str, selector: &str) -> Result<Vec<Option<Block>>, String> {
+    let children = format!("{selector} *");
     let blocks: RefCell<Vec<Option<Block>>> = RefCell::new(vec![]);
     let settings = RewriteStrSettings::new()
-        .append_element_content_handler(element!("pre > code", |el| {
+        .append_element_content_handler(element!(selector, |el| {
             let class = el.get_attribute("class").unwrap_or_default();
             let language = class
                 .split_whitespace()
@@ -151,7 +163,7 @@ fn list_blocks(html: &str) -> Result<Vec<Option<Block>>, String> {
             }));
             Ok(())
         }))
-        .append_element_content_handler(element!("pre > code *", |_| {
+        .append_element_content_handler(element!(&children, |_| {
             if let Some(block) = blocks.borrow_mut().last_mut() {
                 *block = None;
             }

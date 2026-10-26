@@ -75,7 +75,10 @@ run from source: `cargo run --manifest-path rust/Cargo.toml -- build docs`.
    as `light-dark()`), not in `read_page`, so search, the Markdown copies and
    `page.content` keep plain text; giallo's registry loads once per process. Line marks are attributes added to giallo's `giallo-l` line spans by
    position (the nth span is line n), and word marks only touch text between tags;
-   `code/title` then frames every `<pre data-title>` in a captioned figure. `scan_site` applies `patches` first (`page/patch`; a patched
+   `code/title` then frames every `<pre data-title>` in a captioned figure with
+   its language logo (`src/language_icons.rs`, Livemark's six) and sizes
+   `<pre data-collapse>`; inline `<code class="language-…">` is highlighted by the same
+   pass run on `:not(pre) > code`. `scan_site` applies `patches` first (`page/patch`; a patched
    `.md` file is rendered by `markdown/render` into a new page) and refuses two pages on
    one URL, then adds the pages blog and
    changelog sections build (`section/generate`: a blog's index and tag pages, a page per

@@ -21,7 +21,7 @@ fn leaves_plain_unknown_and_marked_up_blocks_alone() -> Result<(), String> {
         "<pre><code>plain</code></pre>",
         "<pre><code class=\"language-nope\">a &amp; b</code></pre>",
         "<pre><code class=\"language-rust\">let <mark>x</mark> = 1;</code></pre>",
-        "<p><code class=\"language-rust\">inline</code></p>",
+        "<p><code>plain inline</code></p>",
     ] {
         assert_eq!(
             highlight_code(html, "catppuccin-latte", "catppuccin-mocha")?,
@@ -77,5 +77,21 @@ fn marks_diff_severity_focus_and_words() -> Result<(), String> {
         .err()
         .unwrap_or_default();
     assert!(error.contains("data-add"), "{error}");
+    Ok(())
+}
+
+#[test]
+fn colors_inline_code_that_names_a_language() -> Result<(), String> {
+    let html = "<p>Run <code class=\"language-js\">const a = 1</code> now.</p>";
+    let colored = highlight_code(html, "catppuccin-latte", "catppuccin-mocha")?;
+    assert!(
+        colored
+            .starts_with("<p>Run <code class=\"language-js\"><span class=\"giallo-l\">"),
+        "{colored}"
+    );
+    assert!(
+        colored.contains("light-dark(#8839EF, #CBA6F7)")
+            && colored.ends_with("</code> now.</p>")
+    );
     Ok(())
 }

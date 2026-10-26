@@ -45,7 +45,9 @@ The theme styles the elements themselves: headings, `<p>`, lists, `<table>`, `<p
   `<pre><code class="language-rust">`, to highlight it at build time; `data-lines="2,4-5"`
   marks lines, `data-line-numbers` numbers them, `data-add`/`data-remove` show a diff,
   `data-focus` dims the other lines, `data-error`/`data-warning` flag lines and
-  `data-words="a,b"` marks words. `<pre data-title="file.yaml">` adds a title bar. `codeThemeLight`/`codeThemeDark` in
+  `data-words="a,b"` marks words. `<pre data-title="file.yaml">` adds a title bar
+  with the language's logo, `<pre data-collapse="10">` shows 10 lines with an Expand bar,
+  and an inline `<code class="language-js">` is highlighted too. `codeThemeLight`/`codeThemeDark` in
   the config pick the themes.
 
 ## Components

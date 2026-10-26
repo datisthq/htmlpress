@@ -110,18 +110,41 @@ const unused = 1</code></pre>
   &lt;summary&gt;The full config&lt;/summary&gt;
   &lt;pre&gt;&lt;code&gt;…&lt;/code&gt;&lt;/pre&gt;
 &lt;/details&gt;</code></pre>
-<htmlpress-callout label="Coming soon">
-  <p>Limiting a code block to its first lines, with a button that reveals the rest.</p>
-</htmlpress-callout>
+<p>
+  <code>data-collapse</code> on the <code>&lt;pre&gt;</code> shows only its first lines,
+  with an Expand bar under the block for the rest; without the script, the block scrolls
+  instead. A block no taller than that gets no bar.
+</p>
+<pre><code class="language-html">&lt;pre data-collapse="5"&gt;&lt;code class="language-yaml"&gt;…&lt;/code&gt;&lt;/pre&gt;</code></pre>
+<pre data-collapse="5"><code class="language-yaml">steps:
+  build: 1
+  build: 2
+  build: 3
+  build: 4
+  build: 5
+  build: 6
+  build: 7
+  build: 8
+  build: 9
+  build: 10
+  build: 11
+  build: 12</code></pre>
 
 <h2>Language Icons</h2>
-<htmlpress-callout label="Coming soon">
-  <p>A language icon in a titled code block's title bar.</p>
-</htmlpress-callout>
+<p>
+  A titled block shows its language's logo in the title bar: TypeScript, JavaScript, React
+  (<code>jsx</code>, <code>tsx</code>), Python, Rust and shell, the set Livemark shows, or
+  a generic file icon for any other language.
+</p>
+<pre data-title="main.rs"><code class="language-rust">fn main() {}</code></pre>
+<pre data-title="build.sh"><code class="language-sh">htmlpress build docs</code></pre>
 
 <h2>TypeScript Support</h2>
-<htmlpress-callout label="Coming soon">
-  <p>Inline type information on hover in TypeScript code blocks.</p>
+<htmlpress-callout label="Not planned">
+  <p>
+    Type information on hover, as Twoslash gives, needs the TypeScript compiler, which a
+    single Rust binary does not carry. A TypeScript block is highlighted like any other.
+  </p>
 </htmlpress-callout>
 
 <h2>NPM Commands</h2>

@@ -29,9 +29,12 @@
 <p><code>&lt;kbd&gt;</code> marks a key: press <kbd>Ctrl</kbd> + <kbd>C</kbd> to copy.</p>
 
 <h2>Inline Code Highlighting</h2>
-<htmlpress-callout label="Coming soon">
-  <p>Language-aware syntax highlighting for inline code and code blocks.</p>
-</htmlpress-callout>
+<p>
+  An inline <code>&lt;code&gt;</code> with a <code>language-*</code> class is highlighted
+  like a block, in the same light and dark themes.
+</p>
+<pre><code class="language-html">Run &lt;code class="language-js"&gt;await build("docs")&lt;/code&gt; first.</code></pre>
+<p>Renders as: Run <code class="language-js">await build("docs")</code> first.</p>
 
 <h2>Blockquotes</h2>
 <pre><code class="language-html">&lt;blockquote&gt;&lt;p&gt;This is a blockquote.&lt;/p&gt;&lt;/blockquote&gt;</code></pre>

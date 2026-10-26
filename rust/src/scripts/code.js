@@ -36,5 +36,33 @@ function addHeadingAnchors() {
   }
 }
 
+// Only a block that really is taller than its lines gets the bar. That is known only
+// once layout settles (stylesheets, web fonts), so each block is watched until it is
+const expandable = new ResizeObserver(entries => {
+  for (const { target: pre } of entries) {
+    if (pre.scrollHeight <= pre.clientHeight + 1) continue
+    expandable.unobserve(pre)
+    pre.dataset.collapsible = ""
+    const button = document.createElement("button")
+    button.type = "button"
+    button.className = "htmlpress-expand"
+    button.textContent = "Expand"
+    button.addEventListener("click", () => {
+      pre.dataset.expanded = ""
+      button.remove()
+    })
+    pre.after(button)
+  }
+})
+
+function addExpandButtons() {
+  for (const pre of document.querySelectorAll(
+    "htmlpress-page > main pre[data-collapse]",
+  )) {
+    expandable.observe(pre)
+  }
+}
+
 addCopyButtons()
+addExpandButtons()
 addHeadingAnchors()

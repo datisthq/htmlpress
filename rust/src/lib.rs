@@ -76,6 +76,7 @@ mod models {
     pub(crate) mod skill;
 }
 mod icons;
+mod language_icons;
 mod program;
 mod settings;
 
