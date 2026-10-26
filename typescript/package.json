@@ -1,6 +1,6 @@
 {
   "name": "gethtmlpress",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Turn a folder of HTML pages into a site: one layout, one theme, live reload, made for agents",
   "keywords": [
     "agents",
