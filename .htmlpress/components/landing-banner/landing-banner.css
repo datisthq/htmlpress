@@ -1,8 +1,8 @@
 @scope (htmlpress-landing-banner) {
   :scope {
     display: block;
-    background: var(--htmlpress-text);
-    color: var(--htmlpress-bg);
+    background: var(--htmlpress-banner);
+    color: var(--htmlpress-banner-text);
   }
   p {
     position: relative;
