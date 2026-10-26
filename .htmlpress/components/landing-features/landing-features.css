@@ -1,5 +1,5 @@
 /* The built-in grid and cards, each card led by an icon and lifted on hover */
-@scope (landing-features) {
+@scope (htmlpress-landing-features) {
   :scope {
     display: block;
   }

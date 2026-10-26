@@ -49,25 +49,21 @@ fn lays_the_projects_assets_over_the_built_in_ones() -> crate::Result<()> {
     let root = root.path();
     let layout = "<main><htmlpress-content></htmlpress-content></main>";
     write_file(root, ".htmlpress/layout.html", layout)?;
+    write_file(root, ".htmlpress/components/tabs/tabs.css", "/* mine */")?;
     write_file(
         root,
-        ".htmlpress/components/htmlpress-tabs.css",
-        "/* mine */",
-    )?;
-    write_file(
-        root,
-        ".htmlpress/components/site-footer.html",
+        ".htmlpress/components/site-footer/site-footer.html",
         "<footer></footer>",
     )?;
     write_file(root, ".htmlpress/notes.md", "kept out")?;
     let site = scan_site(root)?;
     assert_eq!(site.assets["layout.html"], layout);
-    assert_eq!(site.assets["components/htmlpress-tabs.css"], "/* mine */");
+    assert_eq!(site.assets["components/tabs/tabs.css"], "/* mine */");
     assert_eq!(
-        site.assets["components/site-footer.html"],
+        site.assets["components/site-footer/site-footer.html"],
         "<footer></footer>"
     );
-    assert!(site.assets.contains_key("components/htmlpress-tabs.js"));
+    assert!(site.assets.contains_key("components/tabs/tabs.js"));
     assert_eq!(site.assets.len(), ASSETS.len() + 1);
     Ok(())
 }
@@ -80,12 +76,23 @@ fn rejects_an_asset_that_replaces_nothing() -> crate::Result<()> {
             "no built-in styles/tokns.css",
         ),
         (
-            ".htmlpress/components/htmlpress-calout.css",
-            "no built-in htmlpress-calout",
+            ".htmlpress/components/htmlpress-tabs/htmlpress-tabs.css",
+            "components/tabs/tabs.html",
         ),
-        (".htmlpress/components/footer.html", "custom element name"),
         (
-            ".htmlpress/components/site-footer.txt",
+            ".htmlpress/components/htmlpress-tabs.css",
+            "components/tabs/tabs.html",
+        ),
+        (
+            ".htmlpress/components/Footer/Footer.html",
+            "not a component name",
+        ),
+        (
+            ".htmlpress/components/site-footer.css",
+            "components/site-footer/site-footer.html",
+        ),
+        (
+            ".htmlpress/components/site-footer/site-footer.txt",
             ".html, .css or .js",
         ),
         (
@@ -149,7 +156,17 @@ fn registers_every_built_in_asset_file() -> crate::Result<()> {
             std::fs::read_dir(assets.join(folder)).map_err(Error::io(folder))?;
         for entry in entries {
             let entry = entry.map_err(Error::io(folder))?;
-            paths.push(format!("{folder}/{}", entry.file_name().to_string_lossy()));
+            let name = entry.file_name().to_string_lossy().into_owned();
+            if !entry.path().is_dir() {
+                paths.push(format!("{folder}/{name}"));
+                continue;
+            }
+            let files = std::fs::read_dir(entry.path()).map_err(Error::io(&name))?;
+            for file in files {
+                let file = file.map_err(Error::io(&name))?;
+                let file = file.file_name().to_string_lossy().into_owned();
+                paths.push(format!("{folder}/{name}/{file}"));
+            }
         }
     }
     paths.sort();

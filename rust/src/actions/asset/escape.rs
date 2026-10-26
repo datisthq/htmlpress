@@ -1,19 +1,23 @@
 use std::path::Path;
 
-use crate::models::asset::Asset;
+use crate::models::asset::{Asset, COMPONENT_PREFIX, read_component_path};
 use crate::models::error::Error;
 use crate::settings::{ASSETS, PROJECT_DIR};
 
 /// Copy built-in assets into the project's `.htmlpress/` to be edited there. A name is an
-/// asset's path (`components/htmlpress-tabs.js`) or a component's tag, for all its files.
-/// Nothing is written unless every name resolves and none is escaped yet.
+/// asset's path (`components/tabs/tabs.js`) or a component's tag or name (`htmlpress-tabs`,
+/// `tabs`), for all its files. Nothing is written unless every name resolves and none is escaped yet.
 pub fn escape_assets(root: &Path, names: &[String]) -> crate::Result<Vec<String>> {
     let mut assets: Vec<&Asset> = vec![];
     for name in names {
-        let prefix = format!("components/{name}.");
         let found: Vec<&Asset> = ASSETS
             .iter()
-            .filter(|asset| asset.path == name || asset.path.starts_with(&prefix))
+            .filter(|asset| {
+                asset.path == name
+                    || read_component_path(asset.path).is_some_and(|(tag, _)| {
+                        tag == *name || tag.strip_prefix(COMPONENT_PREFIX) == Some(name)
+                    })
+            })
             .collect();
         if found.is_empty() {
             return Err(Error::Usage(format!(

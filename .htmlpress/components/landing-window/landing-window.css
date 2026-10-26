@@ -1,5 +1,5 @@
 /* A window around a sample: three dots and the `label` in its title bar */
-@scope (landing-window) {
+@scope (htmlpress-landing-window) {
   :scope {
     display: block;
     min-width: 0;
@@ -26,7 +26,7 @@
     color: var(--htmlpress-muted);
     font: 0.75rem/1.5 var(--htmlpress-mono);
   }
-  :scope > landing-code {
+  :scope > htmlpress-landing-code {
     padding: 1.25rem;
     overflow-x: auto;
   }

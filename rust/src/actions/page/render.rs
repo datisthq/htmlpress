@@ -10,6 +10,7 @@ use crate::actions::page::convert::create_markdown_path;
 use crate::actions::page::prefix::prefix_urls;
 use crate::actions::section::find::{find_section, is_custom_current};
 use crate::actions::site::index::SEARCH_INDEX;
+use crate::models::asset::{create_component_path, read_component_path};
 use crate::models::config::{Link, Position, Section, SectionKind};
 use crate::models::error::Error;
 use crate::models::page::Page;
@@ -33,12 +34,12 @@ pub(crate) fn render_page(
         .get(&layout)
         .ok_or_else(|| fail(format!("no layout {layout}")))?
         .as_str();
-    let fragments: Vec<(&str, &str)> = site
+    let fragments: Vec<(String, &str)> = site
         .assets
         .iter()
         .filter_map(|(path, html)| {
-            let tag = path.strip_prefix("components/")?.strip_suffix(".html")?;
-            Some((tag, html.as_str()))
+            let (tag, extension) = read_component_path(path)?;
+            (extension == "html").then_some((tag, html.as_str()))
         })
         .collect();
     let content = swap_components(&page.content, &fragments).map_err(fail)?;
@@ -160,7 +161,10 @@ pub(crate) fn render_page(
 
 // The page's content is pasted into the layout unparsed, so its own project component tags
 // are swapped here, before it goes in.
-fn swap_components(content: &str, fragments: &[(&str, &str)]) -> Result<String, String> {
+fn swap_components(
+    content: &str,
+    fragments: &[(String, &str)],
+) -> Result<String, String> {
     let mut settings = RewriteStrSettings::new();
     for (tag, html) in fragments {
         settings = settings.append_element_content_handler(element!(tag, |el| {
@@ -175,14 +179,14 @@ fn swap_components(content: &str, fragments: &[(&str, &str)]) -> Result<String, 
 // too; one level deep, since pasted markup is never rewritten again.
 fn list_tags(
     sources: &[&str],
-    fragments: &[(&str, &str)],
+    fragments: &[(String, &str)],
 ) -> Result<BTreeSet<String>, String> {
     let mut tags = BTreeSet::new();
     for source in sources {
         read_tags(source, &mut tags)?;
     }
     for (tag, html) in fragments {
-        if tags.contains(*tag) {
+        if tags.contains(tag) {
             read_tags(html, &mut tags)?;
         }
     }
@@ -263,7 +267,7 @@ fn create_head(
     );
     let used = |extension: &str| -> Vec<String> {
         tags.iter()
-            .map(|tag| format!("components/{tag}.{extension}"))
+            .filter_map(|tag| create_component_path(tag, extension))
             .filter(|path| site.assets.contains_key(path))
             .collect()
     };

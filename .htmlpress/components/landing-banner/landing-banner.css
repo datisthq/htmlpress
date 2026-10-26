@@ -1,4 +1,4 @@
-@scope (landing-banner) {
+@scope (htmlpress-landing-banner) {
   :scope {
     display: block;
     background: var(--htmlpress-text);

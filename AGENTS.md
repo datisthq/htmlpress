@@ -9,8 +9,8 @@ Htmlpress turns a folder of HTML pages into a site: one layout, one theme, a nav
 - **platform package** — `gethtmlpress-<os>-<arch>`, one per entry in `PLATFORMS` (`typescript/settings.ts`), each carrying one binary; the main `gethtmlpress` package pins them all as `optionalDependencies` at its own version
 - **project** — a folder htmlpress builds: HTML pages, other files copied as-is, an optional `htmlpress.yaml`, and `.htmlpress/` holding the build output and escapes
 - **page** — an `.html` file in a project, read by `rust/src/actions/page/read.rs` into title, order, head and content
-- **escape** — a project file under `.htmlpress/` at a built-in asset's path (`ASSETS` in `rust/src/settings.rs`), replacing it: `layout.html`, `styles/*.css`, `scripts/*.js`, `components/<tag>.{css,js}`; beside escapes a project may add its own `components/<tag>.{html,css,js}` and `layouts/<name>.html`, which a page picks with `<meta name="layout">`
-- **component** — a custom element tag with up to three files, `components/<tag>.{html,css,js}`: its CSS scoped with `@scope (<tag>)`, its JS defining only that element, linked only on pages that use the tag; a project's own tag adds one, and its `.html` fills the tag at build time
+- **escape** — a project file under `.htmlpress/` at a built-in asset's path (`ASSETS` in `rust/src/settings.rs`), replacing it: `layout.html`, `styles/*.css`, `scripts/*.js`, `components/<name>/<name>.{css,js}`; beside escapes a project may add its own `components/<name>/<name>.{html,css,js}` and `layouts/<name>.html`, which a page picks with `<meta name="layout">`
+- **component** — a custom element `<htmlpress-<name>>`, built in or the project's, with up to three files, `components/<name>/<name>.{html,css,js}` (the tag without its prefix): its CSS scoped with `@scope (<tag>)`, its JS defining only that element, linked only on pages that use the tag; a project's own tag adds one, and its `.html` fills the tag at build time
 - **docs site** — this repo's own htmlpress project: the root's `htmlpress.yaml` and `.htmlpress/`, its pages in `rust/docs/` (`include: rust/docs/**/*.html`), built by `pnpm build:docs` and deployed to htmlpress.dev
 
 ## Rules
@@ -97,7 +97,7 @@ Dot-directories hold non-package code: `.agents/` repo skills, `.skills/` shippe
 - `package.json` script names are `verb[:object]` (`check:lint`, `build:docs`), never noun-first
 - Specs: Vitest via `vite-plus/test`, `<module>.unit.ts`, no "Arrange / Act / Assert" comments
 - Rust: edition 2024, rustfmt (90 columns), clippy with `-D warnings`; snake_case **verb_noun** functions; no `unwrap` / `expect` / `unsafe` outside tests (**`rust-development`**)
-- HTML in `rust/docs/` and `.skills/`: semantic elements and the documented `htmlpress-*` components only, no inline styles — the docs are the first project htmlpress must serve well. The one exception is the home page, `rust/docs/index.html`: it uses the `landing` layout and the `landing-*` components in `.htmlpress/`, the way any project builds its own look
+- HTML in `rust/docs/` and `.skills/`: semantic elements and the documented `htmlpress-*` components only, no inline styles — the docs are the first project htmlpress must serve well. The one exception is the home page, `rust/docs/index.html`: it uses the `landing` layout and the `htmlpress-landing-*` components in `.htmlpress/`, the way any project builds its own look
 - Commits: Conventional Commits, typed by what an installer gets (below)
 
 ## Releases

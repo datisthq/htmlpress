@@ -87,4 +87,4 @@ class LandingCarousel extends HTMLElement {
   }
 }
 
-customElements.define("landing-carousel", LandingCarousel)
+customElements.define("htmlpress-landing-carousel", LandingCarousel)

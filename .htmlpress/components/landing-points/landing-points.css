@@ -1,5 +1,5 @@
 /* A list of points, each an icon beside its heading and text */
-@scope (landing-points) {
+@scope (htmlpress-landing-points) {
   :scope {
     display: block;
   }

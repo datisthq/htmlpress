@@ -80,18 +80,16 @@ fn escapes_a_component_and_builds_with_it() -> TestResult {
     let report: serde_json::Value = serde_json::from_str(&out)?;
     assert_eq!(
         report["escaped"][0],
-        ".htmlpress/components/htmlpress-badge.css"
+        ".htmlpress/components/badge/badge.css"
     );
-    let escaped = root
-        .path()
-        .join(".htmlpress/components/htmlpress-badge.css");
+    let escaped = root.path().join(".htmlpress/components/badge/badge.css");
     std::fs::write(&escaped, "/* mine */")?;
 
     let (code, _) = run_cli(&["build", &path])?;
     assert_eq!(code, 0);
     let output = root.path().join(".htmlpress/build/_htmlpress/components");
     assert_eq!(
-        std::fs::read_to_string(output.join("htmlpress-badge.css"))?,
+        std::fs::read_to_string(output.join("badge/badge.css"))?,
         "/* mine */"
     );
     let again = run_cli(&["escape", "htmlpress-badge", "--root", &path]);

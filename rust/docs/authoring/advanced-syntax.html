@@ -102,8 +102,8 @@ pie title Languages
 <h2>Included Documents</h2>
 <p>
   A project component shares markup between pages. A file at
-  <code>.htmlpress/components/&lt;tag&gt;.html</code> fills every
-  <code>&lt;tag&gt;</code> in every page at build time:
+  <code>.htmlpress/components/&lt;name&gt;/&lt;name&gt;.html</code> fills every
+  <code>&lt;htmlpress-&lt;name&gt;&gt;</code> in every page at build time:
 </p>
 <htmlpress-file-tree>
   <ul>
@@ -113,8 +113,13 @@ pie title Languages
         <li>
           components
           <ul>
-            <li>site-disclaimer.html</li>
-            <li>site-disclaimer.css</li>
+            <li>
+              disclaimer
+              <ul>
+                <li>disclaimer.html</li>
+                <li>disclaimer.css</li>
+              </ul>
+            </li>
           </ul>
         </li>
       </ul>
@@ -122,20 +127,21 @@ pie title Languages
     <li>guide.html</li>
   </ul>
 </htmlpress-file-tree>
-<pre><code>&lt;!-- .htmlpress/components/site-disclaimer.html --&gt;
+<pre><code>&lt;!-- .htmlpress/components/disclaimer/disclaimer.html --&gt;
 &lt;aside&gt;&lt;p&gt;Provided as-is, without warranty.&lt;/p&gt;&lt;/aside&gt;
 
 &lt;!-- guide.html --&gt;
-&lt;site-disclaimer&gt;&lt;/site-disclaimer&gt;</code></pre>
+&lt;htmlpress-disclaimer&gt;&lt;/htmlpress-disclaimer&gt;</code></pre>
 <ul>
   <li>
     Its <code>.css</code> and <code>.js</code> load only on pages where the tag appears;
     the tag stays around the pasted markup, so its CSS scopes to the tag,
-    <code>@scope (site-disclaimer)</code>.
+    <code>@scope (htmlpress-disclaimer)</code>.
   </li>
   <li>
-    The <code>htmlpress-</code> prefix is reserved, and a component file that replaces
-    nothing fails the build.
+    The folder is the tag without its <code>htmlpress-</code> prefix, the same as a
+    built-in's: a folder named for a built-in component, such as <code>tabs</code>,
+    replaces it.
   </li>
 </ul>
 <p>

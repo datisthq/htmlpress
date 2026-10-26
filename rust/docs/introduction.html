@@ -223,8 +223,8 @@ htmlpress clear    # remove .htmlpress/build/</code></pre>
     <p>
       A file under <code>.htmlpress/</code> at a built-in's path, such as
       <code>layout.html</code>, <code>styles/tokens.css</code> or
-      <code>components/htmlpress-tabs.css</code>, replaces the default, so you can
-      customize the layout, the theme and components without forking. Run
+      <code>components/tabs/tabs.css</code>, replaces the default, so you can customize
+      the layout, the theme and components without forking. Run
       <code>htmlpress escape &lt;name&gt;</code> to copy a default into
       <code>.htmlpress/</code> ready to edit.
     </p>
@@ -277,15 +277,15 @@ network http://192.168.1.107:8000</code></pre>
     <h3><code>htmlpress escape [names…]</code></h3>
     <p>
       Copies built-in files into <code>.htmlpress/</code> to edit them: a name is a path
-      such as <code>components/htmlpress-tabs.js</code>, or a component's tag for all its
+      such as <code>components/tabs/tabs.js</code>, or a component's tag for all its
       files. Without names it lists every built-in file and whether the project has
       escaped it. <code>--root</code> / <code>-r</code> picks the project (default
       <code>.</code>). It refuses to overwrite a file; see
       <a href="/customization/overriding-escaping.html">Overriding/Escaping</a>.
     </p>
     <pre><code>$ htmlpress escape htmlpress-tabs
-escaped .htmlpress/components/htmlpress-tabs.css
-escaped .htmlpress/components/htmlpress-tabs.js</code></pre>
+escaped .htmlpress/components/tabs/tabs.css
+escaped .htmlpress/components/tabs/tabs.js</code></pre>
 
     <h3>For scripts and agents</h3>
     <p>

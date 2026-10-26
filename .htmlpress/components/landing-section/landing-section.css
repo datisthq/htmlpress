@@ -1,6 +1,6 @@
 /* A landing band: a centered heading and lead, then its body. Without `tone` it is plain,
    with `tone="tint"` it sits on the accent tint. */
-@scope (landing-section) {
+@scope (htmlpress-landing-section) {
   :scope {
     display: block;
     border-bottom: 1px solid var(--htmlpress-border);

@@ -1,5 +1,5 @@
 /* Catppuccin Latte in light, Mocha in dark */
-@scope (landing-code) {
+@scope (htmlpress-landing-code) {
   :scope {
     --landing-code-text: #4c4f69;
     --landing-code-dim: #8c8fa1;
@@ -58,7 +58,7 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) landing-code {
+  :root:not([data-theme="light"]) htmlpress-landing-code {
     --landing-code-text: #cdd6f4;
     --landing-code-dim: #7f849c;
     --landing-code-key: #cba6f7;
@@ -69,7 +69,7 @@
     --landing-code-number: #fab387;
   }
 }
-:root[data-theme="dark"] landing-code {
+:root[data-theme="dark"] htmlpress-landing-code {
   --landing-code-text: #cdd6f4;
   --landing-code-dim: #7f849c;
   --landing-code-key: #cba6f7;

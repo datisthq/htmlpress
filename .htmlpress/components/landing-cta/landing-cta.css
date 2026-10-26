@@ -1,5 +1,5 @@
 /* The closing call to action, centered */
-@scope (landing-cta) {
+@scope (htmlpress-landing-cta) {
   :scope {
     display: block;
   }

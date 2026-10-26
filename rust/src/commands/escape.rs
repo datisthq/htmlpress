@@ -5,8 +5,9 @@ use crate::actions::asset::list::list_assets;
 
 #[fireargs::input]
 pub(crate) struct EscapeInput {
-    /// Assets to copy into .htmlpress/: a path such as components/htmlpress-tabs.js, or a
-    /// component's tag for all its files. Without any, only list them.
+    /// Assets to copy into .htmlpress/: a path such as components/tabs/tabs.js, or a
+    /// component's tag or name (htmlpress-tabs, tabs) for all its files. Without any, only
+    /// list them.
     #[fireargs(argument)]
     #[serde(default)]
     names: Vec<String>,

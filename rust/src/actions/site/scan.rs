@@ -5,10 +5,11 @@ use crate::actions::config::load::load_config;
 use crate::actions::page::read::{is_layout_name, read_page};
 use crate::actions::path::select::{read_bases, select_paths};
 use crate::actions::skill::load::load_skills;
+use crate::models::asset::{COMPONENT_PREFIX, read_component_path};
 use crate::models::error::Error;
 use crate::models::page::Page;
 use crate::models::site::Site;
-use crate::settings::{ASSETS, CONFIG_FILE, LAYOUT_ELEMENTS, PROJECT_DIR};
+use crate::settings::{ASSETS, CONFIG_FILE, PROJECT_DIR};
 
 /// Read a project: its config, its pages and the other files under its include bases.
 /// Dot-folders and dot-files (`.htmlpress/`, `.git/`) and `node_modules/` are skipped.
@@ -85,8 +86,9 @@ pub fn scan_site(root: &Path) -> crate::Result<Site> {
     })
 }
 
-// Only `layout.html` and the files directly in `styles/`, `scripts/`, `components/` and
-// `layouts/` are read, so the build output and anything else kept in `.htmlpress/` stay out.
+// Only `layout.html`, the files directly in `styles/`, `scripts/`, `components/` and
+// `layouts/`, and those one folder into `components/` are read, so the build output and
+// anything else kept in `.htmlpress/` stay out.
 fn read_assets(root: &Path) -> crate::Result<BTreeMap<String, String>> {
     let mut assets: BTreeMap<String, String> = ASSETS
         .iter()
@@ -98,18 +100,16 @@ fn read_assets(root: &Path) -> crate::Result<BTreeMap<String, String>> {
         paths.push("layout.html".to_owned());
     }
     for folder in ["styles", "scripts", "components", "layouts"] {
-        let path = project.join(folder);
-        if !path.is_dir() {
-            continue;
-        }
-        let entries = std::fs::read_dir(&path).map_err(Error::io(&path))?;
-        for entry in entries {
-            let entry = entry.map_err(Error::io(&path))?;
-            let name = entry.file_name().to_string_lossy().into_owned();
-            if !name.starts_with('.') && entry.path().is_file() {
-                paths.push(format!("{folder}/{name}"));
-            }
-        }
+        list_assets(&project, folder, &mut paths)?;
+    }
+    let folders: Vec<String> = paths
+        .iter()
+        .filter(|path| path.starts_with("components/") && project.join(path).is_dir())
+        .cloned()
+        .collect();
+    paths.retain(|path| !folders.contains(path));
+    for folder in &folders {
+        list_assets(&project, folder, &mut paths)?;
     }
     for path in paths {
         let file = project.join(&path);
@@ -123,6 +123,28 @@ fn read_assets(root: &Path) -> crate::Result<BTreeMap<String, String>> {
     Ok(assets)
 }
 
+fn list_assets(
+    project: &Path,
+    folder: &str,
+    paths: &mut Vec<String>,
+) -> crate::Result<()> {
+    let path = project.join(folder);
+    if !path.is_dir() {
+        return Ok(());
+    }
+    let entries = std::fs::read_dir(&path).map_err(Error::io(&path))?;
+    for entry in entries {
+        let entry = entry.map_err(Error::io(&path))?;
+        let name = entry.file_name().to_string_lossy().into_owned();
+        let kept =
+            entry.path().is_file() || folder == "components" && entry.path().is_dir();
+        if !name.starts_with('.') && kept {
+            paths.push(format!("{folder}/{name}"));
+        }
+    }
+    Ok(())
+}
+
 fn check_asset(path: &str) -> Result<(), String> {
     let known = ASSETS.iter().any(|asset| asset.path == path);
     if let Some(name) = path.strip_prefix("layouts/") {
@@ -134,7 +156,7 @@ fn check_asset(path: &str) -> Result<(), String> {
             ),
         };
     }
-    let Some(name) = path.strip_prefix("components/") else {
+    let Some(file) = path.strip_prefix("components/") else {
         return match known || path == "layout.html" {
             true => Ok(()),
             false => Err(format!(
@@ -142,31 +164,33 @@ fn check_asset(path: &str) -> Result<(), String> {
             )),
         };
     };
-    let (tag, extension) = name.rsplit_once('.').unwrap_or((name, ""));
+    let (folder, _) = file.split_once('/').unwrap_or(("", file));
+    let stem = file.rsplit('/').next().unwrap_or(file);
+    let stem = stem.rsplit_once('.').map_or(stem, |(stem, _)| stem);
+    let name = stem.strip_prefix(COMPONENT_PREFIX).unwrap_or(stem);
+    let moved =
+        || format!("a component's files are components/{name}/{name}.html, .css or .js");
+    // A leftover `components/htmlpress-tabs/` would add `htmlpress-htmlpress-tabs` and
+    // silently stop replacing the built-in
+    if folder.starts_with(COMPONENT_PREFIX) {
+        return Err(moved());
+    }
+    let Some((_, extension)) = read_component_path(path) else {
+        return Err(moved());
+    };
     if !["html", "css", "js"].contains(&extension) {
         return Err("a component is a .html, .css or .js file".to_owned());
     }
-    let valid = tag.starts_with(|char: char| char.is_ascii_lowercase())
-        && tag.contains('-')
-        && tag.chars().all(|char| {
+    let valid = folder.starts_with(|char: char| char.is_ascii_lowercase())
+        && folder.chars().all(|char| {
             char.is_ascii_lowercase() || char.is_ascii_digit() || char == '-'
         });
-    if !valid {
-        return Err(format!(
-            "\"{tag}\" is not a custom element name: lowercase, with a hyphen"
-        ));
+    match valid {
+        true => Ok(()),
+        false => Err(format!(
+            "\"{folder}\" is not a component name: lowercase letters, digits and hyphens"
+        )),
     }
-    let built_in = LAYOUT_ELEMENTS.contains(&tag)
-        || ASSETS
-            .iter()
-            .any(|asset| asset.path.starts_with(&format!("components/{tag}.")));
-    if tag.starts_with("htmlpress-") && !built_in {
-        return Err(format!(
-            "no built-in {tag}; the htmlpress- prefix is reserved, \
-             and `htmlpress escape` lists the built-in components"
-        ));
-    }
-    Ok(())
 }
 
 fn list_files(root: &Path, prefix: &str, paths: &mut Vec<String>) -> crate::Result<()> {

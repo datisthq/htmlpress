@@ -10,8 +10,8 @@ fn copies_an_asset_and_every_file_of_a_component() -> crate::Result<()> {
         written,
         [
             ".htmlpress/layout.html",
-            ".htmlpress/components/htmlpress-tabs.css",
-            ".htmlpress/components/htmlpress-tabs.js",
+            ".htmlpress/components/tabs/tabs.css",
+            ".htmlpress/components/tabs/tabs.js",
         ]
     );
     let copied = std::fs::read_to_string(root.path().join(&written[0]))
@@ -26,8 +26,8 @@ fn copies_an_asset_and_every_file_of_a_component() -> crate::Result<()> {
         escaped,
         [
             "layout.html",
-            "components/htmlpress-tabs.css",
-            "components/htmlpress-tabs.js"
+            "components/tabs/tabs.css",
+            "components/tabs/tabs.js"
         ]
     );
     Ok(())
@@ -45,7 +45,7 @@ fn refuses_an_unknown_name_or_an_escaped_file() -> crate::Result<()> {
     assert!(
         !root
             .path()
-            .join(".htmlpress/components/htmlpress-badge.css")
+            .join(".htmlpress/components/badge/badge.css")
             .exists()
     );
     Ok(())

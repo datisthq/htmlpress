@@ -1,5 +1,5 @@
 /* Links as buttons: the first one filled, the others outlined */
-@scope (landing-actions) {
+@scope (htmlpress-landing-actions) {
   :scope {
     display: flex;
     flex-wrap: wrap;

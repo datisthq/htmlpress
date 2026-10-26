@@ -1,5 +1,5 @@
 /* The landing's own chrome: no sidebar, so the header carries the brand at every width */
-@scope (landing-page) {
+@scope (htmlpress-landing-page) {
   :scope {
     --landing-width: 72rem;
     --landing-gutter: 1.5rem;
@@ -32,11 +32,11 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) landing-page {
+  :root:not([data-theme="light"]) htmlpress-landing-page {
     --landing-violet: oklch(0.79 0.1 296);
   }
 }
-:root[data-theme="dark"] landing-page {
+:root[data-theme="dark"] htmlpress-landing-page {
   --landing-violet: oklch(0.79 0.1 296);
 }
 

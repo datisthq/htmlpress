@@ -1,4 +1,4 @@
-@scope (landing-carousel) {
+@scope (htmlpress-landing-carousel) {
   :scope {
     position: relative;
     display: block;
@@ -171,7 +171,7 @@
     letter-spacing: 0.12em;
     text-transform: uppercase;
   }
-  figure > landing-code {
+  figure > htmlpress-landing-code {
     grid-column: 2;
     margin-top: 0.5rem;
   }

@@ -32,28 +32,32 @@ fn serves_escapes_and_project_components() -> crate::Result<()> {
     let root = root.path();
     write_source(root, "index.html", "<h1>Home</h1>")?;
     write_source(root, ".htmlpress/styles/tokens.css", ":root { --mine: 1 }")?;
-    write_source(root, ".htmlpress/components/htmlpress-tabs.js", "// mine")?;
+    write_source(root, ".htmlpress/components/tabs/tabs.js", "// mine")?;
     write_source(
         root,
-        ".htmlpress/components/site-footer.html",
+        ".htmlpress/components/site-footer/site-footer.html",
         "<footer></footer>",
     )?;
-    write_source(root, ".htmlpress/components/site-footer.css", "footer {}")?;
+    write_source(
+        root,
+        ".htmlpress/components/site-footer/site-footer.css",
+        "footer {}",
+    )?;
     let options = BuildOptions::new(root);
     build_site(&options)?;
     let read = |path: &str| std::fs::read_to_string(options.output.join(path)).ok();
     let theme = read("_htmlpress/theme.css").unwrap_or_default();
     assert!(theme.starts_with(":root { --mine: 1 }") && theme.contains("h1"));
     assert_eq!(
-        read("_htmlpress/components/htmlpress-tabs.js").as_deref(),
+        read("_htmlpress/components/tabs/tabs.js").as_deref(),
         Some("// mine")
     );
     assert_eq!(
-        read("_htmlpress/components/site-footer.css").as_deref(),
+        read("_htmlpress/components/site-footer/site-footer.css").as_deref(),
         Some("footer {}")
     );
-    assert!(read("_htmlpress/components/htmlpress-callout.css").is_some());
-    assert!(read("_htmlpress/components/site-footer.html").is_none());
+    assert!(read("_htmlpress/components/callout/callout.css").is_some());
+    assert!(read("_htmlpress/components/site-footer/site-footer.html").is_none());
     assert!(read("_htmlpress/layout.html").is_none());
     Ok(())
 }
@@ -144,7 +148,7 @@ fn writes_a_404_page_unless_the_project_has_one() -> crate::Result<()> {
     assert_eq!(report.pages, 1);
     let missing = read("404.html").unwrap_or_default();
     assert!(missing.contains("<title>Page not found · "));
-    assert!(missing.contains("htmlpress-button.css"));
+    assert!(missing.contains("components/button/button.css"));
     assert!(!read("index.html").unwrap_or_default().contains("404.html"));
 
     write_source(root, "404.html", "<title>Lost</title><h1>Lost</h1>")?;

@@ -105,14 +105,15 @@ Put block content (`<p>`, `<h3>`, `<pre>`) inside a component, not bare text.
     `<meta name="layout" content="<name>">` (a landing page without the sidebar); a
     missing one fails the build.
   - `styles/tokens.css`, `layout.css`, `content.css` are the global theme;
-    `components/<tag>.css` and `.js` one component each, its CSS inside `@scope (<tag>)`.
+    `components/<name>/<name>.css` and `.js` one component each, the tag
+    `<htmlpress-<name>>` without its prefix, its CSS inside `@scope (<tag>)`.
     The layout's frame is elements too, never classes: `<htmlpress-shell>`,
     `-sidebar`, `-main`, `-header`, `-page`, `-aside`, `-skip`.
-  - A new tag adds a component: `components/site-footer.html` fills every
-    `<site-footer>` at build time; the tag stays, so its `.css` scopes to the tag
+  - A new name adds a component: `components/credits/credits.html` fills every
+    `<htmlpress-credits>` at build time; the tag stays, so its `.css` scopes to the tag
     (`:scope { display: block }` when it should be a box) and its `.css`/`.js` load where
-    the tag appears. The `htmlpress-` prefix is reserved, and a file that replaces
-    nothing fails the build.
+    the tag appears. A misspelt built-in name (`calout/`) adds a component rather than
+    replacing one; a file directly in `components/` fails the build.
   - To restyle a component from an outer one, beat its `:scope`: write
     `:scope htmlpress-header`, not a bare `htmlpress-header`, which loses on specificity.
 

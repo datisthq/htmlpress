@@ -1,5 +1,5 @@
 /* Drifting vertical strata, two light scans crossing them in turn, and a soft blob */
-@scope (landing-backdrop) {
+@scope (htmlpress-landing-backdrop) {
   :scope {
     position: absolute;
     inset: 0;

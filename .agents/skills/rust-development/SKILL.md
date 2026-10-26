@@ -113,7 +113,7 @@ under `--json` stdout carries only the result. Flags, defaults and output fields
 `src/layout.html`, `src/styles/`, `src/scripts/` and `src/components/` compile into the binary at
 the paths a project's `.htmlpress/` escapes them under, and every file there is an escapable asset listed in
 `ASSETS` (a unit test fails on one missing). `styles/` joins, in `THEME_STYLES` order, into the
-global `theme.css`; `components/<tag>.css` and `.js` are served one file each, and
+global `theme.css`; `components/<name>/<name>.css` and `.js` are served one file each, and
 `render_page` links only those whose tag the layout, the page or a project component's
 `.html` holds. A component's CSS sits in `@scope (<tag>)` and its JS is a module that
 defines that element alone, with its own copies of any helper: an escaped file must never
@@ -122,6 +122,11 @@ never loads. A new component, token or asset path is public API: add it to
 its `rust/docs/authoring/` article and the `htmlpress-pages` skill in the same commit, and look at it
 in light, dark and phone width (**`change-verification`**).
 
+- A component `<htmlpress-<name>>` lives in `components/<name>/<name>.{html,css,js}`, a
+  project's own the same as a built-in: build and parse those paths only with
+  `create_component_path` / `read_component_path` (`models/asset.rs`). `scan_site` refuses
+  a file directly in `components/` and an `htmlpress-*` folder, since either would
+  silently stop replacing a built-in
 - Inside `@scope`, a bare `ul` ties the global `ul` on specificity and wins on scope
   proximity, but a global `li + li` still beats a scoped `li`: match the global selector's
   weight when a component resets it

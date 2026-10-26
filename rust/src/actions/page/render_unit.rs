@@ -145,13 +145,15 @@ fn links_only_the_components_a_page_uses() -> crate::Result<()> {
     )?;
     let html = render_page(&site, &site.pages[0], false)?;
     assert!(html.contains(
-        r#"<link rel="stylesheet" href="/_htmlpress/components/htmlpress-tabs.css">"#
+        r#"<link rel="stylesheet" href="/_htmlpress/components/tabs/tabs.css">"#
     ));
-    assert!(html.contains(
-        r#"<script type="module" src="/_htmlpress/components/htmlpress-tabs.js">"#
-    ));
-    assert!(html.contains(r#"href="/_htmlpress/components/htmlpress-nav.css""#));
-    assert!(html.contains(r#"href="/_htmlpress/components/htmlpress-header.css""#));
+    assert!(
+        html.contains(
+            r#"<script type="module" src="/_htmlpress/components/tabs/tabs.js">"#
+        )
+    );
+    assert!(html.contains(r#"href="/_htmlpress/components/nav/nav.css""#));
+    assert!(html.contains(r#"href="/_htmlpress/components/header/header.css""#));
     assert!(html.contains(r#"src="/_htmlpress/scripts/code.js""#));
     assert!(
         !html.contains("htmlpress-callout.css") && !html.contains("htmlpress-zoom.js")
@@ -163,38 +165,43 @@ fn links_only_the_components_a_page_uses() -> crate::Result<()> {
 fn fills_a_project_component_tag_with_its_html() -> crate::Result<()> {
     let mut site = create_site()?;
     let footer = "<footer><htmlpress-badge>v1</htmlpress-badge></footer>";
-    site.assets
-        .insert("components/site-footer.html".to_owned(), footer.to_owned());
     site.assets.insert(
-        "components/site-footer.css".to_owned(),
+        "components/site-footer/site-footer.html".to_owned(),
+        footer.to_owned(),
+    );
+    site.assets.insert(
+        "components/site-footer/site-footer.css".to_owned(),
         "footer {}".to_owned(),
     );
     site.assets.insert(
-        "components/htmlpress-brand.html".to_owned(),
+        "components/brand/brand.html".to_owned(),
         "<b>Mine</b>".to_owned(),
     );
-    site.pages[0] = read_page("index.html", "<h1>Home</h1><site-footer></site-footer>")?;
+    site.pages[0] = read_page(
+        "index.html",
+        "<h1>Home</h1><htmlpress-site-footer></htmlpress-site-footer>",
+    )?;
     site.assets.insert(
-        "components/site-header.html".to_owned(),
+        "components/site-header/site-header.html".to_owned(),
         "<header></header>".to_owned(),
     );
     site.assets.insert(
-        "components/site-header.css".to_owned(),
+        "components/site-header/site-header.css".to_owned(),
         "header {}".to_owned(),
     );
     site.pages[0]
         .content
-        .push_str("<site-header></site-header>");
-    let layout = "<head></head><htmlpress-brand></htmlpress-brand><htmlpress-content></htmlpress-content><site-footer></site-footer>";
+        .push_str("<htmlpress-site-header></htmlpress-site-header>");
+    let layout = "<head></head><htmlpress-brand></htmlpress-brand><htmlpress-content></htmlpress-content><htmlpress-site-footer></htmlpress-site-footer>";
     site.assets
         .insert("layout.html".to_owned(), layout.to_owned());
     let html = render_page(&site, &site.pages[0], false)?;
     assert!(html.contains("<htmlpress-brand><b>Mine</b></htmlpress-brand><h1>Home</h1>"));
-    assert!(html.contains("<site-footer><footer>"));
+    assert!(html.contains("<htmlpress-site-footer><footer>"));
     assert_eq!(html.matches("<footer>").count(), 2);
-    assert!(html.contains("href=\"/_htmlpress/components/site-header.css\""));
-    assert!(html.contains("href=\"/_htmlpress/components/site-footer.css\""));
-    assert!(html.contains("href=\"/_htmlpress/components/htmlpress-badge.css\""));
+    assert!(html.contains("href=\"/_htmlpress/components/site-header/site-header.css\""));
+    assert!(html.contains("href=\"/_htmlpress/components/site-footer/site-footer.css\""));
+    assert!(html.contains("href=\"/_htmlpress/components/badge/badge.css\""));
     Ok(())
 }
 

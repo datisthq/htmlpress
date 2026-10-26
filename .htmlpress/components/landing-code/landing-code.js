@@ -101,4 +101,4 @@ function splitWords(text, pattern, tokens, names) {
   tokens.push(["", text.slice(last)])
 }
 
-customElements.define("landing-code", LandingCode)
+customElements.define("htmlpress-landing-code", LandingCode)

@@ -5,8 +5,8 @@
 />
 <meta name="layout" content="landing" />
 
-<landing-hero>
-  <landing-backdrop aria-hidden="true"></landing-backdrop>
+<htmlpress-landing-hero>
+  <htmlpress-landing-backdrop aria-hidden="true"></htmlpress-landing-backdrop>
   <section>
     <div>
       <hgroup>
@@ -18,7 +18,7 @@
         layout, one theme, a navigation and a live-reloading dev server, and every part of
         it can be escaped.
       </p>
-      <landing-actions>
+      <htmlpress-landing-actions>
         <a href="/introduction.html"
           ><svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" />
@@ -39,9 +39,9 @@
             <path d="M9 18c-4.51 2-5-2-7-2" /></svg
           >View source</a
         >
-      </landing-actions>
+      </htmlpress-landing-actions>
     </div>
-    <landing-carousel>
+    <htmlpress-landing-carousel>
       <section title="Docs">
         <div>
           <img
@@ -73,11 +73,11 @@
           <figcaption>
             <strong>Written in plain HTML</strong>rust/docs/authoring/frontmatter.html
           </figcaption>
-          <landing-code syntax="html">
+          <htmlpress-landing-code syntax="html">
             <pre><code>&lt;title&gt;Pages&lt;/title&gt;
 &lt;meta name="order" content="2" /&gt;
 &lt;h1&gt;Pages&lt;/h1&gt;</code></pre>
-          </landing-code>
+          </htmlpress-landing-code>
         </figure>
       </section>
       <section title="Components">
@@ -112,11 +112,11 @@
           <figcaption>
             <strong>Written in plain HTML</strong>rust/docs/authoring/rich-elements.html
           </figcaption>
-          <landing-code syntax="html">
+          <htmlpress-landing-code syntax="html">
             <pre><code>&lt;htmlpress-callout type="success"&gt;
   &lt;p&gt;Every page built.&lt;/p&gt;
 &lt;/htmlpress-callout&gt;</code></pre>
-          </landing-code>
+          </htmlpress-landing-code>
         </figure>
       </section>
       <section title="Escaping">
@@ -151,11 +151,11 @@
           <figcaption>
             <strong>Written in plain HTML</strong>.htmlpress/layouts/landing.html
           </figcaption>
-          <landing-code syntax="html">
+          <htmlpress-landing-code syntax="html">
             <pre><code>&lt;htmlpress-header role="banner"&gt;
   &lt;htmlpress-brand&gt;&lt;/htmlpress-brand&gt;
 &lt;/htmlpress-header&gt;</code></pre>
-          </landing-code>
+          </htmlpress-landing-code>
         </figure>
       </section>
       <section title="Mobile" phones>
@@ -226,18 +226,18 @@
           <figcaption>
             <strong>Written in plain HTML</strong>rust/docs/authoring/rich-elements.html
           </figcaption>
-          <landing-code syntax="html">
+          <htmlpress-landing-code syntax="html">
             <pre><code>&lt;htmlpress-steps&gt;
   &lt;ol&gt;&lt;li&gt;&lt;h3&gt;Install&lt;/h3&gt;&lt;/li&gt;&lt;/ol&gt;
 &lt;/htmlpress-steps&gt;</code></pre>
-          </landing-code>
+          </htmlpress-landing-code>
         </figure>
       </section>
-    </landing-carousel>
+    </htmlpress-landing-carousel>
   </section>
-</landing-hero>
+</htmlpress-landing-hero>
 
-<landing-section>
+<htmlpress-landing-section>
   <section>
     <header>
       <h2>Stays out of your way</h2>
@@ -247,7 +247,7 @@
       </p>
     </header>
     <div>
-      <landing-points
+      <htmlpress-landing-points
         ><ul>
           <li>
             <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -296,10 +296,10 @@
               page is one.
             </p>
           </li>
-        </ul></landing-points
+        </ul></htmlpress-landing-points
       >
-      <landing-window label="your-project"
-        ><landing-code syntax="tree">
+      <htmlpress-landing-window label="your-project"
+        ><htmlpress-landing-code syntax="tree">
           <pre><code>.htmlpress/
 ├─ layouts/
 │  └─ landing.html    ← this page's chrome
@@ -311,13 +311,13 @@ guides/
 images/               ← copied as they are
 index.html            ← a page too
 htmlpress.yaml</code></pre>
-        </landing-code></landing-window
+        </htmlpress-landing-code></htmlpress-landing-window
       >
     </div>
   </section>
-</landing-section>
+</htmlpress-landing-section>
 
-<landing-section>
+<htmlpress-landing-section>
   <section>
     <header>
       <h2>Beautiful by default</h2>
@@ -326,7 +326,7 @@ htmlpress.yaml</code></pre>
         what you want.
       </p>
     </header>
-    <landing-features
+    <htmlpress-landing-features
       ><htmlpress-grid cols="3">
         <htmlpress-card
           ><svg viewBox="0 0 24 24" aria-hidden="true">
@@ -447,20 +447,20 @@ htmlpress.yaml</code></pre>
             to install.
           </p></htmlpress-card
         >
-      </htmlpress-grid></landing-features
+      </htmlpress-grid></htmlpress-landing-features
     >
   </section>
-</landing-section>
+</htmlpress-landing-section>
 
-<landing-section tone="tint">
+<htmlpress-landing-section tone="tint">
   <section>
     <header>
       <h2>Write HTML. Ship a website.</h2>
       <p>Your <code>.html</code> files stay as they are. Htmlpress does the rest.</p>
     </header>
     <div>
-      <landing-window label="quickstart.html"
-        ><landing-code syntax="html">
+      <htmlpress-landing-window label="quickstart.html"
+        ><htmlpress-landing-code syntax="html">
           <pre><code>&lt;title&gt;Quickstart&lt;/title&gt;
 &lt;meta name="order" content="1" /&gt;
 
@@ -478,9 +478,9 @@ htmlpress.yaml</code></pre>
   &lt;li&gt;&lt;strong&gt;Components&lt;/strong&gt; when HTML has none&lt;/li&gt;
   &lt;li&gt;&lt;em&gt;Beautiful&lt;/em&gt; out of the box&lt;/li&gt;
 &lt;/ul&gt;</code></pre>
-        </landing-code></landing-window
+        </htmlpress-landing-code></htmlpress-landing-window
       >
-      <landing-window label="rendered">
+      <htmlpress-landing-window label="rendered">
         <article>
           <h3>Quickstart</h3>
           <p>Install the binary:</p>
@@ -497,12 +497,12 @@ htmlpress.yaml</code></pre>
             <li><em>Beautiful</em> out of the box</li>
           </ul>
         </article>
-      </landing-window>
+      </htmlpress-landing-window>
     </div>
   </section>
-</landing-section>
+</htmlpress-landing-section>
 
-<landing-section>
+<htmlpress-landing-section>
   <section>
     <header>
       <h2>Made for coding agents</h2>
@@ -512,8 +512,8 @@ htmlpress.yaml</code></pre>
       </p>
     </header>
     <div>
-      <landing-window label="terminal"
-        ><landing-code syntax="shell">
+      <htmlpress-landing-window label="terminal"
+        ><htmlpress-landing-code syntax="shell">
           <pre><code>$ htmlpress build docs --json
 {
   "output": "docs/.htmlpress/build",
@@ -524,9 +524,9 @@ htmlpress.yaml</code></pre>
 $ htmlpress build --json '{"root":"docs","out":"dist"}'
 
 $ htmlpress --llms</code></pre>
-        </landing-code></landing-window
+        </htmlpress-landing-code></htmlpress-landing-window
       >
-      <landing-points
+      <htmlpress-landing-points
         ><ul>
           <li>
             <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -585,21 +585,21 @@ $ htmlpress --llms</code></pre>
               to <a href="/agent-skills.html">write and check pages</a>.
             </p>
           </li>
-        </ul></landing-points
+        </ul></htmlpress-landing-points
       >
     </div>
     <p><a href="/agent-skills.html">How agents use htmlpress →</a></p>
   </section>
-</landing-section>
+</htmlpress-landing-section>
 
-<landing-cta>
+<htmlpress-landing-cta>
   <section>
     <h2>Start writing. <em>Let htmlpress handle the rest.</em></h2>
     <p>
       Point htmlpress at a folder of HTML, escape what you want to own, deploy. That's the
       whole setup.
     </p>
-    <landing-actions align="center">
+    <htmlpress-landing-actions align="center">
       <a href="/introduction.html"
         ><svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M12 7v14" />
@@ -609,6 +609,6 @@ $ htmlpress --llms</code></pre>
         >Read the docs</a
       >
       <a href="/introduction.html">Install it</a>
-    </landing-actions>
+    </htmlpress-landing-actions>
   </section>
-</landing-cta>
+</htmlpress-landing-cta>

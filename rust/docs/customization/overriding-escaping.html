@@ -37,7 +37,10 @@
         </tr>
         <tr>
           <td>one component</td>
-          <td><code>.htmlpress/components/&lt;tag&gt;.css</code> or <code>.js</code></td>
+          <td>
+            <code>.htmlpress/components/&lt;name&gt;/&lt;name&gt;.css</code> or
+            <code>.js</code>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -70,10 +73,25 @@
             <li>
               components
               <ul>
-                <li>htmlpress-callout.css</li>
-                <li>htmlpress-tabs.css</li>
-                <li>htmlpress-tabs.js</li>
-                <li>site-footer.html</li>
+                <li>
+                  callout
+                  <ul>
+                    <li>callout.css</li>
+                  </ul>
+                </li>
+                <li>
+                  tabs
+                  <ul>
+                    <li>tabs.css</li>
+                    <li>tabs.js</li>
+                  </ul>
+                </li>
+                <li>
+                  credits
+                  <ul>
+                    <li>credits.html</li>
+                  </ul>
+                </li>
               </ul>
             </li>
           </ul>
@@ -98,9 +116,10 @@
       <dd>The copy button on code blocks and the link on each heading.</dd>
       <dt><code>scripts/hints.js</code></dt>
       <dd>The hover hint on abbreviations and footnote references.</dd>
-      <dt><code>components/&lt;tag&gt;.css</code> and <code>.js</code></dt>
+      <dt><code>components/&lt;name&gt;/&lt;name&gt;.css</code> and <code>.js</code></dt>
       <dd>
-        One component each, the elements of the layout's frame included. Its styles sit in
+        One component each, the elements of the layout's frame included, in a folder named
+        for its tag without the <code>htmlpress-</code> prefix. Its styles sit in
         <code>@scope (&lt;tag&gt;)</code>, so they never reach outside it, and its script
         defines only that element. A page links only the components it uses.
       </dd>
@@ -130,33 +149,33 @@ $ htmlpress escape htmlpress-tabs -r docs  # in another project folder</code></p
       <code>build</code>.
     </p>
 
-    <h2>Example: custom footer</h2>
+    <h2>Example: credits</h2>
     <p>
-      A file under <code>components/</code> with a new tag adds a component of your own.
-      Its <code>.html</code> fills every <code>&lt;tag&gt;</code> in the layout and the
-      pages at build time; its <code>.css</code> and <code>.js</code> load wherever the
-      tag appears.
+      A folder under <code>components/</code> with a new name adds a component of your
+      own, <code>&lt;htmlpress-&lt;name&gt;&gt;</code>, each file named like the folder.
+      Its <code>.html</code> fills every such tag in the layout and the pages at build
+      time; its <code>.css</code> and <code>.js</code> load wherever the tag appears.
     </p>
-    <pre><code>&lt;!-- .htmlpress/components/site-footer.html --&gt;
+    <pre><code>&lt;!-- .htmlpress/components/credits/credits.html --&gt;
 &lt;footer&gt;&lt;p&gt;Built by my team · 2026&lt;/p&gt;&lt;/footer&gt;
 
-/* .htmlpress/components/site-footer.css */
-@scope (site-footer) {
+/* .htmlpress/components/credits/credits.css */
+@scope (htmlpress-credits) {
   :scope { display: block; }
   p { color: var(--htmlpress-muted); }
 }</code></pre>
     <p>
-      Then put <code>&lt;site-footer&gt;&lt;/site-footer&gt;</code> in an escaped
-      <code>layout.html</code> or any page. Save: the dev server picks it up immediately.
-      A tag needs a hyphen and lowercase letters, as every custom element does.
+      Then put <code>&lt;htmlpress-credits&gt;&lt;/htmlpress-credits&gt;</code> in an
+      escaped <code>layout.html</code> or any page. Save: the dev server picks it up
+      immediately. A name is lowercase letters, digits and hyphens.
     </p>
 
     <h2>Example: retheme buttons</h2>
-    <pre><code>$ htmlpress escape components/htmlpress-button.css</code></pre>
+    <pre><code>$ htmlpress escape components/button/button.css</code></pre>
     <p>
-      Edit <code>.htmlpress/components/htmlpress-button.css</code> to change button
-      styling everywhere: every page that uses <code>&lt;htmlpress-button&gt;</code> links
-      your copy instead of the built-in one.
+      Edit <code>.htmlpress/components/button/button.css</code> to change button styling
+      everywhere: every page that uses <code>&lt;htmlpress-button&gt;</code> links your
+      copy instead of the built-in one.
     </p>
 
     <h2>Example: tweak a token</h2>
@@ -185,10 +204,10 @@ $ htmlpress escape htmlpress-tabs -r docs  # in another project folder</code></p
     <p>
       A component's tag stays around the markup its <code>.html</code> fills it with,
       keeping its attributes, so its <code>.css</code> scopes to the tag,
-      <code>@scope (site-footer)</code>, with or without an <code>.html</code>. A custom
-      element is inline until its CSS says otherwise. To restyle a component from another
-      one, beat its <code>:scope</code>: <code>:scope htmlpress-header</code>, not a bare
-      <code>htmlpress-header</code>.
+      <code>@scope (htmlpress-credits)</code>, with or without an <code>.html</code>. A
+      custom element is inline until its CSS says otherwise. To restyle a component from
+      another one, beat its <code>:scope</code>: <code>:scope htmlpress-header</code>, not
+      a bare <code>htmlpress-header</code>.
     </p>
 
     <h2>What you can't override this way</h2>
@@ -198,9 +217,9 @@ $ htmlpress escape htmlpress-tabs -r docs  # in another project folder</code></p
         <code>&lt;htmlpress-nav&gt;</code>, <code>&lt;htmlpress-toc&gt;</code>,
         <code>&lt;htmlpress-pager&gt;</code> and the other layout elements is built from
         the site, so only their <code>.css</code> and <code>.js</code> can be escaped. A
-        <code>components/htmlpress-brand.html</code> fills one with your own static HTML;
-        its built-in <code>.css</code> still applies to the tag, so escape that too to
-        restyle it.
+        <code>components/brand/brand.html</code> fills one with your own static HTML; its
+        built-in <code>.css</code> still applies to the tag, so escape that too to restyle
+        it.
       </li>
       <li>
         <strong>Pages with a different layout</strong>: use
@@ -217,10 +236,10 @@ $ htmlpress escape htmlpress-tabs -r docs  # in another project folder</code></p
     </ul>
     <htmlpress-callout type="warning"
       ><p>
-        The <code>htmlpress-</code> prefix is reserved. A file named for a tag htmlpress
-        does not ship, such as <code>htmlpress-calout.css</code>, fails the build, and so
-        does any file under <code>styles/</code> or <code>scripts/</code> that replaces
-        nothing.
+        A folder under <code>components/</code> with a name htmlpress does not ship, such
+        as <code>calout/</code>, adds a new component rather than replacing one. A file
+        directly in <code>components/</code> fails the build, and so does any file under
+        <code>styles/</code> or <code>scripts/</code> that replaces nothing.
       </p></htmlpress-callout
     >
 

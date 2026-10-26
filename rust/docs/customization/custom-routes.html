@@ -152,15 +152,15 @@
     <h2>Importing htmlpress primitives</h2>
     <p>
       A layout and a page both use the same components htmlpress uses itself: any
-      <code>htmlpress-*</code> component, and your own from
-      <code>.htmlpress/components/</code>, render the same way in either, linking their
+      <code>htmlpress-*</code> component, built in or your own from
+      <code>.htmlpress/components/</code>, renders the same way in either, linking its
       styles and scripts only where used. Style a layout with its own components, as this
-      site's home page does with its <code>landing-*</code> ones, or with the
+      site's home page does with its <code>htmlpress-landing-*</code> ones, or with the
       <code>--htmlpress-*</code> tokens.
     </p>
     <pre><code>&lt;!-- .htmlpress/layouts/landing.html --&gt;
 &lt;body&gt;
-  &lt;landing-hero&gt;&lt;/landing-hero&gt;
+  &lt;htmlpress-landing-hero&gt;&lt;/htmlpress-landing-hero&gt;
   &lt;main&gt;&lt;htmlpress-content&gt;&lt;/htmlpress-content&gt;&lt;/main&gt;
   &lt;htmlpress-footer&gt;&lt;/htmlpress-footer&gt;
 &lt;/body&gt;</code></pre>
