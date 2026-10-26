@@ -48,7 +48,8 @@ and per source folder, and the skills tables. Procedure, rationale and an area's
 area's skill. Keep `AGENTS.md` near 10 KB.
 
 - How to **use** htmlpress (pages, components, CLI) → the matching `rust/docs/` page and the shipped
-  `.skills/htmlpress-pages/SKILL.md`, kept in step.
+  skill under `.skills/` covering it (authoring, configuration, customization, landing,
+  deployment), kept in step; each fact in exactly one.
 - How to **work on** htmlpress → a repo skill in `.agents/skills/`.
 - How a person contributes → `CONTRIBUTING.md`.
 

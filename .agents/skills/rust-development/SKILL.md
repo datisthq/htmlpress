@@ -146,7 +146,7 @@ escape.
 Commands are fireargs commands: `#[fireargs::input]` / `#[fireargs::output]` structs and an
 async handler, so `--json` and `--llms` come free. Anything a command logs goes to **stderr**;
 under `--json` stdout carries only the result. Flags, defaults and output fields are public API
-(`AGENTS.md`); a change updates the commands in `rust/docs/introduction.html` and the `htmlpress-pages` skill.
+(`AGENTS.md`); a change updates the commands in `rust/docs/introduction.html` and the shipped skill that names it.
 
 ## Assets
 
@@ -159,7 +159,8 @@ global `theme.css`; `components/<name>/<name>.css` and `.js` are served one file
 defines that element alone, with its own copies of any helper: an escaped file must never
 depend on another. Components are light DOM and must leave readable HTML when the script
 never loads. A new component, token or asset path is public API: add it to
-its `rust/docs/authoring/` article and the `htmlpress-pages` skill in the same commit, and look at it
+its `rust/docs/authoring/` article and the `htmlpress-authoring` (or, for an escape path,
+`htmlpress-customization`) skill in the same commit, and look at it
 in light, dark and phone width (**`change-verification`**).
 
 - A component `<htmlpress-<name>>` lives in `components/<name>/<name>.{html,css,js}`, a

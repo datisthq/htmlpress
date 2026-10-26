@@ -34,7 +34,7 @@ in it.
 
 - behaviour added to a wrapper (`typescript/`, `python/`) instead of the binary;
 - a changed page contract, component, token, layout element, config key, flag or `--json`
-  field without the matching `rust/docs/` page and the `htmlpress-pages` skill;
+  field without the matching `rust/docs/` page and shipped `.skills/` skill;
 - `PLATFORMS` and the release matrix drifting apart (**`package-distribution`**);
 - an `unwrap`, `expect` or `unsafe` outside tests, or anything a command prints to stdout under
   `--json` besides the result;
