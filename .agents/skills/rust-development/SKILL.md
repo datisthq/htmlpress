@@ -135,13 +135,18 @@ Both servers strip the base from each request (`strip_base`) and redirect `/` to
 watcher. `serve_site` builds with `reload: true`, serves the output with tiny_http (a thread per
 request) and rebuilds on notify events. Reload is a **long poll**, not SSE: tiny_http buffers
 chunked responses, so a stream would sit unsent. `reload.js` asks
-`/_htmlpress/reload?since=<version>` and the server answers when the build counter moves.
+`/_htmlpress/reload?since=<version>` and the server answers when the build counter moves,
+with the version on the first line and a failed build's error after it. A failed build never
+stops the server, not even the first: while one stands, every page request gets the error
+page, since a failed build leaves the output half written, and `reload.js` is answered from
+memory.
 
 The watcher's filter is load-bearing: a build reads every source (inotify `Access` events) and
 rewrites the output, so counting either would rebuild forever. `is_source_event` drops access
 events, the output, other dot-folders, the bare `.htmlpress` folder and anything outside
 the include bases and `htmlpress.yaml`, but keeps files inside `.htmlpress/` such as an
-escape.
+escape. `.htmlpress/cache/`, where a build stores GitHub releases, is dropped too: the
+build writes it, so it would rebuild forever.
 
 ## The CLI
 

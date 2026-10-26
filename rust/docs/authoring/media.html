@@ -18,6 +18,11 @@
   output at the same path:
 </p>
 <pre><code class="language-html">&lt;img src="/screenshots/docs.webp" alt="An htmlpress docs page"&gt;</code></pre>
+<p>
+  A relative <code>src</code>, <code>srcset</code> or <code>poster</code> is resolved from
+  the page's source file, so it keeps working when the page is served elsewhere: under a
+  language prefix, or at another <code>&lt;meta name="path"&gt;</code>.
+</p>
 <p>Renders as:</p>
 <figure>
   <img

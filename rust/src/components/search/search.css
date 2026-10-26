@@ -318,6 +318,18 @@
     overscroll-behavior: contain;
   }
 
+  /* Set by the header's links when they run out of room */
+  htmlpress-header[data-compact] :scope > button {
+    width: 2.25rem;
+    padding: 0;
+    box-shadow: none;
+    justify-content: center;
+    border: 0;
+    background: none;
+  }
+  htmlpress-header[data-compact] :scope > button :is(span, kbd) {
+    display: none;
+  }
   @media (max-width: 56rem) {
     :scope > button {
       width: 2.25rem;

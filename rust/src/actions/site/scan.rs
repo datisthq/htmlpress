@@ -9,6 +9,7 @@ use crate::actions::markdown::render::render_markdown;
 use crate::actions::page::include::resolve_includes;
 use crate::actions::page::patch::patch_page;
 use crate::actions::page::read::{is_layout_name, read_page};
+use crate::actions::page::rebase::rebase_page;
 use crate::actions::path::contain::read_contained;
 use crate::actions::path::select::{read_bases, select_paths};
 use crate::actions::section::generate::generate_pages;
@@ -89,6 +90,10 @@ pub fn scan_site(root: &Path) -> crate::Result<Site> {
         }
     }
     pages.extend(generated);
+    let bases = read_bases(&config);
+    for page in &mut pages {
+        rebase_page(page, &bases).map_err(Error::page(&page.source))?;
+    }
     sort_pages(&mut pages);
 
     let assets = read_assets(root)?;

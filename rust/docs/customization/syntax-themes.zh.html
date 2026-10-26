@@ -40,7 +40,9 @@ codeThemeDark: catppuccin-mocha</code></pre>
     <h2>关于无障碍</h2>
     <p>
       无论给代码设置什么颜色，发布前都请用对比度工具逐一检查它们与代码块背景的对比度。常规尺寸文字所需的阈值为
-      4.5:1（WCAG AA）。
+      4.5:1（WCAG AA）。<code>catppuccin-latte</code>
+      的绿色字符串在白色背景上达不到该阈值，因此 htmlpress 把它们从
+      <code>#40a02b</code> 加深为 <code>#2a7e16</code>，与 Livemark 的做法相同。
     </p>
 
     <h2>另请参阅</h2>

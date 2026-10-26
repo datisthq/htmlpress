@@ -133,7 +133,8 @@ sections:
           <td>ninguno, obligatorio para <code>changelog</code></td>
           <td>
             El registro de cambios en Markdown que se divide, relativo al proyecto; debe
-            quedar dentro del proyecto y no ser un archivo oculto.
+            quedar dentro del proyecto y no ser un archivo oculto. O la URL de un
+            repositorio de GitHub, para compilarlo a partir de sus versiones.
           </td>
         </tr>
         <tr>
@@ -213,9 +214,11 @@ sections:
       Las páginas de una sección <code>blog</code> son entradas: fechadas con
       <code>&lt;meta name="date"&gt;</code>, firmadas con
       <code>&lt;meta name="author"&gt;</code> y etiquetadas con
-      <code>&lt;meta name="keywords"&gt;</code>. La barra lateral y los enlaces de
-      anterior y siguiente las listan de la más reciente a la más antigua, y la
-      compilación añade:
+      <code>&lt;meta name="keywords"&gt;</code>. Los enlaces de anterior y siguiente las
+      listan de la más reciente a la más antigua. La barra lateral enlaza a todas las
+      entradas, las cinco más recientes, el feed RSS (con <code>site</code>) y cada
+      etiqueta; la barra lateral de un registro de cambios enlaza igualmente a todas las
+      versiones y a las cinco más recientes. La compilación añade:
     </p>
     <ul>
       <li>
@@ -248,6 +251,17 @@ sections:
   prefix: /changelog/
   source: CHANGELOG.md
   version: true</code></pre>
+    <p>
+      Un <code>source</code> que nombra un repositorio de GitHub,
+      <code>https://github.com/acme/tool</code>, compila en cambio una página por versión:
+      su etiqueta como versión, su fecha de publicación y sus notas, y un enlace "Ver en
+      GitHub". El HTML sin procesar de las notas se muestra como texto, así que una
+      versión no puede añadir scripts al sitio. La compilación lee las primeras 100
+      versiones de la API de GitHub, con <code>GITHUB_TOKEN</code> del entorno cuando está
+      definido, y las guarda en caché en <code>.htmlpress/cache/</code>; una compilación
+      posterior revalida la caché y recurre a ella cuando no se puede contactar con
+      GitHub. Sin caché, una petición fallida hace fallar la compilación.
+    </p>
 
     <h2>Orden y correspondencia</h2>
     <p>

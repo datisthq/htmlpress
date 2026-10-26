@@ -13,7 +13,7 @@
 <pre><code class="language-html">&lt;h2&gt;My Heading&lt;/h2&gt;</code></pre>
 <p>
   Renders as <code>&lt;h2 id="my-heading"&gt;My Heading&lt;/h2&gt;</code>. Every
-  <code>&lt;h2&gt;</code> and <code>&lt;h3&gt;</code> without an <code>id</code> gets one
+  <code>&lt;h2&gt;</code> to <code>&lt;h6&gt;</code> without an <code>id</code> gets one
   from its text: lowercased, with every run of other characters turned into a hyphen. A
   slug already taken on the page gets a number, <code>my-heading-2</code>.
 </p>
@@ -34,16 +34,17 @@
   <code>&lt;h1&gt;</code> is reserved for the page title.
 </p>
 <p>
-  Only <code>&lt;h2&gt;</code> and <code>&lt;h3&gt;</code> appear in the table of
-  contents; deeper headings are styled but not listed.
+  <code>&lt;h2&gt;</code> to <code>&lt;h4&gt;</code> appear in the table of contents;
+  <code>&lt;h5&gt;</code> and <code>&lt;h6&gt;</code> are styled and linkable but not
+  listed.
 </p>
 
 <h2>TOC Control</h2>
 <p>
-  The table of contents lists the page's <code>&lt;h2&gt;</code> and
-  <code>&lt;h3&gt;</code>, highlighting the one in view. Headings inside a callout, card,
-  steps or tabs component stay out of it, so a component's own headings never crowd the
-  page's outline.
+  The table of contents lists the page's <code>&lt;h2&gt;</code>,
+  <code>&lt;h3&gt;</code> and <code>&lt;h4&gt;</code>, highlighting the one in view.
+  Headings inside a callout, card, steps or tabs component stay out of it, so a
+  component's own headings never crowd the page's outline.
 </p>
 <p>
   <code>data-toc="false"</code> keeps a heading off the table of contents while it stays
@@ -56,15 +57,17 @@
 
 <h2>Anchor Links on Hover</h2>
 <p>
-  Every <code>&lt;h2&gt;</code> and <code>&lt;h3&gt;</code> with an id shows a
+  Every <code>&lt;h2&gt;</code> to <code>&lt;h6&gt;</code> with an id shows a
   <code>#</code> link to itself on hover, to copy the anchor URL for sharing.
 </p>
 
 <h2>Inline Table of Contents</h2>
 <p>
   An <code>&lt;htmlpress-toc&gt;</code> written in the page is filled with the page's
-  table of contents, framed as a card; <code>level="2"</code> keeps only the
-  <code>&lt;h2&gt;</code>s. A page without headings gets none.
+  table of contents, framed as a card: its <code>&lt;h2&gt;</code>s and
+  <code>&lt;h3&gt;</code>s by default, only the <code>&lt;h2&gt;</code>s with
+  <code>level="2"</code>, down to the <code>&lt;h4&gt;</code>s with
+  <code>level="4"</code>. A page without headings gets none.
 </p>
 <pre><code class="language-html">&lt;htmlpress-toc level="2"&gt;&lt;/htmlpress-toc&gt;</code></pre>
 <htmlpress-toc level="2"></htmlpress-toc>

@@ -12,6 +12,8 @@ pub(crate) struct Release {
     pub date: Option<String>,
     /// Its notes as HTML, each heading one level up so `###` sections become `<h2>`.
     pub html: String,
+    /// Where the release itself lives, for one fetched from GitHub.
+    pub url: Option<String>,
 }
 
 /// Split a Markdown changelog at its `##` headings, one release each, newest first as the
@@ -46,19 +48,27 @@ fn create_release(heading: &str, body: &[&str]) -> Option<Release> {
     let date = text
         .split(|char: char| !(char.is_ascii_digit() || char == '-'))
         .find_map(read_date);
-    let mut html = render_markdown(&body.join("\n"));
-    for level in 2..=6 {
-        html = html
-            .replace(&format!("<h{level}"), &format!("<h{}", level - 1))
-            .replace(&format!("</h{level}>"), &format!("</h{}>", level - 1));
-    }
+    let html = raise_headings(&render_markdown(&body.join("\n")));
     let slug = create_slug(&version);
     Some(Release {
         version,
         slug,
         date,
         html,
+        url: None,
     })
+}
+
+/// Each heading one level up, `<h3>` to `<h2>`, so a release's sections sit under the
+/// page's own `<h1>`.
+pub(crate) fn raise_headings(html: &str) -> String {
+    let mut html = html.to_owned();
+    for level in 2..=6 {
+        html = html
+            .replace(&format!("<h{level}"), &format!("<h{}", level - 1))
+            .replace(&format!("</h{level}>"), &format!("</h{}>", level - 1));
+    }
+    html
 }
 
 // `[0.2.0](https://…)` reads as `0.2.0`
@@ -83,7 +93,7 @@ fn strip_links(text: &str) -> String {
     plain
 }
 
-fn create_slug(text: &str) -> String {
+pub(crate) fn create_slug(text: &str) -> String {
     let lower = text.to_lowercase();
     let words: Vec<&str> = lower
         .split(|char: char| !char.is_alphanumeric())

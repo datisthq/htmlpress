@@ -251,3 +251,16 @@ fn reads_heading_toc_flags_and_image_themes() -> crate::Result<()> {
     assert!(read_page("a.html", "<h2 data-toc=\"maybe\">A</h2>").is_err());
     Ok(())
 }
+
+#[test]
+fn lists_h4_and_gives_h5_and_h6_ids_only() -> crate::Result<()> {
+    let html = "<h2>Install</h2><h4>Linux</h4><h5>Arch</h5><h6>Notes</h6>";
+    let page = read_page("a.html", html)?;
+    let levels: Vec<(&str, u8)> = (page.toc.iter())
+        .map(|heading| (heading.id.as_str(), heading.level))
+        .collect();
+    assert_eq!(levels, [("install", 2), ("linux", 4)]);
+    assert!(page.content.contains("<h5 id=\"arch\">"));
+    assert!(page.content.contains("<h6 id=\"notes\">"));
+    Ok(())
+}

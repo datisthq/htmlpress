@@ -3,29 +3,46 @@ const SUN =
 const MOON =
   '<path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/>'
 
+const SYSTEM =
+  '<path d="M12 8a2.83 2.83 0 0 0 4 4 4 4 0 1 1-4-4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M6.3 17.7l-1.4 1.4M19.1 4.9l-1.4 1.4"/>'
+const CHOICES = ["light", "dark", "system"]
+
+// One button cycles light, dark and the system's choice; "T" flips light and dark
 class HtmlpressThemeToggle extends HTMLElement {
   connectedCallback() {
-    const button = createButton(readMessages()["theme.toggle"] ?? "Toggle dark mode")
+    const messages = readMessages()
+    const button = document.createElement("button")
+    button.type = "button"
     button.setAttribute("aria-keyshortcuts", "T")
-    const flip = () => {
-      const root = document.documentElement
-      const dark = matchMedia("(prefers-color-scheme: dark)").matches
-      const current = root.dataset.theme ?? (dark ? "dark" : "light")
-      root.dataset.theme = current === "dark" ? "light" : "dark"
-      writeStorage("htmlpress-theme", root.dataset.theme)
+    button.innerHTML =
+      createIcon("light", SUN) + createIcon("dark", MOON) + createIcon("system", SYSTEM)
+    const show = choice => {
+      const label = messages["theme.toggle"] ?? "Toggle dark mode"
+      const name = messages[`theme.${choice}`] ?? choice
+      button.dataset.choice = choice
+      button.setAttribute("aria-label", `${label}: ${name}`)
+      button.title = `${label}: ${name}`
     }
-    button.addEventListener("click", flip)
-    document.addEventListener("keydown", event => isShortcut(event, "t") && flip())
+    const choose = choice => {
+      const root = document.documentElement
+      if (choice === "system") delete root.dataset.theme
+      else root.dataset.theme = choice
+      writeStorage("htmlpress-theme", choice === "system" ? null : choice)
+      show(choice)
+    }
+    show(document.documentElement.dataset.theme ?? "system")
+    button.addEventListener("click", () => {
+      const index = CHOICES.indexOf(button.dataset.choice ?? "system")
+      choose(CHOICES[(index + 1) % CHOICES.length])
+    })
+    document.addEventListener("keydown", event => {
+      if (!isShortcut(event, "t")) return
+      const dark = matchMedia("(prefers-color-scheme: dark)").matches
+      const current = document.documentElement.dataset.theme ?? (dark ? "dark" : "light")
+      choose(current === "dark" ? "light" : "dark")
+    })
     this.replaceChildren(button)
   }
-}
-
-function createButton(label) {
-  const button = document.createElement("button")
-  button.type = "button"
-  button.setAttribute("aria-label", label)
-  button.innerHTML = createIcon("sun", SUN) + createIcon("moon", MOON)
-  return button
 }
 
 function createIcon(name, paths) {
@@ -35,7 +52,8 @@ function createIcon(name, paths) {
 // Storage throws in some private modes; a choice that cannot be kept is still applied
 function writeStorage(key, value) {
   try {
-    localStorage.setItem(key, value)
+    if (value === null) localStorage.removeItem(key)
+    else localStorage.setItem(key, value)
   } catch {}
 }
 

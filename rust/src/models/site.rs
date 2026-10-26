@@ -4,7 +4,7 @@ use std::path::PathBuf;
 use std::sync::LazyLock;
 
 use crate::actions::language::resolve::resolve_english;
-use crate::models::config::Config;
+use crate::models::config::{Config, SectionKind};
 use crate::models::language::SiteLanguage;
 use crate::models::page::Page;
 use crate::models::skill::Skill;
@@ -41,5 +41,20 @@ impl Site {
             .find(|language| language.code == code)
             .or(self.languages.first())
             .unwrap_or(&ENGLISH)
+    }
+
+    /// The URL search engines should index for a page: a changelog's copy in another
+    /// language repeats the default one's text, so it points there.
+    pub(crate) fn read_canonical_url<'a>(&self, page: &'a Page) -> &'a str {
+        let copy = !self.read_language(&page.language).default
+            && !page.source.is_empty()
+            && (self.config.sections.iter()).any(|section| {
+                section.kind == SectionKind::Changelog
+                    && section.source.as_deref() == Some(page.source.as_str())
+            });
+        match copy {
+            true => &page.key,
+            false => &page.url,
+        }
     }
 }

@@ -263,7 +263,10 @@ built 6 pages and 0 files into docs/.htmlpress/build</code></pre>
     <p>
       Compila el proyecto, lo sirve en <code>http://localhost:8000</code> y lo recompila
       con cada cambio. Las páginas abiertas se recargan solas después de cada compilación.
-      Una página rota imprime su error y mantiene en línea la última compilación correcta.
+      Una compilación fallida imprime su error y lo muestra en el navegador: sobre las
+      páginas ya abiertas y en lugar de cualquier página que se abra después. El servidor
+      sigue en marcha, aunque falle la primera compilación, y la siguiente compilación
+      correcta recarga todas las páginas.
     </p>
     <p>
       Si el 8000 está ocupado, prueba el 8001 y sigue hasta el 8009, e imprime la URL que

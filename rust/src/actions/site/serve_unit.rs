@@ -37,11 +37,26 @@ fn reads_the_since_query() {
 #[test]
 fn answers_at_once_when_the_client_is_behind() {
     let state = Reload::default();
-    if let Ok(mut version) = state.version.lock() {
-        *version = 2;
+    if let Ok(mut status) = state.status.lock() {
+        status.version = 2;
+        status.error = Some("broken".to_owned());
     }
-    assert_eq!(wait_for_change(&state, None), 2);
-    assert_eq!(wait_for_change(&state, Some(1)), 2);
+    assert_eq!(wait_for_change(&state, None).version, 2);
+    let status = wait_for_change(&state, Some(1));
+    assert_eq!(
+        (status.version, status.error.as_deref()),
+        (2, Some("broken"))
+    );
+}
+
+#[test]
+fn tells_pages_from_other_files() {
+    assert!(is_page_path("/"));
+    assert!(is_page_path("/guides/"));
+    assert!(is_page_path("/guides/setup.html"));
+    assert!(is_page_path("/guides"));
+    assert!(!is_page_path("/_htmlpress/theme.css"));
+    assert!(!is_page_path("/llms.txt"));
 }
 
 #[test]
@@ -59,6 +74,7 @@ fn keeps_watching_sources_and_the_project_folder_only() {
     assert!(watched("/site/.htmlpress/layout.html", &all));
     assert!(!watched("/site/.htmlpress/build/index.html", &all));
     assert!(!watched("/site/.htmlpress", &all));
+    assert!(!watched("/site/.htmlpress/cache/changelog-a-b.json", &all));
     assert!(!watched("/site/.git/index", &all));
     assert!(!watched("/site/node_modules/x.html", &all));
     let access = notify::EventKind::Access(notify::event::AccessKind::Any);

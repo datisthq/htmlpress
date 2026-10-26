@@ -119,11 +119,11 @@ fn read_facts(html: &str) -> Result<Facts, String> {
             }
             Ok(())
         }))
-        .append_element_content_handler(element!("h2, h3", |el| {
+        .append_element_content_handler(element!("h2, h3, h4, h5, h6", |el| {
             let heading = Heading {
                 id: el.get_attribute("id").unwrap_or_default(),
                 title: String::new(),
-                level: if el.tag_name() == "h2" { 2 } else { 3 },
+                level: (el.tag_name().as_bytes().get(1)).map_or(2, |digit| digit - b'0'),
             };
             // `data-toc="false"` keeps a heading off the table of contents; "only" keeps it
             // there but off the page, which the theme collapses to nothing in place
@@ -137,10 +137,12 @@ fn read_facts(html: &str) -> Result<Facts, String> {
                     .into());
                 }
             };
+            // An <h5> or <h6> gets an id and an anchor, never a table of contents entry
+            let listed = listed && heading.level <= 4;
             facts.borrow_mut().headings.push((heading, listed));
             Ok(())
         }))
-        .append_element_content_handler(text!("h2, h3", |chunk| {
+        .append_element_content_handler(text!("h2, h3, h4, h5, h6", |chunk| {
             if let Some((heading, _)) = facts.borrow_mut().headings.last_mut() {
                 heading.title.push_str(chunk.as_str());
             }
@@ -317,12 +319,16 @@ fn create_slug(title: &str, taken: &mut Vec<String>) -> String {
 const UNLISTED_HEADINGS: &[&str] = &[
     "htmlpress-callout h2",
     "htmlpress-callout h3",
+    "htmlpress-callout h4",
     "htmlpress-card h2",
     "htmlpress-card h3",
+    "htmlpress-card h4",
     "htmlpress-steps h2",
     "htmlpress-steps h3",
+    "htmlpress-steps h4",
     "htmlpress-tabs h2",
     "htmlpress-tabs h3",
+    "htmlpress-tabs h4",
 ];
 
 fn read_content(html: &str, headings: &[(Heading, bool)]) -> Result<String, String> {
@@ -365,7 +371,7 @@ fn read_content(html: &str, headings: &[(Heading, bool)]) -> Result<String, Stri
             chunk.remove();
             Ok(())
         }))
-        .append_element_content_handler(element!("h2, h3", |el| {
+        .append_element_content_handler(element!("h2, h3, h4, h5, h6", |el| {
             if let Some((heading, _)) = headings.get(index.get())
                 && el.get_attribute("id").is_none_or(|id| id.is_empty())
             {

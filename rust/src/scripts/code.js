@@ -1,7 +1,11 @@
-// Every code block gets a copy button and every h2/h3 with an id a link to itself.
+// Every code block gets wrap and copy buttons, and every h2 to h6 with an id a link to itself.
 
 const MESSAGES = readMessages()
 const COPY = MESSAGES["code.copy"] ?? "Copy"
+const WRAP_ON = MESSAGES["code.wrapOn"] ?? "Enable wrap"
+const WRAP_OFF = MESSAGES["code.wrapOff"] ?? "Disable wrap"
+const WRAP =
+  '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M3 12h15a3 3 0 1 1 0 6h-4"/><path d="m16 16-2 2 2 2M3 18h7"/></svg>'
 
 function addCopyButtons() {
   for (const pre of document.querySelectorAll("htmlpress-page > main pre")) {
@@ -21,13 +25,33 @@ function addCopyButtons() {
       button.textContent = MESSAGES["code.copied"] ?? "Copied"
       setTimeout(() => (button.textContent = COPY), 2000)
     })
-    box.append(pre, button)
+    const actions = document.createElement("span")
+    actions.append(createWrapButton(pre), button)
+    box.append(pre, actions)
   }
+}
+
+function createWrapButton(pre) {
+  const button = document.createElement("button")
+  button.type = "button"
+  button.innerHTML = WRAP
+  const show = () => {
+    const wrapped = pre.dataset.wrap !== undefined
+    button.setAttribute("aria-pressed", String(wrapped))
+    button.setAttribute("aria-label", wrapped ? WRAP_OFF : WRAP_ON)
+    button.title = wrapped ? WRAP_OFF : WRAP_ON
+  }
+  button.addEventListener("click", () => {
+    pre.toggleAttribute("data-wrap")
+    show()
+  })
+  show()
+  return button
 }
 
 function addHeadingAnchors() {
   for (const heading of document.querySelectorAll(
-    "htmlpress-page > main :is(h2, h3)[id]",
+    "htmlpress-page > main :is(h2, h3, h4, h5, h6)[id]",
   )) {
     if (heading.querySelector(".htmlpress-anchor")) continue
     const anchor = document.createElement("a")

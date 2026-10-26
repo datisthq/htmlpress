@@ -7,7 +7,7 @@
 <p>
   代码块就是
   <code>&lt;pre&gt;&lt;code&gt;</code
-  >，由主题以等宽字体设置样式。每个代码块都有一个复制按钮。其中的代码需要转义：
+  >，由主题以等宽字体设置样式。每个代码块都有一个复制按钮和一个自动换行长行的按钮。其中的代码需要转义：
   <code>&lt;</code> 写作 <code>&amp;lt;</code>，<code>&amp;</code> 写作
   <code>&amp;amp;</code>。代码块的标签页在
   <a href="/zh/authoring/rich-elements.html">代码标签页</a>中介绍。
@@ -122,6 +122,19 @@ const unused = 1</code></pre>
   build: 10
   build: 11
   build: 12</code></pre>
+
+<h2>ANSI 输出</h2>
+<p>
+  <code>language-ansi</code>
+  代码块会渲染终端输出中的颜色转义序列，可以原样书写，也可以写作
+  <code>&amp;#27;</code>：支持 16 色、256
+  色和真彩色形式，以及粗体、暗淡、斜体、下划线和删除线。其他转义序列会被丢弃。
+</p>
+<pre><code class="language-html">&lt;pre&gt;&lt;code class="language-ansi"&gt;&amp;#27;[32m✓&amp;#27;[0m built 48 pages
+&amp;#27;[1;31merror&amp;#27;[0m: index.html: no title&lt;/code&gt;&lt;/pre&gt;</code></pre>
+<p>渲染为：</p>
+<pre><code class="language-ansi">&#27;[32m✓&#27;[0m built 48 pages
+&#27;[1;31merror&#27;[0m: index.html: no title</code></pre>
 
 <h2>语言图标</h2>
 <p>

@@ -51,12 +51,13 @@ htmlpress escape htmlpress-tabs -r docs  # in another project folder
 an escape restores the default. An escaped copy keeps the code it was copied from, so after an
 upgrade it misses the new defaults: escape only what you change.
 
-| Path under `.htmlpress/`                         | Replaces                                                 |
-| ------------------------------------------------ | -------------------------------------------------------- |
-| `layout.html`                                    | the page around the content                              |
-| `layouts/<name>.html`                            | a layout of your own, picked by `<meta name="layout">`   |
-| `styles/tokens.css`, `layout.css`, `content.css` | the global theme: tokens, page globals, content elements |
-| `components/<name>/<name>.css`, `.js`            | one component, `<htmlpress-<name>>` without its prefix   |
+| Path under `.htmlpress/`                         | Replaces                                                          |
+| ------------------------------------------------ | ----------------------------------------------------------------- |
+| `layout.html`                                    | the page around the content                                       |
+| `layouts/<name>.html`                            | a layout of your own, picked by `<meta name="layout">`            |
+| `styles/tokens.css`, `layout.css`, `content.css` | the global theme: tokens, page globals, content elements          |
+| `favicon.svg`                                    | the icon linked when the config sets neither `favicon` nor `logo` |
+| `components/<name>/<name>.css`, `.js`            | one component, `<htmlpress-<name>>` without its prefix            |
 
 ## Layouts
 

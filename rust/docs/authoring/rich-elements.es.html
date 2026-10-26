@@ -66,8 +66,9 @@
 <h2>Avisos</h2>
 <p>
   Los avisos destacan información importante. <code>type</code> es <code>info</code> (el
-  predeterminado), <code>success</code>, <code>warning</code> o <code>danger</code>, y
-  <code>label</code> sustituye al encabezado que da el tipo:
+  predeterminado), <code>note</code>, <code>tip</code>, <code>success</code>,
+  <code>warning</code> o <code>danger</code>, y <code>label</code> sustituye al encabezado
+  que da el tipo:
 </p>
 <pre><code class="language-html">&lt;htmlpress-callout&gt;&lt;p&gt;This is a note.&lt;/p&gt;&lt;/htmlpress-callout&gt;
 
@@ -238,8 +239,9 @@ title: Htmlpress</code></pre>
 <h2>Insignias</h2>
 <p>
   Una etiqueta en línea. <code>type</code> es <code>info</code>, <code>success</code>,
-  <code>warning</code>, <code>danger</code> o <code>neutral</code>; sin él, el color de
-  acento.
+  <code>warning</code>, <code>danger</code> o <code>neutral</code> para un tono, u
+  <code>outline</code>, <code>ghost</code> o <code>link</code> para un estilo más sobrio;
+  sin él, el color de acento.
 </p>
 <pre><code class="language-html">&lt;htmlpress-badge&gt;New&lt;/htmlpress-badge&gt;
 &lt;htmlpress-badge type="success"&gt;Stable&lt;/htmlpress-badge&gt;</code></pre>
@@ -251,12 +253,17 @@ title: Htmlpress</code></pre>
   <htmlpress-badge type="warning">Beta</htmlpress-badge>
   <htmlpress-badge type="danger">Eliminado</htmlpress-badge>
   <htmlpress-badge type="neutral">v1</htmlpress-badge>
+  <htmlpress-badge type="outline">Contorno</htmlpress-badge>
+  <htmlpress-badge type="ghost">Fantasma</htmlpress-badge>
 </p>
 
 <h2>Botones</h2>
 <p>
-  Un enlace dentro de <code>&lt;htmlpress-button&gt;</code> es una llamada a la acción;
-  <code>type="secondary"</code> lo hace más discreto.
+  Un enlace dentro de <code>&lt;htmlpress-button&gt;</code> es una llamada a la acción.
+  <code>type</code> es <code>secondary</code>, <code>outline</code>, <code>ghost</code> o
+  <code>link</code> para uno más discreto, y <code>positive</code>, <code>warning</code> o
+  <code>destructive</code> para uno con tono; <code>size</code> es <code>sm</code> o
+  <code>lg</code>.
 </p>
 <pre><code class="language-html">&lt;htmlpress-button&gt;&lt;a href="/introduction.html"&gt;Get Started&lt;/a&gt;&lt;/htmlpress-button&gt;
 &lt;htmlpress-button type="secondary"&gt;&lt;a href="…"&gt;GitHub&lt;/a&gt;&lt;/htmlpress-button&gt;</code></pre>
@@ -266,6 +273,10 @@ title: Htmlpress</code></pre>
   <htmlpress-button type="secondary">
     <a href="https://github.com/datisthq/htmlpress">GitHub</a>
   </htmlpress-button>
+  <htmlpress-button type="outline" size="sm"
+    ><a href="#botones">Contorno</a></htmlpress-button
+  >
+  <htmlpress-button type="link"><a href="#botones">Enlace</a></htmlpress-button>
 </p>
 
 <h2>Iconos</h2>
@@ -555,12 +566,12 @@ title: Htmlpress</code></pre>
   Un elemento sin nada que mostrar se elimina.
   <code>&lt;htmlpress-nav-toggle&gt;</code> (la barra lateral como cajón en un móvil; en
   pantallas más anchas, pliega la barra lateral y lo recuerda),
-  <code>&lt;htmlpress-theme-toggle&gt;</code> y
-  <code>&lt;htmlpress-back-to-top&gt;</code> los construye el script en el navegador. Sus
-  teclas coinciden con las de Livemark: <kbd>L</kbd> muestra u oculta la barra lateral,
-  <kbd>T</kbd> cambia el tema y <kbd>B</kbd> vuelve arriba, mientras que <kbd>J</kbd> y
-  <kbd>K</kbd> desplazan cualquier página hacia abajo y hacia arriba. Ninguna se activa
-  mientras escribes en un campo.
+  <code>&lt;htmlpress-theme-toggle&gt;</code> (que alterna entre claro, oscuro y la
+  elección del sistema) y <code>&lt;htmlpress-back-to-top&gt;</code> los construye el
+  script en el navegador. Sus teclas coinciden con las de Livemark: <kbd>L</kbd> muestra u
+  oculta la barra lateral, <kbd>T</kbd> alterna entre claro y oscuro y <kbd>B</kbd> vuelve
+  arriba, mientras que <kbd>J</kbd> y <kbd>K</kbd> desplazan cualquier página hacia abajo
+  y hacia arriba. Ninguna se activa mientras escribes en un campo.
 </p>
 <p>
   El marco que los rodea también está hecho de elementos. No contienen nada propio, solo

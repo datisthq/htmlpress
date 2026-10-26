@@ -112,7 +112,8 @@ head:
       </li>
       <li>
         Si se omite <code>favicon</code>, htmlpress recurre a <code>logo</code>; sin
-        ninguno de los dos, no se escribe ningún enlace de icono.
+        ninguno de los dos, el icono de htmlpress, que <code>.htmlpress/favicon.svg</code>
+        puede sustituir.
       </li>
       <li>
         El logo es un <code>&lt;img&gt;</code> antes del título del sitio y su
@@ -154,8 +155,8 @@ head:
       <code>og:type</code> es <code>website</code>. Con <code>site</code> definido,
       también recibe <code>og:url</code> y un <code>&lt;link rel="canonical"&gt;</code>.
       El <code>&lt;meta name="image"&gt;</code> de una página se convierte en su
-      <code>og:image</code>, que se hace absoluta con <code>site</code> cuando es relativa
-      a la raíz, y cambia <code>twitter:card</code> de <code>summary</code> a
+      <code>og:image</code>, que se hace absoluta con <code>site</code> (sin él, una
+      imagen local se omite), y cambia <code>twitter:card</code> de <code>summary</code> a
       <code>summary_large_image</code>.
     </p>
 

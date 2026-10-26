@@ -9,10 +9,11 @@
 <h1>Bloques de código</h1>
 <p>
   Un bloque de código es un <code>&lt;pre&gt;&lt;code&gt;</code>, con el estilo del tema
-  en su fuente monoespaciada. Cada bloque de código recibe un botón de copiar. Escapa el
-  código que contiene: <code>&amp;lt;</code> para <code>&lt;</code> y
-  <code>&amp;amp;</code> para <code>&amp;</code>. Las pestañas de bloques de código se
-  explican en <a href="/es/authoring/rich-elements.html">Pestañas de código</a>.
+  en su fuente monoespaciada. Cada bloque de código recibe un botón de copiar y otro que
+  ajusta las líneas largas. Escapa el código que contiene: <code>&amp;lt;</code> para
+  <code>&lt;</code> y <code>&amp;amp;</code> para <code>&amp;</code>. Las pestañas de
+  bloques de código se explican en
+  <a href="/es/authoring/rich-elements.html">Pestañas de código</a>.
 </p>
 <pre><code class="language-html">&lt;pre&gt;&lt;code&gt;const greeting = "&amp;lt;hello&amp;gt;"&lt;/code&gt;&lt;/pre&gt;</code></pre>
 <p>Se renderiza como:</p>
@@ -134,6 +135,19 @@ const unused = 1</code></pre>
   build: 10
   build: 11
   build: 12</code></pre>
+
+<h2>Salida ANSI</h2>
+<p>
+  Un bloque en <code>language-ansi</code> renderiza los escapes de color de la salida de
+  una terminal, escritos tal cual o como <code>&amp;#27;</code>: los 16 colores, las
+  formas de 256 colores y de color verdadero, negrita, tenue, cursiva, subrayado y
+  tachado. Los demás escapes se descartan.
+</p>
+<pre><code class="language-html">&lt;pre&gt;&lt;code class="language-ansi"&gt;&amp;#27;[32m✓&amp;#27;[0m built 48 pages
+&amp;#27;[1;31merror&amp;#27;[0m: index.html: no title&lt;/code&gt;&lt;/pre&gt;</code></pre>
+<p>Se renderiza como:</p>
+<pre><code class="language-ansi">&#27;[32m✓&#27;[0m built 48 pages
+&#27;[1;31merror&#27;[0m: index.html: no title</code></pre>
 
 <h2>Iconos de lenguaje</h2>
 <p>

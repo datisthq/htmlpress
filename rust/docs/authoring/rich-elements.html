@@ -65,8 +65,9 @@
 <h2>Callouts</h2>
 <p>
   Callouts highlight important information. <code>type</code> is <code>info</code> (the
-  default), <code>success</code>, <code>warning</code> or <code>danger</code>, and
-  <code>label</code> replaces the heading the type gives:
+  default), <code>note</code>, <code>tip</code>, <code>success</code>,
+  <code>warning</code> or <code>danger</code>, and <code>label</code> replaces the heading
+  the type gives:
 </p>
 <pre><code class="language-html">&lt;htmlpress-callout&gt;&lt;p&gt;This is a note.&lt;/p&gt;&lt;/htmlpress-callout&gt;
 
@@ -227,8 +228,9 @@ title: Htmlpress</code></pre>
 <h2>Badges</h2>
 <p>
   An inline label. <code>type</code> is <code>info</code>, <code>success</code>,
-  <code>warning</code>, <code>danger</code> or <code>neutral</code>; without it, the
-  accent.
+  <code>warning</code>, <code>danger</code> or <code>neutral</code> for a tone, or
+  <code>outline</code>, <code>ghost</code> or <code>link</code> for a plainer style;
+  without it, the accent.
 </p>
 <pre><code class="language-html">&lt;htmlpress-badge&gt;New&lt;/htmlpress-badge&gt;
 &lt;htmlpress-badge type="success"&gt;Stable&lt;/htmlpress-badge&gt;</code></pre>
@@ -240,12 +242,17 @@ title: Htmlpress</code></pre>
   <htmlpress-badge type="warning">Beta</htmlpress-badge>
   <htmlpress-badge type="danger">Removed</htmlpress-badge>
   <htmlpress-badge type="neutral">v1</htmlpress-badge>
+  <htmlpress-badge type="outline">Outline</htmlpress-badge>
+  <htmlpress-badge type="ghost">Ghost</htmlpress-badge>
 </p>
 
 <h2>Buttons</h2>
 <p>
-  A link inside <code>&lt;htmlpress-button&gt;</code> is a call to action;
-  <code>type="secondary"</code> makes it quieter.
+  A link inside <code>&lt;htmlpress-button&gt;</code> is a call to action.
+  <code>type</code> is <code>secondary</code>, <code>outline</code>, <code>ghost</code> or
+  <code>link</code> for a quieter one, and <code>positive</code>, <code>warning</code> or
+  <code>destructive</code> for a toned one; <code>size</code> is <code>sm</code> or
+  <code>lg</code>.
 </p>
 <pre><code class="language-html">&lt;htmlpress-button&gt;&lt;a href="/introduction.html"&gt;Get Started&lt;/a&gt;&lt;/htmlpress-button&gt;
 &lt;htmlpress-button type="secondary"&gt;&lt;a href="…"&gt;GitHub&lt;/a&gt;&lt;/htmlpress-button&gt;</code></pre>
@@ -255,6 +262,10 @@ title: Htmlpress</code></pre>
   <htmlpress-button type="secondary">
     <a href="https://github.com/datisthq/htmlpress">GitHub</a>
   </htmlpress-button>
+  <htmlpress-button type="outline" size="sm"
+    ><a href="#buttons">Outline</a></htmlpress-button
+  >
+  <htmlpress-button type="link"><a href="#buttons">Link</a></htmlpress-button>
 </p>
 
 <h2>Icons</h2>
@@ -543,11 +554,12 @@ title: Htmlpress</code></pre>
   An element with nothing to show is removed.
   <code>&lt;htmlpress-nav-toggle&gt;</code> (the sidebar as a drawer on a phone; wider, it
   folds the sidebar away and remembers that),
-  <code>&lt;htmlpress-theme-toggle&gt;</code> and
-  <code>&lt;htmlpress-back-to-top&gt;</code> are built by the script in the browser. Their
-  keys match Livemark's: <kbd>L</kbd> toggles the sidebar, <kbd>T</kbd> the theme and
-  <kbd>B</kbd> goes back to the top, while <kbd>J</kbd> and <kbd>K</kbd> scroll any page
-  down and up. None fires while typing in a field.
+  <code>&lt;htmlpress-theme-toggle&gt;</code> (cycling light, dark and the system's
+  choice) and <code>&lt;htmlpress-back-to-top&gt;</code> are built by the script in the
+  browser. Their keys match Livemark's: <kbd>L</kbd> toggles the sidebar,
+  <kbd>T</kbd> flips light and dark and <kbd>B</kbd> goes back to the top, while
+  <kbd>J</kbd> and <kbd>K</kbd> scroll any page down and up. None fires while typing in a
+  field.
 </p>
 <p>
   The frame around them is made of elements too. They hold no content of their own, only

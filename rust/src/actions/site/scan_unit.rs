@@ -166,7 +166,7 @@ fn rejects_a_page_whose_layout_is_missing() -> crate::Result<()> {
 #[test]
 fn registers_every_built_in_asset_file() -> crate::Result<()> {
     let assets = Path::new(env!("CARGO_MANIFEST_DIR")).join("src");
-    let mut paths = vec!["layout.html".to_owned()];
+    let mut paths = vec!["layout.html".to_owned(), "favicon.svg".to_owned()];
     for folder in ["styles", "scripts", "components"] {
         let entries =
             std::fs::read_dir(assets.join(folder)).map_err(Error::io(folder))?;

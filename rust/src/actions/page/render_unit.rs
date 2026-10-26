@@ -307,7 +307,8 @@ fn adds_the_favicon_social_tags_and_head_from_the_config() -> crate::Result<()> 
 fn fills_the_logo_banner_and_footer() -> crate::Result<()> {
     let mut site = create_site()?;
     let html = render_page(&site, &site.pages[0], false)?;
-    assert!(!html.contains("<htmlpress-banner") && !html.contains("rel=\"icon\""));
+    assert!(!html.contains("<htmlpress-banner"));
+    assert!(html.contains(r#"<link rel="icon" href="/_htmlpress/favicon.svg">"#));
     assert!(html.contains(r#"<a href="https://htmlpress.dev">Htmlpress</a>"#));
     site.config.logo = Some("/logo.svg".to_owned());
     site.config.banner = Some("<a href=\"/new\">New</a>".into());
@@ -649,7 +650,7 @@ fn fills_an_inline_toc_written_in_the_page() -> crate::Result<()> {
     assert!(!html.contains("data-inline"));
     site.pages[1] = read_page(
         "guide.html",
-        "<htmlpress-toc level=\"4\"></htmlpress-toc><h2>A</h2>",
+        "<htmlpress-toc level=\"5\"></htmlpress-toc><h2>A</h2>",
     )?;
     assert!(render_page(&site, &site.pages[1], false).is_err());
     Ok(())

@@ -1,6 +1,7 @@
 use std::fmt::Write;
 use std::path::Path;
 
+use crate::actions::changelog::fetch::{fetch_releases, is_github_source};
 use crate::actions::changelog::split::split_changelog;
 use crate::actions::date::format::format_date;
 use crate::actions::language::detect::create_key;
@@ -9,7 +10,7 @@ use crate::actions::path::contain::read_contained;
 use crate::models::config::{Section, SectionKind};
 use crate::models::error::Error;
 use crate::models::language::SiteLanguage;
-use crate::models::page::Page;
+use crate::models::page::{Page, SourceAction};
 use crate::settings::CONFIG_FILE;
 
 /// The pages blog and changelog sections build themselves: a blog's index and one page per
@@ -162,12 +163,14 @@ fn create_changelog(
     language: &SiteLanguage,
 ) -> crate::Result<Vec<Page>> {
     let source = section.source.as_deref().unwrap_or_default();
-    let markdown =
-        read_contained(root, source, false).map_err(|message| Error::Config {
-            path: root.join(CONFIG_FILE),
-            message: format!("section \"{}\": source {message}", section.title),
-        })?;
-    let releases = split_changelog(&markdown);
+    let fail = |message: String| Error::Config {
+        path: root.join(CONFIG_FILE),
+        message: format!("section \"{}\": source {message}", section.title),
+    };
+    let releases = match is_github_source(source) {
+        true => fetch_releases(root, source).map_err(fail)?,
+        false => split_changelog(&read_contained(root, source, false).map_err(fail)?),
+    };
     let folder = prefix.trim_start_matches('/');
     let title = escape_html(&section.title);
     let mut index = format!("<title>{title}</title>\n<h1>{title}</h1>\n<ul>\n");
@@ -183,11 +186,16 @@ fn create_changelog(
             "<title>{version}</title>\n<meta name=\"order\" content=\"{order}\">\n{meta}<h1>{version}</h1>\n{}",
             release.html
         );
-        created.push(create_page(
+        let mut page = create_page(
             &format!("{folder}{}/index.html", release.slug),
             &html,
             source,
-        )?);
+        )?;
+        if let Some(url) = &release.url {
+            page.source_url = Some(url.clone());
+            page.source_action = SourceAction::View;
+        }
+        created.push(page);
         let when = date.map_or(String::new(), |date| {
             format!(" · {}", format_date(date, language))
         });

@@ -49,8 +49,9 @@
       <td><code>&lt;meta name="image"&gt;</code></td>
       <td>none</td>
       <td>
-        The image shown when the page is shared, as <code>og:image</code>; a root-relative
-        URL is made absolute with <code>site</code>.
+        The image shown when the page is shared, as <code>og:image</code>. A relative URL
+        is resolved from the page's source file; a local one needs <code>site</code> to be
+        made absolute, and is left out without it.
       </td>
     </tr>
     <tr>

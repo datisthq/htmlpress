@@ -9,6 +9,9 @@ pub const PROJECT_DIR: &str = ".htmlpress";
 /// The build output, relative to the project root, unless `--out` names another.
 pub const OUTPUT_DIR: &str = ".htmlpress/build";
 
+/// Where builds keep what they fetched, such as GitHub releases; never published.
+pub const CACHE_DIR: &str = ".htmlpress/cache";
+
 /// Where the built-in theme and components are written in the output.
 pub const ASSETS_DIR: &str = "_htmlpress";
 
@@ -17,6 +20,8 @@ pub const PORTS: std::ops::RangeInclusive<u16> = 8000..=8009;
 
 /// The dev server's long-poll endpoint the reload script waits on.
 pub const RELOAD_PATH: &str = "/_htmlpress/reload";
+/// The reload script, which the dev server answers even before a build wrote it.
+pub const RELOAD_SCRIPT: &str = "/_htmlpress/reload.js";
 
 /// Where a host looks for the page it serves on a missing URL; never listed in the
 /// navigation or the sitemap.
@@ -53,6 +58,7 @@ macro_rules! asset {
 /// replaces it.
 pub const ASSETS: &[Asset] = &[
     asset!("layout.html"),
+    asset!("favicon.svg"),
     asset!("styles/tokens.css"),
     asset!("styles/layout.css"),
     asset!("styles/content.css"),
@@ -79,6 +85,7 @@ pub const ASSETS: &[Asset] = &[
     asset!("components/language/language.css"),
     asset!("components/language/language.js"),
     asset!("components/links/links.css"),
+    asset!("components/links/links.js"),
     asset!("components/main/main.css"),
     asset!("components/math/math.css"),
     asset!("components/mermaid/mermaid.css"),

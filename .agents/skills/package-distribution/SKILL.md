@@ -37,7 +37,7 @@ One binary, three registries, one version. Nothing here may change what the bina
 `manifest-path = "../rust/Cargo.toml"`, `dynamic = ["version"]` so the wheel takes the crate's
 version. A wheel holds the binary under `.data/scripts/` and the skills under
 `.data/data/share/htmlpress/skills/`, installed to `<venv>/share/htmlpress/skills`. maturin
-reads them from `python/htmlpress.data/` (`data` in `pyproject.toml`), which
+reads them from the `htmlpress.data` folder beside `pyproject.toml` (its `data` key), which
 `python/scripts/copy-skills.sh` stages and git ignores: the local build and the release
 workflow's Stage Skills step both run it, and a wheel built without it ships no skills. CI builds one wheel per target
 with `PyO3/maturin-action`; no sdist is published, since the crate sits outside `python/`.

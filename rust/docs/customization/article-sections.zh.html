@@ -113,7 +113,9 @@ sections:
           <td><code>source</code></td>
           <td>无，<code>changelog</code> 必填</td>
           <td>
-            要拆分的 Markdown 变更日志，路径相对于项目；它必须位于项目内，且不能是点文件。
+            要拆分的 Markdown
+            变更日志，路径相对于项目；它必须位于项目内，且不能是点文件。也可以是 GitHub
+            仓库的 URL，从其发布版本构建。
           </td>
         </tr>
         <tr>
@@ -185,7 +187,10 @@ sections:
       <code>&lt;meta name="date"&gt;</code> 指定，作者由
       <code>&lt;meta name="author"&gt;</code> 指定，标签由
       <code>&lt;meta name="keywords"&gt;</code>
-      指定。侧边栏以及上一页、下一页链接按最新在前的顺序列出它们，构建还会添加：
+      指定。上一页、下一页链接按最新在前的顺序列出它们。侧边栏链接到全部文章、最新的五篇、RSS
+      订阅源（需设置
+      <code>site</code
+      >）和每个标签；变更日志的侧边栏同样链接到全部发布版本和最新的五个。构建还会添加：
     </p>
     <ul>
       <li>
@@ -217,6 +222,16 @@ sections:
   prefix: /changelog/
   source: CHANGELOG.md
   version: true</code></pre>
+    <p>
+      若 <code>source</code> 指向一个 GitHub 仓库，如
+      <code>https://github.com/acme/tool</code
+      >，则改为每个发布版本构建一个页面：以其标签作为版本，并包含发布日期、发布说明和一个“在
+      GitHub 上查看”链接。发布说明中的原始 HTML
+      会显示为文本，因此发布版本无法向站点添加脚本。构建会从 GitHub API 读取前 100
+      个发布版本，若环境中设置了 <code>GITHUB_TOKEN</code> 则使用它，并把结果缓存在
+      <code>.htmlpress/cache/</code>；之后的构建会重新验证缓存，并在无法连接 GitHub
+      时回退到缓存。没有缓存时，请求失败会导致构建失败。
+    </p>
 
     <h2>排序与匹配</h2>
     <p>

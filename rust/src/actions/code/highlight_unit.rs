@@ -95,3 +95,29 @@ fn colors_inline_code_that_names_a_language() -> Result<(), String> {
     );
     Ok(())
 }
+
+#[test]
+fn darkens_latte_strings_for_contrast() -> Result<(), String> {
+    let html = highlight_code(
+        "<pre><code class=\"language-js\">const a = \"text\"</code></pre>",
+        "catppuccin-latte",
+        "catppuccin-mocha",
+    )?;
+    assert!(html.contains("light-dark(#2A7E16,"), "{html}");
+    assert!(!html.contains("#40A02B"));
+    Ok(())
+}
+
+#[test]
+fn renders_ansi_blocks_from_escapes_or_entities() -> Result<(), String> {
+    let html = highlight_code(
+        "<pre><code class=\"language-ansi\">&#27;[31merror&#27;[0m &lt;ok&gt;</code></pre>",
+        "catppuccin-latte",
+        "catppuccin-mocha",
+    )?;
+    assert!(
+        html.contains("<span style=\"color:#bf616a\">error</span> &lt;ok&gt;"),
+        "{html}"
+    );
+    Ok(())
+}

@@ -28,4 +28,21 @@
   :scope[type="neutral"] {
     --tone: var(--htmlpress-muted);
   }
+  :scope[type="outline"] {
+    border-color: var(--htmlpress-border);
+    background: transparent;
+    color: var(--htmlpress-text);
+  }
+  :scope[type="ghost"] {
+    border-color: transparent;
+    background: transparent;
+    color: var(--htmlpress-muted);
+  }
+  :scope[type="link"] {
+    padding-inline: 0;
+    border-color: transparent;
+    background: transparent;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
 }

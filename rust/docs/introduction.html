@@ -250,8 +250,10 @@ built 6 pages and 0 files into docs/.htmlpress/build</code></pre>
     <h3><code>htmlpress start [root]</code></h3>
     <p>
       Builds the project, serves it on <code>http://localhost:8000</code> and rebuilds on
-      every change. Open pages reload themselves after each build. A broken page prints
-      its error and keeps the last good build up.
+      every change. Open pages reload themselves after each build. A failed build prints
+      its error and shows it in the browser: over the pages already open, and in place of
+      any page opened next. The server stays up, even when the first build fails, and the
+      next good build reloads every page.
     </p>
     <p>
       When 8000 is taken it tries 8001 and on to 8009, and prints the URL it got.

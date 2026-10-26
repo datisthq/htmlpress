@@ -9,9 +9,9 @@
 <h1>Code Blocks</h1>
 <p>
   A code block is a <code>&lt;pre&gt;&lt;code&gt;</code>, styled by the theme in its mono
-  font. Every code block gets a copy button. Escape the code inside it:
-  <code>&amp;lt;</code> for <code>&lt;</code> and <code>&amp;amp;</code> for
-  <code>&amp;</code>. Tabs of code blocks are covered under
+  font. Every code block gets a copy button and a button that wraps long lines. Escape the
+  code inside it: <code>&amp;lt;</code> for <code>&lt;</code> and
+  <code>&amp;amp;</code> for <code>&amp;</code>. Tabs of code blocks are covered under
   <a href="/authoring/rich-elements.html#code-tabs">Code Tabs</a>.
 </p>
 <pre><code class="language-html">&lt;pre&gt;&lt;code&gt;const greeting = "&amp;lt;hello&amp;gt;"&lt;/code&gt;&lt;/pre&gt;</code></pre>
@@ -129,6 +129,18 @@ const unused = 1</code></pre>
   build: 10
   build: 11
   build: 12</code></pre>
+
+<h2>ANSI Output</h2>
+<p>
+  A block in <code>language-ansi</code> renders terminal output's color escapes, written
+  raw or as <code>&amp;#27;</code>: the 16 colors, the 256-color and true-color forms,
+  bold, dim, italic, underline and strikethrough. Other escapes are dropped.
+</p>
+<pre><code class="language-html">&lt;pre&gt;&lt;code class="language-ansi"&gt;&amp;#27;[32m✓&amp;#27;[0m built 48 pages
+&amp;#27;[1;31merror&amp;#27;[0m: index.html: no title&lt;/code&gt;&lt;/pre&gt;</code></pre>
+<p>Renders as:</p>
+<pre><code class="language-ansi">&#27;[32m✓&#27;[0m built 48 pages
+&#27;[1;31merror&#27;[0m: index.html: no title</code></pre>
 
 <h2>Language Icons</h2>
 <p>

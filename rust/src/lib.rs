@@ -8,9 +8,11 @@ mod actions {
         pub(crate) mod list;
     }
     pub(crate) mod changelog {
+        pub(crate) mod fetch;
         pub(crate) mod split;
     }
     pub(crate) mod code {
+        pub(crate) mod ansi;
         pub(crate) mod highlight;
         pub(crate) mod title;
     }
@@ -49,6 +51,7 @@ mod actions {
         pub(crate) mod patch;
         pub(crate) mod prefix;
         pub(crate) mod read;
+        pub(crate) mod rebase;
         pub(crate) mod render;
     }
     pub(crate) mod text {

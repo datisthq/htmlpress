@@ -122,7 +122,8 @@ sections:
           <td>none, required for <code>changelog</code></td>
           <td>
             The Markdown changelog to split, relative to the project; it must stay inside
-            the project and not be a dot-file.
+            the project and not be a dot-file. Or a GitHub repository URL, to build from
+            its releases.
           </td>
         </tr>
         <tr>
@@ -196,8 +197,10 @@ sections:
       A <code>blog</code> section's pages are posts: dated by
       <code>&lt;meta name="date"&gt;</code>, signed by
       <code>&lt;meta name="author"&gt;</code> and tagged by
-      <code>&lt;meta name="keywords"&gt;</code>. The sidebar and the previous and next
-      links list them newest first, and the build adds:
+      <code>&lt;meta name="keywords"&gt;</code>. The previous and next links list them
+      newest first. The sidebar links to all posts, the five newest, the RSS feed (with
+      <code>site</code>) and every tag; a changelog's sidebar likewise links to all
+      releases and the five newest. The build adds:
     </p>
     <ul>
       <li>
@@ -229,6 +232,17 @@ sections:
   prefix: /changelog/
   source: CHANGELOG.md
   version: true</code></pre>
+    <p>
+      A <code>source</code> naming a GitHub repository,
+      <code>https://github.com/acme/tool</code>, builds a page per release instead: its
+      tag as the version, its publish date and notes, and a "View on GitHub" link. Raw
+      HTML in the notes shows as text, so a release cannot add scripts to the site. The
+      build reads the first 100 releases from the GitHub API, with
+      <code>GITHUB_TOKEN</code> from the environment when set, and caches them in
+      <code>.htmlpress/cache/</code>; a later build revalidates the cache and falls back
+      to it when GitHub cannot be reached. Without a cache, a failed request fails the
+      build.
+    </p>
 
     <h2>Ordering and matching</h2>
     <p>

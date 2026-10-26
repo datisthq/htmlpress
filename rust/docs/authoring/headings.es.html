@@ -13,7 +13,7 @@
 <pre><code class="language-html">&lt;h2&gt;My Heading&lt;/h2&gt;</code></pre>
 <p>
   Se renderiza como <code>&lt;h2 id="my-heading"&gt;My Heading&lt;/h2&gt;</code>. Cada
-  <code>&lt;h2&gt;</code> y <code>&lt;h3&gt;</code> sin <code>id</code> recibe uno a
+  <code>&lt;h2&gt;</code> a <code>&lt;h6&gt;</code> sin <code>id</code> recibe uno a
   partir de su texto: en minúsculas, con cada secuencia de otros caracteres convertida en
   un guion. Un slug que ya está ocupado en la página recibe un número,
   <code>my-heading-2</code>.
@@ -35,16 +35,17 @@
   El <code>&lt;h1&gt;</code> está reservado para el título de la página.
 </p>
 <p>
-  Solo <code>&lt;h2&gt;</code> y <code>&lt;h3&gt;</code> aparecen en la tabla de
-  contenidos; los encabezados más profundos tienen estilo pero no se listan.
+  De <code>&lt;h2&gt;</code> a <code>&lt;h4&gt;</code> aparecen en la tabla de contenidos;
+  <code>&lt;h5&gt;</code> y <code>&lt;h6&gt;</code> tienen estilo y se pueden enlazar,
+  pero no se listan.
 </p>
 
 <h2>Control de la tabla de contenidos</h2>
 <p>
-  La tabla de contenidos lista los <code>&lt;h2&gt;</code> y <code>&lt;h3&gt;</code> de la
-  página y resalta el que está a la vista. Los encabezados dentro de un componente de
-  aviso, tarjeta, pasos o pestañas quedan fuera, así que los encabezados propios de un
-  componente nunca saturan el esquema de la página.
+  La tabla de contenidos lista los <code>&lt;h2&gt;</code>, <code>&lt;h3&gt;</code> y
+  <code>&lt;h4&gt;</code> de la página y resalta el que está a la vista. Los encabezados
+  dentro de un componente de aviso, tarjeta, pasos o pestañas quedan fuera, así que los
+  encabezados propios de un componente nunca saturan el esquema de la página.
 </p>
 <p>
   <code>data-toc="false"</code> deja un encabezado fuera de la tabla de contenidos
@@ -57,15 +58,17 @@
 
 <h2>Enlaces de ancla al pasar el ratón</h2>
 <p>
-  Cada <code>&lt;h2&gt;</code> y <code>&lt;h3&gt;</code> con id muestra al pasar el ratón
+  Cada <code>&lt;h2&gt;</code> a <code>&lt;h6&gt;</code> con id muestra al pasar el ratón
   un enlace <code>#</code> a sí mismo, para copiar la URL del ancla y compartirla.
 </p>
 
 <h2>Tabla de contenidos en línea</h2>
 <p>
   Un <code>&lt;htmlpress-toc&gt;</code> escrito en la página se rellena con la tabla de
-  contenidos de la página, enmarcada como una tarjeta; <code>level="2"</code> conserva
-  solo los <code>&lt;h2&gt;</code>. Una página sin encabezados no recibe ninguna.
+  contenidos de la página, enmarcada como una tarjeta: sus <code>&lt;h2&gt;</code> y
+  <code>&lt;h3&gt;</code> por defecto, solo los <code>&lt;h2&gt;</code> con
+  <code>level="2"</code>, y hasta los <code>&lt;h4&gt;</code> con <code>level="4"</code>.
+  Una página sin encabezados no recibe ninguna.
 </p>
 <pre><code class="language-html">&lt;htmlpress-toc level="2"&gt;&lt;/htmlpress-toc&gt;</code></pre>
 <htmlpress-toc level="2"></htmlpress-toc>

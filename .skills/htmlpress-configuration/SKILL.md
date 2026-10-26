@@ -64,7 +64,8 @@ Each has a `title` and a `prefix`; optional `icon`, `position`, `siteTitle`, `si
 
 - `type: article` (the default) — the pages under the prefix.
 - `type: blog` — dated posts (`date`, `author`, `keywords` metas) with tag pages and RSS.
-- `type: changelog` plus `source` — a page per version of a Markdown changelog; `version: true`
+- `type: changelog` plus `source` — a page per version of a Markdown changelog, or per
+  release of a GitHub repository URL (`GITHUB_TOKEN` when set, cached in `.htmlpress/cache/`); `version: true`
   shows the latest version beside the title.
 - `type: custom` plus `url` — a link to anywhere.
 

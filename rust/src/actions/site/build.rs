@@ -56,6 +56,7 @@ pub fn build_site(options: &BuildOptions) -> crate::Result<BuildReport> {
     write_file(&assets.join("theme.css"), theme.join("\n").as_bytes())?;
     for (path, text) in &site.assets {
         let served = path.starts_with("scripts/")
+            || path == "favicon.svg"
             || path.starts_with("components/") && !path.ends_with(".html");
         if served {
             write_file(&assets.join(path), text.as_bytes())?;
@@ -191,7 +192,10 @@ fn create_sitemap(site: &Site) -> Option<String> {
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
          <urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n",
     );
-    for page in site.pages.iter().filter(|page| page.path != NOT_FOUND_PAGE) {
+    let indexed = |page: &&Page| {
+        page.path != NOT_FOUND_PAGE && site.read_canonical_url(page) == page.url
+    };
+    for page in site.pages.iter().filter(indexed) {
         let url = format!("{origin}{}", page.url)
             .replace('&', "&amp;")
             .replace('<', "&lt;");
@@ -247,14 +251,19 @@ fn create_parent(path: &Path) -> crate::Result<()> {
 // A language without a home page of its own sends `/<code>/` to its first page
 fn create_redirect(view: &Site, language: &SiteLanguage) -> Option<String> {
     let home = |page: &Page| page.url == language.prefix && !page.untranslated;
-    if language.default || view.pages.iter().any(home) {
+    if view.pages.iter().any(home) {
         return None;
     }
-    // A page the project wrote before one a section generated, such as a blog's index
+    // A page the project wrote before one a section generated, such as a blog's index or
+    // a changelog's version, which shares the changelog's source
+    let generated = |page: &Page| {
+        page.source.is_empty()
+            || (view.config.sections.iter())
+                .any(|section| section.source.as_deref() == Some(page.source.as_str()))
+    };
     let own = (view.pages.iter())
         .filter(|page| !page.untranslated && page.path != NOT_FOUND_PAGE);
-    let first =
-        (own.clone().find(|page| !page.source.is_empty())).or(own.clone().next())?;
+    let first = (own.clone().find(|page| !generated(page))).or(own.clone().next())?;
     let url = format!("{}{}", view.config.read_base(), first.url);
     let url = url.replace('&', "&amp;").replace('"', "&quot;");
     Some(format!(

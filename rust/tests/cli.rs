@@ -198,3 +198,68 @@ fn builds_every_language_with_its_picker_and_fallbacks() -> TestResult {
     );
     Ok(())
 }
+
+#[test]
+fn rebases_the_media_of_a_moved_page() -> TestResult {
+    let root = tempfile::tempdir()?;
+    write_page(root.path(), "index.html", "<h1>Home</h1>")?;
+    write_page(
+        root.path(),
+        "guides/setup.html",
+        concat!(
+            r#"<meta name="path" content="/start/"><meta name="image" content="cover.png">"#,
+            r#"<h1>Setup</h1><img src="shot.png" alt="">"#,
+        ),
+    )?;
+    write_page(
+        root.path(),
+        "htmlpress.yaml",
+        "site: https://acme.dev\nbase: /docs/\n",
+    )?;
+    let path = root.path().to_string_lossy().into_owned();
+
+    let (code, _) = run_cli(&["build", &path, "--json"])?;
+    assert_eq!(code, 0);
+    let page =
+        std::fs::read_to_string(root.path().join(".htmlpress/build/start/index.html"))?;
+    assert!(page.contains(r#"<img src="/docs/guides/shot.png""#));
+    assert!(page.contains(r#"content="https://acme.dev/docs/guides/cover.png""#));
+    Ok(())
+}
+
+#[test]
+fn redirects_home_and_points_changelog_copies_at_the_default() -> TestResult {
+    let root = tempfile::tempdir()?;
+    write_page(root.path(), "guide.html", "<h1>Guide</h1>")?;
+    write_page(root.path(), "guide.es.html", "<h1>Guía</h1>")?;
+    write_page(
+        root.path(),
+        "CHANGELOG.md",
+        "# Changelog\n\n## 1.0.0\n\nFirst.\n",
+    )?;
+    write_page(
+        root.path(),
+        "htmlpress.yaml",
+        concat!(
+            "site: https://acme.dev\n",
+            "languages: [{ code: en, label: English }, { code: es, label: Español }]\n",
+            "sections:\n",
+            "  - { title: Changelog, type: changelog, prefix: /changelog/, source: CHANGELOG.md }\n",
+        ),
+    )?;
+    let path = root.path().to_string_lossy().into_owned();
+
+    let (code, _) = run_cli(&["build", &path, "--json"])?;
+    assert_eq!(code, 0);
+    let build = root.path().join(".htmlpress/build");
+    let home = std::fs::read_to_string(build.join("index.html"))?;
+    assert!(home.contains(r#"url=/guide.html"#), "{home}");
+    let copy = std::fs::read_to_string(build.join("es/changelog/index.html"))?;
+    assert!(
+        copy.contains(r#"<link rel="canonical" href="https://acme.dev/changelog/">"#)
+    );
+    let sitemap = std::fs::read_to_string(build.join("sitemap.xml"))?;
+    assert!(sitemap.contains("https://acme.dev/es/guide.html"));
+    assert!(!sitemap.contains("https://acme.dev/es/changelog/"));
+    Ok(())
+}

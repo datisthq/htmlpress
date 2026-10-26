@@ -23,21 +23,12 @@
     stroke-linecap: round;
     stroke-linejoin: round;
   }
-  [data-icon="moon"] {
+  svg {
     display: none;
   }
-  :root[data-theme="dark"] :scope [data-icon="sun"] {
-    display: none;
-  }
-  :root[data-theme="dark"] :scope [data-icon="moon"] {
+  button[data-choice="light"] [data-icon="light"],
+  button[data-choice="dark"] [data-icon="dark"],
+  button[data-choice="system"] [data-icon="system"] {
     display: block;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) :scope [data-icon="sun"] {
-      display: none;
-    }
-    :root:not([data-theme="light"]) :scope [data-icon="moon"] {
-      display: block;
-    }
   }
 }

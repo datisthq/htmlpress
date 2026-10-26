@@ -32,6 +32,9 @@
   a[data-level="3"] {
     padding-left: 1.5rem;
   }
+  a[data-level="4"] {
+    padding-left: 2.5rem;
+  }
   /* One written in a page is a card in the flow, not the sidebar's list */
   :scope[data-inline] {
     margin: 0 0 1.5em;

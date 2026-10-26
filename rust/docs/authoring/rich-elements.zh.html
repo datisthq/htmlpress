@@ -63,8 +63,11 @@
 <h2>提示框</h2>
 <p>
   提示框用于突出重要信息。<code>type</code> 可以是
-  <code>info</code>（默认）、<code>success</code>、<code>warning</code> 或
-  <code>danger</code>， <code>label</code> 会替换该类型自带的标题：
+  <code>info</code
+  >（默认）、<code>note</code>、<code>tip</code>、<code>success</code>、<code
+    >warning</code
+  >
+  或 <code>danger</code>， <code>label</code> 会替换该类型自带的标题：
 </p>
 <pre><code class="language-html">&lt;htmlpress-callout&gt;&lt;p&gt;This is a note.&lt;/p&gt;&lt;/htmlpress-callout&gt;
 
@@ -225,7 +228,8 @@ title: Htmlpress</code></pre>
 <p>
   行内标签。<code>type</code> 可以是
   <code>info</code>、<code>success</code>、<code>warning</code>、<code>danger</code> 或
-  <code>neutral</code>；不设置时使用强调色。
+  <code>neutral</code> 表示一种色调，或者是 <code>outline</code>、<code>ghost</code> 或
+  <code>link</code> 表示更朴素的样式；不设置时使用强调色。
 </p>
 <pre><code class="language-html">&lt;htmlpress-badge&gt;New&lt;/htmlpress-badge&gt;
 &lt;htmlpress-badge type="success"&gt;Stable&lt;/htmlpress-badge&gt;</code></pre>
@@ -237,12 +241,17 @@ title: Htmlpress</code></pre>
   <htmlpress-badge type="warning">测试版</htmlpress-badge>
   <htmlpress-badge type="danger">已移除</htmlpress-badge>
   <htmlpress-badge type="neutral">v1</htmlpress-badge>
+  <htmlpress-badge type="outline">描边</htmlpress-badge>
+  <htmlpress-badge type="ghost">幽灵</htmlpress-badge>
 </p>
 
 <h2>按钮</h2>
 <p>
-  <code>&lt;htmlpress-button&gt;</code> 中的链接是一个行动号召按钮；
-  <code>type="secondary"</code> 让它更低调。
+  <code>&lt;htmlpress-button&gt;</code> 中的链接是一个行动号召按钮。<code>type</code> 为
+  <code>secondary</code>、<code>outline</code>、<code>ghost</code> 或
+  <code>link</code> 时更低调，为 <code>positive</code>、<code>warning</code> 或
+  <code>destructive</code> 时带有色调；<code>size</code> 可以是 <code>sm</code> 或
+  <code>lg</code>。
 </p>
 <pre><code class="language-html">&lt;htmlpress-button&gt;&lt;a href="/introduction.html"&gt;Get Started&lt;/a&gt;&lt;/htmlpress-button&gt;
 &lt;htmlpress-button type="secondary"&gt;&lt;a href="…"&gt;GitHub&lt;/a&gt;&lt;/htmlpress-button&gt;</code></pre>
@@ -252,6 +261,8 @@ title: Htmlpress</code></pre>
   <htmlpress-button type="secondary">
     <a href="https://github.com/datisthq/htmlpress">GitHub</a>
   </htmlpress-button>
+  <htmlpress-button type="outline" size="sm"><a href="#按钮">描边</a></htmlpress-button>
+  <htmlpress-button type="link"><a href="#按钮">链接</a></htmlpress-button>
 </p>
 
 <h2>图标</h2>
@@ -527,10 +538,10 @@ title: Htmlpress</code></pre>
   没有内容可显示的元素会被移除。
   <code>&lt;htmlpress-nav-toggle&gt;</code
   >（在手机上把侧边栏变为抽屉；在更宽的屏幕上则折叠侧边栏并记住该状态）、
-  <code>&lt;htmlpress-theme-toggle&gt;</code> 和
+  <code>&lt;htmlpress-theme-toggle&gt;</code>（在浅色、深色和系统选择之间循环）和
   <code>&lt;htmlpress-back-to-top&gt;</code> 由脚本在浏览器中构建。它们的快捷键与 Livemark
-  一致：<kbd>L</kbd> 切换侧边栏，<kbd>T</kbd> 切换主题， <kbd>B</kbd> 返回顶部，而
-  <kbd>J</kbd> 和
+  一致：<kbd>L</kbd> 切换侧边栏，<kbd>T</kbd> 在浅色和深色之间切换，
+  <kbd>B</kbd> 返回顶部，而 <kbd>J</kbd> 和
   <kbd>K</kbd> 可在任何页面上向下和向上滚动。在输入框中输入时，这些快捷键都不会触发。
 </p>
 <p>

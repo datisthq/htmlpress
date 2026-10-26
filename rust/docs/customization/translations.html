@@ -144,8 +144,10 @@ sections:
       language's prefix: the Spanish blog lives at <code>/es/blog/</code>, with its own
       index, tag pages and RSS feed listing the Spanish posts, then the default ones not
       translated yet. A changelog section builds its pages in every language, keeping the
-      release notes as written. A <code>custom</code> section whose <code>url</code> is a
-      page of the site leads to that page's translation, when the open language has one.
+      release notes as written; those copies point their canonical URL at the default
+      language's and stay out of the sitemap. A <code>custom</code> section whose
+      <code>url</code> is a page of the site leads to that page's translation, when the
+      open language has one.
     </p>
 
     <h2>Pages not translated yet</h2>
@@ -160,7 +162,7 @@ sections:
       The language picker links each language to this page's version in it, else to that
       language's home. A language without a home page of its own,
       <code>index.es.html</code>, gets a redirect from <code>/es/</code> to its first
-      page.
+      page; so does the default language without an <code>index.html</code>.
     </p>
 
     <h2>UI strings</h2>

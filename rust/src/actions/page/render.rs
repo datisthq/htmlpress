@@ -13,7 +13,7 @@ use crate::actions::nav::build::build_nav;
 use crate::actions::page::convert::create_markdown_path;
 use crate::actions::page::prefix::prefix_urls;
 use crate::actions::section::find::{find_section, is_custom_current};
-use crate::actions::section::generate::list_posts;
+use crate::actions::section::generate::{create_tag_url, list_posts};
 use crate::actions::site::index::create_search_path;
 use crate::flags::FLAGS;
 use crate::models::asset::{create_component_path, read_component_path};
@@ -286,7 +286,7 @@ fn create_head(
         }
     }
     if let Some(origin) = site.config.read_origin() {
-        let url = escape_html(&format!("{origin}{}", page.url));
+        let url = escape_html(&format!("{origin}{}", site.read_canonical_url(page)));
         let _ = writeln!(head, "<link rel=\"canonical\" href=\"{url}\">");
     }
     head.push_str(&create_alternates(site, page));
@@ -311,10 +311,10 @@ fn create_head(
             );
         }
     }
-    if let Some(favicon) = site.config.favicon.as_ref().or(site.config.logo.as_ref()) {
-        let favicon = escape_html(favicon);
-        let _ = writeln!(head, "<link rel=\"icon\" href=\"{favicon}\">");
-    }
+    let favicon = (site.config.favicon.as_ref()).or(site.config.logo.as_ref());
+    let favicon =
+        favicon.map_or(format!("/{ASSETS_DIR}/favicon.svg"), |url| escape_html(url));
+    let _ = writeln!(head, "<link rel=\"icon\" href=\"{favicon}\">");
     // Set before the stylesheet applies, so a stored dark theme never flashes light
     // and a collapsed sidebar never flashes open
     head.push_str(
@@ -403,13 +403,10 @@ fn create_metas(site: &Site, page: &Page) -> Vec<(&'static str, &'static str, St
         let locale = &site.read_language(&page.language).locale;
         metas.push(("property", "og:locale", locale.replace('-', "_")));
     }
-    let image = page
-        .image
-        .as_ref()
-        .map(|image| match (origin, image.starts_with('/')) {
-            (Some(origin), true) => format!("{origin}{image}"),
-            _ => image.clone(),
-        });
+    let image = (page.image.as_ref()).and_then(|image| match image.starts_with('/') {
+        true => origin.map(|origin| format!("{origin}{image}")),
+        false => Some(image.clone()),
+    });
     let card = match image {
         Some(image) => {
             metas.push(("property", "og:image", image));
@@ -622,7 +619,13 @@ fn create_nav(site: &Site, page: &Page) -> String {
     let label = escape_html(site.read_language(&page.language).read_message("nav.pages"));
     let mut html = format!("<nav aria-label=\"{label}\">");
     html.push_str(&create_section_list(site, page));
-    let nav = read_nav(site, page);
+    let nav = match create_feed_menu(site, page) {
+        Some(menu) => {
+            html.push_str(&menu);
+            vec![]
+        }
+        None => read_nav(site, page),
+    };
     if !nav.is_empty() {
         let key = match read_section(site, page).map(|section| &section.kind) {
             Some(SectionKind::Blog) => "nav.posts",
@@ -664,6 +667,88 @@ fn create_nav(site: &Site, page: &Page) -> String {
     }
     html.push_str("</nav>");
     html
+}
+
+// As in Livemark, a blog or a changelog lists its index, its five newest entries and its
+// feed, then a blog's tags, rather than every post it ever had
+fn create_feed_menu(site: &Site, page: &Page) -> Option<String> {
+    let section = read_section(site, page)?;
+    let blog = match section.kind {
+        SectionKind::Blog => true,
+        SectionKind::Changelog => false,
+        _ => return None,
+    };
+    let prefix = section.prefix.as_deref()?;
+    let language = site.read_language(&page.language);
+    let message = |key: &str| escape_html(language.read_message(key));
+    let pages = list_pages(site, page);
+    let entries: Vec<&Page> = (pages.iter().copied())
+        .filter(|item| item.url != prefix)
+        .collect();
+    let (label, all, recent) = match blog {
+        true => ("nav.posts", "blog.allPosts", "blog.recentPosts"),
+        false => (
+            "nav.releases",
+            "changelog.allReleases",
+            "changelog.recentReleases",
+        ),
+    };
+    let current = |url: &str| match url == page.url {
+        true => " aria-current=\"page\"",
+        false => "",
+    };
+    let mut html = format!("<p data-label>{}</p><ul>", message(label));
+    let _ = write!(
+        html,
+        "<li><a href=\"{}\"{}>{}{}</a></li>",
+        escape_html(prefix),
+        current(prefix),
+        create_icon(Some("list")),
+        message(all),
+    );
+    if !entries.is_empty() {
+        let _ = write!(
+            html,
+            "<li><details open><summary>{}{}</summary><ul>",
+            create_icon(Some("clock")),
+            message(recent),
+        );
+        for item in entries.iter().take(5) {
+            let _ = write!(html, "<li>{}</li>", create_entry(site, item, page, false));
+        }
+        html.push_str("</ul></details></li>");
+    }
+    if blog && site.config.site.is_some() {
+        let _ = write!(
+            html,
+            "<li><a href=\"{}rss.xml\">{}{}</a></li>",
+            escape_html(prefix),
+            create_icon(Some("rss")),
+            message("blog.rssFeed"),
+        );
+    }
+    html.push_str("</ul>");
+    let mut tags: Vec<&str> = (entries.iter())
+        .flat_map(|item| item.tags.iter().map(String::as_str))
+        .collect();
+    tags.sort_unstable();
+    tags.dedup();
+    if blog && !tags.is_empty() {
+        let _ = write!(html, "<p data-label>{}</p><ul>", message("nav.tags"));
+        for tag in tags {
+            let url = create_tag_url(prefix, tag);
+            let _ = write!(
+                html,
+                "<li><a href=\"{}\"{}>{}{}</a></li>",
+                escape_html(&url),
+                current(&url),
+                create_icon(Some("tag")),
+                escape_html(tag),
+            );
+        }
+        html.push_str("</ul>");
+    }
+    Some(html)
 }
 
 // Only the pages of the open page's section, so each section reads as a site of its own
@@ -972,9 +1057,10 @@ fn fill_inline_tocs(
                 None => 3,
                 Some("2") => 2,
                 Some("3") => 3,
+                Some("4") => 4,
                 Some(other) => {
                     return Err(format!(
-                        "<htmlpress-toc level> must be 2 or 3, got \"{other}\""
+                        "<htmlpress-toc level> must be 2, 3 or 4, got \"{other}\""
                     )
                     .into());
                 }
@@ -1003,6 +1089,8 @@ fn label_callouts(content: &str, language: &SiteLanguage) -> Result<String, Stri
         |el| {
             let key = match el.get_attribute("type").as_deref().map(str::trim) {
                 Some("success") => "callout.success",
+                Some("note") => "callout.note",
+                Some("tip") => "callout.tip",
                 Some("warning") => "callout.warning",
                 Some("danger") => "callout.danger",
                 _ => "callout.info",
@@ -1035,7 +1123,7 @@ fn add_byline(content: &str, byline: Option<String>) -> Result<String, String> {
 }
 
 fn create_toc(page: &Page, language: &SiteLanguage) -> Option<String> {
-    create_toc_up_to(page, 3, language)
+    create_toc_up_to(page, 4, language)
 }
 
 fn create_toc_up_to(page: &Page, level: u8, language: &SiteLanguage) -> Option<String> {

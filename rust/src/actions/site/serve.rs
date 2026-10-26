@@ -12,10 +12,12 @@ use crate::actions::path::select::read_bases;
 use crate::actions::site::build::build_site;
 use crate::models::build::BuildOptions;
 use crate::models::error::Error;
-use crate::settings::{CONFIG_FILE, PORTS, PROJECT_DIR, RELOAD_PATH};
+use crate::settings::{
+    CACHE_DIR, CONFIG_FILE, PORTS, PROJECT_DIR, RELOAD, RELOAD_PATH, RELOAD_SCRIPT,
+};
 
-/// Build the project, serve the output and rebuild on every change, reloading open pages.
-/// `host` defaults to localhost and `port` to the first free one of [`PORTS`]. Calls
+/// Build the project, serve the output and rebuild on every change, reloading open pages;
+/// a failed build is shown in the browser until the next one succeeds. `host` defaults to localhost and `port` to the first free one of [`PORTS`]. Calls
 /// `on_ready` with the URLs once listening, the local one first; runs until killed.
 pub fn serve_site(
     options: &BuildOptions,
@@ -27,10 +29,11 @@ pub fn serve_site(
         reload: true,
         ..options.clone()
     };
-    build_site(&options)?;
     let (server, urls) = open_server(host, port)?;
-    let base = load_config(&options.root)?.read_base();
+    let base =
+        (load_config(&options.root).map(|config| config.read_base())).unwrap_or_default();
     let state = Arc::new(Reload::default());
+    report_build(&options, &state, false);
 
     let (sender, events) = channel();
     let mut watcher = notify::recommended_watcher(sender)
@@ -94,8 +97,35 @@ pub(crate) fn add_base(urls: Vec<String>, base: &str) -> Vec<String> {
 
 #[derive(Default)]
 pub(crate) struct Reload {
-    version: Mutex<u64>,
+    status: Mutex<Status>,
     changed: Condvar,
+}
+
+// The error of the last build, if it failed: open pages show it over the page, and new
+// requests for a page get it instead, since a failed build leaves the output half written.
+#[derive(Default, Clone)]
+struct Status {
+    version: u64,
+    error: Option<String>,
+}
+
+fn report_build(options: &BuildOptions, state: &Reload, rebuilt: bool) {
+    let error = match build_site(options) {
+        Ok(report) => {
+            let verb = if rebuilt { "rebuilt" } else { "built" };
+            eprintln!("{verb} {} pages", report.pages);
+            None
+        }
+        Err(error) => {
+            eprintln!("error: {error}");
+            Some(error.to_string())
+        }
+    };
+    if let Ok(mut status) = state.status.lock() {
+        status.version += 1;
+        status.error = error;
+        state.changed.notify_all();
+    }
 }
 
 type Events = Receiver<notify::Result<notify::Event>>;
@@ -123,14 +153,7 @@ fn rebuild_on_change(options: &BuildOptions, events: &Events, state: &Reload) {
                 Err(RecvTimeoutError::Disconnected) => return,
             }
         }
-        match build_site(options) {
-            Ok(report) => eprintln!("rebuilt {} pages", report.pages),
-            Err(error) => eprintln!("error: {error}"),
-        }
-        if let Ok(mut version) = state.version.lock() {
-            *version += 1;
-            state.changed.notify_all();
-        }
+        report_build(options, state, true);
     }
 }
 
@@ -148,7 +171,7 @@ fn is_source_event(
         return false;
     }
     event.paths.iter().any(|path| {
-        if path.starts_with(output) {
+        if path.starts_with(output) || path.starts_with(root.join(CACHE_DIR)) {
             return false;
         }
         let Ok(inside) = path.strip_prefix(root) else {
@@ -184,12 +207,22 @@ fn answer_request(request: Request, output: &Path, base: &str, state: &Reload) {
         }
         return;
     };
-    let result = match path == RELOAD_PATH {
-        true => {
-            let version = wait_for_change(state, read_since(query));
-            request.respond(Response::from_string(version.to_string()))
+    let error = (state.status.lock().ok()).and_then(|status| status.error.clone());
+    let result = match path {
+        RELOAD_PATH => {
+            let status = wait_for_change(state, read_since(query));
+            let body =
+                format!("{}\n{}", status.version, status.error.unwrap_or_default());
+            request.respond(Response::from_string(body))
         }
-        false => answer_file(request, output, path),
+        // A failed first build may not have written it
+        RELOAD_SCRIPT => {
+            request.respond(add_headers(Response::from_string(RELOAD), RELOAD_SCRIPT))
+        }
+        _ => match error {
+            Some(error) if is_page_path(path) => answer_error(request, base, &error),
+            _ => answer_file(request, output, path),
+        },
     };
     if let Err(error) = result {
         eprintln!("error: {url}: {error}");
@@ -198,19 +231,41 @@ fn answer_request(request: Request, output: &Path, base: &str, state: &Reload) {
 
 // A long poll: answer at once when the client is behind, else when the next build lands,
 // else after a timeout so idle connections never pile up.
-fn wait_for_change(state: &Reload, since: Option<u64>) -> u64 {
-    let Ok(version) = state.version.lock() else {
-        return 0;
+fn wait_for_change(state: &Reload, since: Option<u64>) -> Status {
+    let Ok(status) = state.status.lock() else {
+        return Status::default();
     };
-    let Some(since) = since else { return *version };
+    let Some(since) = since else {
+        return status.clone();
+    };
     let timeout = Duration::from_secs(25);
-    match state
-        .changed
-        .wait_timeout_while(version, timeout, |version| *version == since)
+    match (state.changed)
+        .wait_timeout_while(status, timeout, |status| status.version == since)
     {
-        Ok((version, _)) => *version,
-        Err(_) => since,
+        Ok((status, _)) => status.clone(),
+        Err(_) => Status {
+            version: since,
+            error: None,
+        },
     }
+}
+
+fn is_page_path(path: &str) -> bool {
+    let name = path.rsplit('/').next().unwrap_or_default();
+    name.is_empty() || name.ends_with(".html") || !name.contains('.')
+}
+
+fn answer_error(request: Request, base: &str, error: &str) -> std::io::Result<()> {
+    let error = error.replace('&', "&amp;").replace('<', "&lt;");
+    let body = format!(
+        "<!doctype html>\n<html lang=\"en\">\n<meta charset=\"utf-8\">\n\
+         <title>Build failed</title>\n<h1>Build failed</h1>\n<pre>{error}</pre>\n\
+         <p>Fix the error and save: the page reloads once the build succeeds.</p>\n\
+         <script type=\"module\" src=\"{base}{RELOAD_SCRIPT}\" \
+         data-endpoint=\"{base}{RELOAD_PATH}\"></script>\n</html>\n"
+    );
+    let response = Response::from_string(body).with_status_code(500);
+    request.respond(add_headers(response, "error.html"))
 }
 
 fn read_since(query: &str) -> Option<u64> {

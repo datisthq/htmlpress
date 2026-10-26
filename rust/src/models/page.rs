@@ -54,7 +54,7 @@ pub struct Page {
     pub head: String,
     /// The page's body, without the `<html>`, `<head>` and `<body>` wrappers.
     pub content: String,
-    /// The `<h2>` and `<h3>` headings, in order, for the page's table of contents.
+    /// The `<h2>` to `<h4>` headings, in order, for the page's table of contents.
     pub toc: Vec<Heading>,
 }
 
@@ -73,6 +73,6 @@ pub struct Heading {
     /// The heading's `id`: its own, else a slug of its text made unique on the page.
     pub id: String,
     pub title: String,
-    /// 2 for `<h2>`, 3 for `<h3>`.
+    /// 2 for `<h2>` to 4 for `<h4>`.
     pub level: u8,
 }

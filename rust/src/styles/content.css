@@ -136,10 +136,18 @@ kbd {
 .htmlpress-code > pre {
   margin: 0;
 }
-.htmlpress-code > button {
+.htmlpress-code > span {
   position: absolute;
   top: 0.5rem;
   right: 0.5rem;
+  display: flex;
+  gap: 0.25rem;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.htmlpress-code > span > button {
+  display: inline-flex;
+  align-items: center;
   padding: 0.25rem 0.625rem;
   border: 1px solid var(--htmlpress-border);
   border-radius: 999px;
@@ -147,12 +155,27 @@ kbd {
   color: var(--htmlpress-muted);
   font: 500 0.75rem var(--htmlpress-font);
   cursor: pointer;
-  opacity: 0;
-  transition: opacity 0.15s;
 }
-.htmlpress-code:hover > button,
-.htmlpress-code > button:focus-visible {
+.htmlpress-code > span > button[aria-pressed="true"] {
+  color: var(--htmlpress-accent);
+}
+.htmlpress-code > span svg {
+  width: 0.875rem;
+  height: 1.125em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.htmlpress-code:hover > span,
+.htmlpress-code > span:focus-within {
   opacity: 1;
+}
+pre[data-wrap],
+pre[data-wrap] code {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 blockquote {
@@ -420,7 +443,7 @@ pre[data-collapse][data-expanded] {
 
 /* A heading for the table of contents only: collapsed where it stands, not hidden, so
    its link still scrolls here */
-:is(h2, h3)[data-toc="only"] {
+:is(h2, h3, h4)[data-toc="only"] {
   height: 0;
   margin: 0;
   padding: 0;

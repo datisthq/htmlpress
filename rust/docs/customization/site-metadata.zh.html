@@ -107,7 +107,8 @@ head:
       </li>
       <li>
         如果省略 <code>favicon</code>，htmlpress 会回退到
-        <code>logo</code>；两者都没有时，不会写入图标链接。
+        <code>logo</code>；两者都没有时，使用 htmlpress 图标，可用
+        <code>.htmlpress/favicon.svg</code> 替换。
       </li>
       <li>
         logo 是 <code>&lt;htmlpress-brand&gt;</code> 中位于站点标题及其
@@ -147,8 +148,8 @@ head:
       <code>og:description</code> 覆盖站点默认值； <code>og:type</code> 为
       <code>website</code>。设置了 <code>site</code> 时，页面还会获得
       <code>og:url</code> 和一个 <code>&lt;link rel="canonical"&gt;</code>。页面的
-      <code>&lt;meta name="image"&gt;</code> 会成为它的
-      <code>og:image</code>，若为根相对路径则借助 <code>site</code> 转为绝对路径，并把
+      <code>&lt;meta name="image"&gt;</code> 会成为它的 <code>og:image</code>，借助
+      <code>site</code> 转为绝对路径（没有它时省略本地图片），并把
       <code>twitter:card</code> 从 <code>summary</code> 切换为
       <code>summary_large_image</code>。
     </p>

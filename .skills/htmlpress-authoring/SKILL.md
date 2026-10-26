@@ -39,26 +39,27 @@ The config keys are in `htmlpress-configuration`; a different look in `htmlpress
 - The navigation nests pages by folder at any depth (`guides/cli/…` inside `guides/…`), each
   group named by its `index.html`, whose title links to it.
 - Pages are written to the same path, so link between them with relative hrefs
-  (`guides/build.html`). Images and other files are copied as-is.
+  (`guides/build.html`). Images and other files are copied as-is; a relative `src`,
+  `srcset` or `poster` resolves from the source file, even when the page moves.
 - A root `404.html` is the not-found page, kept out of the navigation; without one a built-in
   is used.
 
 ## Page metas
 
-| Meta                                         | Effect                                                  |
-| -------------------------------------------- | ------------------------------------------------------- |
-| `description`                                | the page's summary for search, previews and `llms.txt`  |
-| `image`                                      | its social preview image (`/cover.png`)                 |
-| `date` (`YYYY-MM-DD`), `author` (repeatable) | dates and signs it (a byline; none with `layout`)       |
-| `keywords` (`a, b`)                          | tags it (a blog post's tag pages)                       |
-| `label`                                      | a short name in the navigation                          |
-| `icon`                                       | a Lucide icon; top-level entries and folder index pages |
-| `path` (`/start/`)                           | serves the page at another URL                          |
-| `sidebar` (`false`)                          | built, not listed                                       |
-| `toc` (`false`)                              | no table of contents                                    |
-| `layout` (`<name>`)                          | another layout, from `htmlpress-customization`          |
-| `language` (`<code>`)                        | marks the page a translation                            |
-| `source-url`, `source-action` (`view`)       | the page's source link                                  |
+| Meta                                         | Effect                                                       |
+| -------------------------------------------- | ------------------------------------------------------------ |
+| `description`                                | the page's summary for search, previews and `llms.txt`       |
+| `image`                                      | its social preview image, relative to the file; needs `site` |
+| `date` (`YYYY-MM-DD`), `author` (repeatable) | dates and signs it (a byline; none with `layout`)            |
+| `keywords` (`a, b`)                          | tags it (a blog post's tag pages)                            |
+| `label`                                      | a short name in the navigation                               |
+| `icon`                                       | a Lucide icon; top-level entries and folder index pages      |
+| `path` (`/start/`)                           | serves the page at another URL                               |
+| `sidebar` (`false`)                          | built, not listed                                            |
+| `toc` (`false`)                              | no table of contents                                         |
+| `layout` (`<name>`)                          | another layout, from `htmlpress-customization`               |
+| `language` (`<code>`)                        | marks the page a translation                                 |
+| `source-url`, `source-action` (`view`)       | the page's source link                                       |
 
 A file that cannot carry metas, such as a `README.md`, gets them from `patches` in the config.
 
@@ -71,10 +72,10 @@ listed in every language with a badge and link to the original.
 
 ## Headings
 
-- `<h2>` and `<h3>` outside components make the page's table of contents; one without an `id`
-  gets a slug of its text. Give a heading an `id` only when a link needs it fixed.
+- `<h2>` to `<h4>` outside components make the page's table of contents; any `<h2>` to `<h6>`
+  without an `id` gets a slug of its text and an anchor link. Give a heading an `id` only when a link needs it fixed.
 - A heading takes `data-toc="false"` (shown, not in the TOC) or `data-toc="only"` (in the TOC,
-  not shown); `<htmlpress-toc level="2">` in a page renders its TOC inline.
+  not shown); `<htmlpress-toc level="2">` (2–4, default 3) in a page renders its TOC inline.
 
 ## Semantic HTML first
 
@@ -105,30 +106,31 @@ The theme styles the elements themselves: headings, `<p>`, lists, `<table>`, `<p
   `data-words="a,b"` marks words.
 - `<pre data-title="file.yaml">` adds a title bar with the language's logo;
   `<pre data-collapse="10">` shows 10 lines with an Expand bar.
-- Every block gets a copy button. Tabs holding only code blocks join into one framed block.
+- `<pre><code class="language-ansi">` renders terminal color escapes (raw or `&#27;[31m`).
+- Every block gets copy and wrap buttons. Tabs holding only code blocks join into one framed block.
 
 ## Components
 
 Only these; anything else is plain HTML. Put block content (`<p>`, `<h3>`, `<pre>`) inside a
 component, not bare text.
 
-| Element                                          | Use                                                                                 |
-| ------------------------------------------------ | ----------------------------------------------------------------------------------- |
-| `<htmlpress-callout type="…" label="…">`         | a note; `type` is `info` (default), `success`, `warning`, `danger`                  |
-| `<htmlpress-grid cols="2">` + `<htmlpress-card>` | cards in columns (`cols` 2–4, else responsive); `<h3><a>` links a card              |
-| `<htmlpress-tabs sync="…">` + `<section title>`  | tabs, one per `<section>`; tabs sharing `sync` switch together                      |
-| `<htmlpress-steps>` + `<ol>`                     | numbered steps, one per `<li>`, each led by an `<h3>`                               |
-| `<htmlpress-badge type="…">`                     | an inline label; `type` as a callout's, or `neutral`                                |
-| `<htmlpress-file-tree>` + nested `<ul>`          | a file tree; an `<li>` holding a `<ul>` is a folder                                 |
-| `<htmlpress-table>` + `<table>`                  | a table sorted by a click on a `<thead>` header                                     |
-| `<htmlpress-zoom>` + `<img>`                     | an image that opens full screen on click                                            |
-| `<htmlpress-icon name="…">`                      | an inline Lucide icon; names at htmlpress.dev/authoring/rich-elements.html#icons    |
-| `<htmlpress-button type="…">` + `<a>`            | a call-to-action link; `type="secondary"` for the quieter one                       |
-| `<htmlpress-package-tabs>` + `<pre><code>`       | one `npm`/`npx` command, built into npm, pnpm, yarn and bun tabs                    |
-| `<htmlpress-terminal title="…">` + `<pre>`       | terminal output: `<kbd>` command, `<samp>` output, `<ins>`/`<del>`/`<mark>` colours |
-| `<htmlpress-youtube>` + `<a href>`               | a YouTube video player for the linked video                                         |
-| `<htmlpress-soundcloud>` + `<a href>`            | a SoundCloud player for the linked track                                            |
-| `<htmlpress-mermaid>` + `<pre>`                  | a Mermaid diagram from the source in `<pre>` (escape `<` and `&`)                   |
+| Element                                          | Use                                                                                                                     |
+| ------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
+| `<htmlpress-callout type="…" label="…">`         | a note; `type` is `info` (default), `note`, `tip`, `success`, `warning`, `danger`                                       |
+| `<htmlpress-grid cols="2">` + `<htmlpress-card>` | cards in columns (`cols` 2–4, else responsive); `<h3><a>` links a card                                                  |
+| `<htmlpress-tabs sync="…">` + `<section title>`  | tabs, one per `<section>`; tabs sharing `sync` switch together                                                          |
+| `<htmlpress-steps>` + `<ol>`                     | numbered steps, one per `<li>`, each led by an `<h3>`                                                                   |
+| `<htmlpress-badge type="…">`                     | an inline label; `type` as a callout's, `neutral`, `outline`, `ghost` or `link`                                         |
+| `<htmlpress-file-tree>` + nested `<ul>`          | a file tree; an `<li>` holding a `<ul>` is a folder                                                                     |
+| `<htmlpress-table>` + `<table>`                  | a table sorted by a click on a `<thead>` header                                                                         |
+| `<htmlpress-zoom>` + `<img>`                     | an image that opens full screen on click                                                                                |
+| `<htmlpress-icon name="…">`                      | an inline Lucide icon; names at htmlpress.dev/authoring/rich-elements.html#icons                                        |
+| `<htmlpress-button type="…">` + `<a>`            | a call-to-action link; `type` `secondary`/`outline`/`ghost`/`link`/`positive`/`warning`/`destructive`, `size` `sm`/`lg` |
+| `<htmlpress-package-tabs>` + `<pre><code>`       | one `npm`/`npx` command, built into npm, pnpm, yarn and bun tabs                                                        |
+| `<htmlpress-terminal title="…">` + `<pre>`       | terminal output: `<kbd>` command, `<samp>` output, `<ins>`/`<del>`/`<mark>` colours                                     |
+| `<htmlpress-youtube>` + `<a href>`               | a YouTube video player for the linked video                                                                             |
+| `<htmlpress-soundcloud>` + `<a href>`            | a SoundCloud player for the linked track                                                                                |
+| `<htmlpress-mermaid>` + `<pre>`                  | a Mermaid diagram from the source in `<pre>` (escape `<` and `&`)                                                       |
 
 ## Verification
 

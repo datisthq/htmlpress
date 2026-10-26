@@ -109,7 +109,8 @@ head:
       </li>
       <li>
         If <code>favicon</code> is omitted, htmlpress falls back to <code>logo</code>;
-        with neither, no icon link is written.
+        with neither, the htmlpress icon, which <code>.htmlpress/favicon.svg</code> can
+        replace.
       </li>
       <li>
         The logo is an <code>&lt;img&gt;</code> before the site title and its
@@ -151,7 +152,7 @@ head:
       <code>og:type</code> is <code>website</code>. With <code>site</code> set, it also
       gets <code>og:url</code> and a <code>&lt;link rel="canonical"&gt;</code>. A page's
       <code>&lt;meta name="image"&gt;</code> becomes its <code>og:image</code>, made
-      absolute with <code>site</code> when root-relative, and switches
+      absolute with <code>site</code> (a local image is left out without it), and switches
       <code>twitter:card</code> from <code>summary</code> to
       <code>summary_large_image</code>.
     </p>

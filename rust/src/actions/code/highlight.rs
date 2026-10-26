@@ -6,6 +6,8 @@ use giallo::{HighlightOptions, HtmlRenderer, Registry, RenderOptions, ThemeVaria
 use lol_html::html_content::ContentType;
 use lol_html::{RewriteStrSettings, element, rewrite_str, text};
 
+use crate::actions::code::ansi::render_ansi;
+
 // Loaded once per process: the built-in grammars and themes are a 1 MB compressed dump
 static REGISTRY: OnceLock<Option<Registry>> = OnceLock::new();
 
@@ -53,7 +55,10 @@ fn highlight_selector(
             };
             let handler: lol_html::EndTagHandler<'static> = Box::new(move |end| {
                 if let Some((block, source)) = current.borrow_mut().take() {
-                    let colored = color_source(registry, &block, &source, &theme);
+                    let colored = match block.language.eq_ignore_ascii_case("ansi") {
+                        true => Some(render_ansi(&decode_entities(&source))),
+                        false => color_source(registry, &block, &source, &theme),
+                    };
                     end.before(&colored.unwrap_or(source), ContentType::Html);
                 }
                 Ok(())
@@ -203,13 +208,19 @@ fn color_source(
         highlight_lines: block.lines.clone(),
         ..RenderOptions::default()
     };
-    let html = renderer.render(&highlighted, &options);
+    let mut html = renderer.render(&highlighted, &options);
+    // Livemark's fix: Latte's green strings fail WCAG AA on white, at 2.6:1
+    if let ThemeVariant::Dual { light: LATTE, .. } = theme {
+        html = html.replace("light-dark(#40A02B,", "light-dark(#2A7E16,");
+    }
     let start = html.find("<code")?;
     let open = start + html[start..].find('>')? + 1;
     let close = html.rfind("</code>")?;
     let html = mark_lines(&html[open..close], block);
     Some(mark_words(&html, &block.words))
 }
+
+const LATTE: &str = "catppuccin-latte";
 
 const LINE_START: &str = "<span class=\"giallo-l\"";
 
@@ -305,8 +316,12 @@ fn read_lines(text: &str) -> Result<Vec<std::ops::RangeInclusive<usize>>, String
         .collect()
 }
 
+// An escape character may be written raw or as `&#27;`, the way terminal output pastes
 fn decode_entities(text: &str) -> String {
-    text.replace("&lt;", "<")
+    text.replace("&#27;", "\u{1b}")
+        .replace("&#x1b;", "\u{1b}")
+        .replace("&#x1B;", "\u{1b}")
+        .replace("&lt;", "<")
         .replace("&gt;", ">")
         .replace("&quot;", "\"")
         .replace("&#39;", "'")

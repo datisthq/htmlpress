@@ -15,6 +15,11 @@
 <h2>内部图片</h2>
 <p>引用项目中的图片；所有非页面文件都会复制到输出中的相同路径：</p>
 <pre><code class="language-html">&lt;img src="/screenshots/docs.webp" alt="An htmlpress docs page"&gt;</code></pre>
+<p>
+  相对的 <code>src</code>、<code>srcset</code> 或 <code>poster</code>
+  从页面的源文件解析，因此页面在其他位置提供服务时仍然有效：位于语言前缀之下，或位于另一个
+  <code>&lt;meta name="path"&gt;</code>。
+</p>
 <p>渲染为：</p>
 <figure>
   <img

@@ -147,8 +147,10 @@ sections:
       índice, páginas de etiquetas y feed RSS que listan las entradas en español y,
       después, las predeterminadas aún sin traducir. Una sección de changelog compila sus
       páginas en todos los idiomas, conservando las notas de versión tal como se
-      escribieron. Una sección <code>custom</code> cuya <code>url</code> es una página del
-      sitio lleva a la traducción de esa página, cuando el idioma abierto la tiene.
+      escribieron; esas copias apuntan su URL canónica a la del idioma predeterminado y
+      quedan fuera del sitemap. Una sección <code>custom</code> cuya <code>url</code> es
+      una página del sitio lleva a la traducción de esa página, cuando el idioma abierto
+      la tiene.
     </p>
 
     <h2>Páginas aún sin traducir</h2>
@@ -164,7 +166,7 @@ sections:
       El selector de idioma enlaza cada idioma a la versión de esta página en él o, si no
       existe, a la página de inicio de ese idioma. Un idioma sin página de inicio propia,
       <code>index.es.html</code>, recibe una redirección de <code>/es/</code> a su primera
-      página.
+      página; también el idioma predeterminado sin <code>index.html</code>.
     </p>
 
     <h2>Textos de la interfaz</h2>

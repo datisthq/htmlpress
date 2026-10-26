@@ -27,4 +27,49 @@
   :scope[type="secondary"] a:hover {
     background: var(--htmlpress-surface);
   }
+  :scope:is([type="outline"], [type="ghost"], [type="link"]) a {
+    border-color: var(--htmlpress-border);
+    background: transparent;
+    color: var(--htmlpress-text);
+  }
+  :scope:is([type="outline"], [type="ghost"]) a:hover {
+    background: var(--htmlpress-surface);
+  }
+  :scope:is([type="ghost"], [type="link"]) a {
+    border-color: transparent;
+  }
+  :scope[type="link"] a {
+    padding-inline: 0;
+    color: var(--htmlpress-accent);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+  :scope[type="link"] a:hover {
+    background: transparent;
+  }
+  :scope:is([type="positive"], [type="warning"], [type="destructive"]) a {
+    border-color: var(--tone);
+    background: var(--tone);
+    color: var(--htmlpress-bg);
+  }
+  :scope:is([type="positive"], [type="warning"], [type="destructive"]) a:hover {
+    background: color-mix(in oklab, var(--tone) 85%, var(--htmlpress-text));
+  }
+  :scope[type="positive"] {
+    --tone: var(--htmlpress-success);
+  }
+  :scope[type="warning"] {
+    --tone: var(--htmlpress-warning);
+  }
+  :scope[type="destructive"] {
+    --tone: var(--htmlpress-danger);
+  }
+  :scope[size="sm"] a {
+    padding: 0.375rem 0.875rem;
+    font-size: 0.8125rem;
+  }
+  :scope[size="lg"] a {
+    padding: 0.75rem 1.75rem;
+    font-size: 1.0625rem;
+  }
 }

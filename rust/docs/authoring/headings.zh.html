@@ -10,8 +10,8 @@
 <pre><code class="language-html">&lt;h2&gt;My Heading&lt;/h2&gt;</code></pre>
 <p>
   渲染为 <code>&lt;h2 id="my-heading"&gt;My Heading&lt;/h2&gt;</code>。每个没有
-  <code>id</code> 的 <code>&lt;h2&gt;</code> 和
-  <code>&lt;h3&gt;</code> 都会根据其文本获得一个
+  <code>id</code> 的 <code>&lt;h2&gt;</code> 到
+  <code>&lt;h6&gt;</code> 都会根据其文本获得一个
   ID：转为小写，并把每段其他字符替换为一个连字符。若该 slug
   在页面上已被占用，则会追加编号，如 <code>my-heading-2</code>。
 </p>
@@ -33,14 +33,14 @@
   保留给页面标题。
 </p>
 <p>
-  只有 <code>&lt;h2&gt;</code> 和
-  <code>&lt;h3&gt;</code> 会出现在目录中；更深的标题会应用样式，但不会列出。
+  <code>&lt;h2&gt;</code> 到 <code>&lt;h4&gt;</code> 会出现在目录中；
+  <code>&lt;h5&gt;</code> 和 <code>&lt;h6&gt;</code> 会应用样式并可被链接，但不会列出。
 </p>
 
 <h2>目录控制</h2>
 <p>
-  目录列出页面的 <code>&lt;h2&gt;</code> 和
-  <code>&lt;h3&gt;</code
+  目录列出页面的 <code>&lt;h2&gt;</code>、<code>&lt;h3&gt;</code> 和
+  <code>&lt;h4&gt;</code
   >，并高亮当前可见的那个。提示框、卡片、步骤或标签页组件内的标题不会进入目录，因此组件自身的标题永远不会挤占页面的大纲。
 </p>
 <p>
@@ -52,18 +52,18 @@
 
 <h2>悬停时的锚点链接</h2>
 <p>
-  每个带 ID 的 <code>&lt;h2&gt;</code> 和
-  <code>&lt;h3&gt;</code> 在悬停时都会显示一个指向自身的 <code>#</code> 链接，便于复制锚点
+  每个带 ID 的 <code>&lt;h2&gt;</code> 到
+  <code>&lt;h6&gt;</code> 在悬停时都会显示一个指向自身的 <code>#</code> 链接，便于复制锚点
   URL 进行分享。
 </p>
 
 <h2>内联目录</h2>
 <p>
   写在页面中的
-  <code>&lt;htmlpress-toc&gt;</code> 会被填入页面目录，并以卡片形式呈现；<code
-    >level="2"</code
-  >
-  只保留 <code>&lt;h2&gt;</code>。没有标题的页面不会生成目录。
+  <code>&lt;htmlpress-toc&gt;</code> 会被填入页面目录，并以卡片形式呈现：默认包含
+  <code>&lt;h2&gt;</code> 和 <code>&lt;h3&gt;</code>，<code>level="2"</code> 只保留
+  <code>&lt;h2&gt;</code>，<code>level="4"</code> 则一直包含到
+  <code>&lt;h4&gt;</code>。没有标题的页面不会生成目录。
 </p>
 <pre><code class="language-html">&lt;htmlpress-toc level="2"&gt;&lt;/htmlpress-toc&gt;</code></pre>
 <htmlpress-toc level="2"></htmlpress-toc>
