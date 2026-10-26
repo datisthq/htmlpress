@@ -92,5 +92,19 @@ fn reports_patterns_that_match_nothing_and_bad_ones() -> Result<(), String> {
     assert_eq!(selection.unused, ["docs/**/*.html", "drafts/**"]);
     assert!(selection.files.is_empty());
     assert!(select(&["[unclosed"], &[], &[]).is_err());
+    for outside in [
+        "../**/*.html",
+        "/etc/*.html",
+        "docs/../../*.html",
+        "C:/x/*.html",
+    ] {
+        assert!(select(&[outside], &[], &[]).is_err(), "{outside}");
+        assert!(select(&[], &[outside], &[]).is_err(), "{outside}");
+    }
+    let config = Config {
+        include: vec!["../*.html".to_owned()],
+        ..Config::default()
+    };
+    assert!(read_bases(&config).is_empty());
     Ok(())
 }

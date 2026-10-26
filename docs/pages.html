@@ -217,7 +217,8 @@ edit: https://github.com/datisthq/htmlpress/edit/main/docs/</code></pre>
 </table>
 <p>
   An unknown key is an error, so a typo never passes silently. Globs are relative to the
-  project: <code>*</code> stays within a folder, <code>**</code> crosses folders, and an
+  project and cannot leave it (<code>..</code> or an absolute path is an error):
+  <code>*</code> stays within a folder, <code>**</code> crosses folders, and an
   <code>include</code> or <code>exclude</code> pattern that matches no file prints a
   warning.
 </p>

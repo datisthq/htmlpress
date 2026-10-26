@@ -78,6 +78,7 @@ pub(crate) fn select_paths(
 pub(crate) fn read_bases(config: &Config) -> Vec<String> {
     let mut bases: Vec<String> = read_include(config)
         .iter()
+        .filter(|text| check_pattern("include", text).is_ok())
         .map(|text| read_base(text))
         .collect();
     bases.sort();
@@ -107,11 +108,23 @@ fn compile_patterns(
 ) -> Result<Vec<(String, glob::Pattern)>, String> {
     (patterns.iter())
         .map(|text| {
+            check_pattern(key, text)?;
             glob::Pattern::new(text)
                 .map(|pattern| (text.clone(), pattern))
                 .map_err(|error| format!("{key}: \"{text}\": {error}"))
         })
         .collect()
+}
+
+// A base outside the project would read, and publish, files the project never held
+fn check_pattern(key: &str, text: &str) -> Result<(), String> {
+    match text.starts_with('/')
+        || text.contains(['\\', ':'])
+        || text.split('/').any(|part| part == "..")
+    {
+        true => Err(format!("{key}: \"{text}\": must stay inside the project")),
+        false => Ok(()),
+    }
 }
 
 #[cfg(test)]
