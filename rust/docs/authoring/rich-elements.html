@@ -555,7 +555,8 @@ title: Htmlpress</code></pre>
   <dd>A "Created with Htmlpress" credit.</dd>
   <dt><code>&lt;htmlpress-language&gt;</code></dt>
   <dd>
-    The language picker, linking to this page in each language; only on a site with
+    The language picker, linking to this page in each language, dropped down or, on a
+    phone, in a sheet; only on a site with
     <a href="/customization/translations.html">translations</a>.
   </dd>
   <dt><code>&lt;htmlpress-skip&gt;</code></dt>
@@ -573,12 +574,18 @@ title: Htmlpress</code></pre>
   folds the sidebar away and remembers that),
   <code>&lt;htmlpress-toc-bar&gt;</code> (narrower than the table of contents' column, a
   bar under the header naming the heading in view, which opens a sheet of the page's
-  contents and actions), <code>&lt;htmlpress-theme-toggle&gt;</code> (cycling light, dark
-  and the system's choice) and <code>&lt;htmlpress-back-to-top&gt;</code> are built by the
-  script in the browser. Their keys match Livemark's: <kbd>L</kbd> toggles the sidebar,
-  <kbd>T</kbd> flips light and dark and <kbd>B</kbd> goes back to the top, while
-  <kbd>J</kbd> and <kbd>K</kbd> scroll any page down and up. None fires while typing in a
-  field.
+  contents and actions), <code>&lt;htmlpress-theme-toggle&gt;</code> (a menu of light,
+  dark and the system's choice, dropped down or, on a phone, in a sheet) and
+  <code>&lt;htmlpress-back-to-top&gt;</code> are built by the script in the browser. Their
+  keys match Livemark's: <kbd>L</kbd> toggles the sidebar, <kbd>T</kbd> flips light and
+  dark and <kbd>B</kbd> goes back to the top, while <kbd>J</kbd> and <kbd>K</kbd> scroll
+  any page down and up. None fires while typing in a field.
+</p>
+<p>
+  Every phone sheet, the contents, the theme, the language and the sidebar's section
+  picker, is one <code>&lt;htmlpress-sheet&gt;</code> the scripts add to the body. It
+  closes on a swipe down, a tap on the backdrop, <kbd>Esc</kbd> or its close button, so
+  escaping <code>components/sheet/sheet.css</code> restyles all of them.
 </p>
 <p>
   The frame around them is made of elements too. They hold no content of their own, only

@@ -550,7 +550,8 @@ title: Htmlpress</code></pre>
   <dd>Un crédito "Hecho con Htmlpress".</dd>
   <dt><code>&lt;htmlpress-language&gt;</code></dt>
   <dd>
-    El selector de idioma, que enlaza a esta página en cada idioma; solo en un sitio con
+    El selector de idioma, que enlaza a esta página en cada idioma, como menú desplegable
+    o, en un móvil, en una hoja; solo en un sitio con
     <a href="/es/customization/translations.html">traducciones</a>.
   </dd>
   <dt><code>&lt;htmlpress-skip&gt;</code></dt>
@@ -566,12 +567,20 @@ title: Htmlpress</code></pre>
   Un elemento sin nada que mostrar se elimina.
   <code>&lt;htmlpress-nav-toggle&gt;</code> (la barra lateral como cajón en un móvil; en
   pantallas más anchas, pliega la barra lateral y lo recuerda),
-  <code>&lt;htmlpress-theme-toggle&gt;</code> (que alterna entre claro, oscuro y la
-  elección del sistema) y <code>&lt;htmlpress-back-to-top&gt;</code> los construye el
-  script en el navegador. Sus teclas coinciden con las de Livemark: <kbd>L</kbd> muestra u
-  oculta la barra lateral, <kbd>T</kbd> alterna entre claro y oscuro y <kbd>B</kbd> vuelve
-  arriba, mientras que <kbd>J</kbd> y <kbd>K</kbd> desplazan cualquier página hacia abajo
-  y hacia arriba. Ninguna se activa mientras escribes en un campo.
+  <code>&lt;htmlpress-theme-toggle&gt;</code> (un menú con claro, oscuro y la elección del
+  sistema, desplegable o, en un móvil, en una hoja) y
+  <code>&lt;htmlpress-back-to-top&gt;</code> los construye el script en el navegador. Sus
+  teclas coinciden con las de Livemark: <kbd>L</kbd> muestra u oculta la barra lateral,
+  <kbd>T</kbd> alterna entre claro y oscuro y <kbd>B</kbd> vuelve arriba, mientras que
+  <kbd>J</kbd> y <kbd>K</kbd> desplazan cualquier página hacia abajo y hacia arriba.
+  Ninguna se activa mientras escribes en un campo.
+</p>
+<p>
+  Cada hoja del móvil, el contenido, el tema, el idioma y el selector de secciones de la
+  barra lateral, es un mismo <code>&lt;htmlpress-sheet&gt;</code> que los scripts añaden
+  al body. Se cierra al deslizarla hacia abajo, al tocar el fondo, con <kbd>Esc</kbd> o
+  con su botón de cerrar, así que escapar <code>components/sheet/sheet.css</code> les da
+  estilo a todas.
 </p>
 <p>
   El marco que los rodea también está hecho de elementos. No contienen nada propio, solo

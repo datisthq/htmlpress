@@ -1,24 +1,40 @@
 @scope (htmlpress-theme-toggle) {
-  /* The build renders the button, but only the script makes it do anything */
+  /* The build renders the menu, but only the script makes its choices do anything */
   :root:not([data-scripted]) :scope {
     display: none;
   }
-  button {
+  :scope {
+    position: relative;
+    display: block;
+  }
+  details {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    box-shadow: none;
+  }
+  summary {
     display: grid;
     place-items: center;
     width: 2rem;
     height: 2rem;
+    margin: 0;
     padding: 0;
-    border: 0;
     border-radius: 999px;
-    background: none;
     color: var(--htmlpress-muted);
     cursor: pointer;
+    list-style: none;
   }
-  button:hover {
+  summary::-webkit-details-marker {
+    display: none;
+  }
+  summary:hover,
+  details[open] > summary {
+    margin: 0;
     background: var(--htmlpress-surface);
   }
   svg {
+    flex: none;
     width: 1rem;
     height: 1rem;
     fill: none;
@@ -27,13 +43,54 @@
     stroke-linecap: round;
     stroke-linejoin: round;
   }
-  svg {
+  summary > svg {
     display: none;
   }
   /* Read from the root, which the head script sets before the first frame */
-  :root[data-theme="light"] :scope [data-icon="light"],
-  :root[data-theme="dark"] :scope [data-icon="dark"],
-  :root:not([data-theme]) :scope [data-icon="system"] {
+  :root[data-theme="light"] :scope summary > [data-icon="light"],
+  :root[data-theme="dark"] :scope summary > [data-icon="dark"],
+  :root:not([data-theme]) :scope summary > [data-icon="system"] {
     display: block;
+  }
+  ul {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    right: 0;
+    z-index: 30;
+    min-width: 9rem;
+    margin: 0;
+    padding: 0.25rem;
+    border: 1px solid var(--htmlpress-border);
+    border-radius: 0.75rem;
+    background: var(--htmlpress-bg);
+    box-shadow: 0 8px 24px color-mix(in oklab, var(--htmlpress-text) 12%, transparent);
+    list-style: none;
+  }
+  li,
+  li + li {
+    margin: 0;
+    padding: 0;
+  }
+  button {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    width: 100%;
+    padding: 0.375rem 0.625rem;
+    border: 0;
+    border-radius: 0.5rem;
+    background: none;
+    color: var(--htmlpress-text);
+    font: 400 0.875rem/1.25rem var(--htmlpress-font);
+    text-align: left;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  button:hover {
+    background: var(--htmlpress-surface);
+  }
+  button[aria-current="true"] {
+    color: var(--htmlpress-accent);
+    font-weight: 500;
   }
 }

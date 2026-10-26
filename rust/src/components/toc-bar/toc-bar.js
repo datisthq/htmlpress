@@ -1,8 +1,6 @@
 const MESSAGES = readMessages()
 const ICONS = {
   chevron: '<path d="m18 15-6-6-6 6"/>',
-  close: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
-  check: '<path d="M20 6 9 17l-5-5"/>',
 }
 const RING = 2 * Math.PI * 6
 
@@ -20,7 +18,8 @@ class HtmlpressTocBar extends HTMLElement {
       }))
       .filter(entry => entry.heading)
     if (!this.entries.length) return this.remove()
-    this.replaceChildren(this.createBar(), this.createSheet())
+    this.replaceChildren(this.createBar())
+    document.body.append(this.createSheet())
     addEventListener("scroll", () => this.update(), { passive: true })
     this.update()
   }
@@ -39,26 +38,17 @@ class HtmlpressTocBar extends HTMLElement {
     return button
   }
 
+  // On the body, so this bar's own styles never reach the sheet's rows
   createSheet() {
-    const dialog = document.createElement("dialog")
-    dialog.setAttribute("aria-label", MESSAGES["toc.title"] ?? "Contents")
-    const header = document.createElement("header")
-    const heading = document.createElement("h2")
-    heading.textContent =
+    const sheet = document.createElement("htmlpress-sheet")
+    sheet.setAttribute(
+      "label",
       document.querySelector("main h1")?.textContent.trim() ||
-      (MESSAGES["toc.title"] ?? "Contents")
-    const close = document.createElement("button")
-    close.type = "button"
-    close.setAttribute("aria-label", MESSAGES["nav.close"] ?? "Close")
-    close.innerHTML = createIcon("close")
-    close.addEventListener("click", () => dialog.close())
-    header.append(heading, close)
-    this.body = document.createElement("div")
+        (MESSAGES["toc.title"] ?? "Contents"),
+    )
     this.contents = this.createContents()
-    dialog.append(document.createElement("hr"), header, this.body)
-    dialog.addEventListener("click", event => event.target === dialog && dialog.close())
-    this.dialog = dialog
-    return dialog
+    this.sheet = sheet
+    return sheet
   }
 
   createContents() {
@@ -70,7 +60,7 @@ class HtmlpressTocBar extends HTMLElement {
       const label = document.createElement("span")
       label.textContent = entry.link.textContent
       row.append(label)
-      row.addEventListener("click", () => this.dialog.close())
+      row.addEventListener("click", () => this.sheet.removeAttribute("open"))
       entry.row = row
       const item = document.createElement("li")
       item.append(row)
@@ -92,7 +82,7 @@ class HtmlpressTocBar extends HTMLElement {
       if (item.tagName === "BUTTON") {
         row.addEventListener("click", () => {
           item.click()
-          this.dialog.close()
+          this.sheet.removeAttribute("open")
         })
       }
       const entry = document.createElement("li")
@@ -125,12 +115,12 @@ class HtmlpressTocBar extends HTMLElement {
         panels.forEach((panel, i) => (panel.hidden = i !== index))
       }
       tabs.append(...buttons)
-      this.body.replaceChildren(tabs, ...panels)
+      this.sheet.append(tabs, ...panels)
       select(0)
     } else {
-      this.body.replaceChildren(this.contents)
+      this.sheet.append(this.contents)
     }
-    this.dialog.showModal()
+    this.sheet.setAttribute("open", "")
   }
 
   update() {
@@ -140,14 +130,8 @@ class HtmlpressTocBar extends HTMLElement {
     const current = passed.at(-1) ?? this.entries[0]
     this.label.textContent = current.link.textContent
     for (const entry of this.entries) {
-      if (entry === current) {
-        entry.row.setAttribute("aria-current", "true")
-        if (!entry.row.querySelector("svg"))
-          entry.row.insertAdjacentHTML("beforeend", createIcon("check"))
-      } else {
-        entry.row.removeAttribute("aria-current")
-        entry.row.querySelector("svg")?.remove()
-      }
+      if (entry === current) entry.row.setAttribute("aria-current", "true")
+      else entry.row.removeAttribute("aria-current")
     }
     const room = document.documentElement.scrollHeight - innerHeight
     const progress = room > 0 ? Math.min(Math.max(scrollY / room, 0), 1) : 1

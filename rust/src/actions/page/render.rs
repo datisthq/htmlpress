@@ -59,7 +59,10 @@ pub(crate) fn render_page(
     let (light, dark) = site.config.read_code_themes();
     let content = highlight_code(&content, light, dark).map_err(fail)?;
     let content = add_titles(&content).map_err(fail)?;
-    let tags = list_tags(&[layout, &content], &fragments).map_err(fail)?;
+    let mut tags = list_tags(&[layout, &content], &fragments).map_err(fail)?;
+    if SHEET_HOSTS.iter().any(|host| tags.contains(*host)) {
+        tags.insert("htmlpress-sheet".to_owned());
+    }
     let content = swap_components(&content, &fragments).map_err(fail)?;
     let head = create_head(site, page, &tags, reload);
     let nav = create_nav(site, page);
@@ -465,6 +468,15 @@ document.addEventListener("prerenderingchange", restore)
 const RENDER_BLOCKING: [&str; 2] =
     ["components/links/links.js", "components/sidebar/sidebar.js"];
 
+// The components whose scripts open an `htmlpress-sheet`, which they create at runtime,
+// so no page names its tag
+const SHEET_HOSTS: [&str; 4] = [
+    "htmlpress-language",
+    "htmlpress-nav",
+    "htmlpress-theme-toggle",
+    "htmlpress-toc-bar",
+];
+
 const SEARCH_ICON: &str = r#"<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>"#;
 const SUN_ICON: &str = r#"<svg viewBox="0 0 24 24" data-icon="light" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>"#;
 const MOON_ICON: &str = r#"<svg viewBox="0 0 24 24" data-icon="dark" aria-hidden="true"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>"#;
@@ -501,12 +513,27 @@ fn create_search_button(language: &SiteLanguage) -> String {
     )
 }
 
+// Livemark's theme menu; the script marks the open choice and, on a phone, shows it in
+// a sheet
 fn create_theme_toggle(language: &SiteLanguage) -> String {
-    let label = escape_html(language.read_message("theme.toggle"));
-    format!(
-        "<button type=\"button\" aria-label=\"{label}\" aria-keyshortcuts=\"T\" \
-         title=\"{label}\">{SUN_ICON}{MOON_ICON}{SYSTEM_ICON}</button>"
-    )
+    let label = escape_html(language.read_message("theme.change"));
+    let mut html = format!(
+        "<details><summary aria-label=\"{label}\" aria-keyshortcuts=\"T\" \
+         title=\"{label}\">{SUN_ICON}{MOON_ICON}{SYSTEM_ICON}</summary><ul>"
+    );
+    for (choice, icon) in [
+        ("light", SUN_ICON),
+        ("dark", MOON_ICON),
+        ("system", SYSTEM_ICON),
+    ] {
+        let name = escape_html(language.read_message(&format!("theme.{choice}")));
+        let _ = write!(
+            html,
+            "<li><button type=\"button\" data-choice=\"{choice}\">{icon}<span>{name}</span></button></li>"
+        );
+    }
+    html.push_str("</ul></details>");
+    html
 }
 
 fn create_nav_toggle(language: &SiteLanguage) -> String {
@@ -519,7 +546,7 @@ fn create_nav_toggle(language: &SiteLanguage) -> String {
 
 // The strings the components' scripts write, which they read from here and fall back to
 // English without, so an escaped script keeps working
-const SCRIPT_MESSAGES: [&str; 29] = [
+const SCRIPT_MESSAGES: [&str; 30] = [
     "code.copied",
     "code.copy",
     "code.expand",
@@ -527,6 +554,7 @@ const SCRIPT_MESSAGES: [&str; 29] = [
     "code.wrapOff",
     "code.wrapOn",
     "nav.backToTop",
+    "nav.chooseSection",
     "nav.close",
     "nav.toggleSidebar",
     "page.copied",
@@ -581,7 +609,9 @@ fn create_language_picker(site: &Site, page: &Page) -> Option<String> {
         let flag = (language.flag.as_deref())
             .and_then(|flag| FLAGS.binary_search_by_key(&flag, |(code, _)| code).ok())
             .and_then(|index| FLAGS.get(index))
-            .map_or("", |(_, svg)| *svg);
+            .map_or(String::new(), |(_, svg)| {
+                svg.replacen("<svg ", "<svg data-flag ", 1)
+            });
         let selected = match language.code == current.code {
             true => " aria-current=\"true\"",
             false => "",

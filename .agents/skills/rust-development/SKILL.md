@@ -183,6 +183,9 @@ in light, dark and phone width (**`change-verification`**).
   `display` on its own `:scope` beats a container's bare `htmlpress-brand`: write
   `:scope htmlpress-brand`, and an outer scope overriding the container needs one more type
 
+- A component a script creates at runtime, like `htmlpress-sheet`, is in no page's markup,
+  so its files are never linked: list the components whose scripts create it (`SHEET_HOSTS`
+  in `page/render`), and append it to `<body>` so the creator's scoped CSS stays off it
 - A running `htmlpress start` serves the assets it was compiled with: rebuild and restart it
   after editing one, or copy the file into `<root>/.htmlpress/build/_htmlpress/` to preview
 - Fade text with a `color-mix(in srgb, … , <background>)`, never `opacity`: text under

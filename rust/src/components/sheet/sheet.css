@@ -1,0 +1,216 @@
+/* Livemark's phone sheet: a dialog from below holding rows to pick from */
+@scope (htmlpress-sheet) {
+  :scope {
+    display: contents;
+  }
+  dialog {
+    inset: auto 0 0;
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    max-width: none;
+    max-height: 85dvh;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--htmlpress-border);
+    border-bottom: 0;
+    border-radius: 1.5rem 1.5rem 0 0;
+    background: var(--htmlpress-bg);
+    color: var(--htmlpress-text);
+    font: 400 0.875rem/1.25rem var(--htmlpress-font);
+    transition: translate 0.25s ease-out;
+  }
+  dialog[open] {
+    display: flex;
+    animation: htmlpress-sheet-up 0.25s ease-out;
+  }
+  dialog[data-closing] {
+    translate: 0 100%;
+    transition-timing-function: ease-in;
+    transition-duration: 0.2s;
+  }
+  dialog[data-dragging] {
+    transition: none;
+  }
+  dialog::backdrop {
+    background: oklch(0 0 0 / 0.1);
+    backdrop-filter: blur(4px);
+    animation: htmlpress-sheet-fade 0.25s ease-out;
+    transition: opacity 0.2s ease-in;
+  }
+  dialog[data-closing]::backdrop {
+    opacity: 0;
+  }
+  dialog > hr {
+    flex-shrink: 0;
+    width: 2.25rem;
+    height: 0.25rem;
+    margin: 0.5rem auto 0;
+    border: 0;
+    border-radius: 999px;
+    background: var(--htmlpress-border);
+  }
+  /* The grips the finger drags; the body keeps its own scrolling */
+  dialog > :is(hr, header) {
+    touch-action: none;
+  }
+  header {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 1rem 0.5rem;
+  }
+  h2 {
+    margin: 0;
+    overflow: hidden;
+    color: var(--htmlpress-text);
+    font-size: 1.125rem;
+    font-weight: 600;
+    line-height: 1.75rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  header > button {
+    display: grid;
+    flex-shrink: 0;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    margin: 0 -0.5rem 0 auto;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: none;
+    color: var(--htmlpress-text);
+    cursor: pointer;
+  }
+  header > button svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+  dialog > div {
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 0.5rem 1rem max(1.5rem, env(safe-area-inset-bottom));
+    outline: none;
+  }
+  svg {
+    flex-shrink: 0;
+    width: 1.125rem;
+    height: 1.125rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  svg[data-flag] {
+    height: 0.75rem;
+    border-radius: 2px;
+    box-shadow: 0 0 0 1px var(--htmlpress-border);
+  }
+  [role="tablist"] {
+    display: flex;
+    height: 2.25rem;
+    margin-bottom: 0.5rem;
+    padding: 3px;
+    border-radius: 999px;
+    background: var(--htmlpress-surface);
+  }
+  [role="tab"] {
+    flex: 1;
+    padding: 0.25rem 0.5rem;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    background: none;
+    color: color-mix(in oklab, var(--htmlpress-text) 60%, var(--htmlpress-bg));
+    font: 500 0.875rem/1.25rem var(--htmlpress-font);
+    cursor: pointer;
+  }
+  [role="tab"][aria-selected="true"] {
+    background: var(--htmlpress-bg);
+    color: var(--htmlpress-text);
+  }
+  ul {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin: 0 -0.5rem;
+    padding: 0;
+    list-style: none;
+  }
+  ul[hidden] {
+    display: none;
+  }
+  li,
+  li + li {
+    margin: 0;
+    padding: 0;
+  }
+  ul :is(a, button) {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    width: 100%;
+    height: 2.5rem;
+    padding: 0 0.5rem;
+    border: 0;
+    border-radius: 999px;
+    background: none;
+    color: var(--htmlpress-text);
+    font: 400 1rem/1.5rem var(--htmlpress-font);
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  ul :is(a, button):hover,
+  ul :is(a, button):is([aria-current="true"], [aria-current="page"]) {
+    background: var(--htmlpress-surface);
+  }
+  ul :is(a, button):is([aria-current="true"], [aria-current="page"]) {
+    font-weight: 500;
+  }
+  /* The chosen row's tick, drawn here so a host only marks it with aria-current */
+  ul :is(a, button):is([aria-current="true"], [aria-current="page"])::after {
+    flex-shrink: 0;
+    width: 1.125rem;
+    height: 1.125rem;
+    margin-left: auto;
+    background: var(--htmlpress-accent);
+    content: "";
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+  }
+  ul :is(a, button) > span {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  ul [data-level="3"] > span {
+    padding-left: 1rem;
+  }
+}
+
+@keyframes htmlpress-sheet-up {
+  from {
+    translate: 0 100%;
+  }
+}
+
+@keyframes htmlpress-sheet-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  htmlpress-sheet dialog,
+  htmlpress-sheet dialog::backdrop {
+    animation: none;
+    transition: none;
+  }
+}

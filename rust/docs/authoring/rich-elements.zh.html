@@ -523,7 +523,7 @@ title: Htmlpress</code></pre>
   <dd>“用 Htmlpress 构建”的署名。</dd>
   <dt><code>&lt;htmlpress-language&gt;</code></dt>
   <dd>
-    语言选择器，链接到本页面的各语言版本；仅在启用了
+    语言选择器，链接到本页面的各语言版本，以下拉菜单显示，在手机上则以底部面板显示；仅在启用了
     <a href="/zh/customization/translations.html">翻译</a>的站点上显示。
   </dd>
   <dt><code>&lt;htmlpress-skip&gt;</code></dt>
@@ -538,11 +538,19 @@ title: Htmlpress</code></pre>
   没有内容可显示的元素会被移除。
   <code>&lt;htmlpress-nav-toggle&gt;</code
   >（在手机上把侧边栏变为抽屉；在更宽的屏幕上则折叠侧边栏并记住该状态）、
-  <code>&lt;htmlpress-theme-toggle&gt;</code>（在浅色、深色和系统选择之间循环）和
+  <code>&lt;htmlpress-theme-toggle&gt;</code
+  >（浅色、深色和系统选择的菜单，以下拉菜单显示，在手机上则以底部面板显示）和
   <code>&lt;htmlpress-back-to-top&gt;</code> 由脚本在浏览器中构建。它们的快捷键与 Livemark
   一致：<kbd>L</kbd> 切换侧边栏，<kbd>T</kbd> 在浅色和深色之间切换，
   <kbd>B</kbd> 返回顶部，而 <kbd>J</kbd> 和
   <kbd>K</kbd> 可在任何页面上向下和向上滚动。在输入框中输入时，这些快捷键都不会触发。
+</p>
+<p>
+  手机上的每个底部面板（目录、主题、语言和侧边栏的栏目选择）都是同一个由脚本添加到 body 的
+  <code>&lt;htmlpress-sheet&gt;</code>。向下滑动、点击背景、按
+  <kbd>Esc</kbd> 或点击关闭按钮都会关闭它，因此转义
+  <code>components/sheet/sheet.css</code>
+  即可为所有面板重新设置样式。
 </p>
 <p>
   它们周围的框架同样由元素构成。这些元素本身不包含内容，只负责为其中的内容设置样式和定位，因此布局可以保留需要的元素，并以属性的形式为它们赋予地标角色：

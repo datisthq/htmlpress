@@ -67,10 +67,13 @@ upgrade it misses the new defaults: escape only what you change.
 `<htmlpress-toolbar>`, `<htmlpress-footer>`, `<htmlpress-language>` (the language picker) and
 `<htmlpress-skip>` at build time, every string in the page's language. The interactive ones,
 `<htmlpress-nav-toggle>`, `<htmlpress-search>`, `<htmlpress-theme-toggle>`, `<htmlpress-toc-bar>`
-(the phone's contents bar and sheet) and `<htmlpress-back-to-top>`, run in the browser; the first three get their button at build time,
+(the phone's contents bar) and `<htmlpress-back-to-top>`, run in the browser; the first three get their button at build time,
 so the header is whole on its first frame. A head script sets `data-scripted` on `<html>`:
 without it those buttons stay hidden, so style anything that needs scripts under
-`:root[data-scripted]`. An element with nothing to show is removed.
+`:root[data-scripted]`. An element with nothing to show is removed. The theme toggle, the
+language picker and the sidebar's section picker drop down from `56rem` up and, like the
+contents bar, open an `<htmlpress-sheet>` on a phone: one bottom sheet the scripts append to
+`<body>`, so escape `components/sheet/sheet.css` to restyle every sheet at once.
 
 Pages crossfade only their content: `<htmlpress-header>` and `<htmlpress-sidebar>` carry the
 view transition names `htmlpress-header` and `htmlpress-sidebar`, and a hovered link's page is

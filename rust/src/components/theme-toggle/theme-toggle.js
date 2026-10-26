@@ -1,60 +1,58 @@
-const SUN =
-  '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>'
-const MOON =
-  '<path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/>'
+const PHONE = matchMedia("(max-width: 56rem)")
 
-const SYSTEM =
-  '<path d="M12 8a2.83 2.83 0 0 0 4 4 4 4 0 1 1-4-4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M6.3 17.7l-1.4 1.4M19.1 4.9l-1.4 1.4"/>'
-const CHOICES = ["light", "dark", "system"]
-
-// One button cycles light, dark and the system's choice; "T" flips light and dark
+// Livemark's theme menu: light, dark or the system's choice, dropped down from the
+// header or, on a phone, in a sheet; "T" flips light and dark
 class HtmlpressThemeToggle extends HTMLElement {
   connectedCallback() {
-    if (this.wired) return
+    const details = this.querySelector(":scope > details")
+    if (this.wired || !details) return
     this.wired = true
-    const messages = readMessages()
-    // The build renders the button, so the header is whole on its first frame
-    const button = this.querySelector(":scope > button") ?? createButton()
-    const show = choice => {
-      const label = messages["theme.toggle"] ?? "Toggle dark mode"
-      const name = messages[`theme.${choice}`] ?? choice
-      button.dataset.choice = choice
-      button.setAttribute("aria-label", `${label}: ${name}`)
-      button.title = `${label}: ${name}`
+    const summary = details.querySelector("summary")
+    const list = details.querySelector("ul")
+    const sheet = document.createElement("htmlpress-sheet")
+    sheet.setAttribute("label", summary.getAttribute("aria-label") ?? "")
+    document.body.append(sheet)
+    const mark = () => {
+      const current = document.documentElement.dataset.theme ?? "system"
+      for (const button of list.querySelectorAll("[data-choice]")) {
+        if (button.dataset.choice === current) button.setAttribute("aria-current", "true")
+        else button.removeAttribute("aria-current")
+      }
     }
     const choose = choice => {
       const root = document.documentElement
       if (choice === "system") delete root.dataset.theme
       else root.dataset.theme = choice
       writeStorage("htmlpress-theme", choice === "system" ? null : choice)
-      show(choice)
+      mark()
     }
-    show(document.documentElement.dataset.theme ?? "system")
-    button.addEventListener("click", () => {
-      const index = CHOICES.indexOf(button.dataset.choice ?? "system")
-      choose(CHOICES[(index + 1) % CHOICES.length])
+    const pick = event => {
+      const button = event.target.closest("[data-choice]")
+      if (!button) return
+      choose(button.dataset.choice)
+      details.open = false
+      sheet.removeAttribute("open")
+    }
+    list.addEventListener("click", pick)
+    sheet.addEventListener("click", pick)
+    summary.addEventListener("click", event => {
+      if (!PHONE.matches) return
+      event.preventDefault()
+      sheet.append(list.cloneNode(true))
+      sheet.setAttribute("open", "")
+    })
+    document.addEventListener("click", event => {
+      if (!this.contains(event.target)) details.open = false
     })
     document.addEventListener("keydown", event => {
+      if (event.key === "Escape") details.open = false
       if (!isShortcut(event, "t")) return
       const dark = matchMedia("(prefers-color-scheme: dark)").matches
       const current = document.documentElement.dataset.theme ?? (dark ? "dark" : "light")
       choose(current === "dark" ? "light" : "dark")
     })
-    if (!button.isConnected) this.replaceChildren(button)
+    mark()
   }
-}
-
-function createButton() {
-  const button = document.createElement("button")
-  button.type = "button"
-  button.setAttribute("aria-keyshortcuts", "T")
-  button.innerHTML =
-    createIcon("light", SUN) + createIcon("dark", MOON) + createIcon("system", SYSTEM)
-  return button
-}
-
-function createIcon(name, paths) {
-  return `<svg viewBox="0 0 24 24" data-icon="${name}" aria-hidden="true">${paths}</svg>`
 }
 
 // Storage throws in some private modes; a choice that cannot be kept is still applied
@@ -78,12 +76,3 @@ function isTyping(target) {
 }
 
 customElements.define("htmlpress-theme-toggle", HtmlpressThemeToggle)
-
-// The page's UI strings; English when a layout leaves them out
-function readMessages() {
-  try {
-    return JSON.parse(document.getElementById("htmlpress-messages")?.textContent ?? "{}")
-  } catch {
-    return {}
-  }
-}

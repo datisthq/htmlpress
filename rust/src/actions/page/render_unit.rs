@@ -222,6 +222,34 @@ fn links_only_the_components_a_page_uses() -> crate::Result<()> {
 }
 
 #[test]
+fn links_the_sheet_only_with_a_component_that_opens_it() -> crate::Result<()> {
+    let mut site = create_site()?;
+    let html = render_page(&site, &site.pages[0], false)?;
+    assert!(html.contains(r#"src="/_htmlpress/components/sheet/sheet.js""#));
+    assert!(html.contains(r#"href="/_htmlpress/components/sheet/sheet.css""#));
+    site.assets.insert(
+        "layout.html".to_owned(),
+        "<main><htmlpress-content></main>".to_owned(),
+    );
+    let html = render_page(&site, &site.pages[0], false)?;
+    assert!(!html.contains("sheet.js"));
+    Ok(())
+}
+
+#[test]
+fn renders_the_theme_toggle_as_a_menu() -> crate::Result<()> {
+    let site = create_site()?;
+    let html = render_page(&site, &site.pages[0], false)?;
+    assert!(html.contains(r#"<summary aria-label="Change theme" aria-keyshortcuts="T""#));
+    for choice in ["light", "dark", "system"] {
+        assert!(
+            html.contains(&format!(r#"<button type="button" data-choice="{choice}">"#))
+        );
+    }
+    Ok(())
+}
+
+#[test]
 fn fills_a_project_component_tag_with_its_html() -> crate::Result<()> {
     let mut site = create_site()?;
     let footer = "<footer><htmlpress-badge>v1</htmlpress-badge></footer>";
