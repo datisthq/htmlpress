@@ -15,6 +15,12 @@ sections:
     type: blog
     prefix: /blog/
     icon: rss
+  - title: Changelog
+    type: changelog
+    prefix: /changelog/
+    source: CHANGELOG.md
+    version: true
+    icon: history
 include: rust/docs/**/*.html
 exclude: rust/docs/includes/**
 skills: .skills/*/SKILL.md
