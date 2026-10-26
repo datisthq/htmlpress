@@ -261,3 +261,27 @@ fn prefixes_every_url_with_the_base() -> crate::Result<()> {
     );
     Ok(())
 }
+
+#[test]
+fn builds_only_included_pages_and_leaves_excluded_files_out() -> crate::Result<()> {
+    let root = tempfile::tempdir().map_err(Error::io("tempdir"))?;
+    let root = root.path();
+    write_source(
+        root,
+        "htmlpress.yaml",
+        "include:\n  - '*.html'\nexclude: drafts/**\n",
+    )?;
+    write_source(root, "index.html", "<h1>Home</h1>")?;
+    write_source(root, "demo/embed.html", "<p>raw</p>")?;
+    write_source(root, "drafts/next.html", "<h1>Next</h1>")?;
+    write_source(root, "drafts/notes.txt", "notes")?;
+    let options = BuildOptions::new(root);
+    let read = |path: &str| std::fs::read_to_string(options.output.join(path)).ok();
+
+    let report = build_site(&options)?;
+    assert_eq!((report.pages, report.files), (1, 1));
+    assert_eq!(read("demo/embed.html").as_deref(), Some("<p>raw</p>"));
+    assert!(read("drafts/next.html").is_none() && read("drafts/notes.txt").is_none());
+    assert!(!read("index.html").unwrap_or_default().contains("drafts"));
+    Ok(())
+}

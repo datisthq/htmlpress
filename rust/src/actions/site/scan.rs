@@ -3,6 +3,7 @@ use std::path::Path;
 
 use crate::actions::config::load::load_config;
 use crate::actions::page::read::{is_layout_name, read_page};
+use crate::actions::path::select::select_paths;
 use crate::actions::skill::load::load_skills;
 use crate::models::error::Error;
 use crate::models::site::Site;
@@ -16,20 +17,22 @@ pub fn scan_site(root: &Path) -> crate::Result<Site> {
     list_files(root, "", &mut paths)?;
     paths.sort();
 
-    let mut pages = vec![];
-    let mut files = vec![];
-    for path in paths {
-        if path == CONFIG_FILE {
-            continue;
-        }
-        if path.ends_with(".html") {
-            let file = root.join(&path);
-            let html = std::fs::read_to_string(&file).map_err(Error::io(&file))?;
-            pages.push(read_page(&path, &html)?);
-        } else {
-            files.push(path);
-        }
+    paths.retain(|path| path != CONFIG_FILE);
+    let selection = select_paths(&config, paths).map_err(|message| Error::Config {
+        path: root.join(CONFIG_FILE),
+        message,
+    })?;
+    // stderr, not stdout: under --json stdout carries only the result
+    for pattern in &selection.unused {
+        eprintln!("warning: {CONFIG_FILE}: \"{pattern}\" matches no file");
     }
+    let mut pages = vec![];
+    for path in &selection.pages {
+        let file = root.join(path);
+        let html = std::fs::read_to_string(&file).map_err(Error::io(&file))?;
+        pages.push(read_page(path, &html)?);
+    }
+    let files = selection.files;
     pages.sort_by(|a, b| {
         let rank =
             |page: &crate::Page| (page.url != "/", page.order.is_none(), page.order);

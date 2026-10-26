@@ -184,6 +184,20 @@ edit: https://github.com/datisthq/htmlpress/edit/main/docs/</code></pre>
       </td>
     </tr>
     <tr>
+      <td><code>include</code></td>
+      <td><code>**/*.html</code></td>
+      <td>
+        one glob or a list: the <code>.html</code> files that become pages. It replaces
+        the default, so list every folder you want; other <code>.html</code> files are
+        copied as they are, like any other file
+      </td>
+    </tr>
+    <tr>
+      <td><code>exclude</code></td>
+      <td>none</td>
+      <td>one glob or a list: files left out of the build entirely, pages or not</td>
+    </tr>
+    <tr>
       <td><code>skills</code></td>
       <td>none</td>
       <td>
@@ -198,7 +212,12 @@ edit: https://github.com/datisthq/htmlpress/edit/main/docs/</code></pre>
     </tr>
   </tbody>
 </table>
-<p>An unknown key is an error, so a typo never passes silently.</p>
+<p>
+  An unknown key is an error, so a typo never passes silently. Globs are relative to the
+  project: <code>*</code> stays within a folder, <code>**</code> crosses folders, and an
+  <code>include</code> or <code>exclude</code> pattern that matches no file prints a
+  warning.
+</p>
 <p>
   Every build writes a <code>robots.txt</code>, when <code>site</code> is set a
   <code>sitemap.xml</code> of every page, and the files for agents on the

@@ -79,8 +79,9 @@ Put block content (`<p>`, `<h3>`, `<pre>`) inside a component, not bare text.
   `description`, `logo` and `favicon` (URLs), `banner` (HTML), `links` (each `title`,
   `url`, `position: header | sidebar`), `head` (`meta`, `links`, `scripts`: lists of
   attribute maps; a script's `children` is its source), `contentSignals` (`search`,
-  `aiInput`, `aiTrain` for `robots.txt`), `skills` (globs of `SKILL.md` files to publish
-  for agents) and `edit` (URL prefix for an "Edit this page" link). An unknown key is an
+  `aiInput`, `aiTrain` for `robots.txt`), `include` (globs of the `.html` files that become pages, default `**/*.html`; other
+  `.html` is copied as-is), `exclude` (globs left out of the build), `skills` (globs of
+  `SKILL.md` files to publish for agents) and `edit` (URL prefix for an "Edit this page" link). An unknown key is an
   error.
 - `<meta name="image" content="/cover.png">` in a page is its social preview image.
 - A build writes `robots.txt`, with `site` a `sitemap.xml`, and for agents a Markdown copy

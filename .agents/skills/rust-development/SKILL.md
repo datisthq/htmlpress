@@ -44,7 +44,8 @@ run from source: `cargo run --manifest-path rust/Cargo.toml -- build docs`.
 ## The pipeline
 
 1. `scan_site` lists the project, skipping dot-entries and `node_modules/`, so `.htmlpress/build`
-   is never read back. `.html` files become pages; the rest are copied. Pages sort `index.html`
+   is never read back. `select_paths` sorts the rest by the config's `include` (pages, `**/*.html` when unset) and
+   `exclude` (dropped); other files, `.html` outside `include` too, are copied. Pages sort `index.html`
    first, then by `<meta name="order">`, then by path.
 2. `read_page` runs lol_html over the source three times — facts (title, first `<h1>`, metas,
    whether a `<head>` exists), content (wrappers and layout-owned tags removed) and, only when a

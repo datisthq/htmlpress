@@ -77,7 +77,7 @@ Shipped skills live in `.skills/` and teach coding agents to **use** htmlpress; 
 The root is a private pnpm workspace (`package.json`, `pnpm-workspace.yaml`): format, lint, the repo guards and the scripts that chain each section with `pnpm -C <section>` — never `pnpm -r`.
 
 - `rust/` — the crates.io package and the binary, a cargo project on the toolchain `rust/rust-toolchain.toml` pins (**`rust-development`**)
-  - `src/actions/<entity>/<verb>.rs` — `asset/escape` and `asset/list`, `config/load`, `package/convert`, `page/convert`, `page/prefix`, `page/read` and `page/render`, `skill/load`, `site/scan`, `site/build`, `site/clear`, `site/describe`, `site/serve` and `site/preview`
+  - `src/actions/<entity>/<verb>.rs` — `asset/escape` and `asset/list`, `config/load`, `package/convert`, `path/select`, `page/convert`, `page/prefix`, `page/read` and `page/render`, `skill/load`, `site/scan`, `site/build`, `site/clear`, `site/describe`, `site/serve` and `site/preview`
   - `src/commands/` — the fireargs commands `build`, `start`, `preview`, `clear` and `escape`; `src/program.rs` the CLI; `src/main.rs` runs it
   - `src/models/`, `src/settings.rs` (paths and the embedded assets), `src/lib.rs` the façade; `src/assets/` the layout, `styles/`, `scripts/`, `components/` and the reload script compiled into the binary
   - Unit tests beside their module as `<module>_unit.rs`; `tests/` the CLI integration tests

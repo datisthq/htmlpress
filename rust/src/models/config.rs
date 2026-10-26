@@ -28,6 +28,13 @@ pub struct Config {
     pub head: Head,
     /// How automated systems may use the content, written to `robots.txt`.
     pub content_signals: ContentSignals,
+    /// Globs of the `.html` files that become pages, relative to the project; one
+    /// pattern or a list. Empty means `**/*.html`. Other `.html` files are copied as-is.
+    #[serde(deserialize_with = "read_patterns")]
+    pub include: Vec<String>,
+    /// Globs of files left out of the build entirely, pages or not.
+    #[serde(deserialize_with = "read_patterns")]
+    pub exclude: Vec<String>,
     /// Globs of `SKILL.md` files, relative to the project, published for agents under
     /// `.well-known/agent-skills/`; one pattern or a list.
     #[serde(deserialize_with = "read_patterns")]
