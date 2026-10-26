@@ -38,6 +38,7 @@ mod actions {
     }
     pub(crate) mod page {
         pub(crate) mod convert;
+        pub(crate) mod include;
         pub(crate) mod patch;
         pub(crate) mod prefix;
         pub(crate) mod read;

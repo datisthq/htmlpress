@@ -16,5 +16,6 @@ sections:
     prefix: /blog/
     icon: rss
 include: rust/docs/**/*.html
+exclude: rust/docs/includes/**
 skills: .skills/*/SKILL.md
 edit: https://github.com/datisthq/htmlpress/edit/main/

@@ -4,6 +4,7 @@ use std::path::Path;
 use crate::actions::config::load::load_config;
 use crate::actions::git::read::read_dates;
 use crate::actions::markdown::render::render_markdown;
+use crate::actions::page::include::resolve_includes;
 use crate::actions::page::patch::patch_page;
 use crate::actions::page::read::{is_layout_name, read_page};
 use crate::actions::path::contain::read_contained;
@@ -46,6 +47,7 @@ pub fn scan_site(root: &Path) -> crate::Result<Site> {
     for (path, source) in &selection.pages {
         let file = root.join(source);
         let html = std::fs::read_to_string(&file).map_err(Error::io(&file))?;
+        let html = resolve_includes(root, source, &html).map_err(Error::page(source))?;
         let page = read_page(path, &html).map_err(|error| match error {
             Error::Page { message, .. } => Error::Page {
                 path: source.clone(),
@@ -134,6 +136,7 @@ fn read_patched_file(root: &Path, bases: &[String], file: &str) -> Result<Page, 
         true => render_markdown(&text),
         false => text,
     };
+    let html = resolve_includes(root, file, &html)?;
     let output = (bases.iter())
         .filter(|base| !base.is_empty())
         .find_map(|base| stem.strip_prefix(&format!("{base}/")))

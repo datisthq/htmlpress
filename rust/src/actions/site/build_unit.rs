@@ -366,3 +366,36 @@ fn builds_a_blog_and_a_changelog() -> crate::Result<()> {
     ));
     Ok(())
 }
+
+#[test]
+fn builds_pages_with_their_includes() -> crate::Result<()> {
+    let root = tempfile::tempdir().map_err(Error::io("tempdir"))?;
+    let root = root.path();
+    write_source(root, "htmlpress.yaml", "exclude: \"**/includes/**\"\n")?;
+    write_source(
+        root,
+        "index.html",
+        "<h1>Home</h1>\n<htmlpress-include src=\"includes/intro.md\"></htmlpress-include>",
+    )?;
+    write_source(root, "includes/intro.md", "## Setup\n\nRun it.\n")?;
+    let options = BuildOptions::new(root);
+    let report = build_site(&options)?;
+    assert_eq!(report.pages, 1);
+    let html =
+        std::fs::read_to_string(options.output.join("index.html")).unwrap_or_default();
+    assert!(
+        html.contains("<h2 id=\"setup\">Setup</h2>") && html.contains("<p>Run it.</p>"),
+        "{html}"
+    );
+    assert!(
+        html.contains("href=\"#setup\""),
+        "the included heading joins the toc"
+    );
+    write_source(
+        root,
+        "index.html",
+        "<htmlpress-include src=\"../escape.md\"></htmlpress-include>",
+    )?;
+    assert!(build_site(&options).is_err());
+    Ok(())
+}

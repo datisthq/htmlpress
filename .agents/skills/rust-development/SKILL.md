@@ -53,6 +53,9 @@ run from source: `cargo run --manifest-path rust/Cargo.toml -- build docs`.
    files under a base, `.html` outside `include` too, are copied. Every path is served
    without its base, so `Page.path` is the output path and `Page.source` the file's. Pages sort `index.html`
    first, then by `<meta name="order">`, then by path.
+   `scan_site` resolves `<htmlpress-include>` (`page/include`, through `path/contain`) in a
+   page's source before `read_page`, which has no filesystem access, so included content
+   reaches the TOC, search and the Markdown copies like the page's own.
 2. `read_page` first runs `text/enrich` (auto links and emoji shortcodes, on whole text
    nodes outside links, code and `data-literal`), then lol_html over the source three times — facts (title, first `<h1>`, metas,
    whether a `<head>` exists), content (wrappers and layout-owned tags removed) and, only when a

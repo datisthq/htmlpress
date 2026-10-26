@@ -44,6 +44,9 @@ The theme styles the elements themselves: headings, `<p>`, lists, `<table>`, `<p
 - To change the look site-wide, override a token in a stylesheet: `--htmlpress-accent`, `--htmlpress-font`,
   `--htmlpress-mono`, `--htmlpress-bg`, `--htmlpress-surface`, `--htmlpress-text`, `--htmlpress-muted`, `--htmlpress-border`,
   `--htmlpress-radius`, `--htmlpress-width`.
+- `<htmlpress-include src="partial.html">` pastes in another file by path (relative to
+  the page): `.html` body, rendered `.md`, or any other file as a titled code block that
+  takes `data-lines` and the other code block attributes. Exclude the partials folder.
 - Bare URLs and emails in prose become links and GitHub shortcodes (`:rocket:`) become emoji
   at build time; text in links, code and `data-literal` elements stays as written.
 - Escape code inside `<pre><code>`: `&lt;` and `&amp;`. Name its language,

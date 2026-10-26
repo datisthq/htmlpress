@@ -149,6 +149,37 @@ pie title Languages
   See <a href="/customization/overriding-escaping.html">Overriding and Escaping</a> for
   every file under <code>.htmlpress/</code>.
 </p>
-<htmlpress-callout label="Coming soon">
-  <p>Including another file's content, or a code file as a code block, by its path.</p>
-</htmlpress-callout>
+<p>
+  <code>&lt;htmlpress-include src="…"&gt;</code> pastes another file in by its path,
+  relative to the page (or the project with a leading <code>/</code>): an
+  <code>.html</code> file's body, a <code>.md</code> file rendered (its frontmatter
+  dropped), or any other file as a code block titled with its name and highlighted by its
+  extension.
+</p>
+<pre><code class="language-html">&lt;htmlpress-include src="../includes/disclaimer.md"&gt;&lt;/htmlpress-include&gt;</code></pre>
+<p>Renders as:</p>
+<htmlpress-include src="../includes/disclaimer.md"></htmlpress-include>
+<p>
+  A code file takes the code block attributes, such as <code>data-lines</code>,
+  <code>data-line-numbers</code> or <code>data-title</code>, which replaces the file name:
+</p>
+<pre><code class="language-html">&lt;htmlpress-include src="../includes/build.ts" data-lines="3"&gt;&lt;/htmlpress-include&gt;</code></pre>
+<p>Renders as:</p>
+<htmlpress-include src="../includes/build.ts" data-lines="3"></htmlpress-include>
+<ul>
+  <li>
+    Includes nest up to five levels, and one page expands at most 1,000 of them or 16 MB.
+    A missing file, a cycle, or a path that leaves the project, or names a dot-file,
+    <code>node_modules</code> or <code>.htmlpress</code>, fails the build: an included
+    file is published.
+  </li>
+  <li>
+    Keep partials out of the site with <code>exclude</code>, as this site does with
+    <code>exclude: rust/docs/includes/**</code>; an <code>.html</code> partial would
+    otherwise be a page too.
+  </li>
+  <li>
+    The page's "Edit this page" link and updated date stay its own; editing an included
+    file rebuilds the page under <code>htmlpress start</code>.
+  </li>
+</ul>
