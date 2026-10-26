@@ -213,6 +213,19 @@ $ htmlpress escape htmlpress-tabs -r docs  # in another project folder</code></p
       a bare <code>htmlpress-header</code>.
     </p>
 
+    <h2>Page transitions</h2>
+    <p>
+      Moving between pages crossfades the content only:
+      <code>&lt;htmlpress-header&gt;</code> and
+      <code>&lt;htmlpress-sidebar&gt;</code> carry the view transition names
+      <code>htmlpress-header</code> and <code>htmlpress-sidebar</code> and switch to the
+      new page at once. Hovering a link prerenders its page, so it is ready by the click.
+      The header's buttons are built into each page; a head script sets
+      <code>data-scripted</code> on <code>&lt;html&gt;</code>, and without it they stay
+      hidden, so style anything that only works with scripts under
+      <code>:root[data-scripted]</code>.
+    </p>
+
     <h2>What you can't override this way</h2>
     <ul>
       <li>

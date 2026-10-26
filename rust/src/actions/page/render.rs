@@ -167,8 +167,27 @@ pub(crate) fn render_page(
             settings.append_element_content_handler(element!("htmlpress-search", |el| {
                 let index = create_search_path(site.read_language(&page.language));
                 el.set_attribute("data-index", &format!("/{ASSETS_DIR}/{index}"))?;
+                el.set_inner_content(&create_search_button(language), ContentType::Html);
                 Ok(())
             }));
+    }
+    if !replaced("htmlpress-theme-toggle") {
+        settings = settings.append_element_content_handler(element!(
+            "htmlpress-theme-toggle",
+            |el| {
+                el.set_inner_content(&create_theme_toggle(language), ContentType::Html);
+                Ok(())
+            }
+        ));
+    }
+    if !replaced("htmlpress-nav-toggle") {
+        settings = settings.append_element_content_handler(element!(
+            "htmlpress-nav-toggle",
+            |el| {
+                el.set_inner_content(&create_nav_toggle(language), ContentType::Html);
+                Ok(())
+            }
+        ));
     }
     if !replaced("htmlpress-language") {
         settings = settings.append_element_content_handler(element!(
@@ -315,14 +334,8 @@ fn create_head(
     let favicon =
         favicon.map_or(format!("/{ASSETS_DIR}/favicon.svg"), |url| escape_html(url));
     let _ = writeln!(head, "<link rel=\"icon\" href=\"{favicon}\">");
-    // Set before the stylesheet applies, so a stored dark theme never flashes light
-    // and a collapsed sidebar never flashes open
-    head.push_str(
-        "<script>try { const theme = localStorage.getItem(\"htmlpress-theme\"); \
-         if (theme) document.documentElement.dataset.theme = theme; \
-         if (localStorage.getItem(\"htmlpress-nav\") === \"collapsed\") \
-         document.documentElement.dataset.navCollapsed = \"\" } catch {}</script>\n",
-    );
+    head.push_str(RESTORE_SCRIPT);
+    head.push_str(&create_speculation_rules(&site.config.read_base()));
     head.push_str(&create_messages(site.read_language(&page.language)));
     let _ = writeln!(
         head,
@@ -345,9 +358,13 @@ fn create_head(
         .keys()
         .filter(|path| path.starts_with("scripts/"));
     for path in scripts.cloned().chain(used("js")) {
+        let blocking = match RENDER_BLOCKING.contains(&path.as_str()) {
+            true => " blocking=\"render\"",
+            false => "",
+        };
         let _ = writeln!(
             head,
-            "<script type=\"module\" src=\"/{ASSETS_DIR}/{path}\"></script>"
+            "<script type=\"module\" src=\"/{ASSETS_DIR}/{path}\"{blocking}></script>"
         );
     }
     if reload {
@@ -424,6 +441,80 @@ fn create_attributes(tag: &std::collections::BTreeMap<String, String>) -> String
         let _ = write!(html, " {}=\"{}\"", escape_html(name), escape_html(value));
     }
     html
+}
+
+// Runs before the stylesheet applies, so a stored dark theme never flashes light, a
+// collapsed sidebar never flashes open, and the header's buttons hide without scripts.
+// A prerendered page ran it before the visitor's last choice, so it runs again on reveal.
+const RESTORE_SCRIPT: &str = r#"<script>{
+const root = document.documentElement
+const restore = () => { try {
+  const theme = localStorage.getItem("htmlpress-theme")
+  if (theme) root.dataset.theme = theme
+  else delete root.dataset.theme
+  root.toggleAttribute("data-nav-collapsed", localStorage.getItem("htmlpress-nav") === "collapsed")
+} catch {} }
+root.dataset.scripted = ""
+restore()
+document.addEventListener("prerenderingchange", restore)
+}</script>
+"#;
+
+// These reshape the header and the sidebar once they run, so the first frame, which a
+// view transition snapshots, waits for them
+const RENDER_BLOCKING: [&str; 2] =
+    ["components/links/links.js", "components/sidebar/sidebar.js"];
+
+const SEARCH_ICON: &str = r#"<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>"#;
+const SUN_ICON: &str = r#"<svg viewBox="0 0 24 24" data-icon="light" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>"#;
+const MOON_ICON: &str = r#"<svg viewBox="0 0 24 24" data-icon="dark" aria-hidden="true"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>"#;
+const SYSTEM_ICON: &str = r#"<svg viewBox="0 0 24 24" data-icon="system" aria-hidden="true"><path d="M12 8a2.83 2.83 0 0 0 4 4 4 4 0 1 1-4-4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M6.3 17.7l-1.4 1.4M19.1 4.9l-1.4 1.4"/></svg>"#;
+const MENU_ICON: &str = r#"<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>"#;
+
+// A page is prerendered while a link to it is hovered, as Livemark preloads its routes, so
+// the next page is ready, scripts run, before the view transition shows it
+fn create_speculation_rules(base: &str) -> String {
+    let rules = serde_json::json!({
+        "prerender": [{
+            "where": {
+                "and": [
+                    { "href_matches": format!("{base}/*") },
+                    { "not": { "href_matches": [
+                        format!("{base}/{ASSETS_DIR}/*"),
+                        "/*.md", "/*.txt", "/*.xml", "/*.json",
+                    ] } },
+                ],
+            },
+            "eagerness": "moderate",
+        }],
+    });
+    let json = rules.to_string().replace("</", "<\\/");
+    format!("<script type=\"speculationrules\">{json}</script>\n")
+}
+
+fn create_search_button(language: &SiteLanguage) -> String {
+    let label = escape_html(language.read_message("search.label"));
+    let text = escape_html(language.read_message("search.button"));
+    format!(
+        "<button type=\"button\" aria-label=\"{label}\" aria-keyshortcuts=\"S\" \
+         title=\"{label}\">{SEARCH_ICON}<span>{text}</span><kbd>S</kbd></button>"
+    )
+}
+
+fn create_theme_toggle(language: &SiteLanguage) -> String {
+    let label = escape_html(language.read_message("theme.toggle"));
+    format!(
+        "<button type=\"button\" aria-label=\"{label}\" aria-keyshortcuts=\"T\" \
+         title=\"{label}\">{SUN_ICON}{MOON_ICON}{SYSTEM_ICON}</button>"
+    )
+}
+
+fn create_nav_toggle(language: &SiteLanguage) -> String {
+    let label = escape_html(language.read_message("nav.toggleSidebar"));
+    format!(
+        "<button type=\"button\" aria-label=\"{label}\" \
+         aria-controls=\"htmlpress-sidebar\" aria-keyshortcuts=\"L\">{MENU_ICON}</button>"
+    )
 }
 
 // The strings the components' scripts write, which they read from here and fall back to

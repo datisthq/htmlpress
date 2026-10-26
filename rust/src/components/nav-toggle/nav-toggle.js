@@ -5,10 +5,11 @@ const PHONE = matchMedia("(max-width: 56rem)")
 // away, and that choice is kept across pages
 class HtmlpressNavToggle extends HTMLElement {
   connectedCallback() {
+    if (this.wired) return
+    this.wired = true
     const label = readMessages()["nav.toggleSidebar"] ?? "Toggle sidebar"
-    const button = createButton(label, ICON)
-    button.setAttribute("aria-controls", "htmlpress-sidebar")
-    button.setAttribute("aria-keyshortcuts", "L")
+    // The build renders the button, so the header is whole on its first frame
+    const button = this.querySelector(":scope > button") ?? createButton(label, ICON)
     const root = document.documentElement
     const update = () => {
       const open = PHONE.matches
@@ -36,7 +37,7 @@ class HtmlpressNavToggle extends HTMLElement {
     })
     PHONE.addEventListener("change", update)
     update()
-    this.replaceChildren(button)
+    if (!button.isConnected) this.replaceChildren(button)
   }
 }
 
@@ -44,6 +45,8 @@ function createButton(label, icon) {
   const button = document.createElement("button")
   button.type = "button"
   button.setAttribute("aria-label", label)
+  button.setAttribute("aria-controls", "htmlpress-sidebar")
+  button.setAttribute("aria-keyshortcuts", "L")
   button.innerHTML = createIcon(icon)
   return button
 }

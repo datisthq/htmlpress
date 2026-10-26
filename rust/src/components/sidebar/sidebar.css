@@ -13,6 +13,7 @@
     scrollbar-width: thin;
     scrollbar-color: transparent transparent;
     transition: scrollbar-color 0.2s;
+    view-transition-name: htmlpress-sidebar;
   }
   :scope:hover,
   :scope:focus-within {
@@ -60,12 +61,12 @@
       border-right: 0;
       border-bottom: 1px solid var(--htmlpress-border);
     }
-    :root:not(:has(htmlpress-nav-toggle:defined)) :scope htmlpress-brand {
+    :root:not([data-scripted]:has(htmlpress-nav-toggle)) :scope htmlpress-brand {
       display: none;
     }
 
     /* With the script the sidebar becomes a drawer; without it, it stays above the page */
-    :root:has(htmlpress-nav-toggle:defined) :scope {
+    :root[data-scripted]:has(htmlpress-nav-toggle) :scope {
       position: fixed;
       inset: 0 auto 0 0;
       z-index: 40;
@@ -77,7 +78,7 @@
         translate 0.2s,
         scrollbar-color 0.2s;
     }
-    :root:has(htmlpress-nav-toggle:defined)[data-nav-open] :scope {
+    :root[data-scripted]:has(htmlpress-nav-toggle)[data-nav-open] :scope {
       translate: 0;
       box-shadow: 0 0 2rem oklch(0 0 0 / 0.2);
     }

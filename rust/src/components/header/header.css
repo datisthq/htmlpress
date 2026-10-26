@@ -9,12 +9,13 @@
     padding: 0 0.25rem 0 1rem;
     border-bottom: 1px solid var(--htmlpress-border);
     background: var(--htmlpress-bg);
+    view-transition-name: htmlpress-header;
   }
   :scope htmlpress-brand,
   :scope htmlpress-nav-toggle {
     display: none;
   }
-  :scope htmlpress-nav-toggle:defined {
+  :root[data-scripted] :scope htmlpress-nav-toggle {
     display: block;
     margin-right: 1rem;
   }
@@ -59,7 +60,7 @@
     :scope htmlpress-brand img {
       margin-bottom: 0;
     }
-    :scope htmlpress-nav-toggle:defined {
+    :root[data-scripted] :scope htmlpress-nav-toggle {
       margin-right: 0;
     }
     :scope htmlpress-links {

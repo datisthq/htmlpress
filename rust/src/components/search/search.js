@@ -26,14 +26,10 @@ let lastId = 0
 
 class HtmlpressSearch extends HTMLElement {
   connectedCallback() {
-    if (!this.dataset.index || this.querySelector(":scope > button")) return
-    const button = document.createElement("button")
-    button.type = "button"
-    button.setAttribute("aria-label", t("search.label"))
-    button.setAttribute("aria-keyshortcuts", "S")
-    button.title = t("search.label")
-    button.innerHTML = `${SEARCH_ICON}<span></span><kbd>S</kbd>`
-    button.querySelector("span").textContent = t("search.button")
+    if (!this.dataset.index || this.wired) return
+    this.wired = true
+    // The build renders the button, so the header is whole on its first frame
+    const button = this.querySelector(":scope > button") ?? createButton()
     button.addEventListener("click", () => this.open())
     document.addEventListener("keydown", event => {
       const modified = event.metaKey || event.ctrlKey || event.altKey
@@ -44,7 +40,7 @@ class HtmlpressSearch extends HTMLElement {
         this.open()
       }
     })
-    this.replaceChildren(button)
+    if (!button.isConnected) this.replaceChildren(button)
   }
 
   open() {
@@ -118,6 +114,17 @@ class HtmlpressSearch extends HTMLElement {
     removeEventListener("scroll", this.measure)
     removeEventListener("resize", this.measure)
   }
+}
+
+function createButton() {
+  const button = document.createElement("button")
+  button.type = "button"
+  button.setAttribute("aria-label", t("search.label"))
+  button.setAttribute("aria-keyshortcuts", "S")
+  button.title = t("search.label")
+  button.innerHTML = `${SEARCH_ICON}<span></span><kbd>S</kbd>`
+  button.querySelector("span").textContent = t("search.button")
+  return button
 }
 
 // The input, the listbox and their keyboard handling, shared by the dialog and the bar

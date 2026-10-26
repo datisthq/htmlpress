@@ -67,7 +67,15 @@ upgrade it misses the new defaults: escape only what you change.
 `<htmlpress-toolbar>`, `<htmlpress-footer>`, `<htmlpress-language>` (the language picker) and
 `<htmlpress-skip>` at build time, every string in the page's language. The interactive ones,
 `<htmlpress-nav-toggle>`, `<htmlpress-search>`, `<htmlpress-theme-toggle>` and
-`<htmlpress-back-to-top>`, run in the browser. An element with nothing to show is removed.
+`<htmlpress-back-to-top>`, run in the browser; the first three get their button at build time,
+so the header is whole on its first frame. A head script sets `data-scripted` on `<html>`:
+without it those buttons stay hidden, so style anything that needs scripts under
+`:root[data-scripted]`. An element with nothing to show is removed.
+
+Pages crossfade only their content: `<htmlpress-header>` and `<htmlpress-sidebar>` carry the
+view transition names `htmlpress-header` and `htmlpress-sidebar`, and a hovered link's page is
+prerendered. An escape of either component's `.css` keeps its `view-transition-name`, or it
+crossfades with the content.
 
 The frame is elements too, never classes: `<htmlpress-shell>`, `-sidebar`, `-main`, `-header`,
 `-page`, `-aside`, `-skip`, each a component whose `.css` can be escaped.

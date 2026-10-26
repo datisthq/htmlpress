@@ -655,3 +655,49 @@ fn fills_an_inline_toc_written_in_the_page() -> crate::Result<()> {
     assert!(render_page(&site, &site.pages[1], false).is_err());
     Ok(())
 }
+
+#[test]
+fn builds_the_header_buttons_into_the_page() -> crate::Result<()> {
+    let site = create_site()?;
+    let html = render_page(&site, &site.pages[1], false)?;
+    assert!(html.contains(r#"<button type="button" aria-label="Search" aria-keyshortcuts="S" title="Search"><svg"#), "{html}");
+    assert!(
+        html.contains("<span>Search...</span><kbd>S</kbd></button></htmlpress-search>")
+    );
+    assert!(html.contains(r#"data-icon="system""#));
+    assert!(html.contains(r#"aria-controls="htmlpress-sidebar" aria-keyshortcuts="L""#));
+    assert!(html.contains("root.dataset.scripted"));
+    Ok(())
+}
+
+#[test]
+fn keeps_a_project_component_over_a_built_header_button() -> crate::Result<()> {
+    let mut site = create_site()?;
+    let path = "components/theme-toggle/theme-toggle.html";
+    site.assets
+        .insert(path.to_owned(), "<a href=\"/dark\">Dark</a>".to_owned());
+    let html = render_page(&site, &site.pages[1], false)?;
+    assert!(
+        html.contains("<htmlpress-theme-toggle><a href=\"/dark\">Dark</a>"),
+        "{html}"
+    );
+    assert!(!html.contains(r#"data-icon="system""#));
+    Ok(())
+}
+
+#[test]
+fn prerenders_hovered_pages_under_the_base() -> crate::Result<()> {
+    let mut site = create_site()?;
+    let html = render_page(&site, &site.pages[1], false)?;
+    assert!(
+        html.contains(r#"<script type="speculationrules">"#),
+        "{html}"
+    );
+    assert!(html.contains(r#"{"href_matches":"/*"}"#), "{html}");
+    assert!(html.contains(r#"<script type="module" src="/_htmlpress/components/sidebar/sidebar.js" blocking="render">"#));
+    site.config.base = Some("docs".to_owned());
+    let html = render_page(&site, &site.pages[1], false)?;
+    assert!(html.contains(r#"{"href_matches":"/docs/*"}"#), "{html}");
+    assert!(html.contains(r#""/docs/_htmlpress/*""#), "{html}");
+    Ok(())
+}

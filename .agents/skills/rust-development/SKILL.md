@@ -197,5 +197,13 @@ in light, dark and phone width (**`change-verification`**).
 - `htmlpress-nav-toggle` sets `data-nav-open` (the phone drawer) or, wider,
   `data-nav-collapsed`, which the head script restores from storage before any CSS
   applies; keep collapse rules inside `(width > 56rem)` or a phone inherits a hidden sidebar
-- Mobile drawer rules hang off `:has(htmlpress-nav-toggle:defined)`, which counts as a type plus a
-  pseudo-class: an override needs the same `:has()` or it silently loses
+- Mobile drawer rules hang off `:root[data-scripted]:has(htmlpress-nav-toggle)`, never
+  `:defined`: the head script sets `data-scripted` before the first frame, while a component
+  is defined only after its module runs, which flickers the header on every page. An override
+  needs the same `:has()` or it silently loses
+- Anything a script reshapes after load shows as a jump on every page, since each page is a
+  fresh load the view transition snapshots on its first frame: build the markup in
+  `render_page` and let the script adopt it, or add the script to `RENDER_BLOCKING`
+- `<htmlpress-header>` and `<htmlpress-sidebar>` carry a `view-transition-name`, and a name
+  must be unique per page or the browser skips the transition: never name a component a
+  layout may hold twice, such as `htmlpress-brand`

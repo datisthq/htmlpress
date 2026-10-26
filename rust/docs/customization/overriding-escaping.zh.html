@@ -209,6 +209,18 @@ $ htmlpress escape htmlpress-tabs -r docs  # in another project folder</code></p
       <code>htmlpress-header</code>。
     </p>
 
+    <h2>页面切换</h2>
+    <p>
+      在页面之间切换时只有内容淡入淡出：<code>&lt;htmlpress-header&gt;</code> 和
+      <code>&lt;htmlpress-sidebar&gt;</code> 带有视图过渡名称
+      <code>htmlpress-header</code> 和
+      <code>htmlpress-sidebar</code
+      >，并立即切换到新页面。悬停链接时会预渲染其页面，点击时即已就绪。
+      页头的按钮在构建时写入每个页面；head 中的脚本会在 <code>&lt;html&gt;</code> 上设置
+      <code>data-scripted</code>，没有它时这些按钮保持隐藏，因此只在脚本下可用的内容请放在
+      <code>:root[data-scripted]</code> 下设置样式。
+    </p>
+
     <h2>无法以这种方式覆盖的内容</h2>
     <ul>
       <li>

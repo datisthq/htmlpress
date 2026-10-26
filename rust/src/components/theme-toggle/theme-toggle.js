@@ -10,12 +10,11 @@ const CHOICES = ["light", "dark", "system"]
 // One button cycles light, dark and the system's choice; "T" flips light and dark
 class HtmlpressThemeToggle extends HTMLElement {
   connectedCallback() {
+    if (this.wired) return
+    this.wired = true
     const messages = readMessages()
-    const button = document.createElement("button")
-    button.type = "button"
-    button.setAttribute("aria-keyshortcuts", "T")
-    button.innerHTML =
-      createIcon("light", SUN) + createIcon("dark", MOON) + createIcon("system", SYSTEM)
+    // The build renders the button, so the header is whole on its first frame
+    const button = this.querySelector(":scope > button") ?? createButton()
     const show = choice => {
       const label = messages["theme.toggle"] ?? "Toggle dark mode"
       const name = messages[`theme.${choice}`] ?? choice
@@ -41,8 +40,17 @@ class HtmlpressThemeToggle extends HTMLElement {
       const current = document.documentElement.dataset.theme ?? (dark ? "dark" : "light")
       choose(current === "dark" ? "light" : "dark")
     })
-    this.replaceChildren(button)
+    if (!button.isConnected) this.replaceChildren(button)
   }
+}
+
+function createButton() {
+  const button = document.createElement("button")
+  button.type = "button"
+  button.setAttribute("aria-keyshortcuts", "T")
+  button.innerHTML =
+    createIcon("light", SUN) + createIcon("dark", MOON) + createIcon("system", SYSTEM)
+  return button
 }
 
 function createIcon(name, paths) {

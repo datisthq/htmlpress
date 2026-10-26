@@ -220,6 +220,19 @@ $ htmlpress escape htmlpress-tabs -r docs  # in another project folder</code></p
       <code>htmlpress-header</code> a secas.
     </p>
 
+    <h2>Transiciones entre páginas</h2>
+    <p>
+      Al pasar de una página a otra solo el contenido se funde:
+      <code>&lt;htmlpress-header&gt;</code> y
+      <code>&lt;htmlpress-sidebar&gt;</code> llevan los nombres de transición
+      <code>htmlpress-header</code> y <code>htmlpress-sidebar</code> y cambian a la nueva
+      página al instante. Pasar el cursor sobre un enlace prerenderiza su página, así que
+      está lista al hacer clic. Los botones de la cabecera vienen en cada página; un
+      script del head pone <code>data-scripted</code> en <code>&lt;html&gt;</code>, y sin
+      él quedan ocultos, así que estiliza lo que solo funciona con scripts bajo
+      <code>:root[data-scripted]</code>.
+    </p>
+
     <h2>Qué no puedes sobrescribir así</h2>
     <ul>
       <li>

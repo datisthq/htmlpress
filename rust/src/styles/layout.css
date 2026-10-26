@@ -5,6 +5,19 @@
   navigation: auto;
 }
 
+/* The header and the sidebar outlast the page, as in Livemark's single-page app: only the
+   content crossfades, and they take the new page's state at once */
+::view-transition-group(htmlpress-header),
+::view-transition-group(htmlpress-sidebar),
+::view-transition-new(htmlpress-header),
+::view-transition-new(htmlpress-sidebar) {
+  animation: none;
+}
+::view-transition-old(htmlpress-header),
+::view-transition-old(htmlpress-sidebar) {
+  display: none;
+}
+
 *,
 *::before,
 *::after {

@@ -2,6 +2,10 @@
   :scope {
     display: block;
   }
+  /* The build renders the button, but only the script makes it do anything */
+  :root:not([data-scripted]) :scope {
+    display: none;
+  }
   :scope > button {
     display: flex;
     align-items: center;

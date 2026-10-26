@@ -4,9 +4,17 @@ const KEY = "htmlpress-sidebar-scroll"
 // keep its scroll across pages as Livemark's single-page sidebar does
 class HtmlpressSidebar extends HTMLElement {
   connectedCallback() {
+    this.restore()
+    const save = () => writeStorage(KEY, String(this.scrollTop))
+    // A prerendered next page is revealed before this one's pagehide, so a click saves too
+    this.addEventListener("click", event => event.target.closest("a") && save())
+    addEventListener("pagehide", save)
+    document.addEventListener("prerenderingchange", () => this.restore())
+  }
+
+  restore() {
     this.scrollTop = Number(readStorage(KEY))
     this.revealCurrent()
-    addEventListener("pagehide", () => writeStorage(KEY, String(this.scrollTop)))
   }
 
   // scrollIntoView would scroll the page as well; only the sidebar may move

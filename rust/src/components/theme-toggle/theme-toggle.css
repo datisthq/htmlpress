@@ -1,4 +1,8 @@
 @scope (htmlpress-theme-toggle) {
+  /* The build renders the button, but only the script makes it do anything */
+  :root:not([data-scripted]) :scope {
+    display: none;
+  }
   button {
     display: grid;
     place-items: center;
@@ -26,9 +30,10 @@
   svg {
     display: none;
   }
-  button[data-choice="light"] [data-icon="light"],
-  button[data-choice="dark"] [data-icon="dark"],
-  button[data-choice="system"] [data-icon="system"] {
+  /* Read from the root, which the head script sets before the first frame */
+  :root[data-theme="light"] :scope [data-icon="light"],
+  :root[data-theme="dark"] :scope [data-icon="dark"],
+  :root:not([data-theme]) :scope [data-icon="system"] {
     display: block;
   }
 }
