@@ -1,0 +1,731 @@
+<title>Electricity dashboard</title>
+<meta
+  name="description"
+  content="An operations-style dashboard of the world's electricity mix: KPI tiles with sparklines, a 100% stacked column chart, a donut and a sortable table, from Ember data."
+/>
+<meta name="order" content="3" />
+<meta name="toc" content="false" />
+<style>
+  :root {
+    --htmlpress-width: 60rem;
+  }
+  .nrg {
+    --nrg-coal: #6250d6;
+    --nrg-gas: #e34948;
+    --nrg-nuclear: #008300;
+    --nrg-other: #e87ba4;
+    --nrg-hydro: #2a78d6;
+    --nrg-wind: #1baf7a;
+    --nrg-solar: #eda100;
+    --nrg-good: #0ca30c;
+    --nrg-good-text: #006300;
+    --nrg-ink: var(--htmlpress-text);
+    --nrg-soft: var(--htmlpress-muted);
+    --nrg-grid: var(--htmlpress-border);
+    --nrg-card: var(--htmlpress-surface);
+    margin-block: 1.5rem 2rem;
+    color: var(--nrg-ink);
+    font-variant-numeric: tabular-nums;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) .nrg {
+      --nrg-coal: #9085e9;
+      --nrg-gas: #e66767;
+      --nrg-other: #d55181;
+      --nrg-hydro: #3987e5;
+      --nrg-wind: #199e70;
+      --nrg-solar: #c98500;
+      --nrg-good-text: #4cc94c;
+    }
+  }
+  :root[data-theme="dark"] .nrg {
+    --nrg-coal: #9085e9;
+    --nrg-gas: #e66767;
+    --nrg-other: #d55181;
+    --nrg-hydro: #3987e5;
+    --nrg-wind: #199e70;
+    --nrg-solar: #c98500;
+    --nrg-good-text: #4cc94c;
+  }
+  .nrg-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    font-size: 0.8125rem;
+    color: var(--nrg-soft);
+  }
+  .nrg-bar strong {
+    font-size: 0.9375rem;
+    color: var(--nrg-ink);
+  }
+  .nrg-live {
+    display: inline-flex;
+    gap: 0.4rem;
+    align-items: center;
+    padding: 0.2rem 0.6rem;
+    border: 1px solid var(--nrg-grid);
+    border-radius: 999px;
+  }
+  .nrg-live::before {
+    content: "";
+    width: 0.5rem;
+    height: 0.5rem;
+    background: var(--nrg-good);
+    border-radius: 50%;
+  }
+  .nrg-grid {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+  .nrg-card {
+    grid-column: span 12;
+    min-width: 0;
+    padding: 1rem 1.1rem;
+    background: var(--nrg-card);
+    border: 1px solid var(--nrg-grid);
+    border-radius: calc(var(--htmlpress-radius) * 0.75);
+  }
+  .nrg-kpi {
+    grid-column: span 6;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+  @media (min-width: 64rem) {
+    .nrg-kpi {
+      grid-column: span 3;
+    }
+    .nrg-wide {
+      grid-column: span 8;
+    }
+    .nrg-side {
+      grid-column: span 4;
+    }
+  }
+  .nrg-kpi > span {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--nrg-soft);
+  }
+  .nrg-kpi b {
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+  .nrg-kpi b small {
+    font-size: 0.55em;
+    font-weight: 600;
+    color: var(--nrg-soft);
+  }
+  .nrg-delta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.5rem;
+    align-items: center;
+    font-size: 0.75rem;
+    color: var(--nrg-soft);
+  }
+  .nrg-delta mark {
+    display: inline-flex;
+    gap: 0.25rem;
+    align-items: center;
+    padding: 0.05rem 0.45rem;
+    font-weight: 600;
+    color: var(--nrg-good-text);
+    background: color-mix(in oklab, var(--nrg-good) 14%, transparent);
+    border-radius: 999px;
+  }
+  .nrg-spark svg {
+    display: block;
+  }
+  .nrg-card > header {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1rem;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 0.6rem;
+  }
+  .nrg-card > header strong {
+    font-size: 0.9375rem;
+  }
+  .nrg-card > header span {
+    font-size: 0.75rem;
+    color: var(--nrg-soft);
+  }
+  .nrg-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem 0.85rem;
+    margin: 0 0 0.6rem;
+    padding: 0;
+    font-size: 0.75rem;
+    list-style: none;
+    color: var(--nrg-soft);
+  }
+  .nrg-legend li {
+    display: flex;
+    gap: 0.35rem;
+    align-items: center;
+    margin: 0;
+  }
+  .nrg-legend i,
+  .nrg-tip i,
+  .nrg-table i {
+    display: inline-block;
+    flex: none;
+    width: 0.65rem;
+    height: 0.65rem;
+    border-radius: 2px;
+  }
+  .nrg-chart {
+    position: relative;
+    touch-action: pan-y;
+  }
+  .nrg-chart svg {
+    display: block;
+    overflow: visible;
+  }
+  .nrg-chart text {
+    font-size: 11px;
+    fill: var(--nrg-soft);
+  }
+  .nrg-chart .nrg-strong {
+    font-size: 12px;
+    font-weight: 600;
+    fill: var(--nrg-ink);
+  }
+  .nrg-chart .nrg-big {
+    font-size: 26px;
+    font-weight: 700;
+    fill: var(--nrg-ink);
+  }
+  .nrg-tip {
+    position: absolute;
+    top: 0;
+    z-index: 1;
+    min-width: 10rem;
+    padding: 0.55rem 0.7rem;
+    font-size: 0.75rem;
+    pointer-events: none;
+    background: var(--htmlpress-bg);
+    border: 1px solid var(--nrg-grid);
+    border-radius: 0.5rem;
+    box-shadow: var(--htmlpress-shadow);
+    opacity: 0;
+    transition: opacity 0.12s;
+  }
+  .nrg-tip[data-on] {
+    opacity: 1;
+  }
+  .nrg-tip strong {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-size: 0.8125rem;
+  }
+  .nrg-tip div {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: space-between;
+    line-height: 1.55;
+  }
+  .nrg-tip span {
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
+  }
+  .nrg-table table {
+    margin: 0;
+    font-size: 0.8125rem;
+  }
+  .nrg-table td:first-child {
+    display: flex;
+    gap: 0.45rem;
+    align-items: center;
+    white-space: nowrap;
+  }
+  .nrg-table td:not(:first-child),
+  .nrg-table th:not(:first-child) {
+    text-align: right;
+  }
+  .nrg-note {
+    margin: 0.6rem 0 0;
+    font-size: 0.75rem;
+    color: var(--nrg-soft);
+  }
+</style>
+
+<h1>World electricity: the generation mix dashboard</h1>
+<p>
+  An operations-style dashboard in one HTML page: four KPI tiles with sparklines and
+  deltas, a 100% stacked column chart, a donut for the latest year and a sortable table,
+  laid out on a twelve-column CSS grid. It answers one question at a glance: how much of
+  the world's electricity still comes from burning fossil fuels, and how fast is that
+  changing?
+</p>
+
+<div class="nrg">
+  <div class="nrg-bar">
+    <strong>Global power generation · share by source</strong>
+    <span class="nrg-live">Ember yearly data · 2000–2025</span>
+  </div>
+
+  <div class="nrg-grid">
+    <section class="nrg-card nrg-kpi" data-kpi="lowcarbon">
+      <span>Low-carbon share</span>
+      <b>42.6<small>%</small></b>
+      <div class="nrg-delta"><mark>▲ +9.1 pp</mark> since 2015 · Improving</div>
+      <div class="nrg-spark"></div>
+    </section>
+    <section class="nrg-card nrg-kpi" data-kpi="solar">
+      <span>Solar</span>
+      <b>8.8<small>%</small></b>
+      <div class="nrg-delta"><mark>▲ +7.7 pp</mark> since 2015 · Improving</div>
+      <div class="nrg-spark"></div>
+    </section>
+    <section class="nrg-card nrg-kpi" data-kpi="wind">
+      <span>Wind</span>
+      <b>8.5<small>%</small></b>
+      <div class="nrg-delta"><mark>▲ +5.1 pp</mark> since 2015 · Improving</div>
+      <div class="nrg-spark"></div>
+    </section>
+    <section class="nrg-card nrg-kpi" data-kpi="coal">
+      <span>Coal</span>
+      <b>33.0<small>%</small></b>
+      <div class="nrg-delta"><mark>▼ −5.7 pp</mark> since 2015 · Improving</div>
+      <div class="nrg-spark"></div>
+    </section>
+
+    <section class="nrg-card nrg-wide" aria-labelledby="nrg-mix-title">
+      <header>
+        <strong id="nrg-mix-title">Share of electricity by source</strong>
+        <span>% of generation · hover a year</span>
+      </header>
+      <ul class="nrg-legend" id="nrg-legend"></ul>
+      <div class="nrg-chart" id="nrg-columns"></div>
+    </section>
+
+    <section class="nrg-card nrg-side" aria-labelledby="nrg-donut-title">
+      <header>
+        <strong id="nrg-donut-title">The 2025 mix</strong>
+        <span>hover a slice</span>
+      </header>
+      <div class="nrg-chart" id="nrg-donut"></div>
+      <p class="nrg-note">
+        Solar overtook wind in 2025, and together they now out-generate hydropower.
+      </p>
+    </section>
+
+    <section class="nrg-card nrg-table" aria-labelledby="nrg-table-title">
+      <header>
+        <strong id="nrg-table-title">By source</strong>
+        <span>% of generation · click a header to sort</span>
+      </header>
+      <htmlpress-table>
+        <table id="nrg-table">
+          <thead>
+            <tr>
+              <th>Source</th>
+              <th>2000</th>
+              <th>2015</th>
+              <th>2025</th>
+              <th>vs 2015, pp</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </htmlpress-table>
+      <p class="nrg-note">
+        Other is oil (2.7% in 2025), bioenergy (2.2%) and geothermal, tidal and other
+        renewables (0.3%).
+      </p>
+    </section>
+  </div>
+</div>
+
+<h2>How it's built</h2>
+<ul>
+  <li>
+    <strong>The layout</strong> is a twelve-column CSS grid: KPI tiles span six columns on
+    a phone and three on a wide screen, and the column chart and donut share a row 8 + 4.
+    The page widens the site's content column with one line,
+    <code>:root { --htmlpress-width: 60rem }</code>, in its own style block.
+  </li>
+  <li>
+    <strong>Status color</strong> is used only for the deltas, always with an arrow and
+    the word "Improving", so it never carries meaning alone. Series colors are reserved
+    for sources and stay the same in every chart, the legend and the table.
+  </li>
+  <li>
+    <strong>The columns and the donut</strong> are SVG drawn from one array of numbers:
+    seven series, stacked with a 1px gap, a crosshair-free hover that highlights the
+    hovered year, and the donut's arcs computed with plain trigonometry.
+  </li>
+  <li>
+    <strong>The table</strong> is the built-in <code>&lt;htmlpress-table&gt;</code>
+    component, so sorting comes for free.
+  </li>
+</ul>
+<p>
+  Source: <a href="https://ember-energy.org/data/">Ember, Yearly Electricity Data</a> and
+  the Energy Institute's Statistical Review of World Energy, as compiled by
+  <a href="https://ourworldindata.org/electricity-mix">Our World in Data</a>. 2025 values
+  are Ember's first estimate for the year.
+</p>
+
+<script>
+  {
+    const years = Array.from({ length: 26 }, (_, i) => 2000 + i)
+    const sources = [
+      {
+        key: "coal",
+        name: "Coal",
+        values: [
+          38.02, 38.0, 38.28, 39.54, 39.03, 39.52, 40.17, 40.84, 40.16, 39.87, 39.78,
+          40.56, 39.8, 40.7, 40.44, 38.68, 37.77, 37.95, 37.91, 36.62, 35.31, 35.94,
+          35.41, 35.04, 34.07, 32.96,
+        ],
+      },
+      {
+        key: "gas",
+        name: "Gas",
+        values: [
+          17.97, 18.8, 19.34, 19.58, 20.12, 20.3, 20.7, 21.4, 21.69, 21.97, 22.61, 22.15,
+          22.92, 21.85, 21.96, 23.08, 23.69, 23.48, 23.52, 23.86, 23.89, 23.2, 22.92,
+          22.58, 22.25, 21.78,
+        ],
+      },
+      {
+        key: "nuclear",
+        name: "Nuclear",
+        values: [
+          16.63, 16.86, 16.54, 15.64, 15.62, 15.04, 14.66, 13.71, 13.4, 13.32, 12.82,
+          11.88, 10.8, 10.57, 10.52, 10.55, 10.41, 10.2, 10.05, 10.26, 9.91, 9.78, 9.13,
+          9.09, 8.98, 8.85,
+        ],
+      },
+      {
+        key: "other",
+        name: "Other",
+        values: [
+          9.97, 9.53, 9.22, 9.14, 8.64, 8.49, 7.71, 7.6, 7.44, 7.1, 6.89, 7.25, 7.44,
+          7.21, 6.97, 6.99, 6.65, 6.21, 5.77, 5.61, 5.47, 5.61, 5.68, 5.56, 5.32, 5.17,
+        ],
+      },
+      {
+        key: "hydro",
+        name: "Hydro",
+        values: [
+          17.21, 16.54, 16.27, 15.71, 16.09, 16.06, 16.02, 15.54, 16.14, 16.25, 16.12,
+          15.88, 16.26, 16.37, 16.3, 16.17, 16.26, 15.94, 15.78, 15.76, 16.27, 15.18,
+          14.95, 14.29, 14.33, 13.96,
+        ],
+      },
+      {
+        key: "wind",
+        name: "Wind",
+        values: [
+          0.2, 0.25, 0.33, 0.38, 0.49, 0.58, 0.71, 0.87, 1.1, 1.39, 1.63, 2.0, 2.35, 2.74,
+          2.97, 3.46, 3.89, 4.48, 4.79, 5.3, 5.96, 6.57, 7.29, 7.82, 8.11, 8.54,
+        ],
+      },
+      {
+        key: "solar",
+        name: "Solar",
+        values: [
+          0.01, 0.01, 0.01, 0.01, 0.02, 0.02, 0.03, 0.04, 0.06, 0.1, 0.15, 0.29, 0.43,
+          0.57, 0.83, 1.07, 1.33, 1.75, 2.17, 2.6, 3.19, 3.73, 4.61, 5.61, 6.93, 8.75,
+        ],
+      },
+    ]
+    // Bioenergy and other renewables are low-carbon but sit in "Other" with oil.
+    const lowCarbonExtra = [
+      1.3, 1.24, 1.3, 1.34, 1.38, 1.44, 1.47, 1.53, 1.61, 1.73, 1.82, 1.85, 1.94, 2.04,
+      2.15, 2.27, 2.26, 2.3, 2.34, 2.42, 2.57, 2.63, 2.61, 2.6, 2.56, 2.52,
+    ]
+    const series = Object.fromEntries(sources.map(s => [s.key, s.values]))
+    const lowCarbon = years.map((_, i) =>
+      ["nuclear", "hydro", "wind", "solar"].reduce(
+        (sum, k) => sum + series[k][i],
+        lowCarbonExtra[i],
+      ),
+    )
+    const sparks = {
+      lowcarbon: [lowCarbon, "--nrg-wind"],
+      solar: [series.solar, "--nrg-solar"],
+      wind: [series.wind, "--nrg-wind"],
+      coal: [series.coal, "--nrg-coal"],
+    }
+    const NS = "http://www.w3.org/2000/svg"
+    const latest = years.length - 1
+    const i2015 = years.indexOf(2015)
+
+    const el = (name, attrs, parent) => {
+      const node = document.createElementNS(NS, name)
+      for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, value)
+      parent?.append(node)
+      return node
+    }
+    const text = (content, attrs, parent) => {
+      const node = el("text", attrs, parent)
+      node.textContent = content
+      return node
+    }
+    const swatch = s => `<i style="background:var(--nrg-${s.key})"></i>`
+    const makeTip = host => {
+      const tip = document.createElement("div")
+      tip.className = "nrg-tip"
+      host.append(tip)
+      return tip
+    }
+    const place = (tip, host, x) => {
+      const width = host.clientWidth
+      const left = x + 14
+      tip.style.left = `${Math.max(0, left + tip.offsetWidth > width ? x - tip.offsetWidth - 14 : left)}px`
+      tip.toggleAttribute("data-on", true)
+    }
+
+    document.getElementById("nrg-legend").innerHTML = [...sources]
+      .reverse()
+      .map(s => `<li>${swatch(s)}${s.name}</li>`)
+      .join("")
+
+    const tbody = document.querySelector("#nrg-table tbody")
+    for (const s of [...sources].sort((a, b) => b.values[latest] - a.values[latest])) {
+      const row = tbody.insertRow()
+      row.insertCell().innerHTML = `${swatch(s)}${s.name}`
+      for (const i of [0, i2015, latest])
+        row.insertCell().textContent = s.values[i].toFixed(1)
+      const change = s.values[latest] - s.values[i2015]
+      row.insertCell().textContent = `${change > 0 ? "+" : "−"}${Math.abs(change).toFixed(1)}`
+    }
+
+    const drawSpark = host => {
+      const [values, color] = sparks[host.parentElement.dataset.kpi]
+      host.replaceChildren()
+      const width = host.clientWidth
+      if (width < 60) return
+      const height = 36
+      const min = Math.min(...values)
+      const max = Math.max(...values)
+      const x = i => 2 + (i / latest) * (width - 6)
+      const y = v => height - 3 - ((v - min) / (max - min)) * (height - 8)
+      const svg = el("svg", { width, height, "aria-hidden": "true" }, host)
+      const line = values.map((v, i) => `${x(i)},${y(v)}`).join("L")
+      el(
+        "path",
+        {
+          d: `M${line}L${x(latest)},${height}L${x(0)},${height}Z`,
+          fill: `var(${color})`,
+          opacity: 0.14,
+        },
+        svg,
+      )
+      el(
+        "line",
+        { x1: x(i2015), x2: x(i2015), y1: 2, y2: height, stroke: "var(--nrg-grid)" },
+        svg,
+      )
+      el(
+        "path",
+        {
+          d: `M${line}`,
+          fill: "none",
+          stroke: `var(${color})`,
+          "stroke-width": 2,
+          "stroke-linejoin": "round",
+        },
+        svg,
+      )
+      el(
+        "circle",
+        { cx: x(latest), cy: y(values[latest]), r: 3, fill: `var(${color})` },
+        svg,
+      )
+    }
+
+    const drawColumns = host => {
+      host.replaceChildren()
+      const width = host.clientWidth
+      if (width < 120) return
+      const height = width < 480 ? 240 : 300
+      const m = { top: 8, right: 4, bottom: 22, left: 30 }
+      const band = (width - m.left - m.right) / years.length
+      const gap = Math.max(1, Math.min(4, band * 0.18))
+      const y = v => height - m.bottom - (v / 100) * (height - m.top - m.bottom)
+      const svg = el(
+        "svg",
+        { width, height, role: "img", "aria-labelledby": "nrg-mix-title" },
+        host,
+      )
+      for (const tick of [0, 25, 50, 75, 100]) {
+        el(
+          "line",
+          {
+            x1: m.left,
+            x2: width - m.right,
+            y1: y(tick),
+            y2: y(tick),
+            stroke: "var(--nrg-grid)",
+          },
+          svg,
+        )
+        text(`${tick}%`, { x: m.left - 6, y: y(tick) + 4, "text-anchor": "end" }, svg)
+      }
+      const columns = years.map((year, i) => {
+        const g = el("g", {}, svg)
+        const x = m.left + i * band + gap / 2
+        let base = 0
+        for (const s of sources) {
+          const v = s.values[i]
+          const top = base + v
+          const h = y(base) - y(top)
+          if (h > 0.5) {
+            el(
+              "rect",
+              {
+                x,
+                y: y(top),
+                width: band - gap,
+                height: Math.max(0, h - 1),
+                fill: `var(--nrg-${s.key})`,
+                rx: s.key === "solar" ? 2 : 0,
+              },
+              g,
+            )
+          }
+          base = top
+        }
+        if (year % 5 === 0 || i === latest) {
+          text(
+            year,
+            { x: x + (band - gap) / 2, y: height - 6, "text-anchor": "middle" },
+            svg,
+          )
+        }
+        return g
+      })
+      const tip = makeTip(host)
+      const hit = el(
+        "rect",
+        { x: m.left, y: 0, width: width - m.left - m.right, height, fill: "transparent" },
+        svg,
+      )
+      const show = event => {
+        const px = event.clientX - svg.getBoundingClientRect().left
+        const i = Math.max(0, Math.min(latest, Math.floor((px - m.left) / band)))
+        columns.forEach((g, j) => g.setAttribute("opacity", j === i ? 1 : 0.45))
+        tip.innerHTML =
+          `<strong>${years[i]}</strong>` +
+          [...sources]
+            .reverse()
+            .map(
+              s =>
+                `<div><span>${swatch(s)}${s.name}</span><span>${s.values[i].toFixed(1)}%</span></div>`,
+            )
+            .join("")
+        place(tip, host, m.left + (i + 0.5) * band)
+      }
+      hit.addEventListener("pointermove", show)
+      hit.addEventListener("pointerdown", show)
+      hit.addEventListener("pointerleave", () => {
+        columns.forEach(g => g.setAttribute("opacity", 1))
+        tip.toggleAttribute("data-on", false)
+      })
+    }
+
+    const drawDonut = host => {
+      host.replaceChildren()
+      const width = host.clientWidth
+      if (width < 120) return
+      const size = Math.min(width, 260)
+      const r = size / 2 - 4
+      const inner = r * 0.62
+      const cx = width / 2
+      const cy = size / 2
+      const svg = el(
+        "svg",
+        { width, height: size, role: "img", "aria-labelledby": "nrg-donut-title" },
+        host,
+      )
+      const tip = makeTip(host)
+      const centre = text(
+        "57.4%",
+        { x: cx, y: cy + 2, "text-anchor": "middle", class: "nrg-big" },
+        svg,
+      )
+      const caption = text(
+        "fossil fuels",
+        { x: cx, y: cy + 20, "text-anchor": "middle" },
+        svg,
+      )
+      const point = (angle, radius) => [
+        cx + radius * Math.sin(angle),
+        cy - radius * Math.cos(angle),
+      ]
+      let start = 0
+      for (const s of sources) {
+        const v = s.values[latest]
+        const end = start + (v / 100) * Math.PI * 2
+        const pad = 0.012
+        const [a, b, c, d] = [
+          point(start + pad, r),
+          point(end - pad, r),
+          point(end - pad, inner),
+          point(start + pad, inner),
+        ]
+        const large = end - start > Math.PI ? 1 : 0
+        const arc = el(
+          "path",
+          {
+            d: `M${a}A${r},${r} 0 ${large} 1 ${b}L${c}A${inner},${inner} 0 ${large} 0 ${d}Z`,
+            fill: `var(--nrg-${s.key})`,
+          },
+          svg,
+        )
+        const mid = (start + end) / 2
+        const show = () => {
+          svg
+            .querySelectorAll("path")
+            .forEach(p => p.setAttribute("opacity", p === arc ? 1 : 0.4))
+          centre.textContent = `${v.toFixed(1)}%`
+          caption.textContent = s.name.toLowerCase()
+          tip.innerHTML = `<strong>${s.name}, 2025</strong><div><span>${swatch(s)}Share</span><span>${v.toFixed(1)}%</span></div><div><span>Since 2015</span><span>${v - s.values[i2015] > 0 ? "+" : "−"}${Math.abs(v - s.values[i2015]).toFixed(1)} pp</span></div>`
+          place(tip, host, point(mid, r)[0])
+        }
+        arc.addEventListener("pointerenter", show)
+        arc.addEventListener("pointerdown", show)
+        arc.addEventListener("pointerleave", () => {
+          svg.querySelectorAll("path").forEach(p => p.setAttribute("opacity", 1))
+          centre.textContent = "57.4%"
+          caption.textContent = "fossil fuels"
+          tip.toggleAttribute("data-on", false)
+        })
+        start = end
+      }
+    }
+
+    const charts = [
+      [document.getElementById("nrg-columns"), drawColumns],
+      [document.getElementById("nrg-donut"), drawDonut],
+      ...[...document.querySelectorAll(".nrg-spark")].map(host => [host, drawSpark]),
+    ]
+    const observer = new ResizeObserver(entries => {
+      for (const entry of entries) {
+        const chart = charts.find(([host]) => host === entry.target)
+        if (chart && String(entry.contentRect.width) !== chart[0].dataset.width) {
+          chart[0].dataset.width = entry.contentRect.width
+          chart[1](chart[0])
+        }
+      }
+    })
+    for (const [host] of charts) observer.observe(host)
+  }
+</script>

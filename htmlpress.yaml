@@ -25,6 +25,9 @@ sections:
     type: custom
     url: /introduction.html
     icon: book-open
+  - title: { en: Examples, es: Ejemplos, zh: 示例 }
+    prefix: /examples/
+    icon: chart-column
   - title: { en: Blog, es: Blog, zh: 博客 }
     type: blog
     prefix: /blog/

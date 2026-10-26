@@ -101,7 +101,7 @@ Dot-directories hold non-package code: `.agents/` repo skills, `.skills/` shippe
 - `package.json` script names are `verb[:object]` (`check:lint`, `build:docs`), never noun-first
 - Specs: Vitest via `vite-plus/test`, `<module>.unit.ts`, no "Arrange / Act / Assert" comments
 - Rust: edition 2024, rustfmt (90 columns), clippy with `-D warnings`; snake_case **verb_noun** functions; no `unwrap` / `expect` / `unsafe` outside tests (**`rust-development`**)
-- HTML in `rust/docs/` and `.skills/`: semantic elements and the documented `htmlpress-*` components only, no inline styles — the docs are the first project htmlpress must serve well. The one exception is the home page, `rust/docs/index.html`: it uses the `landing` layout and the `htmlpress-landing-*` components in `.htmlpress/`, the way any project builds its own look
+- HTML in `rust/docs/` and `.skills/`: semantic elements and the documented `htmlpress-*` components only, no inline styles — the docs are the first project htmlpress must serve well. The exceptions are the home page, `rust/docs/index.html`, which uses the `landing` layout and the `htmlpress-landing-*` components in `.htmlpress/`, the way any project builds its own look, and the showcase pages in `rust/docs/examples/`: each is one self-contained page with its own `<style>` and `<script>` scoped under a page-specific class prefix, built on real public data with its source cited
 - Commits: Conventional Commits, typed by what an installer gets (below)
 
 ## Releases

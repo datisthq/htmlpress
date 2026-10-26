@@ -1,0 +1,719 @@
+<title>Urbanization timeline</title>
+<meta
+  name="description"
+  content="A vertical timeline of how the world moved to cities, with a 100-person dot matrix driven by a year slider and regional bars that follow it, on UN data."
+/>
+<meta name="order" content="9" />
+<meta name="toc" content="false" />
+<style>
+  .urb {
+    --urb-urban: #2a78d6;
+    --urb-rural: color-mix(in oklab, var(--htmlpress-muted) 28%, var(--htmlpress-bg));
+    --urb-ink: var(--htmlpress-text);
+    --urb-soft: var(--htmlpress-muted);
+    --urb-grid: var(--htmlpress-border);
+    --urb-card: var(--htmlpress-surface);
+    margin-block: 2rem;
+    color: var(--urb-ink);
+    font-variant-numeric: tabular-nums;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) .urb {
+      --urb-urban: #3987e5;
+    }
+  }
+  :root[data-theme="dark"] .urb {
+    --urb-urban: #3987e5;
+  }
+  .urb-explorer {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+    gap: 1.5rem;
+    padding: 1.25rem;
+    border: 1px solid var(--urb-grid);
+    border-radius: var(--htmlpress-radius);
+    background: var(--urb-card);
+  }
+  @media (max-width: 44rem) {
+    .urb-explorer {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+  .urb-year {
+    display: flex;
+    gap: 0.75rem;
+    align-items: baseline;
+    margin: 0 0 0.25rem;
+  }
+  .urb-year output {
+    font-size: 2.75rem;
+    font-weight: 750;
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+  .urb-year span {
+    font-size: 0.875rem;
+    color: var(--urb-soft);
+  }
+  .urb-share {
+    margin: 0 0 1rem;
+    font-size: 0.9375rem;
+  }
+  .urb-share strong {
+    color: var(--urb-urban);
+  }
+  .urb-people {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: clamp(3px, 1vw, 6px);
+    max-width: 17rem;
+    margin: 0;
+    padding: 0;
+  }
+  .urb-people i {
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--urb-rural);
+    transition:
+      background-color 0.25s,
+      transform 0.25s;
+  }
+  .urb-people i[data-urban] {
+    background: var(--urb-urban);
+    transform: scale(1.06);
+  }
+  .urb-key {
+    display: flex;
+    gap: 1rem;
+    margin: 0.75rem 0 0;
+    padding: 0;
+    font-size: 0.8125rem;
+    list-style: none;
+    color: var(--urb-soft);
+  }
+  .urb-key li {
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
+    margin: 0;
+  }
+  .urb-key i {
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 50%;
+  }
+  .urb-controls {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    margin-top: 1.25rem;
+  }
+  .urb-controls input {
+    flex: 1;
+    min-width: 0;
+    accent-color: var(--urb-urban);
+  }
+  .urb-controls button {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 2.25rem;
+    height: 2.25rem;
+    font: inherit;
+    color: var(--urb-ink);
+    cursor: pointer;
+    background: var(--htmlpress-bg);
+    border: 1px solid var(--urb-grid);
+    border-radius: 50%;
+  }
+  .urb-regions header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+  }
+  .urb-regions header span {
+    color: var(--urb-soft);
+  }
+  .urb-chart {
+    position: relative;
+  }
+  .urb-chart svg {
+    display: block;
+    overflow: visible;
+  }
+  .urb-chart text {
+    font-size: 12px;
+    fill: var(--urb-soft);
+  }
+  .urb-chart .urb-name {
+    fill: var(--urb-ink);
+  }
+  .urb-chart .urb-value {
+    font-weight: 600;
+    fill: var(--urb-ink);
+  }
+  .urb-chart rect,
+  .urb-chart line[data-mark] {
+    transition: all 0.25s;
+  }
+  .urb-tip {
+    position: absolute;
+    left: 0;
+    z-index: 1;
+    padding: 0.5rem 0.7rem;
+    font-size: 0.8125rem;
+    white-space: nowrap;
+    pointer-events: none;
+    background: var(--htmlpress-bg);
+    border: 1px solid var(--urb-grid);
+    border-radius: 0.5rem;
+    box-shadow: var(--htmlpress-shadow);
+    opacity: 0;
+    transition: opacity 0.12s;
+  }
+  .urb-tip[data-on] {
+    opacity: 1;
+  }
+  .urb-tip strong {
+    display: block;
+  }
+  .urb-note {
+    margin: 0.5rem 0 0;
+    font-size: 0.75rem;
+    color: var(--urb-soft);
+  }
+  .urb-timeline {
+    position: relative;
+    margin: 2.5rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .urb-timeline::before {
+    content: "";
+    position: absolute;
+    top: 0.5rem;
+    bottom: 0.5rem;
+    left: 5.2rem;
+    width: 2px;
+    background: linear-gradient(var(--urb-rural), var(--urb-urban));
+    border-radius: 2px;
+  }
+  .urb-timeline li {
+    position: relative;
+    display: grid;
+    grid-template-columns: 4rem minmax(0, 1fr);
+    gap: 2.5rem;
+    margin: 0 0 1.75rem;
+  }
+  .urb-timeline time {
+    padding-top: 0.1rem;
+    font-size: 1.125rem;
+    font-weight: 700;
+    text-align: right;
+  }
+  .urb-timeline li::before {
+    content: "";
+    position: absolute;
+    top: 0.45rem;
+    left: calc(5.2rem - 5px);
+    width: 8px;
+    height: 8px;
+    background: var(--htmlpress-bg);
+    border: 2px solid var(--urb-urban);
+    border-radius: 50%;
+  }
+  .urb-timeline li[data-key]::before {
+    left: calc(5.2rem - 8px);
+    width: 14px;
+    height: 14px;
+    top: 0.3rem;
+    background: var(--urb-urban);
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--urb-urban) 22%, transparent);
+  }
+  .urb-timeline h3 {
+    margin: 0 0 0.25rem;
+    font-size: 1rem;
+  }
+  .urb-timeline p {
+    margin: 0;
+    font-size: 0.9375rem;
+    color: var(--htmlpress-prose);
+  }
+  .urb-meter {
+    display: flex;
+    gap: 0.6rem;
+    align-items: center;
+    margin-top: 0.6rem;
+    font-size: 0.75rem;
+    color: var(--urb-soft);
+  }
+  .urb-meter b {
+    position: relative;
+    flex: 0 1 12rem;
+    height: 0.45rem;
+    overflow: hidden;
+    background: var(--urb-rural);
+    border-radius: 999px;
+  }
+  .urb-meter b::after {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: calc(var(--share) * 1%);
+    background: var(--urb-urban);
+    border-radius: 999px;
+  }
+  .urb-meter button {
+    padding: 0;
+    font: inherit;
+    color: var(--htmlpress-accent);
+    cursor: pointer;
+    background: none;
+    border: 0;
+  }
+  @media (max-width: 30rem) {
+    .urb-timeline::before {
+      left: 0.35rem;
+    }
+    .urb-timeline li {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0.15rem;
+      padding-left: 1.75rem;
+    }
+    .urb-timeline time {
+      text-align: left;
+    }
+    .urb-timeline li::before {
+      left: 0;
+    }
+    .urb-timeline li[data-key]::before {
+      left: -0.15rem;
+    }
+  }
+</style>
+
+<h1>Urbanization: the move to the city</h1>
+<p>
+  A timeline that doubles as a control. The year slider fills a grid of one hundred people
+  and moves the regional bars beside it; every milestone below has a button that jumps the
+  explorer to its year. The dots are plain HTML elements in a CSS grid, the timeline is an
+  ordered list with a pseudo-element for its spine.
+</p>
+
+<div class="urb">
+  <section class="urb-explorer" aria-label="Urban share explorer">
+    <div>
+      <p class="urb-year"><output id="urb-year">2025</output><span>world</span></p>
+      <p class="urb-share" aria-live="polite">
+        <strong id="urb-count">58</strong> of every 100 people live in towns and cities
+      </p>
+      <div
+        class="urb-people"
+        id="urb-people"
+        role="img"
+        aria-label="Dot matrix of 100 people"
+      ></div>
+      <ul class="urb-key">
+        <li><i style="background: var(--urb-urban)"></i>Urban</li>
+        <li><i style="background: var(--urb-rural)"></i>Rural</li>
+      </ul>
+      <div class="urb-controls">
+        <button type="button" id="urb-play" aria-label="Play from 1950">
+          <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
+            <path d="M7 4.5v15l12-7.5z" fill="currentColor" />
+          </svg>
+        </button>
+        <input
+          type="range"
+          id="urb-slider"
+          min="1950"
+          max="2025"
+          value="2025"
+          aria-label="Year"
+        />
+      </div>
+    </div>
+    <div class="urb-regions">
+      <header>
+        <strong id="urb-regions-title">Urban share by region</strong>
+        <span id="urb-regions-year">2025</span>
+      </header>
+      <div class="urb-chart" id="urb-regions"></div>
+      <p class="urb-note">
+        Tick: the region's 1950 level. Regions move in five-year steps.
+      </p>
+    </div>
+  </section>
+
+  <ol class="urb-timeline">
+    <li>
+      <time>1950</time>
+      <div>
+        <h3>Fewer than three in ten</h3>
+        <p>
+          28.8% of the world lives in towns and cities. Europe and Oceania already have
+          urban majorities; in Africa and Asia it is about one person in seven.
+        </p>
+        <div class="urb-meter" style="--share: 28.8">
+          <b></b>28.8%<button type="button" data-year="1950">Show</button>
+        </div>
+      </div>
+    </li>
+    <li>
+      <time>1960</time>
+      <div>
+        <h3>South America tips urban</h3>
+        <p>
+          51.1% of South Americans live in cities by 1960, up from 43.8% a decade earlier.
+          By 2025 the share reaches 85.5%, the highest of any region.
+        </p>
+        <div class="urb-meter" style="--share: 51.1">
+          <b></b>51.1%<button type="button" data-year="1960">Show</button>
+        </div>
+      </div>
+    </li>
+    <li>
+      <time>1960s</time>
+      <div>
+        <h3>Asia stalls</h3>
+        <p>
+          Asia's urban share barely moves for a decade, from 22.5% in 1960 to 23.6% in
+          1970, as China sends millions of urban youth to the countryside.
+        </p>
+        <div class="urb-meter" style="--share: 23.6">
+          <b></b>23.6%<button type="button" data-year="1970">Show</button>
+        </div>
+      </div>
+    </li>
+    <li>
+      <time>1975</time>
+      <div>
+        <h3>Oceania peaks</h3>
+        <p>
+          Oceania's urban share tops out at 72.0% and drifts down after it, to 67.6% in
+          2025: the one region where the countryside has outgrown the cities for half a
+          century.
+        </p>
+        <div class="urb-meter" style="--share: 72">
+          <b></b>72.0%<button type="button" data-year="1975">Show</button>
+        </div>
+      </div>
+    </li>
+    <li data-key>
+      <time>2007</time>
+      <div>
+        <h3>The urban majority</h3>
+        <p>
+          For the first time, more people live in cities than in the countryside: 50.4% of
+          the world, up from 49.9% the year before.
+        </p>
+        <div class="urb-meter" style="--share: 50.4">
+          <b></b>50.4%<button type="button" data-year="2007">Show</button>
+        </div>
+      </div>
+    </li>
+    <li>
+      <time>2017</time>
+      <div>
+        <h3>Asia crosses half</h3>
+        <p>
+          Home to more than half the world's people, Asia becomes majority urban, at 50.2%
+          in 2017 after tripling its share since 1950.
+        </p>
+        <div class="urb-meter" style="--share: 50.2">
+          <b></b>50.2%<button type="button" data-year="2017">Show</button>
+        </div>
+      </div>
+    </li>
+    <li data-key>
+      <time>2025</time>
+      <div>
+        <h3>57.8% and climbing</h3>
+        <p>
+          Africa, at 46.4%, is the last major region with a rural majority, and its share
+          rose faster than any other region's over the last five years, by 2.1 points.
+        </p>
+        <div class="urb-meter" style="--share: 57.8">
+          <b></b>57.8%<button type="button" data-year="2025">Show</button>
+        </div>
+      </div>
+    </li>
+  </ol>
+
+  <details>
+    <summary>Data table</summary>
+    <htmlpress-table>
+      <table id="urb-table">
+        <thead>
+          <tr>
+            <th>Year</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </htmlpress-table>
+    <p>Share of the population living in urban areas, %.</p>
+  </details>
+</div>
+
+<h2>How it's built</h2>
+<ul>
+  <li>
+    <strong>The dot matrix</strong> is a hundred <code>&lt;i&gt;</code> elements in a
+    ten-column CSS grid; a slider toggles <code>data-urban</code> on the first
+    <em>n</em> of them, and a transition does the animation.
+  </li>
+  <li>
+    <strong>The regional bars</strong> are one SVG redrawn at its real width; they keep
+    their elements between years, so the bars glide instead of jumping.
+  </li>
+  <li>
+    <strong>The timeline</strong> is an <code>&lt;ol&gt;</code>: the spine is a gradient
+    <code>::before</code> on the list, each dot a <code>::before</code> on an item, and
+    each progress meter a <code>--share</code> custom property.
+  </li>
+</ul>
+<p>
+  Source:
+  <a href="https://population.un.org/wup/">UN World Urbanization Prospects</a> (2025
+  revision), as compiled by
+  <a href="https://ourworldindata.org/urbanization">Our World in Data</a>. Urban areas
+  follow each country's own definition, so a town in one country may count as rural in
+  another.
+</p>
+
+<script>
+  {
+    const world = [
+      28.8, 29.3, 29.9, 30.4, 31.0, 31.3, 31.9, 32.4, 32.9, 33.7, 34.3, 34.6, 34.4, 34.6,
+      35.1, 35.3, 35.6, 35.8, 36.0, 36.3, 36.5, 36.7, 36.9, 37.2, 37.5, 37.7, 38.0, 38.3,
+      38.7, 39.2, 39.5, 39.9, 40.2, 40.6, 41.1, 41.4, 41.8, 42.1, 42.4, 42.7, 42.8, 43.2,
+      43.4, 43.7, 44.0, 44.3, 44.8, 45.3, 45.8, 46.3, 46.8, 47.3, 47.8, 48.4, 48.9, 49.4,
+      49.9, 50.4, 50.9, 51.4, 51.8, 52.5, 53.0, 53.5, 53.9, 54.5, 54.9, 55.4, 55.8, 56.2,
+      56.5, 56.9, 57.1, 57.4, 57.6, 57.8,
+    ]
+    const regions = [
+      {
+        name: "South America",
+        values: [
+          43.8, 47.4, 51.1, 54.8, 58.9, 63.8, 68.7, 71.9, 74.7, 77.1, 79.7, 81.2, 82.4,
+          83.5, 84.4, 85.5,
+        ],
+      },
+      {
+        name: "Northern America",
+        values: [
+          63.8, 67.1, 69.9, 72.3, 73.7, 73.8, 73.9, 74.5, 75.4, 77.2, 79.0, 80.2, 80.7,
+          80.6, 80.2, 80.5,
+        ],
+      },
+      {
+        name: "Europe",
+        values: [
+          51.3, 54.0, 57.1, 60.3, 63.3, 65.8, 67.8, 69.2, 70.4, 70.8, 71.5, 72.2, 73.0,
+          73.9, 74.7, 75.4,
+        ],
+      },
+      {
+        name: "Oceania",
+        values: [
+          59.0, 61.7, 64.7, 66.7, 70.9, 72.0, 71.4, 71.1, 71.1, 70.1, 68.8, 68.1, 67.8,
+          67.6, 67.5, 67.6,
+        ],
+      },
+      {
+        name: "World",
+        values: [
+          28.8, 31.3, 34.3, 35.3, 36.5, 37.7, 39.5, 41.4, 42.8, 44.3, 46.8, 49.4, 51.8,
+          54.5, 56.5, 57.8,
+        ],
+      },
+      {
+        name: "Asia",
+        values: [
+          15.9, 18.9, 22.5, 22.7, 23.6, 24.9, 27.1, 29.9, 31.8, 33.9, 37.6, 41.2, 44.8,
+          48.9, 51.9, 53.6,
+        ],
+      },
+      {
+        name: "Africa",
+        values: [
+          14.6, 16.2, 18.3, 20.5, 22.8, 25.2, 27.5, 29.8, 32.4, 34.3, 36.1, 38.2, 40.3,
+          42.3, 44.3, 46.4,
+        ],
+      },
+    ]
+    const NS = "http://www.w3.org/2000/svg"
+    const el = (name, attrs, parent) => {
+      const node = document.createElementNS(NS, name)
+      for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, value)
+      parent?.append(node)
+      return node
+    }
+    const text = (content, attrs, parent) => {
+      const node = el("text", attrs, parent)
+      node.textContent = content
+      return node
+    }
+
+    const head = document.querySelector("#urb-table thead tr")
+    for (const r of regions) head.insertCell().outerHTML = `<th>${r.name}</th>`
+    const tbody = document.querySelector("#urb-table tbody")
+    for (let i = 0; i < 16; i++) {
+      const row = tbody.insertRow()
+      for (const v of [1950 + i * 5, ...regions.map(r => r.values[i].toFixed(1))])
+        row.insertCell().textContent = v
+    }
+
+    const people = document.getElementById("urb-people")
+    for (let i = 0; i < 100; i++) people.append(document.createElement("i"))
+    const slider = document.getElementById("urb-slider")
+    const regionsHost = document.getElementById("urb-regions")
+    let year = 2025
+    let bars = null
+
+    const drawRegions = host => {
+      host.replaceChildren()
+      bars = null
+      const width = host.clientWidth
+      if (width < 120) return
+      const rowH = 34
+      const label = width < 360 ? 104 : 124
+      const m = { top: 4, right: 44, bottom: 22, left: label }
+      const height = m.top + regions.length * rowH + m.bottom
+      const x = v => m.left + (v / 100) * (width - m.left - m.right)
+      const svg = el(
+        "svg",
+        { width, height, role: "img", "aria-labelledby": "urb-regions-title" },
+        host,
+      )
+      for (const tick of [0, 50, 100]) {
+        el(
+          "line",
+          {
+            x1: x(tick),
+            x2: x(tick),
+            y1: m.top,
+            y2: height - m.bottom,
+            stroke: "var(--urb-grid)",
+          },
+          svg,
+        )
+        text(`${tick}%`, { x: x(tick), y: height - 6, "text-anchor": "middle" }, svg)
+      }
+      const tip = document.createElement("div")
+      tip.className = "urb-tip"
+      host.append(tip)
+      bars = regions.map((r, i) => {
+        const top = m.top + i * rowH + 7
+        const isWorld = r.name === "World"
+        const g = el("g", {}, svg)
+        text(
+          r.name,
+          { x: 0, y: top + 14, class: isWorld ? "urb-name urb-value" : "urb-name" },
+          g,
+        )
+        const bar = el(
+          "rect",
+          {
+            x: x(0),
+            y: top,
+            height: 20,
+            rx: 4,
+            fill: isWorld ? "var(--urb-ink)" : "var(--urb-urban)",
+          },
+          g,
+        )
+        const mark = el(
+          "line",
+          {
+            "data-mark": "",
+            y1: top - 3,
+            y2: top + 23,
+            x1: x(r.values[0]),
+            x2: x(r.values[0]),
+            stroke: isWorld ? "var(--htmlpress-bg)" : "var(--urb-ink)",
+            "stroke-width": 2,
+          },
+          g,
+        )
+        const value = text("", { y: top + 14, class: "urb-value" }, g)
+        el("rect", { x: 0, y: top - 7, width, height: rowH, fill: "transparent" }, g)
+        g.addEventListener("pointerenter", () => {
+          const k = Math.min(15, Math.floor((year - 1950) / 5))
+          tip.innerHTML = `<strong>${r.name}, ${1950 + k * 5}</strong>${r.values[k].toFixed(1)}% urban · ${r.values[0]}% in 1950`
+          tip.style.top = `${top + 26}px`
+          tip.style.left = `${Math.min(m.left, width - tip.offsetWidth)}px`
+          tip.toggleAttribute("data-on", true)
+        })
+        g.addEventListener("pointerleave", () => tip.toggleAttribute("data-on", false))
+        return { r, bar, value, mark, x }
+      })
+      render(false)
+    }
+
+    const render = (animate = true) => {
+      const share = world[year - 1950]
+      const count = Math.round(share)
+      document.getElementById("urb-year").textContent = year
+      document.getElementById("urb-count").textContent = count
+      ;[...people.children].forEach((dot, i) =>
+        dot.toggleAttribute("data-urban", i < count),
+      )
+      const k = Math.min(15, Math.floor((year - 1950) / 5))
+      document.getElementById("urb-regions-year").textContent = 1950 + k * 5
+      for (const b of bars ?? []) {
+        const v = b.r.values[k]
+        b.bar.style.transition = animate ? "" : "none"
+        b.bar.setAttribute("width", Math.max(0, b.x(v) - b.x(0)))
+        b.value.setAttribute("x", b.x(v) + 6)
+        b.value.textContent = `${Math.round(v)}%`
+      }
+    }
+
+    const setYear = next => {
+      year = Math.max(1950, Math.min(2025, next))
+      slider.value = year
+      render()
+    }
+    slider.addEventListener("input", () => setYear(Number(slider.value)))
+    let timer = null
+    const play = document.getElementById("urb-play")
+    const playIcon = play.innerHTML
+    const pauseIcon = `<svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M6 4h4v16H6zM14 4h4v16h-4z" fill="currentColor" /></svg>`
+    const stop = () => {
+      clearInterval(timer)
+      timer = null
+      play.innerHTML = playIcon
+    }
+    play.addEventListener("click", () => {
+      if (timer) return stop()
+      if (year >= 2025) setYear(1950)
+      play.innerHTML = pauseIcon
+      timer = setInterval(() => (year >= 2025 ? stop() : setYear(year + 1)), 70)
+    })
+    for (const button of document.querySelectorAll(".urb-meter button")) {
+      button.addEventListener("click", () => {
+        stop()
+        setYear(Number(button.dataset.year))
+        document
+          .querySelector(".urb-explorer")
+          .scrollIntoView({ behavior: "smooth", block: "nearest" })
+      })
+    }
+
+    const charts = [[regionsHost, drawRegions]]
+    const observer = new ResizeObserver(entries => {
+      for (const entry of entries) {
+        const chart = charts.find(([host]) => host === entry.target)
+        if (chart && String(entry.contentRect.width) !== chart[0].dataset.width) {
+          chart[0].dataset.width = entry.contentRect.width
+          chart[1](chart[0])
+        }
+      }
+    })
+    for (const [host] of charts) observer.observe(host)
+    render(false)
+  }
+</script>

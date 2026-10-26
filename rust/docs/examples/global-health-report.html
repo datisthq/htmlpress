@@ -1,0 +1,829 @@
+<title>Global health report</title>
+<meta
+  name="description"
+  content="A formal annual report: a cover with key findings, an executive summary, a slope chart of life expectancy, small multiples of child mortality, footnotes and print styles."
+/>
+<meta name="order" content="7" />
+<style>
+  .ghr {
+    --ghr-asia: #2a78d6;
+    --ghr-africa: #eb6834;
+    --ghr-europe: #1baf7a;
+    --ghr-latam: #eda100;
+    --ghr-namerica: #e87ba4;
+    --ghr-oceania: #008300;
+    --ghr-ink: var(--htmlpress-text);
+    --ghr-soft: var(--htmlpress-muted);
+    --ghr-grid: var(--htmlpress-border);
+    --ghr-card: var(--htmlpress-surface);
+    color: var(--ghr-ink);
+    font-variant-numeric: tabular-nums;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) .ghr {
+      --ghr-asia: #3987e5;
+      --ghr-africa: #d95926;
+      --ghr-europe: #199e70;
+      --ghr-latam: #c98500;
+      --ghr-namerica: #d55181;
+    }
+  }
+  :root[data-theme="dark"] .ghr {
+    --ghr-asia: #3987e5;
+    --ghr-africa: #d95926;
+    --ghr-europe: #199e70;
+    --ghr-latam: #c98500;
+    --ghr-namerica: #d55181;
+  }
+  .ghr-cover {
+    position: relative;
+    margin-block: 1.5rem 2.5rem;
+    padding: clamp(1.5rem, 5vw, 2.75rem);
+    overflow: hidden;
+    border: 1px solid var(--ghr-grid);
+    border-radius: var(--htmlpress-radius);
+    background:
+      radial-gradient(
+        circle at 100% 0,
+        color-mix(in oklab, var(--ghr-asia) 16%, transparent),
+        transparent 55%
+      ),
+      var(--ghr-card);
+  }
+  .ghr-cover > p:first-child {
+    margin: 0 0 2.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ghr-soft);
+  }
+  .ghr-cover h2 {
+    max-width: 22ch;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: clamp(1.75rem, 5vw, 2.6rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+  .ghr-cover > p:nth-of-type(2) {
+    margin: 0.75rem 0 2rem;
+    color: var(--ghr-soft);
+  }
+  .ghr-findings {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+    gap: 1.25rem;
+    margin: 0;
+    padding: 1.5rem 0 0;
+    list-style: none;
+    border-top: 1px solid var(--ghr-grid);
+    counter-reset: finding;
+  }
+  .ghr-findings li {
+    margin: 0;
+    counter-increment: finding;
+  }
+  .ghr-findings b {
+    display: block;
+    font-size: 2rem;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+  .ghr-findings b::before {
+    content: counter(finding, decimal-leading-zero);
+    display: block;
+    margin-bottom: 0.4rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    color: var(--ghr-soft);
+  }
+  .ghr-findings span {
+    display: block;
+    margin-top: 0.35rem;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    color: var(--ghr-soft);
+  }
+  .ghr-cover dl {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 2rem;
+    margin: 2rem 0 0;
+    font-size: 0.8125rem;
+  }
+  .ghr-cover dl div {
+    display: flex;
+    gap: 0.4rem;
+  }
+  .ghr-cover dt {
+    color: var(--ghr-soft);
+  }
+  .ghr-cover dd {
+    margin: 0;
+    font-weight: 600;
+  }
+  .ghr-figure {
+    margin: 1.5rem 0 2rem;
+    padding: 1.25rem;
+    border: 1px solid var(--ghr-grid);
+    border-radius: var(--htmlpress-radius);
+  }
+  .ghr-figure figcaption {
+    margin: 0 0 1rem;
+    font-size: 0.875rem;
+    color: var(--ghr-soft);
+  }
+  .ghr-figure figcaption strong {
+    display: block;
+    margin-bottom: 0.15rem;
+    font-size: 1rem;
+    color: var(--ghr-ink);
+  }
+  .ghr-chart {
+    position: relative;
+    touch-action: pan-y;
+  }
+  .ghr-chart svg {
+    display: block;
+    overflow: visible;
+  }
+  .ghr-chart text {
+    font-size: 11px;
+    fill: var(--ghr-soft);
+  }
+  .ghr-chart .ghr-halo {
+    paint-order: stroke;
+    stroke: var(--htmlpress-bg);
+    stroke-width: 4px;
+    stroke-linejoin: round;
+  }
+  .ghr-chart .ghr-label {
+    font-size: 12px;
+    font-weight: 600;
+    fill: var(--ghr-ink);
+  }
+  .ghr-chart [data-region] {
+    transition: opacity 0.15s;
+  }
+  .ghr-chart[data-focus] [data-region]:not([data-on]) {
+    opacity: 0.18;
+  }
+  .ghr-multiples {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem 1.25rem;
+  }
+  @media (max-width: 40rem) {
+    .ghr-multiples {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  .ghr-multiples h4 {
+    display: flex;
+    justify-content: space-between;
+    margin: 0 0 0.15rem;
+    font-size: 0.875rem;
+  }
+  .ghr-multiples h4 span {
+    font-weight: 500;
+    color: var(--ghr-soft);
+  }
+  .ghr-multiples p {
+    margin: 0 0 0.25rem;
+    font-size: 0.75rem;
+    color: var(--ghr-soft);
+  }
+  .ghr-tip {
+    position: absolute;
+    top: 0;
+    z-index: 1;
+    padding: 0.5rem 0.7rem;
+    font-size: 0.8125rem;
+    white-space: nowrap;
+    pointer-events: none;
+    background: var(--htmlpress-bg);
+    border: 1px solid var(--ghr-grid);
+    border-radius: 0.5rem;
+    box-shadow: var(--htmlpress-shadow);
+    opacity: 0;
+    transition: opacity 0.12s;
+  }
+  .ghr-tip[data-on] {
+    opacity: 1;
+  }
+  .ghr-tip strong {
+    display: block;
+  }
+  .ghr-notes {
+    font-size: 0.875rem;
+  }
+  @media print {
+    htmlpress-header,
+    htmlpress-sidebar,
+    htmlpress-aside,
+    htmlpress-banner,
+    htmlpress-breadcrumbs,
+    htmlpress-pager,
+    htmlpress-footer,
+    htmlpress-toc-bar,
+    htmlpress-back-to-top,
+    htmlpress-toolbar,
+    .ghr-tip,
+    .ghr-screen {
+      display: none !important;
+    }
+    htmlpress-shell {
+      display: block !important;
+    }
+    .ghr-cover {
+      min-height: 90vh;
+      break-after: page;
+      background: none;
+    }
+    .ghr-figure,
+    .ghr-multiples > div {
+      break-inside: avoid;
+    }
+    .ghr h2 {
+      break-after: avoid;
+    }
+    .ghr details {
+      display: block;
+    }
+  }
+</style>
+
+<h1>Global health report</h1>
+<p class="ghr-screen">
+  An annual report as a web page: a cover, numbered findings, figures with captions,
+  footnotes and a methodology section. Print it, or save it as PDF from the browser: a
+  print stylesheet drops the site's navigation, gives the cover its own page and keeps
+  every figure whole.
+</p>
+
+<div class="ghr">
+  <header class="ghr-cover">
+    <p>Annual report · Edition 2026</p>
+    <h2 data-toc="false">Longer lives, fewer children lost</h2>
+    <p>Life expectancy and child mortality across world regions, 1950–2024</p>
+    <ol class="ghr-findings">
+      <li>
+        <b>+26.8 yrs</b>
+        <span>Global life expectancy at birth, from 46.4 in 1950 to 73.2 in 2023</span>
+      </li>
+      <li>
+        <b>3.7%</b>
+        <span
+          >of children die before age five, down from 24.7% in 1950<sup
+            ><a href="#ghr-n1">1</a></sup
+          ></span
+        >
+      </li>
+      <li>
+        <b>15.8 yrs</b>
+        <span
+          >The gap between Northern America and Africa, half the 30.9 years of 1950</span
+        >
+      </li>
+    </ol>
+    <dl>
+      <div>
+        <dt>Coverage</dt>
+        <dd>6 regions, 1950–2024</dd>
+      </div>
+      <div>
+        <dt>Sources</dt>
+        <dd>UN WPP 2024, UN IGME</dd>
+      </div>
+      <div>
+        <dt>Published</dt>
+        <dd>October 2026</dd>
+      </div>
+    </dl>
+  </header>
+
+  <h2>Executive summary</h2>
+  <p>
+    A child born in 2023 can expect to live 73 years, 27 years longer than one born in
+    1950. The gains were not a slow drift: they came fastest where the starting point was
+    lowest. Asia added 32.6 years and Latin America 27, while Europe and Northern America,
+    which started near 65, added 17 and 11.5.
+  </p>
+  <p>
+    The largest single driver is the collapse of child mortality. In 1950 one child in
+    four died before their fifth birthday; in 2024 it was fewer than one in twenty-five.
+    Africa still carries the heaviest burden at 6.6%, but it has cut its rate by 59% since
+    1990, almost exactly the world's pace of 60%.
+  </p>
+  <p>
+    Progress is not guaranteed. Global life expectancy fell by 1.7 years between 2019 and
+    2021 as COVID-19 spread<sup><a href="#ghr-n2">2</a></sup
+    >, the first sustained reversal since the famine years around 1960, before recovering
+    to a new high in 2023.
+  </p>
+
+  <h2>Life expectancy</h2>
+  <figure class="ghr-figure">
+    <figcaption id="ghr-slope-title">
+      <strong>Figure 1. Life expectancy at birth, 1950 and 2023</strong>
+      Years, by region. Hover a line to isolate a region; the world average is the heavy
+      line.
+    </figcaption>
+    <div class="ghr-chart" id="ghr-slope"></div>
+  </figure>
+  <p>
+    Every region gained, and the order barely changed: Northern America, Oceania and
+    Europe still lead, Africa still trails. What changed is the spread. In 1950 the
+    regions spanned 31 years; in 2023 they span 16, and five of the six now sit within
+    five years of each other.
+  </p>
+
+  <h2>Child mortality</h2>
+  <figure class="ghr-figure">
+    <figcaption id="ghr-multiples-title">
+      <strong>Figure 2. Under-five mortality, 1990–2024</strong>
+      Share of children dying before age five, on one shared scale. The gray line in each
+      panel is the world, 9.3% in 1990 and 3.7% in 2024. Hover any panel to read all of
+      them at the same year.
+    </figcaption>
+    <div class="ghr-multiples" id="ghr-multiples"></div>
+  </figure>
+  <p>
+    The panels share one vertical scale on purpose: it shows how far apart the regions
+    still are. Europe's rate, 0.5%, is a thirteenth of Africa's. But on its own scale
+    every line falls, and Asia's fall is the steepest, from 9.0% to 2.5% in 34 years.
+  </p>
+
+  <details class="ghr-screen">
+    <summary>Data tables</summary>
+    <htmlpress-table>
+      <table id="ghr-table">
+        <thead>
+          <tr>
+            <th>Region</th>
+            <th>Life exp. 1950</th>
+            <th>Life exp. 2023</th>
+            <th>Under-5 1990</th>
+            <th>Under-5 2024</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </htmlpress-table>
+  </details>
+
+  <h2>Methodology</h2>
+  <p>
+    Life expectancy is period life expectancy at birth: the average number of years a
+    newborn would live if the death rates of that year held for their whole life. Regional
+    figures are the UN's population-weighted aggregates. Child mortality is the
+    probability of dying between birth and exactly five years of age, shown as a
+    percentage of live births.
+  </p>
+  <ol class="ghr-notes">
+    <li id="ghr-n1">
+      The 1950 figure comes from Gapminder and the UN's historical reconstruction; from
+      1990 the series is the UN Inter-agency Group for Child Mortality Estimation (IGME).
+    </li>
+    <li id="ghr-n2">
+      Period life expectancy reacts to a single year's deaths, so a pandemic shows as a
+      sharp dip that reverses once excess mortality falls. It is not a forecast of how
+      long anyone born in 2021 will live.
+    </li>
+  </ol>
+</div>
+
+<h2 class="ghr-screen">How it's built</h2>
+<ul class="ghr-screen">
+  <li>
+    <strong>The cover</strong> is a <code>&lt;header&gt;</code> with an ordered list of
+    findings; CSS counters print the 01, 02, 03 above each number.
+  </li>
+  <li>
+    <strong>The slope chart</strong> spreads its end labels apart when two regions land
+    within a few pixels, so Europe and Oceania, both 79.1 in 2023, stay readable.
+  </li>
+  <li>
+    <strong>The small multiples</strong> are one function called seven times with a shared
+    scale; a pointer over any panel moves the crosshair in all of them.
+  </li>
+  <li>
+    <strong>The print stylesheet</strong> is an <code>@media print</code> block in the
+    same <code>&lt;style&gt;</code>: it hides the site's chrome and this section, breaks
+    after the cover and keeps figures on one page.
+  </li>
+</ul>
+<p class="ghr-screen">
+  Sources:
+  <a href="https://population.un.org/wpp/">UN World Population Prospects 2024</a> and
+  <a href="https://childmortality.org/">UN IGME</a>, as compiled by Our World in Data's
+  <a href="https://ourworldindata.org/life-expectancy">life expectancy</a> and
+  <a href="https://ourworldindata.org/child-mortality">child mortality</a> pages.
+</p>
+
+<script>
+  {
+    const regions = [
+      {
+        name: "Northern America",
+        color: "--ghr-namerica",
+        life: [68.1, 79.6],
+        child: [
+          3.2, 3.0, 2.9, 2.8, 2.7, 2.6, 2.5, 2.4, 2.4, 2.2, 2.2, 2.1, 2.0, 1.9, 1.9, 1.8,
+          1.8, 1.7, 1.6, 1.6, 1.8, 1.5, 1.5, 1.5, 1.4, 1.4, 1.4, 1.3, 1.3, 1.3, 1.3, 1.2,
+          1.2, 1.2, 1.2,
+        ],
+      },
+      {
+        name: "Europe",
+        color: "--ghr-europe",
+        life: [62.0, 79.1],
+        child: [
+          1.6, 1.5, 1.5, 1.5, 1.4, 1.3, 1.3, 1.2, 1.2, 1.1, 1.1, 1.0, 1.0, 0.9, 0.9, 0.8,
+          0.8, 0.8, 0.7, 0.7, 0.7, 0.7, 0.6, 0.6, 0.6, 0.6, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5,
+          0.5, 0.5, 0.5,
+        ],
+      },
+      {
+        name: "Oceania",
+        color: "--ghr-oceania",
+        life: [61.6, 79.1],
+        child: [
+          3.3, 3.2, 3.2, 3.1, 3.1, 3.1, 3.1, 3.4, 3.1, 3.1, 3.1, 3.1, 3.1, 3.0, 3.0, 3.0,
+          2.9, 2.8, 2.7, 2.6, 2.6, 2.5, 2.5, 2.4, 2.4, 2.5, 2.3, 2.2, 2.2, 2.1, 2.1, 2.1,
+          2.0, 1.9, 1.9,
+        ],
+      },
+      {
+        name: "Latin America",
+        color: "--ghr-latam",
+        life: [48.7, 75.7],
+        child: [
+          5.5, 5.2, 5.0, 4.7, 4.5, 4.2, 4.0, 3.7, 3.5, 3.3, 3.1, 3.0, 2.8, 2.6, 2.5, 2.4,
+          2.2, 2.1, 2.0, 1.9, 1.9, 1.8, 1.7, 1.7, 1.6, 1.6, 1.6, 1.6, 1.5, 1.5, 1.5, 1.5,
+          1.4, 1.4, 1.4,
+        ],
+      },
+      {
+        name: "Asia",
+        color: "--ghr-asia",
+        life: [42.0, 74.6],
+        child: [
+          9.0, 8.8, 8.7, 8.5, 8.2, 8.1, 7.8, 7.6, 7.3, 7.1, 6.8, 6.5, 6.2, 5.9, 5.7, 5.4,
+          5.1, 4.9, 4.7, 4.4, 4.2, 4.0, 3.8, 3.6, 3.4, 3.3, 3.1, 3.0, 2.9, 2.8, 2.7, 2.7,
+          2.6, 2.6, 2.5,
+        ],
+      },
+      {
+        name: "Africa",
+        color: "--ghr-africa",
+        life: [37.2, 63.8],
+        child: [
+          16.2, 16.4, 16.2, 16.1, 15.8, 15.4, 15.5, 15.2, 15.1, 14.3, 13.8, 13.4, 12.8,
+          12.2, 11.8, 11.0, 10.5, 10.1, 9.6, 9.4, 8.9, 8.9, 8.3, 8.0, 7.9, 7.8, 7.7, 7.6,
+          7.3, 7.2, 7.0, 7.2, 7.3, 6.8, 6.6,
+        ],
+      },
+    ]
+    const world = {
+      name: "World",
+      color: "--ghr-ink",
+      life: [46.4, 73.2],
+      child: [
+        9.3, 9.3, 9.2, 9.1, 8.9, 8.8, 8.6, 8.4, 8.3, 7.9, 7.7, 7.4, 7.1, 6.8, 6.6, 6.2,
+        6.0, 5.7, 5.5, 5.3, 5.1, 5.0, 4.7, 4.5, 4.4, 4.3, 4.2, 4.1, 4.0, 4.0, 3.9, 4.0,
+        4.0, 3.8, 3.7,
+      ],
+    }
+    const years = Array.from({ length: 35 }, (_, i) => 1990 + i)
+    const NS = "http://www.w3.org/2000/svg"
+
+    const el = (name, attrs, parent) => {
+      const node = document.createElementNS(NS, name)
+      for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, value)
+      parent?.append(node)
+      return node
+    }
+    const text = (content, attrs, parent) => {
+      const node = el("text", attrs, parent)
+      node.textContent = content
+      return node
+    }
+    // Pushes sorted label positions apart so no two sit closer than `gap` pixels.
+    const spread = (ys, gap) => {
+      const order = ys.map((y, i) => [y, i]).sort((a, b) => a[0] - b[0])
+      for (let k = 1; k < order.length; k++) {
+        order[k][0] = Math.max(order[k][0], order[k - 1][0] + gap)
+      }
+      const out = []
+      for (const [y, i] of order) out[i] = y
+      return out
+    }
+
+    const tbody = document.querySelector("#ghr-table tbody")
+    for (const r of [...regions, world]) {
+      const row = tbody.insertRow()
+      for (const value of [
+        r.name,
+        r.life[0],
+        r.life[1],
+        `${r.child[0]}%`,
+        `${r.child.at(-1)}%`,
+      ]) {
+        row.insertCell().textContent = value
+      }
+    }
+
+    const drawSlope = host => {
+      host.replaceChildren()
+      const width = host.clientWidth
+      if (width < 120) return
+      const narrow = width < 520
+      const height = narrow ? 420 : 460
+      const labelWidth = narrow ? 92 : 150
+      const m = { top: 28, right: labelWidth, bottom: 16, left: labelWidth }
+      const x0 = m.left
+      const x1 = width - m.right
+      const y = v => m.top + ((82 - v) / (82 - 34)) * (height - m.top - m.bottom)
+      const svg = el(
+        "svg",
+        { width, height, role: "img", "aria-labelledby": "ghr-slope-title" },
+        host,
+      )
+      for (const tick of [40, 50, 60, 70, 80]) {
+        el(
+          "line",
+          { x1: x0, x2: x1, y1: y(tick), y2: y(tick), stroke: "var(--ghr-grid)" },
+          svg,
+        )
+        text(
+          tick,
+          {
+            x: (x0 + x1) / 2,
+            y: y(tick) + 4,
+            "text-anchor": "middle",
+            class: "ghr-halo",
+          },
+          svg,
+        )
+      }
+      text("1950", { x: x0, y: 12, "text-anchor": "middle", class: "ghr-label" }, svg)
+      text("2023", { x: x1, y: 12, "text-anchor": "middle", class: "ghr-label" }, svg)
+      el(
+        "line",
+        {
+          x1: x0,
+          x2: x0,
+          y1: m.top - 8,
+          y2: height - m.bottom,
+          stroke: "var(--ghr-grid)",
+        },
+        svg,
+      )
+      el(
+        "line",
+        {
+          x1: x1,
+          x2: x1,
+          y1: m.top - 8,
+          y2: height - m.bottom,
+          stroke: "var(--ghr-grid)",
+        },
+        svg,
+      )
+
+      const all = [...regions, world]
+      const left = spread(
+        all.map(r => y(r.life[0])),
+        15,
+      )
+      const right = spread(
+        all.map(r => y(r.life[1])),
+        15,
+      )
+      all.forEach((r, i) => {
+        const group = el("g", { "data-region": r.name }, svg)
+        const isWorld = r === world
+        const stroke = `var(${r.color})`
+        el(
+          "line",
+          {
+            x1: x0,
+            y1: y(r.life[0]),
+            x2: x1,
+            y2: y(r.life[1]),
+            stroke,
+            "stroke-width": isWorld ? 3 : 2,
+            "stroke-linecap": "round",
+          },
+          group,
+        )
+        for (const [x, v] of [
+          [x0, r.life[0]],
+          [x1, r.life[1]],
+        ]) {
+          el(
+            "circle",
+            {
+              cx: x,
+              cy: y(v),
+              r: 4.5,
+              fill: stroke,
+              stroke: "var(--htmlpress-bg)",
+              "stroke-width": 2,
+            },
+            group,
+          )
+        }
+        const name = narrow
+          ? r.name
+              .replace("Northern America", "N. America")
+              .replace("Latin America", "Lat. America")
+          : r.name
+        text(
+          `${name} ${r.life[0]}`,
+          {
+            x: x0 - 10,
+            y: left[i] + 4,
+            "text-anchor": "end",
+            class: isWorld ? "ghr-label" : "",
+          },
+          group,
+        )
+        text(
+          `${r.life[1]} ${name}`,
+          { x: x1 + 10, y: right[i] + 4, class: isWorld ? "ghr-label" : "" },
+          group,
+        )
+        el(
+          "line",
+          {
+            x1: x0,
+            y1: y(r.life[0]),
+            x2: x1,
+            y2: y(r.life[1]),
+            stroke: "transparent",
+            "stroke-width": 16,
+          },
+          group,
+        )
+        group.addEventListener("pointerenter", () => {
+          host.toggleAttribute("data-focus", true)
+          group.toggleAttribute("data-on", true)
+        })
+        group.addEventListener("pointerleave", () => {
+          host.toggleAttribute("data-focus", false)
+          group.toggleAttribute("data-on", false)
+        })
+      })
+    }
+
+    const panels = []
+    const drawPanel = (host, r) => {
+      host.querySelector("svg")?.remove()
+      const width = host.clientWidth
+      if (width < 120) return
+      const height = 120
+      const m = { top: 8, right: 6, bottom: 18, left: 24 }
+      const x = i => m.left + (i / 34) * (width - m.left - m.right)
+      const y = v => height - m.bottom - (v / 18) * (height - m.top - m.bottom)
+      const svg = el(
+        "svg",
+        {
+          width,
+          height,
+          role: "img",
+          "aria-label": `${r.name}: ${r.child[0]}% in 1990, ${r.child.at(-1)}% in 2024`,
+        },
+        host,
+      )
+      for (const tick of [0, 9, 18]) {
+        el(
+          "line",
+          {
+            x1: m.left,
+            x2: width - m.right,
+            y1: y(tick),
+            y2: y(tick),
+            stroke: "var(--ghr-grid)",
+          },
+          svg,
+        )
+        text(`${tick}%`, { x: m.left - 4, y: y(tick) + 4, "text-anchor": "end" }, svg)
+      }
+      text("1990", { x: m.left, y: height - 3 }, svg)
+      text("2024", { x: width - m.right, y: height - 3, "text-anchor": "end" }, svg)
+      const line = series => series.map((v, i) => `${x(i)},${y(v)}`).join("L")
+      if (r !== world) {
+        el(
+          "path",
+          {
+            d: `M${line(world.child)}`,
+            fill: "none",
+            stroke: "var(--ghr-soft)",
+            "stroke-width": 1.5,
+            opacity: 0.6,
+          },
+          svg,
+        )
+      }
+      el(
+        "path",
+        {
+          d: `M${line(r.child)}L${x(34)},${y(0)}L${x(0)},${y(0)}Z`,
+          fill: `var(${r.color})`,
+          opacity: 0.14,
+        },
+        svg,
+      )
+      el(
+        "path",
+        {
+          d: `M${line(r.child)}`,
+          fill: "none",
+          stroke: `var(${r.color})`,
+          "stroke-width": 2,
+          "stroke-linejoin": "round",
+        },
+        svg,
+      )
+      const cursor = el(
+        "line",
+        { y1: m.top, y2: height - m.bottom, stroke: "var(--ghr-ink)", opacity: 0 },
+        svg,
+      )
+      const dot = el(
+        "circle",
+        {
+          r: 4,
+          fill: `var(${r.color})`,
+          stroke: "var(--htmlpress-bg)",
+          "stroke-width": 2,
+          opacity: 0,
+        },
+        svg,
+      )
+      const hit = el(
+        "rect",
+        { x: m.left, y: 0, width: width - m.left - m.right, height, fill: "transparent" },
+        svg,
+      )
+      const panel = { r, x, y, cursor, dot, value: host.querySelector("h4 span") }
+      const index = panels.findIndex(p => p.r === r)
+      if (index >= 0) panels[index] = panel
+      else panels.push(panel)
+      const sync = i => {
+        for (const p of panels) {
+          const on = i !== null
+          p.cursor.setAttribute("opacity", on ? 0.5 : 0)
+          p.dot.setAttribute("opacity", on ? 1 : 0)
+          if (on) {
+            p.cursor.setAttribute("x1", p.x(i))
+            p.cursor.setAttribute("x2", p.x(i))
+            p.dot.setAttribute("cx", p.x(i))
+            p.dot.setAttribute("cy", p.y(p.r.child[i]))
+          }
+          p.value.textContent = on
+            ? `${years[i]}: ${p.r.child[i]}%`
+            : `${p.r.child.at(-1)}%`
+        }
+      }
+      const move = event => {
+        const px = event.clientX - svg.getBoundingClientRect().left
+        sync(
+          Math.max(
+            0,
+            Math.min(34, Math.round(((px - m.left) / (width - m.left - m.right)) * 34)),
+          ),
+        )
+      }
+      hit.addEventListener("pointermove", move)
+      hit.addEventListener("pointerdown", move)
+      hit.addEventListener("pointerleave", () => sync(null))
+    }
+
+    const grid = document.getElementById("ghr-multiples")
+    const hosts = regions.map(r => {
+      const cell = document.createElement("div")
+      cell.className = "ghr-chart"
+      const cut = Math.round((1 - r.child.at(-1) / r.child[0]) * 100)
+      cell.innerHTML = `<h4>${r.name}<span>${r.child.at(-1)}%</span></h4><p>${r.child[0].toFixed(1)}% in 1990 · −${cut}%</p>`
+      grid.append(cell)
+      return [cell, host => drawPanel(host, r)]
+    })
+
+    const charts = [[document.getElementById("ghr-slope"), drawSlope], ...hosts]
+    const observer = new ResizeObserver(entries => {
+      for (const entry of entries) {
+        const chart = charts.find(([host]) => host === entry.target)
+        if (chart && String(entry.contentRect.width) !== chart[0].dataset.width) {
+          chart[0].dataset.width = entry.contentRect.width
+          chart[1](chart[0])
+        }
+      }
+    })
+    for (const [host] of charts) observer.observe(host)
+  }
+</script>
