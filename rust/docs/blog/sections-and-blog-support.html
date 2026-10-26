@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Sections and Blog Support</title>
+    <meta
+      name="description"
+      content="Introducing configurable sections and blog support in Htmlpress"
+    />
+    <meta name="author" content="Htmlpress Team" />
+    <meta name="date" content="2026-04-15" />
+    <meta name="keywords" content="features, announcement" />
+  </head>
+  <body>
+    <h1>Sections and Blog Support</h1>
+    <p>We just shipped two major features: configurable sections and blog support.</p>
+
+    <h2>Sections</h2>
+    <p>
+      You can now split your site into multiple sections. Each section appears as a tab in
+      the header, and the sidebar shows only pages from the active section.
+    </p>
+    <pre><code class="language-yaml">sections:
+  - title: Docs
+    prefix: /
+  - title: Blog
+    prefix: /blog/
+    type: blog</code></pre>
+
+    <h2>Blog</h2>
+    <p>
+      Blog sections list their posts newest first, and the build adds an index page
+      listing all posts by date, a page per tag and an RSS feed. This blog is one: see
+      <a href="/customization/article-sections.html#blog-sections">Article Sections</a>.
+    </p>
+  </body>
+</html>
