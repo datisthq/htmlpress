@@ -1,0 +1,558 @@
+<title>太阳能电池板价格</title>
+<meta
+  name="description"
+  content="一个交互式浏览器：自 1975 年以来太阳能组件价格的对数或线性图表，可重新计算核心数字的年份区间，以及用平实语言表述的变化率计算器。"
+/>
+<meta name="order" content="10" />
+<meta name="icon" content="lightbulb" />
+<style>
+  .sp {
+    --sp-line: #2a78d6;
+    --sp-accent: #eda100;
+    --sp-ink: var(--htmlpress-text);
+    --sp-soft: var(--htmlpress-muted);
+    --sp-grid: var(--htmlpress-border);
+    --sp-card: var(--htmlpress-surface);
+    margin-block: 2rem;
+    color: var(--sp-ink);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) .sp {
+      --sp-line: #3987e5;
+      --sp-accent: #c98500;
+    }
+  }
+  :root[data-theme="dark"] .sp {
+    --sp-line: #3987e5;
+    --sp-accent: #c98500;
+  }
+  .sp-app {
+    overflow: hidden;
+    border: 1px solid var(--sp-grid);
+    border-radius: var(--htmlpress-radius);
+  }
+  .sp-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.5rem;
+    align-items: center;
+    padding: 0.9rem 1.25rem;
+    background: var(--sp-card);
+    border-bottom: 1px solid var(--sp-grid);
+  }
+  .sp-toggle {
+    display: inline-flex;
+    padding: 3px;
+    background: var(--htmlpress-bg);
+    border: 1px solid var(--sp-grid);
+    border-radius: 999px;
+  }
+  .sp-toggle button {
+    padding: 0.3rem 0.85rem;
+    font: inherit;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--sp-soft);
+    cursor: pointer;
+    background: none;
+    border: 0;
+    border-radius: 999px;
+  }
+  .sp-toggle button[aria-pressed="true"] {
+    color: var(--htmlpress-accent-text);
+    background: var(--htmlpress-accent);
+  }
+  .sp-range {
+    display: flex;
+    flex: 1 1 18rem;
+    gap: 0.6rem;
+    align-items: center;
+    font-size: 0.8125rem;
+    color: var(--sp-soft);
+  }
+  .sp-range input {
+    flex: 1;
+    min-width: 5rem;
+    accent-color: var(--htmlpress-accent);
+  }
+  .sp-range output {
+    min-width: 2.5rem;
+    font-weight: 600;
+    color: var(--sp-ink);
+    font-variant-numeric: tabular-nums;
+  }
+  .sp-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+    border-bottom: 1px solid var(--sp-grid);
+  }
+  .sp-stats > div {
+    padding: 1rem 1.25rem;
+    border-right: 1px solid var(--sp-grid);
+  }
+  .sp-stats > div:last-child {
+    border-right: 0;
+  }
+  .sp-stats b {
+    display: block;
+    font-size: clamp(1.4rem, 4vw, 1.9rem);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+  .sp-stats span {
+    display: block;
+    margin-top: 0.3rem;
+    font-size: 0.75rem;
+    color: var(--sp-soft);
+  }
+  .sp-body {
+    padding: 1.25rem;
+  }
+  .sp-sentence {
+    margin: 0 0 1rem;
+    font-size: 1.05rem;
+    line-height: 1.55;
+  }
+  .sp-sentence mark {
+    padding: 0 0.2em;
+    font-weight: 700;
+    color: inherit;
+    background: color-mix(in oklab, var(--sp-accent) 28%, transparent);
+    border-radius: 0.25em;
+  }
+  .sp-chart {
+    position: relative;
+    touch-action: pan-y;
+  }
+  .sp-chart svg {
+    display: block;
+    overflow: visible;
+  }
+  .sp-chart text {
+    font-size: 11px;
+    fill: var(--sp-soft);
+    font-variant-numeric: tabular-nums;
+  }
+  .sp-chart .sp-note {
+    font-size: 11.5px;
+    fill: var(--sp-ink);
+  }
+  .sp-tip {
+    position: absolute;
+    top: 0;
+    z-index: 1;
+    padding: 0.45rem 0.65rem;
+    font-size: 0.8125rem;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    pointer-events: none;
+    background: var(--htmlpress-bg);
+    border: 1px solid var(--sp-grid);
+    border-radius: 0.5rem;
+    box-shadow: var(--htmlpress-shadow);
+    opacity: 0;
+    transition: opacity 0.12s;
+  }
+  .sp-tip[data-on] {
+    opacity: 1;
+  }
+  .sp-foot {
+    margin: 0.75rem 0 0;
+    font-size: 0.75rem;
+    color: var(--sp-soft);
+  }
+</style>
+
+<h1>太阳能电池板：便宜了 500 倍</h1>
+<p>
+  一个只有一个 HTML
+  页面的交互式浏览器。在对数和线性坐标之间切换图表，拖动两个滑块选择任意年份区间，核心数字、其下方的句子以及折线的高亮区段都会重新计算。没有任何预先计算：页面只携带五十个价格，随着你的操作实时计算。
+</p>
+
+<h2>价格浏览器</h2>
+<div class="sp">
+  <div class="sp-app">
+    <div class="sp-controls">
+      <div class="sp-toggle" role="group" aria-label="坐标">
+        <button type="button" data-scale="log" aria-pressed="true">对数</button>
+        <button type="button" data-scale="linear" aria-pressed="false">线性</button>
+      </div>
+      <label class="sp-range">
+        从 <input type="range" id="sp-from" min="1975" max="2024" value="1975" />
+        <output for="sp-from" id="sp-from-out">1975</output>
+      </label>
+      <label class="sp-range">
+        到 <input type="range" id="sp-to" min="1975" max="2024" value="2024" />
+        <output for="sp-to" id="sp-to-out">2024</output>
+      </label>
+    </div>
+    <div class="sp-stats" aria-live="polite">
+      <div><b id="sp-start">$132</b><span id="sp-start-label">1975 年每瓦价格</span></div>
+      <div><b id="sp-end">$0.27</b><span id="sp-end-label">2024 年每瓦价格</span></div>
+      <div><b id="sp-fold">500×</b><span>区间内价格下降的倍数</span></div>
+      <div><b id="sp-rate">−11.9%</b><span>年均变化</span></div>
+    </div>
+    <div class="sp-body">
+      <p class="sp-sentence" id="sp-sentence"></p>
+      <div class="sp-chart" id="sp-chart"></div>
+      <p class="sp-foot">
+        每瓦组件价格，以 2025 年不变美元计。2010 年以前为全球估算值；2010
+        年起为欧洲市场基准价。
+      </p>
+    </div>
+  </div>
+</div>
+
+<h2>为什么用对数坐标</h2>
+<p>
+  在线性坐标轴上，故事在 1985 年就结束了：价格已从 $132 跌到
+  $17，此后的一切都是贴着底部的一条平线。在对数坐标轴上，网格的每一格代表十倍的变化，所以稳定的百分比下降就是一条直线——而太阳能的这条线五十年来几乎是直的。这种稳定的速率就是所谓的斯旺森定律（Swanson's
+  law）：全球累计出货量每翻一番，组件价格往往下降约五分之一。
+</p>
+
+<h2>数据</h2>
+<details>
+  <summary>数据表</summary>
+  <htmlpress-table>
+    <table id="sp-table">
+      <thead>
+        <tr>
+          <th>年份</th>
+          <th>价格，$/W</th>
+          <th>同比变化</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </htmlpress-table>
+</details>
+
+<h2>实现方式</h2>
+<ul>
+  <li>
+    <strong>一个状态，一次渲染。</strong
+    >坐标类型和两个年份保存在一个小对象里；每个控件都写入它，并调用同一个函数来重绘图表、改写数字，因此不会出现不同步。
+  </li>
+  <li>
+    <strong>控件都是原生的</strong>：两个用 <code>accent-color</code> 着色的
+    <code>&lt;input type="range"&gt;</code>，以及一对按钮，其
+    <code>aria-pressed</code> 同时作为选中按钮的样式钩子。
+  </li>
+  <li>
+    <strong>句子是生成的</strong>：减半时间为
+    <code>ln 2 / −ln(1 + rate)</code
+    >，并用文字写出来，因此从不看坐标轴的读者也能得到答案。
+  </li>
+</ul>
+<p>
+  来源：Nemet（2009）、Farmer &amp; Lafond（2016）以及
+  IRENA《可再生能源发电成本》（Renewable Power Generation Costs，2025），由
+  <a href="https://ourworldindata.org/grapher/solar-pv-prices">Our World in Data</a>
+  整理。
+</p>
+
+<script>
+  {
+    const firstYear = 1975
+    const prices = [
+      132.376, 99.598, 72.661, 51.408, 43.195, 36.605, 29.266, 26.295, 21.228, 19.725,
+      17.22, 14.245, 12.11, 11.312, 11.69, 12.091, 11.201, 10.435, 9.759, 9.232, 8.536,
+      7.98, 7.952, 7.166, 6.619, 6.496, 6.284, 5.747, 5.464, 4.695, 4.746, 5.173, 5.211,
+      4.749, 3.174, 2.512, 2.061, 1.111, 0.857, 0.791, 0.736, 0.68, 0.571, 0.509, 0.467,
+      0.37, 0.332, 0.366, 0.322, 0.265,
+    ]
+    const years = prices.map((_, i) => firstYear + i)
+    const lastYear = years[years.length - 1]
+    const notes = [
+      { year: 2006, label: "硅料短缺", dy: -40 },
+      { year: 2011, label: "中国工厂扩产", dy: 44 },
+    ]
+    const state = { scale: "log", from: firstYear, to: lastYear }
+    const NS = "http://www.w3.org/2000/svg"
+
+    const el = (name, attrs, parent) => {
+      const node = document.createElementNS(NS, name)
+      for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, value)
+      parent?.append(node)
+      return node
+    }
+    const text = (content, attrs, parent) => {
+      const node = el("text", attrs, parent)
+      node.textContent = content
+      return node
+    }
+    const price = value =>
+      value >= 10
+        ? `$${Math.round(value)}`
+        : value >= 1
+          ? `$${value.toFixed(1)}`
+          : `$${value.toFixed(2)}`
+    const priceOf = year => prices[year - firstYear]
+
+    const tbody = document.querySelector("#sp-table tbody")
+    years.forEach((year, i) => {
+      const row = tbody.insertRow()
+      row.insertCell().textContent = year
+      row.insertCell().textContent = prices[i].toFixed(3)
+      row.insertCell().textContent = i
+        ? `${((prices[i] / prices[i - 1] - 1) * 100).toFixed(1)}%`
+        : "–"
+    })
+
+    const updateNumbers = () => {
+      const start = priceOf(state.from)
+      const end = priceOf(state.to)
+      const span = state.to - state.from
+      const ratio = start / end
+      const rate = span ? Math.pow(end / start, 1 / span) - 1 : 0
+      document.getElementById("sp-from-out").textContent = state.from
+      document.getElementById("sp-to-out").textContent = state.to
+      document.getElementById("sp-start").textContent = price(start)
+      document.getElementById("sp-start-label").textContent = `${state.from} 年每瓦价格`
+      document.getElementById("sp-end").textContent = price(end)
+      document.getElementById("sp-end-label").textContent = `${state.to} 年每瓦价格`
+      document.getElementById("sp-fold").textContent =
+        ratio >= 1
+          ? `${ratio >= 10 ? Math.round(ratio) : ratio.toFixed(1)}×`
+          : `${(1 / ratio).toFixed(1)}×`
+      document.getElementById("sp-fold").nextElementSibling.textContent =
+        ratio >= 1 ? "区间内价格下降的倍数" : "区间内价格上涨的倍数"
+      document.getElementById("sp-rate").textContent =
+        `${rate > 0 ? "+" : "−"}${Math.abs(rate * 100).toFixed(1)}%`
+      const sentence = document.getElementById("sp-sentence")
+      if (!span) {
+        sentence.innerHTML = `请选择两个不同的年份进行比较。`
+      } else if (rate < 0) {
+        const halving = Math.log(2) / -Math.log(1 + rate)
+        sentence.innerHTML = `${state.from} 年至 ${state.to} 年，太阳能组件价格平均<mark>每年下降 ${Math.abs(rate * 100).toFixed(1)}%</mark>：价格<mark>每 ${halving.toFixed(1)} 年减半</mark>，这一趋势持续了 ${span} 年。`
+      } else {
+        sentence.innerHTML = `${state.from} 年至 ${state.to} 年，价格<mark>每年上涨 ${(rate * 100).toFixed(1)}%</mark>——这是少数与长期趋势相反的时段之一。`
+      }
+    }
+
+    const drawChart = host => {
+      host.replaceChildren()
+      const width = host.clientWidth
+      if (width < 120) return
+      const narrow = width < 520
+      const height = narrow ? 280 : 380
+      const m = { top: 14, right: 12, bottom: 26, left: 44 }
+      const log = state.scale === "log"
+      const x = year =>
+        m.left +
+        ((year - firstYear) / (lastYear - firstYear)) * (width - m.left - m.right)
+      const plot = height - m.top - m.bottom
+      const y = log
+        ? value =>
+            m.top +
+            ((Math.log10(200) - Math.log10(value)) /
+              (Math.log10(200) - Math.log10(0.2))) *
+              plot
+        : value => m.top + ((140 - value) / 140) * plot
+      const svg = el(
+        "svg",
+        {
+          width,
+          height,
+          role: "img",
+          "aria-label": `太阳能组件价格，${log ? "对数" : "线性"}坐标`,
+        },
+        host,
+      )
+
+      const ticks = log
+        ? [0.2, 0.5, 1, 2, 5, 10, 20, 50, 100, 200]
+        : [0, 20, 40, 60, 80, 100, 120, 140]
+      for (const tick of ticks) {
+        el(
+          "line",
+          {
+            x1: m.left,
+            x2: width - m.right,
+            y1: y(tick),
+            y2: y(tick),
+            stroke: "var(--sp-grid)",
+          },
+          svg,
+        )
+        text(
+          tick < 1 ? `$${tick}` : `$${tick}`,
+          { x: m.left - 8, y: y(tick) + 4, "text-anchor": "end" },
+          svg,
+        )
+      }
+      for (const year of narrow
+        ? [1975, 2000, 2024]
+        : [1975, 1985, 1995, 2005, 2015, 2024]) {
+        text(
+          year,
+          {
+            x: x(year),
+            y: height - 6,
+            "text-anchor":
+              year === lastYear ? "end" : year === firstYear ? "start" : "middle",
+          },
+          svg,
+        )
+      }
+      if (state.from !== firstYear || state.to !== lastYear)
+        el(
+          "rect",
+          {
+            x: x(state.from),
+            y: m.top,
+            width: Math.max(1, x(state.to) - x(state.from)),
+            height: plot,
+            fill: "var(--sp-accent)",
+            opacity: 0.1,
+          },
+          svg,
+        )
+
+      const points = years.map((year, i) => [x(year), y(prices[i])])
+      const all = points.map(([px, py]) => `${px},${py}`).join("L")
+      el(
+        "path",
+        {
+          d: `M${all}`,
+          fill: "none",
+          stroke: "var(--sp-line)",
+          "stroke-width": 2,
+          opacity: 0.3,
+          "stroke-linejoin": "round",
+        },
+        svg,
+      )
+      const inside = points.slice(state.from - firstYear, state.to - firstYear + 1)
+      el(
+        "path",
+        {
+          d: `M${inside.map(([px, py]) => `${px},${py}`).join("L")}`,
+          fill: "none",
+          stroke: "var(--sp-line)",
+          "stroke-width": 2.5,
+          "stroke-linejoin": "round",
+          "stroke-linecap": "round",
+        },
+        svg,
+      )
+      for (const year of [state.from, state.to]) {
+        el(
+          "circle",
+          {
+            cx: x(year),
+            cy: y(priceOf(year)),
+            r: 5,
+            fill: "var(--sp-line)",
+            stroke: "var(--htmlpress-bg)",
+            "stroke-width": 2,
+          },
+          svg,
+        )
+      }
+      if (!narrow && log) {
+        for (const note of notes) {
+          const cx = x(note.year)
+          const cy = y(priceOf(note.year))
+          const down = note.dy > 0
+          el(
+            "line",
+            {
+              x1: cx,
+              x2: cx,
+              y1: cy + (down ? 8 : -8),
+              y2: cy + note.dy,
+              stroke: "var(--sp-soft)",
+            },
+            svg,
+          )
+          text(
+            note.label,
+            {
+              x: cx,
+              y: cy + note.dy + (down ? 14 : -6),
+              "text-anchor": down ? "end" : "middle",
+              class: "sp-note",
+            },
+            svg,
+          )
+        }
+      }
+
+      const tip = document.createElement("div")
+      tip.className = "sp-tip"
+      host.append(tip)
+      const dot = el("circle", { r: 4, fill: "var(--sp-ink)", opacity: 0 }, svg)
+      const hit = el(
+        "rect",
+        { x: m.left, y: 0, width: width - m.left - m.right, height, fill: "transparent" },
+        svg,
+      )
+      const show = event => {
+        const px = event.clientX - svg.getBoundingClientRect().left
+        const i = Math.max(
+          0,
+          Math.min(
+            years.length - 1,
+            Math.round(((px - m.left) / (width - m.left - m.right)) * (years.length - 1)),
+          ),
+        )
+        dot.setAttribute("cx", points[i][0])
+        dot.setAttribute("cy", points[i][1])
+        dot.setAttribute("opacity", 1)
+        const change = i ? (prices[i] / prices[i - 1] - 1) * 100 : null
+        tip.innerHTML =
+          `<strong>${years[i]}</strong> $${prices[i].toFixed(prices[i] < 1 ? 3 : 2)}/W` +
+          (change === null
+            ? ""
+            : `<br><span style="color:var(--sp-soft)">较上年 ${change > 0 ? "+" : "−"}${Math.abs(change).toFixed(1)}%</span>`)
+        const left = points[i][0] + 12
+        tip.style.left = `${left + tip.offsetWidth > width ? points[i][0] - tip.offsetWidth - 12 : left}px`
+        tip.style.top = `${Math.max(0, Math.min(points[i][1] - 20, height - 70))}px`
+        tip.toggleAttribute("data-on", true)
+      }
+      hit.addEventListener("pointermove", show)
+      hit.addEventListener("pointerdown", show)
+      hit.addEventListener("pointerleave", () => {
+        dot.setAttribute("opacity", 0)
+        tip.toggleAttribute("data-on", false)
+      })
+    }
+
+    const host = document.getElementById("sp-chart")
+    const render = () => {
+      updateNumbers()
+      drawChart(host)
+    }
+    for (const button of document.querySelectorAll(".sp-toggle button")) {
+      button.addEventListener("click", () => {
+        state.scale = button.dataset.scale
+        for (const other of document.querySelectorAll(".sp-toggle button")) {
+          other.setAttribute("aria-pressed", String(other === button))
+        }
+        render()
+      })
+    }
+    const from = document.getElementById("sp-from")
+    const to = document.getElementById("sp-to")
+    from.addEventListener("input", () => {
+      state.from = Math.min(Number(from.value), state.to)
+      from.value = state.from
+      render()
+    })
+    to.addEventListener("input", () => {
+      state.to = Math.max(Number(to.value), state.from)
+      to.value = state.to
+      render()
+    })
+    new ResizeObserver(([entry]) => {
+      if (String(entry.contentRect.width) !== host.dataset.width) {
+        host.dataset.width = entry.contentRect.width
+        drawChart(host)
+      }
+    }).observe(host)
+    updateNumbers()
+  }
+</script>

@@ -1,0 +1,701 @@
+<title>Hielo marino del Ártico</title>
+<meta
+  name="description"
+  content="Un informe científico: resumen, hallazgos numerados y tres figuras —una dispersión con tendencia ajustada, una lista de barras ordenada y un gráfico de rangos— con datos del Sea Ice Index del NSIDC."
+/>
+<meta name="order" content="5" />
+<meta name="icon" content="compass" />
+<style>
+  .si {
+    --si-min: #eb6834;
+    --si-max: #2a78d6;
+    --si-recent: #eb6834;
+    --si-past: #86b6ef;
+    --si-ink: var(--htmlpress-text);
+    --si-soft: var(--htmlpress-muted);
+    --si-grid: var(--htmlpress-border);
+    --si-card: var(--htmlpress-surface);
+    color: var(--si-ink);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) .si {
+      --si-min: #d95926;
+      --si-max: #3987e5;
+      --si-recent: #d95926;
+      --si-past: #184f95;
+    }
+  }
+  :root[data-theme="dark"] .si {
+    --si-min: #d95926;
+    --si-max: #3987e5;
+    --si-recent: #d95926;
+    --si-past: #184f95;
+  }
+  .si-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.5rem;
+    margin: 0 0 1.5rem;
+    padding: 0.75rem 0;
+    font-size: 0.8125rem;
+    color: var(--si-soft);
+    border-block: 1px solid var(--si-grid);
+  }
+  .si-meta b {
+    font-weight: 600;
+    color: var(--si-ink);
+  }
+  .si-abstract {
+    display: grid;
+    grid-template-columns: 7rem 1fr;
+    gap: 0.5rem 1.5rem;
+    margin: 0 0 2rem;
+    padding: 1.25rem 1.5rem;
+    background: var(--si-card);
+    border-radius: var(--htmlpress-radius);
+  }
+  .si-abstract h2 {
+    margin: 0;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--si-soft);
+  }
+  .si-abstract p {
+    margin: 0;
+  }
+  @media (width < 40rem) {
+    .si-abstract {
+      grid-template-columns: 1fr;
+      padding: 1.1rem;
+    }
+  }
+  .si-findings {
+    display: grid;
+    gap: 1rem;
+    margin: 1rem 0 2rem;
+    padding: 0;
+    list-style: none;
+    counter-reset: finding;
+  }
+  .si-findings li {
+    display: grid;
+    grid-template-columns: 2.5rem 1fr;
+    gap: 0.75rem;
+    margin: 0;
+    counter-increment: finding;
+  }
+  .si-findings li::before {
+    content: counter(finding, decimal-leading-zero);
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--si-min);
+    font-variant-numeric: tabular-nums;
+  }
+  .si-findings li > div > strong {
+    display: block;
+    font-size: 1.05rem;
+  }
+  .si-findings span {
+    color: var(--si-soft);
+  }
+  .si-figure {
+    margin: 1.5rem 0 2rem;
+    padding: 1.25rem;
+    border: 1px solid var(--si-grid);
+    border-radius: var(--htmlpress-radius);
+  }
+  .si-figure > h3 {
+    margin: 0 0 0.75rem;
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: 0;
+    color: var(--htmlpress-text);
+  }
+  .si-figure figcaption {
+    margin-top: 0.75rem;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: var(--si-soft);
+  }
+  .si-figure figcaption b {
+    color: var(--si-ink);
+  }
+  .si-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 1rem;
+    margin: 0 0 0.5rem;
+    padding: 0;
+    font-size: 0.8125rem;
+    list-style: none;
+    color: var(--si-soft);
+  }
+  .si-legend li {
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
+    margin: 0;
+  }
+  .si-legend i {
+    width: 0.65rem;
+    height: 0.65rem;
+    border-radius: 50%;
+    background: var(--swatch);
+  }
+  .si-legend i[data-line] {
+    width: 1rem;
+    height: 2px;
+    border-radius: 0;
+  }
+  .si-chart {
+    position: relative;
+    touch-action: pan-y;
+  }
+  .si-chart svg {
+    display: block;
+    overflow: visible;
+  }
+  .si-chart text {
+    font-size: 11px;
+    fill: var(--si-soft);
+    font-variant-numeric: tabular-nums;
+  }
+  .si-chart .si-note {
+    font-size: 12px;
+    font-weight: 600;
+    fill: var(--si-ink);
+  }
+  .si-tip {
+    position: absolute;
+    top: 0;
+    z-index: 1;
+    padding: 0.45rem 0.65rem;
+    font-size: 0.8125rem;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    pointer-events: none;
+    background: var(--htmlpress-bg);
+    border: 1px solid var(--si-grid);
+    border-radius: 0.5rem;
+    box-shadow: var(--htmlpress-shadow);
+    opacity: 0;
+    transition: opacity 0.12s;
+  }
+  .si-tip[data-on] {
+    opacity: 1;
+  }
+  .si-rank {
+    display: grid;
+    gap: 0.35rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .si-rank li {
+    display: grid;
+    grid-template-columns: 1.5rem 2.75rem 1fr 3.25rem;
+    gap: 0.6rem;
+    align-items: center;
+    margin: 0;
+    font-size: 0.875rem;
+    font-variant-numeric: tabular-nums;
+  }
+  .si-rank small {
+    font-size: 0.75rem;
+    color: var(--si-soft);
+  }
+  .si-rank b {
+    font-weight: 600;
+  }
+  .si-rank i {
+    height: 0.75rem;
+    width: calc(var(--value) / 5 * 100%);
+    background: var(--si-past);
+    border-radius: 0 4px 4px 0;
+  }
+  .si-rank li[data-recent] i {
+    background: var(--si-recent);
+  }
+  .si-rank output {
+    text-align: right;
+    color: var(--si-soft);
+  }
+</style>
+
+<h1>El hielo marino del Ártico en retirada</h1>
+<p>
+  Un informe científico como página web: un resumen, hallazgos numerados, tres figuras
+  numeradas y una nota de método, con el estilo de un artículo pero vivo: cada estadística
+  de abajo se calcula en el navegador a partir de las 48 observaciones incrustadas en la
+  página, y las figuras responden al pasar el cursor.
+</p>
+
+<div class="si">
+  <div class="si-meta">
+    <span><b>Informe</b> · Criosfera</span>
+    <span><b>Datos</b> · NSIDC Sea Ice Index, 1979–2026</span>
+    <span><b>Unidad</b> · millones de km²</span>
+  </div>
+
+  <section class="si-abstract" aria-label="Resumen">
+    <h2>Resumen</h2>
+    <p>
+      Los satélites miden el hielo marino del Ártico a diario desde 1979. La extensión de
+      septiembre —el mínimo del verano— ha caído
+      <strong data-si="slope-min">0,74</strong> millones de km² por década, un
+      <strong data-si="pct-min">11,6 %</strong> por década respecto a la media de
+      1981–2010. Los diez septiembres más bajos registrados son todos de 2007 o
+      posteriores. El máximo invernal también disminuye, pero entre cuatro y cinco veces
+      más despacio en términos relativos, así que el hielo que sobrevive cada verano es
+      una parte cada vez menor de la cubierta de cada invierno.
+    </p>
+  </section>
+
+  <h2>Hallazgos clave</h2>
+  <ol class="si-findings">
+    <li>
+      <div>
+        <strong>El hielo de verano ha perdido un Kazajistán.</strong>
+        <span>
+          La extensión de septiembre promedió 7,31 millones de km² en 1979–1983 y 4,64 en
+          2022–2026: 2,7 millones de km² menos, más o menos la superficie de Kazajistán.
+        </span>
+      </div>
+    </li>
+    <li>
+      <div>
+        <strong>Los diez años más bajos son todos de 2007 en adelante.</strong>
+        <span
+          >El récord, 3,57 millones de km² en 2012, lleva catorce veranos sin
+          batirse.</span
+        >
+      </div>
+    </li>
+    <li>
+      <div>
+        <strong>El invierno se recupera menos cada año.</strong>
+        <span>
+          El máximo de marzo cae un <b data-si="pct-max">2,5 %</b> por década, así que la
+          brecha entre el hielo de invierno y el de verano —lo que se derrite cada año— se
+          ha ampliado.
+        </span>
+      </div>
+    </li>
+  </ol>
+
+  <h2>Figuras</h2>
+  <figure class="si-figure">
+    <h3 id="si-fig-trend">Extensión de septiembre y su tendencia</h3>
+    <ul class="si-legend">
+      <li><i style="--swatch: var(--si-min)"></i>Extensión de septiembre</li>
+      <li>
+        <i data-line style="--swatch: var(--si-ink)"></i>
+        <span
+          >Tendencia, &minus;<span data-si="slope-min">0,74</span> mill. km² por
+          década</span
+        >
+      </li>
+    </ul>
+    <div class="si-chart" id="si-scatter"></div>
+    <figcaption>
+      <b>Figura 1.</b> Extensión media del hielo marino del Ártico en septiembre,
+      1979–2026, con un ajuste por mínimos cuadrados ordinarios. La banda sombreada es la
+      media de 1981–2010 ± una desviación estándar.
+    </figcaption>
+  </figure>
+
+  <figure class="si-figure">
+    <h3 id="si-fig-lowest">Los diez septiembres más bajos</h3>
+    <ol class="si-rank" id="si-rank"></ol>
+    <figcaption>
+      <b>Figura 2.</b> Las diez extensiones de septiembre más bajas registradas,
+      ordenadas. Las barras naranjas son años desde 2016.
+    </figcaption>
+  </figure>
+
+  <figure class="si-figure">
+    <h3 id="si-fig-range">Máximo invernal y mínimo estival</h3>
+    <ul class="si-legend">
+      <li><i style="--swatch: var(--si-max)"></i>Máximo de marzo</li>
+      <li><i style="--swatch: var(--si-min)"></i>Mínimo de septiembre</li>
+    </ul>
+    <div class="si-chart" id="si-range"></div>
+    <figcaption>
+      <b>Figura 3.</b> El rango estacional de cada año, del máximo de marzo al mínimo de
+      septiembre. La parte superior baja lentamente; la inferior cae el doble de rápido.
+    </figcaption>
+  </figure>
+
+  <h2>Método</h2>
+  <p>
+    La extensión es la superficie de océano con al menos un 15 % de cobertura de hielo,
+    como medias mensuales de marzo y septiembre del Sea Ice Index del NSIDC, versión 3. La
+    tendencia es un ajuste por mínimos cuadrados ordinarios de la extensión sobre el año
+    en los <span data-si="n">48</span> años; la tasa porcentual la divide por la media de
+    1981–2010 (<span data-si="base-min">6,41</span> millones de km² en septiembre,
+    <span data-si="base-max">15,43</span> en marzo), la convención que usa el NSIDC. Las
+    oscilaciones de un año a otro son meteorología: un solo año bajo no es una tendencia,
+    por eso el informe da el ajuste y medias quinquenales.
+  </p>
+
+  <details>
+    <summary>Tabla de datos</summary>
+    <htmlpress-table>
+      <table id="si-table">
+        <thead>
+          <tr>
+            <th>Año</th>
+            <th>Mínimo de septiembre</th>
+            <th>Máximo de marzo</th>
+            <th>Rango estacional</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </htmlpress-table>
+  </details>
+</div>
+
+<h2>Cómo está hecho</h2>
+<ul>
+  <li>
+    <strong>Los números del texto</strong> los rellena el mismo script que dibuja los
+    gráficos: cada span <code>data-si</code> recibe la pendiente, el porcentaje o la media
+    que calcula, así que el texto y las figuras no pueden contradecirse.
+  </li>
+  <li>
+    <strong>La lista ordenada</strong> es una lista numerada cuyas barras son elementos
+    <code>&lt;i&gt;</code> dimensionados con una propiedad personalizada
+    <code>--value</code>; sin nada de SVG.
+  </li>
+  <li>
+    <strong>El aspecto de artículo</strong> —la columna de etiqueta del resumen, los
+    números de hallazgo con cero inicial— son contadores CSS y una rejilla de dos columnas
+    que se pliega a una sola en un teléfono.
+  </li>
+</ul>
+<p>
+  Fuente:
+  <a href="https://nsidc.org/data/seaice_index"
+    >National Snow and Ice Data Center, Sea Ice Index</a
+  >, según la recopilación de
+  <a href="https://ourworldindata.org/grapher/arctic-sea-ice">Our World in Data</a>.
+</p>
+
+<script>
+  {
+    const firstYear = 1979
+    const minimum = [
+      7.051, 7.667, 7.138, 7.302, 7.395, 6.805, 6.698, 7.411, 7.279, 7.369, 7.008, 6.143,
+      6.473, 7.474, 6.397, 7.138, 6.08, 7.583, 6.686, 6.536, 6.117, 6.246, 6.732, 5.827,
+      6.116, 5.984, 5.504, 5.862, 4.267, 4.687, 5.262, 4.865, 4.561, 3.566, 5.208, 5.22,
+      4.616, 4.528, 4.822, 4.785, 4.364, 4.001, 4.952, 4.897, 4.381, 4.351, 4.747, 4.811,
+    ]
+    const maximum = [
+      16.342, 16.041, 15.632, 16.044, 16.085, 15.584, 15.886, 15.91, 15.816, 15.957,
+      15.423, 15.867, 15.416, 15.481, 15.813, 15.554, 15.26, 15.123, 15.467, 15.598,
+      15.398, 15.225, 15.516, 15.349, 15.485, 14.993, 14.687, 14.421, 14.542, 15.179,
+      14.984, 15.137, 14.546, 15.196, 15.032, 14.758, 14.37, 14.4, 14.29, 14.298, 14.574,
+      14.73, 14.658, 14.586, 14.43, 14.868, 14.119, 14.131,
+    ]
+    const years = minimum.map((_, i) => firstYear + i)
+    const NS = "http://www.w3.org/2000/svg"
+    const num = (value, digits) =>
+      value.toLocaleString("es", {
+        minimumFractionDigits: digits,
+        maximumFractionDigits: digits,
+      })
+
+    const el = (name, attrs, parent) => {
+      const node = document.createElementNS(NS, name)
+      for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, value)
+      parent?.append(node)
+      return node
+    }
+    const text = (content, attrs, parent) => {
+      const node = el("text", attrs, parent)
+      node.textContent = content
+      return node
+    }
+    const mean = values => values.reduce((a, b) => a + b, 0) / values.length
+    const fit = values => {
+      const mx = mean(years)
+      const my = mean(values)
+      let sxy = 0
+      let sxx = 0
+      years.forEach((year, i) => {
+        sxy += (year - mx) * (values[i] - my)
+        sxx += (year - mx) ** 2
+      })
+      const slope = sxy / sxx
+      return { slope, at: year => my + slope * (year - mx) }
+    }
+    const baseline = values => mean(values.slice(1981 - firstYear, 2011 - firstYear))
+    const trendMin = fit(minimum)
+    const trendMax = fit(maximum)
+    const baseMin = baseline(minimum)
+    const baseMax = baseline(maximum)
+    const sdMin = Math.sqrt(mean(minimum.slice(2, 32).map(v => (v - baseMin) ** 2)))
+    const facts = {
+      "slope-min": num(Math.abs(trendMin.slope * 10), 2),
+      "pct-min": `${num(Math.abs(((trendMin.slope * 10) / baseMin) * 100), 1)} %`,
+      "pct-max": `${num(Math.abs(((trendMax.slope * 10) / baseMax) * 100), 1)} %`,
+      "base-min": num(baseMin, 2),
+      "base-max": num(baseMax, 2),
+      n: minimum.length,
+    }
+    for (const node of document.querySelectorAll("[data-si]")) {
+      node.textContent = facts[node.dataset.si]
+    }
+
+    const tbody = document.querySelector("#si-table tbody")
+    years.forEach((year, i) => {
+      const row = tbody.insertRow()
+      for (const value of [
+        year,
+        num(minimum[i], 2),
+        num(maximum[i], 2),
+        num(maximum[i] - minimum[i], 2),
+      ]) {
+        row.insertCell().textContent = value
+      }
+    })
+
+    const rank = document.getElementById("si-rank")
+    years
+      .map((year, i) => ({ year, value: minimum[i] }))
+      .sort((a, b) => a.value - b.value)
+      .slice(0, 10)
+      .forEach((entry, i) => {
+        const li = document.createElement("li")
+        li.style.setProperty("--value", entry.value)
+        li.toggleAttribute("data-recent", entry.year >= 2016)
+        li.innerHTML = `<small>${i + 1}</small><b>${entry.year}</b><i></i><output>${num(entry.value, 2)}</output>`
+        rank.append(li)
+      })
+
+    const attachTip = (host, svg, hitArea, locate) => {
+      const tip = document.createElement("div")
+      tip.className = "si-tip"
+      host.append(tip)
+      const show = event => {
+        const box = svg.getBoundingClientRect()
+        const found = locate(event.clientX - box.left)
+        tip.innerHTML = found.html
+        const left = found.x + 12
+        tip.style.left = `${left + tip.offsetWidth > host.clientWidth ? found.x - tip.offsetWidth - 12 : left}px`
+        tip.style.top = `${found.y}px`
+        tip.toggleAttribute("data-on", true)
+      }
+      hitArea.addEventListener("pointermove", show)
+      hitArea.addEventListener("pointerdown", show)
+      hitArea.addEventListener("pointerleave", () => {
+        tip.toggleAttribute("data-on", false)
+        locate(null)
+      })
+    }
+    const frame = (host, height, m, yMin, yMax) => {
+      const width = host.clientWidth
+      const x = year =>
+        m.left + ((year - firstYear + 0.5) / years.length) * (width - m.left - m.right)
+      const y = value =>
+        m.top + ((yMax - value) / (yMax - yMin)) * (height - m.top - m.bottom)
+      const svg = el("svg", { width, height, role: "img" }, host)
+      const narrow = width < 520
+      for (const year of narrow ? [1980, 2000, 2020] : [1980, 1990, 2000, 2010, 2020]) {
+        text(year, { x: x(year), y: height - 6, "text-anchor": "middle" }, svg)
+      }
+      const index = px =>
+        Math.max(
+          0,
+          Math.min(
+            years.length - 1,
+            Math.floor(((px - m.left) / (width - m.left - m.right)) * years.length),
+          ),
+        )
+      return { svg, x, y, width, narrow, index }
+    }
+
+    const drawScatter = host => {
+      host.replaceChildren()
+      if (host.clientWidth < 120) return
+      const height = host.clientWidth < 520 ? 260 : 320
+      const m = { top: 12, right: 10, bottom: 26, left: 32 }
+      const { svg, x, y, width, narrow, index } = frame(host, height, m, 3, 8.5)
+      svg.setAttribute(
+        "aria-label",
+        "Extensión del hielo marino en septiembre con su tendencia",
+      )
+      for (const tick of [3, 4, 5, 6, 7, 8]) {
+        el(
+          "line",
+          {
+            x1: m.left,
+            x2: width - m.right,
+            y1: y(tick),
+            y2: y(tick),
+            stroke: "var(--si-grid)",
+          },
+          svg,
+        )
+        text(tick, { x: m.left - 8, y: y(tick) + 4, "text-anchor": "end" }, svg)
+      }
+      el(
+        "rect",
+        {
+          x: m.left,
+          width: width - m.left - m.right,
+          y: y(baseMin + sdMin),
+          height: y(baseMin - sdMin) - y(baseMin + sdMin),
+          fill: "var(--si-max)",
+          opacity: 0.1,
+        },
+        svg,
+      )
+      text(
+        "Media 1981–2010",
+        { x: width - m.right - 4, y: y(baseMin + sdMin) - 5, "text-anchor": "end" },
+        svg,
+      )
+      el(
+        "line",
+        {
+          x1: x(firstYear),
+          x2: x(2026),
+          y1: y(trendMin.at(firstYear)),
+          y2: y(trendMin.at(2026)),
+          stroke: "var(--si-ink)",
+          "stroke-width": 2,
+          "stroke-linecap": "round",
+        },
+        svg,
+      )
+      const dots = minimum.map((value, i) =>
+        el(
+          "circle",
+          {
+            cx: x(years[i]),
+            cy: y(value),
+            r: narrow ? 3.5 : 4.5,
+            fill: "var(--si-min)",
+            stroke: "var(--htmlpress-bg)",
+            "stroke-width": 1.5,
+          },
+          svg,
+        ),
+      )
+      const low = 2012 - firstYear
+      text(
+        "Mínimo récord de 2012",
+        {
+          x: x(2012) + (narrow ? -8 : 10),
+          y: y(minimum[low]) + 4,
+          "text-anchor": narrow ? "end" : "start",
+          class: "si-note",
+        },
+        svg,
+      )
+
+      const hit = el(
+        "rect",
+        { x: m.left, y: 0, width: width - m.left - m.right, height, fill: "transparent" },
+        svg,
+      )
+      let active = null
+      attachTip(host, svg, hit, px => {
+        active?.setAttribute("r", narrow ? 3.5 : 4.5)
+        if (px === null) return
+        const i = index(px)
+        active = dots[i]
+        active.setAttribute("r", 7)
+        const diff = minimum[i] - trendMin.at(years[i])
+        return {
+          x: x(years[i]),
+          y: Math.max(0, y(minimum[i]) - 54),
+          html: `<strong>${years[i]}</strong> ${num(minimum[i], 2)} mill. km²<br><span style="color:var(--si-soft)">${diff >= 0 ? "+" : "−"}${num(Math.abs(diff), 2)} frente a la tendencia</span>`,
+        }
+      })
+    }
+
+    const drawRange = host => {
+      host.replaceChildren()
+      if (host.clientWidth < 120) return
+      const height = host.clientWidth < 520 ? 260 : 320
+      const m = { top: 12, right: 10, bottom: 26, left: 32 }
+      const { svg, x, y, width, narrow, index } = frame(host, height, m, 0, 17)
+      svg.setAttribute(
+        "aria-label",
+        "Rango estacional del hielo marino del Ártico por año",
+      )
+      for (const tick of [0, 4, 8, 12, 16]) {
+        el(
+          "line",
+          {
+            x1: m.left,
+            x2: width - m.right,
+            y1: y(tick),
+            y2: y(tick),
+            stroke: "var(--si-grid)",
+          },
+          svg,
+        )
+        text(tick, { x: m.left - 8, y: y(tick) + 4, "text-anchor": "end" }, svg)
+      }
+      const r = narrow ? 2.5 : 3.5
+      const bars = years.map((year, i) => {
+        const group = el("g", {}, svg)
+        el(
+          "line",
+          {
+            x1: x(year),
+            x2: x(year),
+            y1: y(maximum[i]),
+            y2: y(minimum[i]),
+            stroke: "var(--si-grid)",
+            "stroke-width": narrow ? 2 : 3,
+            "stroke-linecap": "round",
+          },
+          group,
+        )
+        el("circle", { cx: x(year), cy: y(maximum[i]), r, fill: "var(--si-max)" }, group)
+        el("circle", { cx: x(year), cy: y(minimum[i]), r, fill: "var(--si-min)" }, group)
+        return group
+      })
+      const hit = el(
+        "rect",
+        { x: m.left, y: 0, width: width - m.left - m.right, height, fill: "transparent" },
+        svg,
+      )
+      attachTip(host, svg, hit, px => {
+        for (const bar of bars) bar.setAttribute("opacity", 1)
+        if (px === null) return
+        const i = index(px)
+        bars.forEach((bar, j) => bar.setAttribute("opacity", j === i ? 1 : 0.35))
+        return {
+          x: x(years[i]),
+          y: y(maximum[i]) + 8,
+          html: `<strong>${years[i]}</strong><br>Marzo ${num(maximum[i], 2)}<br>Septiembre ${num(minimum[i], 2)}<br><span style="color:var(--si-soft)">se derriten ${num(maximum[i] - minimum[i], 2)} mill. km²</span>`,
+        }
+      })
+    }
+
+    const charts = [
+      [document.getElementById("si-scatter"), drawScatter],
+      [document.getElementById("si-range"), drawRange],
+    ]
+    const observer = new ResizeObserver(entries => {
+      for (const entry of entries) {
+        const chart = charts.find(([host]) => host === entry.target)
+        if (chart && String(entry.contentRect.width) !== chart[0].dataset.width) {
+          chart[0].dataset.width = entry.contentRect.width
+          chart[1](chart[0])
+        }
+      }
+    })
+    for (const [host] of charts) observer.observe(host)
+  }
+</script>

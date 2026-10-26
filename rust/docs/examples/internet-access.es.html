@@ -1,0 +1,504 @@
+<title>Acceso a internet</title>
+<meta
+  name="description"
+  content="Una ficha informativa de una página, lista para imprimir, sobre quién está conectado: cifras destacadas, un pictograma de antes y ahora y gráficos de gofre por región y grupo de ingreso, con datos de la UIT y el Banco Mundial."
+/>
+<meta name="order" content="6" />
+<meta name="icon" content="globe" />
+<style>
+  .net {
+    --net-then: #184f95;
+    --net-now: #5598e7;
+    --net-off: color-mix(in oklab, var(--htmlpress-text) 10%, var(--htmlpress-bg));
+    --net-ink: var(--htmlpress-text);
+    --net-soft: var(--htmlpress-muted);
+    --net-grid: var(--htmlpress-border);
+    --net-person: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 48'%3E%3Ccircle cx='12' cy='7' r='6'/%3E%3Cpath d='M3 18a5 5 0 0 1 5-5h8a5 5 0 0 1 5 5v13a2 2 0 0 1-2 2h-1v12a3 3 0 0 1-3 3h-6a3 3 0 0 1-3-3V33H5a2 2 0 0 1-2-2z'/%3E%3C/svg%3E");
+    margin-block: 2rem;
+    color: var(--net-ink);
+    font-variant-numeric: tabular-nums;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) .net {
+      --net-then: #86b6ef;
+      --net-now: #2a78d6;
+      --net-off: color-mix(in oklab, var(--htmlpress-text) 16%, var(--htmlpress-bg));
+    }
+  }
+  :root[data-theme="dark"] .net {
+    --net-then: #86b6ef;
+    --net-now: #2a78d6;
+    --net-off: color-mix(in oklab, var(--htmlpress-text) 16%, var(--htmlpress-bg));
+  }
+  .net-sheet {
+    padding: clamp(1rem, 4vw, 2.25rem);
+    border: 1px solid var(--net-grid);
+    border-radius: var(--htmlpress-radius);
+  }
+  .net-masthead {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    align-items: baseline;
+    justify-content: space-between;
+    padding-bottom: 1rem;
+    border-bottom: 3px solid var(--net-ink);
+  }
+  .net-masthead strong {
+    font-size: clamp(1.4rem, 4vw, 1.9rem);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+  .net-masthead span {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--net-soft);
+  }
+  .net-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(8.25rem, 1fr));
+    gap: 1rem 1.25rem;
+    margin: 1.5rem 0;
+    padding: 0;
+    list-style: none;
+  }
+  .net-facts li {
+    margin: 0;
+    padding-left: 0.85rem;
+    border-left: 3px solid var(--net-now);
+  }
+  .net-facts b {
+    display: block;
+    font-size: clamp(1.75rem, 5vw, 2.4rem);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+  }
+  .net-facts span {
+    display: block;
+    margin-top: 0.35rem;
+    font-size: 0.8125rem;
+    line-height: 1.35;
+    color: var(--net-soft);
+  }
+  .net-sheet h2 {
+    margin: 1.75rem 0 0.25rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    line-height: 1.5;
+    color: var(--net-ink);
+    scroll-margin-top: 5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .net-sheet h2 + p {
+    margin: 0 0 1rem;
+    font-size: 0.8125rem;
+    color: var(--net-soft);
+  }
+  .net-people {
+    display: grid;
+    gap: 0.75rem;
+  }
+  .net-people > div {
+    display: grid;
+    grid-template-columns: 3rem 1fr 3.5rem;
+    gap: 0.75rem;
+    align-items: center;
+  }
+  .net-people strong {
+    font-size: 0.9375rem;
+  }
+  .net-people b {
+    font-size: 1.1rem;
+    text-align: right;
+  }
+  .net-row {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: clamp(2px, 1vw, 8px);
+  }
+  .net-row i {
+    aspect-ratio: 1 / 2;
+    max-height: 3.25rem;
+    background: linear-gradient(
+      to right,
+      var(--net-now) var(--fill),
+      var(--net-off) var(--fill)
+    );
+    -webkit-mask: var(--net-person) center / contain no-repeat;
+    mask: var(--net-person) center / contain no-repeat;
+  }
+  .net-row[data-year="2005"] i {
+    background: linear-gradient(
+      to right,
+      var(--net-then) var(--fill),
+      var(--net-off) var(--fill)
+    );
+  }
+  .net-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 1.1rem;
+    margin: 0 0 1rem;
+    padding: 0;
+    font-size: 0.75rem;
+    list-style: none;
+    color: var(--net-soft);
+  }
+  .net-legend li {
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
+    margin: 0;
+  }
+  .net-legend i {
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 2px;
+  }
+  .net-waffles {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(8.25rem, 1fr));
+    gap: 1.25rem 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .net-waffles li {
+    margin: 0;
+  }
+  .net-waffle {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 2px;
+    cursor: default;
+  }
+  .net-waffle i {
+    aspect-ratio: 1;
+    background: var(--net-off);
+    border-radius: 2px;
+  }
+  .net-waffle [data-state="then"] {
+    background: var(--net-then);
+  }
+  .net-waffle [data-state="now"] {
+    background: var(--net-now);
+  }
+  .net-waffles b {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 1.35rem;
+    line-height: 1;
+  }
+  .net-waffles span {
+    display: block;
+    margin-top: 0.2rem;
+    font-size: 0.75rem;
+    line-height: 1.3;
+    color: var(--net-soft);
+  }
+  .net-tip {
+    position: fixed;
+    z-index: 10;
+    padding: 0.5rem 0.65rem;
+    font-size: 0.75rem;
+    pointer-events: none;
+    background: var(--htmlpress-bg);
+    border: 1px solid var(--net-grid);
+    border-radius: 0.5rem;
+    box-shadow: var(--htmlpress-shadow);
+    opacity: 0;
+    transition: opacity 0.12s;
+  }
+  .net-tip[data-on] {
+    opacity: 1;
+  }
+  .net-tip strong {
+    display: block;
+    margin-bottom: 0.15rem;
+  }
+  .net-tip div {
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+  }
+  .net-foot {
+    margin: 1.75rem 0 0;
+    padding-top: 0.75rem;
+    font-size: 0.6875rem;
+    color: var(--net-soft);
+    border-top: 1px solid var(--net-grid);
+  }
+  @media print {
+    .net {
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+    .net-sheet {
+      padding: 0;
+      border: 0;
+    }
+    .net-sheet,
+    .net-waffles li {
+      break-inside: avoid;
+    }
+    .net-tip,
+    .net > details {
+      display: none;
+    }
+  }
+</style>
+
+<h1>Acceso a internet: una ficha informativa de una página</h1>
+<p>
+  Una ficha pensada para imprimirse además de leerse: cifras destacadas, un pictograma que
+  compara 2005 con 2025 y un gráfico de gofre para cada región y grupo de ingreso, donde
+  cada cuadrado es un uno por ciento de su población. Cabe en una hoja en la vista previa
+  de impresión del navegador, y un bloque <code>@media print</code> quita el marco de la
+  página y conserva los colores.
+</p>
+
+<div class="net">
+  <article class="net-sheet" aria-labelledby="net-title">
+    <header class="net-masthead">
+      <strong id="net-title"
+        >Tres de cada cuatro personas están conectadas. Una de cada cuatro no.</strong
+      >
+      <span>Ficha informativa · 2025</span>
+    </header>
+
+    <ul class="net-facts">
+      <li>
+        <b>6.100 M</b>
+        <span>de personas usaron internet en 2025, el 73,6 % del mundo</span>
+      </li>
+      <li>
+        <b>2.200 M</b>
+        <span
+          >siguen desconectadas, la mayoría en Asia Meridional y África subsahariana</span
+        >
+      </li>
+      <li>
+        <b>×5,9</b>
+        <span>más personas conectadas que en 2005, cuando lo estaban 1.000 millones</span>
+      </li>
+      <li>
+        <b>×4</b>
+        <span
+          >la proporción conectada en los países de ingreso alto, 94 %, frente al 23 % en
+          los de ingreso bajo</span
+        >
+      </li>
+    </ul>
+
+    <h2>Antes y ahora</h2>
+    <p>Cada figura es una décima parte de la población mundial.</p>
+    <div class="net-people">
+      <div>
+        <strong>2005</strong>
+        <div
+          class="net-row"
+          data-year="2005"
+          data-share="15.6"
+          role="img"
+          aria-label="15,6 % conectado en 2005"
+        ></div>
+        <b>15,6 %</b>
+      </div>
+      <div>
+        <strong>2025</strong>
+        <div
+          class="net-row"
+          data-year="2025"
+          data-share="73.6"
+          role="img"
+          aria-label="73,6 % conectado en 2025"
+        ></div>
+        <b>73,6 %</b>
+      </div>
+    </div>
+
+    <h2>Por región</h2>
+    <p>
+      Cada cuadrado es un uno por ciento de la población de la región · pasa el cursor por
+      un gráfico.
+    </p>
+    <ul class="net-legend">
+      <li><i style="background: var(--net-then)"></i>Conectados en 2005</li>
+      <li><i style="background: var(--net-now)"></i>Conectados desde entonces</li>
+      <li><i style="background: var(--net-off)"></i>Desconectados en 2025</li>
+    </ul>
+    <ul class="net-waffles" id="net-regions"></ul>
+
+    <h2>Por grupo de ingreso</h2>
+    <p>Clasificación por ingreso del Banco Mundial.</p>
+    <ul class="net-waffles" id="net-incomes"></ul>
+
+    <p class="net-foot">
+      Proporción de personas que usaron internet en los últimos tres meses. Fuente: UIT a
+      través de los Indicadores del Desarrollo Mundial (World Development Indicators) del
+      Banco Mundial, según la recopilación de Our World in Data; población mundial de las
+      Perspectivas de la Población Mundial 2024 de la ONU.
+    </p>
+  </article>
+
+  <details>
+    <summary>Tabla de datos</summary>
+    <htmlpress-table>
+      <table id="net-table">
+        <thead>
+          <tr>
+            <th>Grupo</th>
+            <th>2005, %</th>
+            <th>2025, %</th>
+            <th>Cambio, p. p.</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </htmlpress-table>
+  </details>
+</div>
+
+<h2>Cómo está hecho</h2>
+<ul>
+  <li>
+    <strong>El pictograma</strong> son diez elementos <code>&lt;i&gt;</code> vacíos. Cada
+    uno se pinta con un <code>linear-gradient</code> de dos paradas y se recorta con forma
+    de persona mediante una <code>mask</code> de CSS, así que una figura puede rellenarse
+    en parte: la fila del 15,6 % rellena figura y media, sin dibujar nada de SVG.
+  </li>
+  <li>
+    <strong>Cada gofre</strong> es una rejilla CSS de diez por diez cuadrados, rellenada
+    desde la fila inferior hacia arriba en dos tonos de un mismo color: quienes estaban
+    conectados en 2005 y quienes se conectaron después. Un único tono secuencial lo
+    mantiene como una sola medida vista en dos fechas.
+  </li>
+  <li>
+    <strong>Impresión</strong>: un bloque <code>@media print</code> fija
+    <code>print-color-adjust: exact</code> para que los cuadrados conserven su color,
+    quita el marco de la hoja e impide que ningún gráfico se parta entre páginas.
+  </li>
+</ul>
+<p>
+  Fuente:
+  <a href="https://www.itu.int/en/ITU-D/Statistics/">UIT, Facts and Figures</a> a través
+  del <a href="https://data.worldbank.org/indicator/IT.NET.USER.ZS">Banco Mundial</a>,
+  según la recopilación de
+  <a href="https://ourworldindata.org/internet">Our World in Data</a>.
+</p>
+
+<script>
+  {
+    const num = (value, digits) =>
+      value.toLocaleString("es", {
+        minimumFractionDigits: digits,
+        maximumFractionDigits: digits,
+      })
+    const regions = [
+      { name: "Norteamérica", then: 68.3, now: 95.6 },
+      { name: "Europa y Asia Central", then: 34.7, now: 92.4 },
+      { name: "Asia Oriental y el Pacífico", then: 14.7, now: 88.4 },
+      { name: "América Latina y el Caribe", then: 16.6, now: 83.7 },
+      { name: "Asia Meridional", then: 2.1, now: 67.8 },
+      {
+        name: "Oriente Medio, Norte de África, Afganistán y Pakistán",
+        short: "Oriente Medio y Norte de África",
+        then: 8.3,
+        now: 63.7,
+      },
+      { name: "África subsahariana", then: 2.0, now: 35.7 },
+    ]
+    const incomes = [
+      { name: "Ingreso alto", then: 52.9, now: 94.2 },
+      { name: "Ingreso mediano alto", then: 10.2, now: 88.8 },
+      { name: "Ingreso mediano bajo", then: 3.6, now: 62.9 },
+      { name: "Ingreso bajo", then: 1.0, now: 23.4 },
+    ]
+
+    for (const row of document.querySelectorAll(".net-row")) {
+      const share = Number(row.dataset.share) / 10
+      for (let i = 0; i < 10; i++) {
+        const figure = document.createElement("i")
+        figure.style.setProperty(
+          "--fill",
+          `${Math.max(0, Math.min(1, share - i)) * 100}%`,
+        )
+        row.append(figure)
+      }
+    }
+
+    const tip = document.createElement("div")
+    tip.className = "net-tip"
+    document.querySelector(".net").append(tip)
+    const move = event => {
+      const left = event.clientX + 14
+      tip.style.left = `${left + tip.offsetWidth > window.innerWidth ? event.clientX - tip.offsetWidth - 14 : left}px`
+      tip.style.top = `${event.clientY + 14}px`
+    }
+
+    const drawWaffles = (list, groups) => {
+      for (const group of groups) {
+        const item = document.createElement("li")
+        const waffle = document.createElement("div")
+        waffle.className = "net-waffle"
+        waffle.setAttribute("role", "img")
+        waffle.setAttribute(
+          "aria-label",
+          `${group.name}: ${num(group.now, 1)} % conectado en 2025, ${num(group.then, 1)} % en 2005`,
+        )
+        for (let d = 0; d < 100; d++) {
+          const v = (9 - Math.floor(d / 10)) * 10 + (d % 10)
+          const cell = document.createElement("i")
+          cell.dataset.state =
+            v < Math.round(group.then)
+              ? "then"
+              : v < Math.round(group.now)
+                ? "now"
+                : "off"
+          waffle.append(cell)
+        }
+        item.append(waffle)
+        item.insertAdjacentHTML(
+          "beforeend",
+          `<b>${num(group.now, 0)} %</b><span>${group.short ?? group.name}</span>`,
+        )
+        waffle.addEventListener("pointerenter", event => {
+          tip.innerHTML =
+            `<strong>${group.name}</strong><div><span>2005</span><span>${num(group.then, 1)} %</span></div>` +
+            `<div><span>2025</span><span>${num(group.now, 1)} %</span></div>` +
+            `<div><span>Desconectados</span><span>${num(100 - group.now, 1)} %</span></div>`
+          move(event)
+          tip.toggleAttribute("data-on", true)
+        })
+        waffle.addEventListener("pointermove", move)
+        waffle.addEventListener("pointerleave", () =>
+          tip.toggleAttribute("data-on", false),
+        )
+        list.append(item)
+      }
+    }
+    drawWaffles(document.getElementById("net-regions"), regions)
+    drawWaffles(document.getElementById("net-incomes"), incomes)
+
+    const tbody = document.querySelector("#net-table tbody")
+    for (const group of [
+      { name: "Mundo", then: 15.6, now: 73.6 },
+      ...regions,
+      ...incomes,
+    ]) {
+      const row = tbody.insertRow()
+      for (const value of [
+        group.name,
+        num(group.then, 1),
+        num(group.now, 1),
+        `+${num(group.now - group.then, 1)}`,
+      ]) {
+        row.insertCell().textContent = value
+      }
+    }
+  }
+</script>

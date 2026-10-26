@@ -1,0 +1,744 @@
+<title>Población mundial</title>
+<meta
+  name="description"
+  content="Un póster infográfico: cifras destacadas, un gráfico de áreas apiladas interactivo por región y una cronología en barras de cada mil millones, con datos de World Population Prospects de la ONU."
+/>
+<meta name="order" content="1" />
+<meta name="icon" content="users" />
+<style>
+  .pop {
+    --pop-asia: #2a78d6;
+    --pop-africa: #eb6834;
+    --pop-europe: #1baf7a;
+    --pop-latam: #eda100;
+    --pop-namerica: #e87ba4;
+    --pop-oceania: #008300;
+    --pop-ink: var(--htmlpress-text);
+    --pop-soft: var(--htmlpress-muted);
+    --pop-grid: var(--htmlpress-border);
+    --pop-card: var(--htmlpress-surface);
+    margin-block: 2rem;
+    color: var(--pop-ink);
+    font-variant-numeric: tabular-nums;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) .pop {
+      --pop-asia: #3987e5;
+      --pop-africa: #d95926;
+      --pop-europe: #199e70;
+      --pop-latam: #c98500;
+      --pop-namerica: #d55181;
+    }
+  }
+  :root[data-theme="dark"] .pop {
+    --pop-asia: #3987e5;
+    --pop-africa: #d95926;
+    --pop-europe: #199e70;
+    --pop-latam: #c98500;
+    --pop-namerica: #d55181;
+  }
+  .pop-hero {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1px;
+    overflow: hidden;
+    border: 1px solid var(--pop-grid);
+    border-radius: var(--htmlpress-radius);
+    background: var(--pop-grid);
+  }
+  .pop-hero > div {
+    flex: 1 1 11rem;
+    padding: 1.25rem 1.25rem 1.1rem;
+    background: var(--pop-card);
+  }
+  .pop-hero b {
+    display: block;
+    font-size: clamp(2rem, 5vw, 2.75rem);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+  .pop-hero b small {
+    margin-left: 0.2em;
+    font-size: 0.45em;
+    font-weight: 600;
+    letter-spacing: 0;
+    color: var(--pop-soft);
+  }
+  .pop-hero span {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    line-height: 1.35;
+    color: var(--pop-soft);
+  }
+  .pop-panel {
+    margin-top: 1.5rem;
+    padding: 1.25rem;
+    border: 1px solid var(--pop-grid);
+    border-radius: var(--htmlpress-radius);
+  }
+  .pop-panel > header {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1rem;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+  }
+  .pop h2 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: 0;
+    color: var(--pop-ink);
+  }
+  .pop > h2 {
+    margin-bottom: 0.75rem;
+  }
+  .pop-panel > header span {
+    font-size: 0.8125rem;
+    color: var(--pop-soft);
+  }
+  .pop-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 1rem;
+    margin: 0 0 0.75rem;
+    padding: 0;
+    font-size: 0.8125rem;
+    list-style: none;
+    color: var(--pop-soft);
+  }
+  .pop-legend li {
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
+    margin: 0;
+  }
+  .pop-legend i {
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 3px;
+  }
+  .pop-chart {
+    position: relative;
+    touch-action: pan-y;
+  }
+  .pop-chart svg {
+    display: block;
+    overflow: visible;
+  }
+  .pop-chart text {
+    font-size: 11px;
+    fill: var(--pop-soft);
+  }
+  .pop-chart .pop-label {
+    font-size: 12px;
+    font-weight: 600;
+    fill: var(--pop-ink);
+  }
+  .pop-tip {
+    position: absolute;
+    top: 0;
+    z-index: 1;
+    min-width: 11rem;
+    padding: 0.6rem 0.75rem;
+    font-size: 0.8125rem;
+    pointer-events: none;
+    background: var(--htmlpress-bg);
+    border: 1px solid var(--pop-grid);
+    border-radius: 0.5rem;
+    box-shadow: var(--htmlpress-shadow);
+    opacity: 0;
+    transition: opacity 0.12s;
+  }
+  .pop-tip[data-on] {
+    opacity: 1;
+  }
+  .pop-tip strong {
+    display: block;
+    margin-bottom: 0.3rem;
+  }
+  .pop-tip div {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: space-between;
+    line-height: 1.6;
+  }
+  .pop-tip i {
+    display: inline-block;
+    width: 0.6rem;
+    height: 0.6rem;
+    margin-right: 0.4rem;
+    border-radius: 2px;
+  }
+  .pop-billions {
+    display: grid;
+    gap: 0.4rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .pop-billions li {
+    display: grid;
+    grid-template-columns: 3.5rem 3.5rem 1fr;
+    gap: 0.75rem;
+    align-items: center;
+    margin: 0;
+    font-size: 0.875rem;
+  }
+  .pop-billions b {
+    font-weight: 700;
+  }
+  .pop-billions time {
+    color: var(--pop-soft);
+  }
+  .pop-billions span {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    font-size: 0.75rem;
+    color: var(--pop-soft);
+  }
+  .pop-billions span::before {
+    content: "";
+    width: calc(var(--years) / 125 * 100%);
+    min-width: 4px;
+    height: 0.6rem;
+    background: var(--pop-asia);
+    border-radius: 0 4px 4px 0;
+  }
+  .pop-billions [data-projected] span::before {
+    background: repeating-linear-gradient(
+      135deg,
+      var(--pop-asia) 0 3px,
+      transparent 3px 6px
+    );
+  }
+  .pop-billions [data-projected] time::after {
+    content: "*";
+  }
+  .pop-columns {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+    gap: 1.5rem;
+  }
+  .pop-columns > .pop-panel {
+    margin-top: 1.5rem;
+  }
+  .pop-note {
+    margin: 0.75rem 0 0;
+    font-size: 0.75rem;
+    color: var(--pop-soft);
+  }
+</style>
+
+<h1>Población mundial: la subida hasta los diez mil millones</h1>
+<p>
+  Un póster infográfico en una sola página HTML: tres cifras destacadas, un gráfico de
+  áreas apiladas interactivo, una cronología en barras y una minigráfica de doce mil años.
+  Cada gráfico es SVG en línea dibujado por unas pocas líneas de script a partir de los
+  números de la página, y cada color es un token que cambia con el modo oscuro del sitio.
+</p>
+
+<div class="pop">
+  <h2 id="pop-glance">De un vistazo</h2>
+  <div class="pop-hero">
+    <div>
+      <b>8,23<small>mil millones</small></b>
+      <span>personas vivas en 2025, más del triple que en 1950</span>
+    </div>
+    <div>
+      <b>10,3<small>mil millones</small></b>
+      <span
+        >el máximo previsto, alcanzado a mediados de la década de 2080 antes de un lento
+        descenso</span
+      >
+    </div>
+    <div>
+      <b>×17</b>
+      <span
+        >el crecimiento de África entre 1950 y 2100, de 228 millones a 3.800
+        millones</span
+      >
+    </div>
+  </div>
+
+  <section class="pop-panel" aria-labelledby="pop-regions-title">
+    <header>
+      <h2 id="pop-regions-title">Población por región</h2>
+      <span>miles de millones, 1950–2100 · pasa el cursor para ver los valores</span>
+    </header>
+    <ul class="pop-legend">
+      <li><i style="background: var(--pop-asia)"></i>Asia</li>
+      <li><i style="background: var(--pop-africa)"></i>África</li>
+      <li><i style="background: var(--pop-europe)"></i>Europa</li>
+      <li><i style="background: var(--pop-latam)"></i>América Latina</li>
+      <li><i style="background: var(--pop-namerica)"></i>Norteamérica</li>
+      <li><i style="background: var(--pop-oceania)"></i>Oceanía</li>
+    </ul>
+    <div class="pop-chart" id="pop-regions"></div>
+    <p class="pop-note">
+      Asia alcanza su máximo de 5.290 millones hacia 2055; a partir de ahí, casi todo el
+      crecimiento es africano.
+    </p>
+  </section>
+
+  <div class="pop-columns">
+    <section class="pop-panel" aria-labelledby="pop-billions-title">
+      <header>
+        <h2 id="pop-billions-title">Años para sumar cada mil millones</h2>
+      </header>
+      <ol class="pop-billions">
+        <li style="--years: 122"><b>2 mil M</b><time>1927</time><span>122</span></li>
+        <li style="--years: 33"><b>3 mil M</b><time>1960</time><span>33</span></li>
+        <li style="--years: 15"><b>4 mil M</b><time>1975</time><span>15</span></li>
+        <li style="--years: 12"><b>5 mil M</b><time>1987</time><span>12</span></li>
+        <li style="--years: 11"><b>6 mil M</b><time>1998</time><span>11</span></li>
+        <li style="--years: 12"><b>7 mil M</b><time>2010</time><span>12</span></li>
+        <li style="--years: 12"><b>8 mil M</b><time>2022</time><span>12</span></li>
+        <li style="--years: 15" data-projected>
+          <b>9 mil M</b><time>2037</time><span>15</span>
+        </li>
+        <li style="--years: 24" data-projected>
+          <b>10 mil M</b><time>2061</time><span>24</span>
+        </li>
+      </ol>
+      <p class="pop-note">
+        Barras en años; * proyección de la variante media de la ONU. Los primeros mil
+        millones: 1805.
+      </p>
+    </section>
+
+    <section class="pop-panel" aria-labelledby="pop-long-title">
+      <header>
+        <h2 id="pop-long-title">Los últimos 12.000 años</h2>
+        <span>miles de millones</span>
+      </header>
+      <div class="pop-chart" id="pop-long"></div>
+      <p class="pop-note">
+        Durante 11.800 de esos años la línea es plana: hubo que esperar hasta 1805 para
+        llegar a los mil millones, y solo 220 años más para llegar a ocho mil millones.
+      </p>
+    </section>
+  </div>
+
+  <details>
+    <summary>Tabla de datos</summary>
+    <htmlpress-table>
+      <table id="pop-table">
+        <thead>
+          <tr>
+            <th>Año</th>
+            <th>Asia</th>
+            <th>África</th>
+            <th>Europa</th>
+            <th>América Latina</th>
+            <th>Norteamérica</th>
+            <th>Oceanía</th>
+            <th>Mundo</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </htmlpress-table>
+  </details>
+</div>
+
+<h2>Cómo está hecho</h2>
+<ul>
+  <li>
+    <strong>Las cifras destacadas</strong> son una fila flex que se ajusta y cuyo hueco de
+    1px deja ver el color del borde, así que las tarjetas tienen divisores finos sin una
+    sola regla de borde.
+  </li>
+  <li>
+    <strong>Las áreas apiladas</strong> se calculan en el navegador: la banda de cada
+    región es un trazado desde su base hasta su techo, y una capa invisible ajusta la
+    retícula al paso de cinco años más cercano. Un <code>ResizeObserver</code> lo vuelve a
+    dibujar al ancho real, así que las etiquetas siguen midiendo 11px en un móvil.
+  </li>
+  <li>
+    <strong>La cronología de los miles de millones</strong> no usa ninguna librería de
+    gráficos: cada barra es un <code>::before</code> cuyo ancho es la propiedad
+    personalizada <code>--years</code>, y las filas proyectadas pasan a un relleno rayado.
+  </li>
+</ul>
+<p>
+  Fuente:
+  <a href="https://population.un.org/wpp/">World Population Prospects 2024 de la ONU</a>,
+  con la serie de largo plazo de HYDE y Gapminder, según la recopilación de
+  <a href="https://ourworldindata.org/population-growth">Our World in Data</a>.
+</p>
+
+<script>
+  {
+    const years = Array.from({ length: 31 }, (_, i) => 1950 + i * 5)
+    const regions = [
+      {
+        name: "Asia",
+        color: "--pop-asia",
+        values: [
+          1.368, 1.524, 1.692, 1.895, 2.138, 2.389, 2.632, 2.907, 3.21, 3.488, 3.748,
+          3.994, 4.24, 4.483, 4.688, 4.835, 4.969, 5.083, 5.175, 5.242, 5.28, 5.287,
+          5.267, 5.227, 5.173, 5.105, 5.022, 4.928, 4.827, 4.721, 4.613,
+        ],
+      },
+      {
+        name: "África",
+        color: "--pop-africa",
+        values: [
+          0.228, 0.254, 0.284, 0.321, 0.366, 0.418, 0.483, 0.56, 0.644, 0.733, 0.831,
+          0.943, 1.072, 1.22, 1.381, 1.55, 1.727, 1.91, 2.096, 2.282, 2.467, 2.647, 2.821,
+          2.988, 3.145, 3.291, 3.425, 3.544, 3.649, 3.739, 3.814,
+        ],
+      },
+      {
+        name: "Europa",
+        color: "--pop-europe",
+        values: [
+          0.549, 0.575, 0.606, 0.634, 0.657, 0.677, 0.694, 0.709, 0.724, 0.729, 0.728,
+          0.732, 0.738, 0.744, 0.75, 0.744, 0.738, 0.731, 0.722, 0.713, 0.703, 0.69,
+          0.676, 0.662, 0.649, 0.637, 0.626, 0.617, 0.609, 0.601, 0.592,
+        ],
+      },
+      {
+        name: "América Latina",
+        color: "--pop-latam",
+        values: [
+          0.168, 0.191, 0.219, 0.251, 0.286, 0.322, 0.36, 0.401, 0.442, 0.482, 0.521,
+          0.556, 0.589, 0.62, 0.647, 0.668, 0.688, 0.704, 0.717, 0.726, 0.73, 0.73, 0.727,
+          0.721, 0.711, 0.699, 0.684, 0.668, 0.65, 0.632, 0.613,
+        ],
+      },
+      {
+        name: "Norteamérica",
+        color: "--pop-namerica",
+        values: [
+          0.168, 0.182, 0.198, 0.215, 0.229, 0.242, 0.255, 0.268, 0.281, 0.298, 0.312,
+          0.328, 0.345, 0.362, 0.378, 0.388, 0.397, 0.406, 0.414, 0.421, 0.427, 0.431,
+          0.436, 0.441, 0.447, 0.453, 0.458, 0.462, 0.466, 0.471, 0.475,
+        ],
+      },
+      {
+        name: "Oceanía",
+        color: "--pop-oceania",
+        values: [
+          0.013, 0.014, 0.016, 0.018, 0.019, 0.022, 0.023, 0.025, 0.027, 0.029, 0.031,
+          0.034, 0.037, 0.041, 0.044, 0.047, 0.049, 0.051, 0.054, 0.056, 0.058, 0.06,
+          0.061, 0.063, 0.065, 0.066, 0.068, 0.069, 0.07, 0.072, 0.073,
+        ],
+      },
+    ]
+    const longRun = [
+      [-10000, 0.005],
+      [-9000, 0.006],
+      [-8000, 0.007],
+      [-7000, 0.01],
+      [-6000, 0.013],
+      [-5000, 0.019],
+      [-4000, 0.029],
+      [-3000, 0.045],
+      [-2000, 0.073],
+      [-1000, 0.111],
+      [0, 0.232],
+      [1000, 0.323],
+      [1500, 0.503],
+      [1600, 0.516],
+      [1700, 0.595],
+      [1750, 0.753],
+      [1800, 0.983],
+      [1850, 1.276],
+      [1900, 1.627],
+      [1950, 2.493],
+      [1960, 3.015],
+      [1970, 3.695],
+      [1980, 4.448],
+      [1990, 5.328],
+      [2000, 6.172],
+      [2010, 7.022],
+      [2020, 7.887],
+      [2025, 8.232],
+    ]
+    const projectionStart = 2024
+    const NS = "http://www.w3.org/2000/svg"
+
+    const el = (name, attrs, parent) => {
+      const node = document.createElementNS(NS, name)
+      for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, value)
+      parent?.append(node)
+      return node
+    }
+    const text = (content, attrs, parent) => {
+      const node = el("text", attrs, parent)
+      node.textContent = content
+      return node
+    }
+    const decimal = value =>
+      value.toLocaleString("es", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+    const fmt = billions =>
+      billions >= 1 ? `${decimal(billions)} mil M` : `${Math.round(billions * 1000)} M`
+
+    const totals = years.map((_, i) => regions.reduce((sum, r) => sum + r.values[i], 0))
+    const tbody = document.querySelector("#pop-table tbody")
+    years.forEach((year, i) => {
+      if (year % 10) return
+      const row = tbody.insertRow()
+      for (const value of [year, ...regions.map(r => r.values[i]), totals[i]]) {
+        row.insertCell().textContent =
+          value > 100 ? value : `${decimal(value)}${year > projectionStart ? "*" : ""}`
+      }
+    })
+
+    const drawRegions = host => {
+      host.replaceChildren()
+      const width = host.clientWidth
+      if (width < 120) return
+      const narrow = width < 520
+      const height = narrow ? 280 : 360
+      const m = { top: 12, right: narrow ? 8 : 112, bottom: 26, left: 30 }
+      const x = year => m.left + ((year - 1950) / 150) * (width - m.left - m.right)
+      const y = value => height - m.bottom - (value / 11) * (height - m.top - m.bottom)
+      const svg = el(
+        "svg",
+        { width, height, role: "img", "aria-labelledby": "pop-regions-title" },
+        host,
+      )
+
+      for (let tick = 0; tick <= 10; tick += 2) {
+        el(
+          "line",
+          {
+            x1: m.left,
+            x2: width - m.right,
+            y1: y(tick),
+            y2: y(tick),
+            stroke: "var(--pop-grid)",
+          },
+          svg,
+        )
+        text(tick, { x: m.left - 8, y: y(tick) + 4, "text-anchor": "end" }, svg)
+      }
+      for (const year of narrow
+        ? [1950, 2000, 2050, 2100]
+        : [1950, 1975, 2000, 2025, 2050, 2075, 2100]) {
+        text(year, { x: x(year), y: height - 6, "text-anchor": "middle" }, svg)
+      }
+
+      const base = years.map(() => 0)
+      regions.forEach(region => {
+        const top = base.map((b, i) => b + region.values[i])
+        const upper = years.map((yr, i) => `${x(yr)},${y(top[i])}`)
+        const lower = years.map((yr, i) => `${x(yr)},${y(base[i])}`).reverse()
+        el(
+          "path",
+          {
+            d: `M${upper.join("L")}L${lower.join("L")}Z`,
+            fill: `var(${region.color})`,
+            stroke: "var(--htmlpress-bg)",
+            "stroke-width": 1.5,
+            "stroke-linejoin": "round",
+          },
+          svg,
+        )
+        const last = years.length - 1
+        const band = top[last] - base[last]
+        if (!narrow && band > 0.3) {
+          text(
+            region.name,
+            {
+              x: width - m.right + 8,
+              y: y(base[last] + band / 2) + 4,
+              class: "pop-label",
+            },
+            svg,
+          )
+        }
+        top.forEach((v, i) => (base[i] = v))
+      })
+
+      el(
+        "rect",
+        {
+          x: x(projectionStart),
+          y: m.top,
+          width: x(2100) - x(projectionStart),
+          height: height - m.top - m.bottom,
+          fill: "var(--htmlpress-bg)",
+          opacity: 0.35,
+        },
+        svg,
+      )
+      el(
+        "line",
+        {
+          x1: x(projectionStart),
+          x2: x(projectionStart),
+          y1: m.top,
+          y2: height - m.bottom,
+          stroke: "var(--pop-ink)",
+          "stroke-width": 1,
+        },
+        svg,
+      )
+      text(
+        "Proyección →",
+        { x: x(projectionStart) + 6, y: m.top + 10, class: "pop-label" },
+        svg,
+      )
+
+      const cursor = el(
+        "line",
+        {
+          y1: m.top,
+          y2: height - m.bottom,
+          stroke: "var(--pop-ink)",
+          "stroke-width": 1,
+          opacity: 0,
+        },
+        svg,
+      )
+      const tip = document.createElement("div")
+      tip.className = "pop-tip"
+      host.append(tip)
+      const hit = el(
+        "rect",
+        { x: m.left, y: 0, width: width - m.left - m.right, height, fill: "transparent" },
+        svg,
+      )
+      const show = event => {
+        const box = svg.getBoundingClientRect()
+        const px = event.clientX - box.left
+        const i = Math.max(
+          0,
+          Math.min(
+            years.length - 1,
+            Math.round(((px - m.left) / (width - m.left - m.right)) * 30),
+          ),
+        )
+        cursor.setAttribute("x1", x(years[i]))
+        cursor.setAttribute("x2", x(years[i]))
+        cursor.setAttribute("opacity", 0.6)
+        tip.innerHTML =
+          `<strong>${years[i]}${years[i] > projectionStart ? " · proyección" : ""}</strong>` +
+          [...regions]
+            .reverse()
+            .map(
+              r =>
+                `<div><span><i style="background:var(${r.color})"></i>${r.name}</span><span>${fmt(r.values[i])}</span></div>`,
+            )
+            .join("") +
+          `<div><strong>Mundo</strong><strong>${fmt(totals[i])}</strong></div>`
+        const left = x(years[i]) + 14
+        tip.style.left = `${left + tip.offsetWidth > width ? x(years[i]) - tip.offsetWidth - 14 : left}px`
+        tip.toggleAttribute("data-on", true)
+      }
+      hit.addEventListener("pointermove", show)
+      hit.addEventListener("pointerdown", show)
+      hit.addEventListener("pointerleave", () => {
+        cursor.setAttribute("opacity", 0)
+        tip.toggleAttribute("data-on", false)
+      })
+    }
+
+    const drawLongRun = host => {
+      host.replaceChildren()
+      const width = host.clientWidth
+      if (width < 120) return
+      const height = 200
+      const m = { top: 14, right: 12, bottom: 24, left: 26 }
+      const x = year => m.left + ((year + 10000) / 12025) * (width - m.left - m.right)
+      const y = value => height - m.bottom - (value / 9) * (height - m.top - m.bottom)
+      const svg = el(
+        "svg",
+        { width, height, role: "img", "aria-labelledby": "pop-long-title" },
+        host,
+      )
+      for (const tick of [0, 4, 8]) {
+        el(
+          "line",
+          {
+            x1: m.left,
+            x2: width - m.right,
+            y1: y(tick),
+            y2: y(tick),
+            stroke: "var(--pop-grid)",
+          },
+          svg,
+        )
+        text(tick, { x: m.left - 8, y: y(tick) + 4, "text-anchor": "end" }, svg)
+      }
+      for (const [year, label] of [
+        [-10000, "10.000 a. C."],
+        [-5000, "5000 a. C."],
+        [0, "1 d. C."],
+        [2025, "2025"],
+      ]) {
+        text(
+          label,
+          {
+            x: x(year),
+            y: height - 6,
+            "text-anchor": year === -10000 ? "start" : year === 2025 ? "end" : "middle",
+          },
+          svg,
+        )
+      }
+      const line = longRun.map(([yr, v]) => `${x(yr)},${y(v)}`).join("L")
+      el(
+        "path",
+        {
+          d: `M${line}L${x(2025)},${y(0)}L${x(-10000)},${y(0)}Z`,
+          fill: "var(--pop-asia)",
+          opacity: 0.18,
+        },
+        svg,
+      )
+      el(
+        "path",
+        {
+          d: `M${line}`,
+          fill: "none",
+          stroke: "var(--pop-asia)",
+          "stroke-width": 2,
+          "stroke-linejoin": "round",
+        },
+        svg,
+      )
+      el(
+        "circle",
+        {
+          cx: x(2025),
+          cy: y(8.232),
+          r: 4,
+          fill: "var(--pop-asia)",
+          stroke: "var(--htmlpress-bg)",
+          "stroke-width": 2,
+        },
+        svg,
+      )
+      text(
+        "8.200 M hoy",
+        { x: x(2025) - 10, y: y(8.232) + 4, "text-anchor": "end", class: "pop-label" },
+        svg,
+      )
+    }
+
+    const charts = [
+      [document.getElementById("pop-regions"), drawRegions],
+      [document.getElementById("pop-long"), drawLongRun],
+    ]
+    const observer = new ResizeObserver(entries => {
+      for (const entry of entries) {
+        const chart = charts.find(([host]) => host === entry.target)
+        if (chart && String(entry.contentRect.width) !== chart[0].dataset.width) {
+          chart[0].dataset.width = entry.contentRect.width
+          chart[1](chart[0])
+        }
+      }
+    })
+    for (const [host] of charts) observer.observe(host)
+  }
+</script>

@@ -1,0 +1,581 @@
+<title>二氧化碳排放</title>
+<meta
+  name="description"
+  content="交互式比较全球 CO₂ 由谁排放：一张显示各国占比的方形化矩形树图，以及一个可在排放总量和人均排放之间切换的动画条形排名。"
+/>
+<meta name="order" content="4" />
+<meta name="icon" content="cloud" />
+<style>
+  .co2 {
+    --co2-china: #2a78d6;
+    --co2-usa: #eb6834;
+    --co2-india: #1baf7a;
+    --co2-china-ink: #ffffff;
+    --co2-usa-ink: #0b0b0b;
+    --co2-india-ink: #0b0b0b;
+    --co2-other: color-mix(in oklab, var(--htmlpress-text) 16%, var(--htmlpress-bg));
+    --co2-rest: color-mix(in oklab, var(--htmlpress-text) 6%, var(--htmlpress-bg));
+    --co2-ink: var(--htmlpress-text);
+    --co2-soft: var(--htmlpress-muted);
+    --co2-grid: var(--htmlpress-border);
+    margin-block: 2rem;
+    color: var(--co2-ink);
+    font-variant-numeric: tabular-nums;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) .co2 {
+      --co2-china: #3987e5;
+      --co2-usa: #d95926;
+      --co2-india: #199e70;
+      --co2-china-ink: #ffffff;
+      --co2-usa-ink: #ffffff;
+      --co2-india-ink: #ffffff;
+      --co2-other: color-mix(in oklab, var(--htmlpress-text) 32%, var(--htmlpress-bg));
+      --co2-rest: color-mix(in oklab, var(--htmlpress-text) 12%, var(--htmlpress-bg));
+    }
+  }
+  :root[data-theme="dark"] .co2 {
+    --co2-china: #3987e5;
+    --co2-usa: #d95926;
+    --co2-india: #199e70;
+    --co2-china-ink: #ffffff;
+    --co2-usa-ink: #ffffff;
+    --co2-india-ink: #ffffff;
+    --co2-other: color-mix(in oklab, var(--htmlpress-text) 32%, var(--htmlpress-bg));
+    --co2-rest: color-mix(in oklab, var(--htmlpress-text) 12%, var(--htmlpress-bg));
+  }
+  .co2-panel {
+    margin-top: 1.5rem;
+    padding: 1.25rem;
+    border: 1px solid var(--co2-grid);
+    border-radius: var(--htmlpress-radius);
+  }
+  .co2-panel > header {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+  .co2 h2 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: 0;
+    color: var(--htmlpress-text);
+    scroll-margin-top: 5rem;
+  }
+  .co2 > h2 {
+    margin-top: 1.75rem;
+  }
+  .co2-panel > header span {
+    font-size: 0.8125rem;
+    color: var(--co2-soft);
+  }
+  .co2-tree {
+    position: relative;
+    touch-action: pan-y;
+  }
+  .co2-tree svg {
+    display: block;
+  }
+  .co2-tree text {
+    font-size: 12px;
+    pointer-events: none;
+  }
+  .co2-tree .co2-name {
+    font-weight: 600;
+  }
+  .co2-tree .co2-share {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  .co2-tip {
+    position: absolute;
+    z-index: 1;
+    min-width: 10rem;
+    padding: 0.55rem 0.7rem;
+    font-size: 0.8125rem;
+    pointer-events: none;
+    background: var(--htmlpress-bg);
+    border: 1px solid var(--co2-grid);
+    border-radius: 0.5rem;
+    box-shadow: var(--htmlpress-shadow);
+    opacity: 0;
+    transition: opacity 0.12s;
+  }
+  .co2-tip[data-on] {
+    opacity: 1;
+  }
+  .co2-tip strong {
+    display: block;
+    margin-bottom: 0.2rem;
+  }
+  .co2-tip div {
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+    line-height: 1.55;
+  }
+  .co2-toggle {
+    display: inline-flex;
+    padding: 3px;
+    background: var(--htmlpress-surface);
+    border: 1px solid var(--co2-grid);
+    border-radius: 999px;
+  }
+  .co2-toggle button {
+    padding: 0.35rem 0.9rem;
+    font: inherit;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--co2-soft);
+    cursor: pointer;
+    background: none;
+    border: 0;
+    border-radius: 999px;
+  }
+  .co2-toggle button[aria-pressed="true"] {
+    color: var(--htmlpress-accent-text);
+    background: var(--htmlpress-accent);
+  }
+  .co2-bars {
+    position: relative;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .co2-bars li {
+    position: absolute;
+    inset-inline: 0;
+    top: 0;
+    display: grid;
+    grid-template-columns: 1.5rem 7.5rem 1fr 4.5rem;
+    gap: 0.5rem;
+    align-items: center;
+    height: 1.75rem;
+    margin: 0;
+    font-size: 0.8125rem;
+    transform: translateY(calc(var(--rank) * 2rem));
+    transition: transform 0.6s cubic-bezier(0.3, 0.7, 0.2, 1);
+  }
+  .co2-bars .co2-rank {
+    font-size: 0.75rem;
+    text-align: right;
+    color: var(--co2-soft);
+  }
+  .co2-bars .co2-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .co2-bars [data-focus] .co2-label {
+    font-weight: 700;
+  }
+  .co2-track {
+    position: relative;
+    height: 0.9rem;
+  }
+  .co2-track i {
+    display: block;
+    width: var(--w);
+    height: 100%;
+    background: var(--co2-fill, var(--co2-other));
+    border-radius: 0 4px 4px 0;
+    transition: width 0.6s cubic-bezier(0.3, 0.7, 0.2, 1);
+  }
+  .co2-bars[data-mode="capita"] .co2-track::after {
+    content: "";
+    position: absolute;
+    top: -0.3rem;
+    bottom: -0.3rem;
+    left: var(--avg);
+    width: 1px;
+    background: var(--co2-ink);
+  }
+  .co2-bars b {
+    font-weight: 600;
+    text-align: right;
+  }
+  .co2-key {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 1rem;
+    margin: 0.75rem 0 0;
+    padding: 0;
+    font-size: 0.75rem;
+    list-style: none;
+    color: var(--co2-soft);
+  }
+  .co2-key li {
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
+    margin: 0;
+  }
+  .co2-key li[hidden] {
+    display: none;
+  }
+  .co2-key i {
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 2px;
+  }
+  .co2-key .co2-avg-key {
+    width: 1px;
+    height: 0.9rem;
+    background: var(--co2-ink);
+    border-radius: 0;
+  }
+  .co2-flip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    gap: 0.75rem;
+  }
+  .co2-caption {
+    margin: 0.25rem 0 0.75rem;
+    font-size: 0.8125rem;
+    color: var(--co2-soft);
+  }
+  .co2-flip div {
+    padding: 0.9rem 1rem;
+    border-left: 4px solid var(--co2-fill);
+    background: var(--htmlpress-surface);
+    border-radius: 0 0.5rem 0.5rem 0;
+  }
+  .co2-flip strong {
+    display: block;
+    font-size: 0.875rem;
+  }
+  .co2-flip span {
+    display: block;
+    margin-top: 0.15rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+  .co2-flip small {
+    font-size: 0.75rem;
+    color: var(--co2-soft);
+  }
+  @media (max-width: 30rem) {
+    .co2-bars li {
+      grid-template-columns: 1.25rem 5.5rem 1fr 3.75rem;
+      gap: 0.4rem;
+      font-size: 0.75rem;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .co2-bars li,
+    .co2-track i {
+      transition: none;
+    }
+  }
+</style>
+
+<h1>谁在排放全球的 CO₂，谁的人均排放最多</h1>
+<p>
+  一个只用一个 HTML 页面完成的交互式比较。方形化矩形树图展示了 2024 年全球 386 亿吨化石
+  CO₂
+  在各国之间的分布；下方的排名可在排放总量和人均排放之间切换，条形会滑动到新的位置。三个最大的排放国始终保持各自的颜色，排名翻转时你也能一路追踪它们。
+</p>
+
+<div class="co2">
+  <section class="co2-panel" aria-labelledby="co2-tree-title">
+    <header>
+      <div>
+        <h2 id="co2-tree-title">占全球排放的份额，2024 年</h2>
+        <span>化石燃料与工业 · 矩形面积即份额 · 悬停查看某一矩形</span>
+      </div>
+    </header>
+    <div class="co2-tree" id="co2-tree"></div>
+  </section>
+
+  <section class="co2-panel" aria-labelledby="co2-bars-title">
+    <header>
+      <div>
+        <h2 id="co2-bars-title">总量与人均</h2>
+        <span id="co2-bars-unit">十亿吨 CO₂/年</span>
+      </div>
+      <div class="co2-toggle" role="group" aria-label="指标">
+        <button type="button" data-mode="total" aria-pressed="true">总量</button>
+        <button type="button" data-mode="capita" aria-pressed="false">人均</button>
+      </div>
+    </header>
+    <ol class="co2-bars" id="co2-bars" data-mode="total"></ol>
+    <ul class="co2-key">
+      <li><i style="background: var(--co2-china)"></i>中国</li>
+      <li><i style="background: var(--co2-usa)"></i>美国</li>
+      <li><i style="background: var(--co2-india)"></i>印度</li>
+      <li><i style="background: var(--co2-other)"></i>其他国家</li>
+      <li id="co2-avg-key" hidden><i class="co2-avg-key"></i>全球平均，4.7 吨</li>
+    </ul>
+  </section>
+
+  <h2 id="co2-flip-title">排名如何翻转</h2>
+  <p class="co2-caption">在 16 个最大排放国中的排名，总量 → 人均：</p>
+  <div class="co2-flip">
+    <div style="--co2-fill: var(--co2-china)">
+      <strong>中国</strong>
+      <span>第 1 → 第 7</span>
+      <small>占总量 32%，人均 8.7 吨</small>
+    </div>
+    <div style="--co2-fill: var(--co2-usa)">
+      <strong>美国</strong>
+      <span>第 2 → 第 3</span>
+      <small>占总量 13%，人均 14.2 吨</small>
+    </div>
+    <div style="--co2-fill: var(--co2-india)">
+      <strong>印度</strong>
+      <span>第 3 → 第 16</span>
+      <small>占总量 8%，人均 2.2 吨</small>
+    </div>
+  </div>
+
+  <details>
+    <summary>数据表</summary>
+    <htmlpress-table>
+      <table id="co2-table">
+        <thead>
+          <tr>
+            <th>国家</th>
+            <th>总量（Gt）</th>
+            <th>占全球份额</th>
+            <th>人均（吨）</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </htmlpress-table>
+  </details>
+</div>
+
+<h2>实现方式</h2>
+<ul>
+  <li>
+    <strong>矩形树图</strong
+    >采用方形化（squarified）布局：矩形沿较短的一边逐行排布，只有当加入新矩形能让这一行的矩形更接近正方形时，这一行才继续增长。整个算法只有二十行脚本；只有矩形放得下时才绘制标签。
+  </li>
+  <li>
+    <strong>排名</strong>是一个 HTML 列表，而不是 SVG。每一行位于
+    <code>translateY(calc(var(--rank) * 2rem))</code>，每个条形的宽度为
+    <code>width: var(--w)</code>，因此切换时每行只需改写两个自定义属性，重新排序的动画交给
+    CSS 过渡完成。
+  </li>
+  <li>
+    <strong>颜色跟随国家</strong
+    >，而不是排名：中国、美国和印度在两种模式和矩形树图中都保持各自的色相，其他所有国家统一使用中性灰，于是三种颜色就讲完了整个故事。
+  </li>
+</ul>
+<p>
+  来源：
+  <a href="https://globalcarbonbudget.org/">Global Carbon Budget 2025</a
+  >（全球碳预算），人口数据来自联合国 World Population Prospects（世界人口展望），由
+  <a href="https://ourworldindata.org/co2-emissions">Our World in Data</a>
+  汇编。欧盟作为一个整体计算；“世界其他地区”包括国际航空和航运。
+</p>
+
+<script>
+  {
+    const world = { total: 38.599, capita: 4.73 }
+    const countries = [
+      { name: "中国", total: 12.289, capita: 8.66, color: "china" },
+      { name: "美国", total: 4.904, capita: 14.2, color: "usa" },
+      { name: "印度", total: 3.193, capita: 2.2, color: "india" },
+      { name: "欧盟", total: 2.426, capita: 5.39 },
+      { name: "俄罗斯", total: 1.781, capita: 12.29 },
+      { name: "日本", total: 0.962, capita: 7.77 },
+      { name: "印度尼西亚", short: "印尼", total: 0.812, capita: 2.87 },
+      { name: "伊朗", total: 0.793, capita: 8.66 },
+      { name: "沙特阿拉伯", short: "沙特", total: 0.692, capita: 20.38 },
+      { name: "韩国", total: 0.584, capita: 11.29 },
+      { name: "加拿大", total: 0.533, capita: 13.42 },
+      { name: "土耳其", total: 0.513, capita: 5.87 },
+      { name: "巴西", total: 0.483, capita: 2.28 },
+      { name: "墨西哥", total: 0.461, capita: 3.52 },
+      { name: "南非", total: 0.44, capita: 6.87 },
+      { name: "澳大利亚", total: 0.387, capita: 14.48 },
+    ]
+    const rest = world.total - countries.reduce((sum, c) => sum + c.total, 0)
+    const pct = value => `${((value / world.total) * 100).toFixed(1)}%`
+    const fill = c => (c.color ? `var(--co2-${c.color})` : "var(--co2-other)")
+    const NS = "http://www.w3.org/2000/svg"
+    const el = (name, attrs, parent) => {
+      const node = document.createElementNS(NS, name)
+      for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, value)
+      parent?.append(node)
+      return node
+    }
+
+    const tbody = document.querySelector("#co2-table tbody")
+    for (const c of [...countries, { name: "世界其他地区", total: rest }]) {
+      const row = tbody.insertRow()
+      for (const value of [
+        c.name,
+        c.total.toFixed(2),
+        pct(c.total),
+        c.capita?.toFixed(1) ?? "–",
+      ]) {
+        row.insertCell().textContent = value
+      }
+    }
+
+    const worst = (row, side, scale) => {
+      const areas = row.map(item => item.total * scale)
+      const sum = areas.reduce((a, b) => a + b, 0)
+      return Math.max(
+        (side * side * Math.max(...areas)) / (sum * sum),
+        (sum * sum) / (side * side * Math.min(...areas)),
+      )
+    }
+    const squarify = (items, x, y, w, h) => {
+      const tiles = []
+      let remaining = items
+      while (remaining.length) {
+        const side = Math.min(w, h)
+        const scale = (w * h) / remaining.reduce((sum, item) => sum + item.total, 0)
+        let row = [remaining[0]]
+        for (const item of remaining.slice(1)) {
+          if (worst([...row, item], side, scale) > worst(row, side, scale)) break
+          row = [...row, item]
+        }
+        const thick = (row.reduce((sum, item) => sum + item.total, 0) * scale) / side
+        let offset = 0
+        for (const item of row) {
+          const length = (item.total * scale) / thick
+          tiles.push(
+            w >= h
+              ? { item, x, y: y + offset, w: thick, h: length }
+              : { item, x: x + offset, y, w: length, h: thick },
+          )
+          offset += length
+        }
+        if (w >= h) [x, w] = [x + thick, w - thick]
+        else [y, h] = [y + thick, h - thick]
+        remaining = remaining.slice(row.length)
+      }
+      return tiles
+    }
+
+    const drawTree = host => {
+      host.replaceChildren()
+      const width = host.clientWidth
+      if (width < 120) return
+      const height = Math.round(width < 520 ? width * 1.1 : width * 0.56)
+      const svg = el(
+        "svg",
+        { width, height, role: "img", "aria-labelledby": "co2-tree-title" },
+        host,
+      )
+      const tip = document.createElement("div")
+      tip.className = "co2-tip"
+      host.append(tip)
+      const items = [...countries, { name: "世界其他地区", total: rest, rest: true }]
+      for (const { item, x, y, w, h } of squarify(items, 0, 0, width, height)) {
+        const ink = item.color ? `var(--co2-${item.color}-ink)` : "var(--co2-ink)"
+        const g = el("g", {}, svg)
+        el(
+          "rect",
+          {
+            x: x + 1,
+            y: y + 1,
+            width: Math.max(0, w - 2),
+            height: Math.max(0, h - 2),
+            rx: 4,
+            fill: item.rest ? "var(--co2-rest)" : fill(item),
+            stroke: item.rest ? "var(--co2-grid)" : "none",
+          },
+          g,
+        )
+        const big = w > 110 && h > 64
+        if (w > 58 && h > 30) {
+          const name = el(
+            "text",
+            { x: x + 9, y: y + 19, fill: ink, class: "co2-name" },
+            g,
+          )
+          name.textContent = w < 100 && item.short ? item.short : item.name
+          const share = el(
+            "text",
+            {
+              x: x + 9,
+              y: y + (big ? 44 : 34),
+              fill: ink,
+              class: big ? "co2-share" : "",
+            },
+            g,
+          )
+          share.textContent = pct(item.total)
+        }
+        const show = event => {
+          svg
+            .querySelectorAll("g")
+            .forEach(node => node.setAttribute("opacity", node === g ? 1 : 0.55))
+          tip.innerHTML =
+            `<strong>${item.name}</strong><div><span>排放量</span><span>${item.total.toFixed(2)} Gt</span></div>` +
+            `<div><span>占全球份额</span><span>${pct(item.total)}</span></div>` +
+            (item.capita
+              ? `<div><span>人均</span><span>${item.capita.toFixed(1)} 吨</span></div>`
+              : "")
+          const box = host.getBoundingClientRect()
+          const px = event.clientX - box.left
+          const py = event.clientY - box.top
+          tip.style.left = `${Math.max(0, px + 16 + tip.offsetWidth > width ? px - tip.offsetWidth - 16 : px + 16)}px`
+          tip.style.top = `${Math.max(0, Math.min(height - tip.offsetHeight, py - 20))}px`
+          tip.toggleAttribute("data-on", true)
+        }
+        g.addEventListener("pointermove", show)
+        g.addEventListener("pointerdown", show)
+        g.addEventListener("pointerleave", () => {
+          svg.querySelectorAll("g").forEach(node => node.setAttribute("opacity", 1))
+          tip.toggleAttribute("data-on", false)
+        })
+      }
+    }
+
+    const list = document.getElementById("co2-bars")
+    list.style.height = `${countries.length * 2}rem`
+    const rows = countries.map(c => {
+      const li = document.createElement("li")
+      if (c.color) li.dataset.focus = ""
+      li.style.setProperty("--co2-fill", fill(c))
+      li.innerHTML = `<span class="co2-rank"></span><span class="co2-label">${c.name}</span><span class="co2-track"><i></i></span><b></b>`
+      list.append(li)
+      return { c, li }
+    })
+    const render = mode => {
+      const max = Math.max(...countries.map(c => c[mode]))
+      const order = [...countries].sort((a, b) => b[mode] - a[mode])
+      list.dataset.mode = mode
+      list.style.setProperty("--avg", `${(world.capita / max) * 100}%`)
+      for (const { c, li } of rows) {
+        const rank = order.indexOf(c)
+        li.style.setProperty("--rank", rank)
+        li.style.setProperty("--w", `${(c[mode] / max) * 100}%`)
+        li.querySelector(".co2-rank").textContent = rank + 1
+        li.querySelector("b").textContent =
+          mode === "total" ? `${c.total.toFixed(2)} Gt` : `${c.capita.toFixed(1)} 吨`
+      }
+      document.getElementById("co2-bars-unit").textContent =
+        mode === "total" ? "十亿吨 CO₂/年" : "吨 CO₂/人/年"
+      document.getElementById("co2-avg-key").hidden = mode !== "capita"
+      for (const button of document.querySelectorAll(".co2-toggle button")) {
+        button.setAttribute("aria-pressed", button.dataset.mode === mode)
+      }
+    }
+    for (const button of document.querySelectorAll(".co2-toggle button")) {
+      button.addEventListener("click", () => render(button.dataset.mode))
+    }
+    render("total")
+
+    const host = document.getElementById("co2-tree")
+    new ResizeObserver(([entry]) => {
+      if (String(entry.contentRect.width) !== host.dataset.width) {
+        host.dataset.width = entry.contentRect.width
+        drawTree(host)
+      }
+    }).observe(host)
+  }
+</script>

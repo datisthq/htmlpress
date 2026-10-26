@@ -1,0 +1,573 @@
+<title>Precios de los paneles solares</title>
+<meta
+  name="description"
+  content="Un explorador interactivo: un gráfico logarítmico o lineal de los precios de los módulos solares desde 1975, un rango de años que recalcula las cifras principales y una calculadora de tasas explicada con palabras."
+/>
+<meta name="order" content="10" />
+<meta name="icon" content="lightbulb" />
+<style>
+  .sp {
+    --sp-line: #2a78d6;
+    --sp-accent: #eda100;
+    --sp-ink: var(--htmlpress-text);
+    --sp-soft: var(--htmlpress-muted);
+    --sp-grid: var(--htmlpress-border);
+    --sp-card: var(--htmlpress-surface);
+    margin-block: 2rem;
+    color: var(--sp-ink);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) .sp {
+      --sp-line: #3987e5;
+      --sp-accent: #c98500;
+    }
+  }
+  :root[data-theme="dark"] .sp {
+    --sp-line: #3987e5;
+    --sp-accent: #c98500;
+  }
+  .sp-app {
+    overflow: hidden;
+    border: 1px solid var(--sp-grid);
+    border-radius: var(--htmlpress-radius);
+  }
+  .sp-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.5rem;
+    align-items: center;
+    padding: 0.9rem 1.25rem;
+    background: var(--sp-card);
+    border-bottom: 1px solid var(--sp-grid);
+  }
+  .sp-toggle {
+    display: inline-flex;
+    padding: 3px;
+    background: var(--htmlpress-bg);
+    border: 1px solid var(--sp-grid);
+    border-radius: 999px;
+  }
+  .sp-toggle button {
+    padding: 0.3rem 0.85rem;
+    font: inherit;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--sp-soft);
+    cursor: pointer;
+    background: none;
+    border: 0;
+    border-radius: 999px;
+  }
+  .sp-toggle button[aria-pressed="true"] {
+    color: var(--htmlpress-accent-text);
+    background: var(--htmlpress-accent);
+  }
+  .sp-range {
+    display: flex;
+    flex: 1 1 18rem;
+    gap: 0.6rem;
+    align-items: center;
+    font-size: 0.8125rem;
+    color: var(--sp-soft);
+  }
+  .sp-range input {
+    flex: 1;
+    min-width: 5rem;
+    accent-color: var(--htmlpress-accent);
+  }
+  .sp-range output {
+    min-width: 2.5rem;
+    font-weight: 600;
+    color: var(--sp-ink);
+    font-variant-numeric: tabular-nums;
+  }
+  .sp-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+    border-bottom: 1px solid var(--sp-grid);
+  }
+  .sp-stats > div {
+    padding: 1rem 1.25rem;
+    border-right: 1px solid var(--sp-grid);
+  }
+  .sp-stats > div:last-child {
+    border-right: 0;
+  }
+  .sp-stats b {
+    display: block;
+    font-size: clamp(1.4rem, 4vw, 1.9rem);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+  .sp-stats span {
+    display: block;
+    margin-top: 0.3rem;
+    font-size: 0.75rem;
+    color: var(--sp-soft);
+  }
+  .sp-body {
+    padding: 1.25rem;
+  }
+  .sp-sentence {
+    margin: 0 0 1rem;
+    font-size: 1.05rem;
+    line-height: 1.55;
+  }
+  .sp-sentence mark {
+    padding: 0 0.2em;
+    font-weight: 700;
+    color: inherit;
+    background: color-mix(in oklab, var(--sp-accent) 28%, transparent);
+    border-radius: 0.25em;
+  }
+  .sp-chart {
+    position: relative;
+    touch-action: pan-y;
+  }
+  .sp-chart svg {
+    display: block;
+    overflow: visible;
+  }
+  .sp-chart text {
+    font-size: 11px;
+    fill: var(--sp-soft);
+    font-variant-numeric: tabular-nums;
+  }
+  .sp-chart .sp-note {
+    font-size: 11.5px;
+    fill: var(--sp-ink);
+  }
+  .sp-tip {
+    position: absolute;
+    top: 0;
+    z-index: 1;
+    padding: 0.45rem 0.65rem;
+    font-size: 0.8125rem;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    pointer-events: none;
+    background: var(--htmlpress-bg);
+    border: 1px solid var(--sp-grid);
+    border-radius: 0.5rem;
+    box-shadow: var(--htmlpress-shadow);
+    opacity: 0;
+    transition: opacity 0.12s;
+  }
+  .sp-tip[data-on] {
+    opacity: 1;
+  }
+  .sp-foot {
+    margin: 0.75rem 0 0;
+    font-size: 0.75rem;
+    color: var(--sp-soft);
+  }
+</style>
+
+<h1>Paneles solares: 500 veces más baratos</h1>
+<p>
+  Un explorador interactivo en una sola página HTML. Cambia el gráfico entre escala
+  logarítmica y lineal, arrastra los dos controles para elegir cualquier rango de años, y
+  las cifras principales, la frase de debajo y el tramo resaltado de la línea se
+  recalculan. Nada está precalculado: la página lleva cincuenta precios y hace las cuentas
+  mientras te mueves.
+</p>
+
+<h2>Explorador de precios</h2>
+<div class="sp">
+  <div class="sp-app">
+    <div class="sp-controls">
+      <div class="sp-toggle" role="group" aria-label="Escala">
+        <button type="button" data-scale="log" aria-pressed="true">Logarítmica</button>
+        <button type="button" data-scale="linear" aria-pressed="false">Lineal</button>
+      </div>
+      <label class="sp-range">
+        Desde <input type="range" id="sp-from" min="1975" max="2024" value="1975" />
+        <output for="sp-from" id="sp-from-out">1975</output>
+      </label>
+      <label class="sp-range">
+        Hasta <input type="range" id="sp-to" min="1975" max="2024" value="2024" />
+        <output for="sp-to" id="sp-to-out">2024</output>
+      </label>
+    </div>
+    <div class="sp-stats" aria-live="polite">
+      <div>
+        <b id="sp-start">$132</b><span id="sp-start-label">por vatio en 1975</span>
+      </div>
+      <div><b id="sp-end">$0,27</b><span id="sp-end-label">por vatio en 2024</span></div>
+      <div><b id="sp-fold">500×</b><span>más barato en el periodo</span></div>
+      <div><b id="sp-rate">−11,9 %</b><span>variación media anual</span></div>
+    </div>
+    <div class="sp-body">
+      <p class="sp-sentence" id="sp-sentence"></p>
+      <div class="sp-chart" id="sp-chart"></div>
+      <p class="sp-foot">
+        Precio del módulo por vatio en dólares estadounidenses constantes de 2025. Antes
+        de 2010, estimaciones mundiales; desde 2010, referencias del mercado europeo.
+      </p>
+    </div>
+  </div>
+</div>
+
+<h2>Por qué una escala logarítmica</h2>
+<p>
+  En un eje lineal la historia termina en 1985: el precio ya ha caído de $132 a $17 y todo
+  lo que viene después es una línea plana pegada al suelo. En un eje logarítmico cada paso
+  de la cuadrícula es un cambio de diez veces, así que un descenso porcentual constante es
+  una línea recta, y la línea solar es casi recta durante cincuenta años. Ese ritmo
+  constante es el patrón conocido como ley de Swanson: los precios de los módulos tienden
+  a bajar alrededor de una quinta parte cada vez que se duplican los envíos acumulados en
+  el mundo.
+</p>
+
+<h2>Datos</h2>
+<details>
+  <summary>Tabla de datos</summary>
+  <htmlpress-table>
+    <table id="sp-table">
+      <thead>
+        <tr>
+          <th>Año</th>
+          <th>Precio, $/W</th>
+          <th>Variación anual</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </htmlpress-table>
+</details>
+
+<h2>Cómo está hecho</h2>
+<ul>
+  <li>
+    <strong>Un estado, un render.</strong> La escala y los dos años viven en un pequeño
+    objeto; cada control escribe en él y llama a la misma función que redibuja el gráfico
+    y reescribe las cifras, así que nada puede desincronizarse.
+  </li>
+  <li>
+    <strong>Los controles son nativos</strong>: dos
+    <code>&lt;input type="range"&gt;</code> teñidos con <code>accent-color</code>, y un
+    par de botones cuyo <code>aria-pressed</code> sirve también de gancho de estilo para
+    el seleccionado.
+  </li>
+  <li>
+    <strong>La frase se genera</strong>: el tiempo de reducción a la mitad es
+    <code>ln 2 / −ln(1 + rate)</code>, escrito con palabras, así que quien nunca mira el
+    eje también obtiene la respuesta.
+  </li>
+</ul>
+<p>
+  Fuente: Nemet (2009), Farmer &amp; Lafond (2016) e IRENA Renewable Power Generation
+  Costs (Costes de generación de energía renovable, 2025), recopilado por
+  <a href="https://ourworldindata.org/grapher/solar-pv-prices">Our World in Data</a>.
+</p>
+
+<script>
+  {
+    const firstYear = 1975
+    const prices = [
+      132.376, 99.598, 72.661, 51.408, 43.195, 36.605, 29.266, 26.295, 21.228, 19.725,
+      17.22, 14.245, 12.11, 11.312, 11.69, 12.091, 11.201, 10.435, 9.759, 9.232, 8.536,
+      7.98, 7.952, 7.166, 6.619, 6.496, 6.284, 5.747, 5.464, 4.695, 4.746, 5.173, 5.211,
+      4.749, 3.174, 2.512, 2.061, 1.111, 0.857, 0.791, 0.736, 0.68, 0.571, 0.509, 0.467,
+      0.37, 0.332, 0.366, 0.322, 0.265,
+    ]
+    const years = prices.map((_, i) => firstYear + i)
+    const lastYear = years[years.length - 1]
+    const notes = [
+      { year: 2006, label: "Escasez de silicio", dy: -40 },
+      { year: 2011, label: "Las fábricas chinas crecen", dy: 44 },
+    ]
+    const state = { scale: "log", from: firstYear, to: lastYear }
+    const NS = "http://www.w3.org/2000/svg"
+
+    const el = (name, attrs, parent) => {
+      const node = document.createElementNS(NS, name)
+      for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, value)
+      parent?.append(node)
+      return node
+    }
+    const text = (content, attrs, parent) => {
+      const node = el("text", attrs, parent)
+      node.textContent = content
+      return node
+    }
+    const num = (value, digits) =>
+      value.toLocaleString("es", {
+        minimumFractionDigits: digits,
+        maximumFractionDigits: digits,
+      })
+    const price = value =>
+      value >= 10
+        ? `$${Math.round(value)}`
+        : value >= 1
+          ? `$${num(value, 1)}`
+          : `$${num(value, 2)}`
+    const priceOf = year => prices[year - firstYear]
+
+    const tbody = document.querySelector("#sp-table tbody")
+    years.forEach((year, i) => {
+      const row = tbody.insertRow()
+      row.insertCell().textContent = year
+      row.insertCell().textContent = num(prices[i], 3)
+      row.insertCell().textContent = i
+        ? `${num((prices[i] / prices[i - 1] - 1) * 100, 1)} %`
+        : "–"
+    })
+
+    const updateNumbers = () => {
+      const start = priceOf(state.from)
+      const end = priceOf(state.to)
+      const span = state.to - state.from
+      const ratio = start / end
+      const rate = span ? Math.pow(end / start, 1 / span) - 1 : 0
+      document.getElementById("sp-from-out").textContent = state.from
+      document.getElementById("sp-to-out").textContent = state.to
+      document.getElementById("sp-start").textContent = price(start)
+      document.getElementById("sp-start-label").textContent = `por vatio en ${state.from}`
+      document.getElementById("sp-end").textContent = price(end)
+      document.getElementById("sp-end-label").textContent = `por vatio en ${state.to}`
+      document.getElementById("sp-fold").textContent =
+        ratio >= 1
+          ? `${ratio >= 10 ? Math.round(ratio) : num(ratio, 1)}×`
+          : `${num(1 / ratio, 1)}×`
+      document.getElementById("sp-fold").nextElementSibling.textContent =
+        ratio >= 1 ? "más barato en el periodo" : "más caro en el periodo"
+      document.getElementById("sp-rate").textContent =
+        `${rate > 0 ? "+" : "−"}${num(Math.abs(rate * 100), 1)} %`
+      const sentence = document.getElementById("sp-sentence")
+      if (!span) {
+        sentence.innerHTML = `Elige dos años distintos para comparar.`
+      } else if (rate < 0) {
+        const halving = Math.log(2) / -Math.log(1 + rate)
+        sentence.innerHTML = `De ${state.from} a ${state.to}, un módulo solar se abarató de media un <mark>${num(Math.abs(rate * 100), 1)} % al año</mark>: su precio <mark>se redujo a la mitad cada ${num(halving, 1)} años</mark>, de forma sostenida durante ${span} ${span > 1 ? "años" : "año"}.`
+      } else {
+        sentence.innerHTML = `De ${state.from} a ${state.to}, los precios <mark>subieron un ${num(rate * 100, 1)} % al año</mark>, uno de los pocos tramos contra la tendencia de largo plazo.`
+      }
+    }
+
+    const drawChart = host => {
+      host.replaceChildren()
+      const width = host.clientWidth
+      if (width < 120) return
+      const narrow = width < 520
+      const height = narrow ? 280 : 380
+      const m = { top: 14, right: 12, bottom: 26, left: 44 }
+      const log = state.scale === "log"
+      const x = year =>
+        m.left +
+        ((year - firstYear) / (lastYear - firstYear)) * (width - m.left - m.right)
+      const plot = height - m.top - m.bottom
+      const y = log
+        ? value =>
+            m.top +
+            ((Math.log10(200) - Math.log10(value)) /
+              (Math.log10(200) - Math.log10(0.2))) *
+              plot
+        : value => m.top + ((140 - value) / 140) * plot
+      const svg = el(
+        "svg",
+        {
+          width,
+          height,
+          role: "img",
+          "aria-label": `Precio del módulo solar, escala ${log ? "logarítmica" : "lineal"}`,
+        },
+        host,
+      )
+
+      const ticks = log
+        ? [0.2, 0.5, 1, 2, 5, 10, 20, 50, 100, 200]
+        : [0, 20, 40, 60, 80, 100, 120, 140]
+      for (const tick of ticks) {
+        el(
+          "line",
+          {
+            x1: m.left,
+            x2: width - m.right,
+            y1: y(tick),
+            y2: y(tick),
+            stroke: "var(--sp-grid)",
+          },
+          svg,
+        )
+        text(
+          tick < 1 ? `$${num(tick, 1)}` : `$${tick}`,
+          { x: m.left - 8, y: y(tick) + 4, "text-anchor": "end" },
+          svg,
+        )
+      }
+      for (const year of narrow
+        ? [1975, 2000, 2024]
+        : [1975, 1985, 1995, 2005, 2015, 2024]) {
+        text(
+          year,
+          {
+            x: x(year),
+            y: height - 6,
+            "text-anchor":
+              year === lastYear ? "end" : year === firstYear ? "start" : "middle",
+          },
+          svg,
+        )
+      }
+      if (state.from !== firstYear || state.to !== lastYear)
+        el(
+          "rect",
+          {
+            x: x(state.from),
+            y: m.top,
+            width: Math.max(1, x(state.to) - x(state.from)),
+            height: plot,
+            fill: "var(--sp-accent)",
+            opacity: 0.1,
+          },
+          svg,
+        )
+
+      const points = years.map((year, i) => [x(year), y(prices[i])])
+      const all = points.map(([px, py]) => `${px},${py}`).join("L")
+      el(
+        "path",
+        {
+          d: `M${all}`,
+          fill: "none",
+          stroke: "var(--sp-line)",
+          "stroke-width": 2,
+          opacity: 0.3,
+          "stroke-linejoin": "round",
+        },
+        svg,
+      )
+      const inside = points.slice(state.from - firstYear, state.to - firstYear + 1)
+      el(
+        "path",
+        {
+          d: `M${inside.map(([px, py]) => `${px},${py}`).join("L")}`,
+          fill: "none",
+          stroke: "var(--sp-line)",
+          "stroke-width": 2.5,
+          "stroke-linejoin": "round",
+          "stroke-linecap": "round",
+        },
+        svg,
+      )
+      for (const year of [state.from, state.to]) {
+        el(
+          "circle",
+          {
+            cx: x(year),
+            cy: y(priceOf(year)),
+            r: 5,
+            fill: "var(--sp-line)",
+            stroke: "var(--htmlpress-bg)",
+            "stroke-width": 2,
+          },
+          svg,
+        )
+      }
+      if (!narrow && log) {
+        for (const note of notes) {
+          const cx = x(note.year)
+          const cy = y(priceOf(note.year))
+          const down = note.dy > 0
+          el(
+            "line",
+            {
+              x1: cx,
+              x2: cx,
+              y1: cy + (down ? 8 : -8),
+              y2: cy + note.dy,
+              stroke: "var(--sp-soft)",
+            },
+            svg,
+          )
+          text(
+            note.label,
+            {
+              x: cx,
+              y: cy + note.dy + (down ? 14 : -6),
+              "text-anchor": down ? "end" : "middle",
+              class: "sp-note",
+            },
+            svg,
+          )
+        }
+      }
+
+      const tip = document.createElement("div")
+      tip.className = "sp-tip"
+      host.append(tip)
+      const dot = el("circle", { r: 4, fill: "var(--sp-ink)", opacity: 0 }, svg)
+      const hit = el(
+        "rect",
+        { x: m.left, y: 0, width: width - m.left - m.right, height, fill: "transparent" },
+        svg,
+      )
+      const show = event => {
+        const px = event.clientX - svg.getBoundingClientRect().left
+        const i = Math.max(
+          0,
+          Math.min(
+            years.length - 1,
+            Math.round(((px - m.left) / (width - m.left - m.right)) * (years.length - 1)),
+          ),
+        )
+        dot.setAttribute("cx", points[i][0])
+        dot.setAttribute("cy", points[i][1])
+        dot.setAttribute("opacity", 1)
+        const change = i ? (prices[i] / prices[i - 1] - 1) * 100 : null
+        tip.innerHTML =
+          `<strong>${years[i]}</strong> $${num(prices[i], prices[i] < 1 ? 3 : 2)}/W` +
+          (change === null
+            ? ""
+            : `<br><span style="color:var(--sp-soft)">${change > 0 ? "+" : "−"}${num(Math.abs(change), 1)} % respecto al año anterior</span>`)
+        const left = points[i][0] + 12
+        tip.style.left = `${left + tip.offsetWidth > width ? points[i][0] - tip.offsetWidth - 12 : left}px`
+        tip.style.top = `${Math.max(0, Math.min(points[i][1] - 20, height - 70))}px`
+        tip.toggleAttribute("data-on", true)
+      }
+      hit.addEventListener("pointermove", show)
+      hit.addEventListener("pointerdown", show)
+      hit.addEventListener("pointerleave", () => {
+        dot.setAttribute("opacity", 0)
+        tip.toggleAttribute("data-on", false)
+      })
+    }
+
+    const host = document.getElementById("sp-chart")
+    const render = () => {
+      updateNumbers()
+      drawChart(host)
+    }
+    for (const button of document.querySelectorAll(".sp-toggle button")) {
+      button.addEventListener("click", () => {
+        state.scale = button.dataset.scale
+        for (const other of document.querySelectorAll(".sp-toggle button")) {
+          other.setAttribute("aria-pressed", String(other === button))
+        }
+        render()
+      })
+    }
+    const from = document.getElementById("sp-from")
+    const to = document.getElementById("sp-to")
+    from.addEventListener("input", () => {
+      state.from = Math.min(Number(from.value), state.to)
+      from.value = state.from
+      render()
+    })
+    to.addEventListener("input", () => {
+      state.to = Math.max(Number(to.value), state.from)
+      to.value = state.to
+      render()
+    })
+    new ResizeObserver(([entry]) => {
+      if (String(entry.contentRect.width) !== host.dataset.width) {
+        host.dataset.width = entry.contentRect.width
+        drawChart(host)
+      }
+    }).observe(host)
+    updateNumbers()
+  }
+</script>

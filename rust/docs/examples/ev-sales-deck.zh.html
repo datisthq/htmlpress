@@ -1,0 +1,813 @@
+<title>电动汽车销量</title>
+<meta
+  name="description"
+  content="页面中的幻灯片演示：整体缩放的 16:9 幻灯片，支持滚动吸附、按钮、方向键和全屏导航，内容为 IEA 的电动汽车销量数据。"
+/>
+<meta name="order" content="8" />
+<meta name="icon" content="presentation" />
+<style>
+  .evd {
+    --evd-china: #2a78d6;
+    --evd-europe: #eb6834;
+    --evd-us: #1baf7a;
+    --evd-rest: #eda100;
+    --evd-ink: var(--htmlpress-text);
+    --evd-soft: var(--htmlpress-muted);
+    --evd-grid: var(--htmlpress-border);
+    --evd-card: var(--htmlpress-surface);
+    margin-block: 1.5rem 2rem;
+    color: var(--evd-ink);
+    font-variant-numeric: tabular-nums;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) .evd {
+      --evd-china: #3987e5;
+      --evd-europe: #d95926;
+      --evd-us: #199e70;
+      --evd-rest: #c98500;
+    }
+  }
+  :root[data-theme="dark"] .evd {
+    --evd-china: #3987e5;
+    --evd-europe: #d95926;
+    --evd-us: #199e70;
+    --evd-rest: #c98500;
+  }
+  .evd-stage {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--evd-grid);
+    border-radius: var(--htmlpress-radius);
+    background: var(--evd-card);
+    outline-offset: 3px;
+    container-type: inline-size;
+  }
+  .evd-track {
+    display: flex;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+  }
+  .evd-track::-webkit-scrollbar {
+    display: none;
+  }
+  .evd-slide {
+    position: relative;
+    flex: 0 0 100%;
+    aspect-ratio: 16 / 9;
+    padding: 6cqw 7cqw;
+    overflow: hidden;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+  .evd-slide :is(h2, h3, p, ul) {
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  .evd-kicker {
+    font-size: 1.9cqw;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--evd-soft);
+  }
+  .evd-slide h2 {
+    font-size: 6.4cqw;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+  }
+  .evd-slide h3 {
+    margin-top: 0.8cqw;
+    font-size: 3.6cqw;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+  .evd-title {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 2cqw;
+    background:
+      radial-gradient(
+        circle at 88% 18%,
+        color-mix(in oklab, var(--evd-china) 34%, transparent),
+        transparent 42%
+      ),
+      radial-gradient(
+        circle at 70% 95%,
+        color-mix(in oklab, var(--evd-us) 26%, transparent),
+        transparent 40%
+      );
+  }
+  .evd-title h2 {
+    max-width: 14ch;
+    font-size: 8.4cqw;
+  }
+  .evd-title p:last-child {
+    font-size: 2.4cqw;
+    color: var(--evd-soft);
+  }
+  .evd-big {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 5cqw;
+    align-items: center;
+  }
+  .evd-big b {
+    display: block;
+    font-size: 17cqw;
+    font-weight: 750;
+    line-height: 0.9;
+    letter-spacing: -0.05em;
+    background: linear-gradient(135deg, var(--evd-china), var(--evd-us));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .evd-big b small {
+    font-size: 0.4em;
+    letter-spacing: -0.02em;
+  }
+  .evd-big p {
+    margin-top: 1.5cqw;
+    font-size: 2.6cqw;
+    color: var(--evd-soft);
+  }
+  .evd-big ul {
+    display: grid;
+    gap: 2.4cqw;
+    list-style: none;
+  }
+  .evd-big li {
+    margin: 0;
+    padding-left: 2cqw;
+    border-left: 0.4cqw solid var(--evd-grid);
+    font-size: 2.2cqw;
+    color: var(--evd-soft);
+  }
+  .evd-big li strong {
+    display: block;
+    font-size: 4.2cqw;
+    line-height: 1.1;
+    color: var(--evd-ink);
+  }
+  .evd-chart {
+    position: relative;
+    margin-top: 2.5cqw;
+  }
+  .evd-chart svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+  .evd-chart text {
+    font-size: 21px;
+    fill: var(--evd-soft);
+  }
+  .evd-chart .evd-value {
+    font-size: 24px;
+    font-weight: 700;
+    fill: var(--evd-ink);
+  }
+  .evd-chart .evd-inside {
+    font-size: 24px;
+    font-weight: 700;
+    fill: #0b0b0b;
+  }
+  .evd-chart [data-bar] {
+    cursor: default;
+  }
+  .evd-chart [data-bar]:hover rect:first-child {
+    filter: brightness(1.15);
+  }
+  .evd-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8cqw 2.6cqw;
+    margin-top: 1.6cqw;
+    font-size: 1.9cqw;
+    color: var(--evd-soft);
+  }
+  .evd-legend span {
+    display: flex;
+    gap: 0.8cqw;
+    align-items: center;
+  }
+  .evd-legend i {
+    width: 1.6cqw;
+    height: 1.6cqw;
+    border-radius: 0.4cqw;
+  }
+  .evd-tip {
+    position: absolute;
+    z-index: 1;
+    padding: 0.8cqw 1.2cqw;
+    font-size: 1.8cqw;
+    white-space: nowrap;
+    pointer-events: none;
+    background: var(--htmlpress-bg);
+    border: 1px solid var(--evd-grid);
+    border-radius: 0.8cqw;
+    box-shadow: var(--htmlpress-shadow);
+    opacity: 0;
+    transform: translate(-50%, -110%);
+    transition: opacity 0.12s;
+  }
+  .evd-tip[data-on] {
+    opacity: 1;
+  }
+  .evd-takeaways ol {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3cqw;
+    margin: 4cqw 0 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: takeaway;
+  }
+  .evd-takeaways li {
+    margin: 0;
+    padding-top: 2cqw;
+    border-top: 0.35cqw solid var(--evd-china);
+    font-size: 2.3cqw;
+    line-height: 1.4;
+    color: var(--evd-soft);
+    counter-increment: takeaway;
+  }
+  .evd-takeaways li::before {
+    content: counter(takeaway, decimal-leading-zero);
+    display: block;
+    margin-bottom: 1cqw;
+    font-size: 1.8cqw;
+    font-weight: 700;
+    color: var(--evd-china);
+  }
+  .evd-takeaways li strong {
+    display: block;
+    margin-bottom: 0.6cqw;
+    font-size: 3cqw;
+    line-height: 1.15;
+    color: var(--evd-ink);
+  }
+  .evd-takeaways > p:last-child {
+    position: absolute;
+    bottom: 4cqw;
+    font-size: 1.6cqw;
+    color: var(--evd-soft);
+  }
+  .evd-slide .evd-folio {
+    position: absolute;
+    margin: 0;
+    right: 3cqw;
+    bottom: 2.4cqw;
+    font-size: 1.5cqw;
+    color: var(--evd-soft);
+  }
+  .evd-bar {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin-top: 0.75rem;
+  }
+  .evd-bar button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.25rem;
+    height: 2.25rem;
+    padding: 0 0.75rem;
+    font: inherit;
+    font-size: 0.875rem;
+    color: var(--evd-ink);
+    cursor: pointer;
+    background: var(--htmlpress-bg);
+    border: 1px solid var(--evd-grid);
+    border-radius: 999px;
+  }
+  .evd-bar button:hover:not(:disabled) {
+    background: var(--evd-card);
+  }
+  .evd-bar button:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+  .evd-dots {
+    display: flex;
+    flex: 1;
+    gap: 0.4rem;
+    justify-content: center;
+  }
+  .evd-dots button {
+    min-width: 0;
+    width: 0.6rem;
+    height: 0.6rem;
+    padding: 0;
+    background: var(--evd-grid);
+    border: 0;
+  }
+  .evd-dots button[aria-current="true"] {
+    width: 1.6rem;
+    background: var(--evd-ink);
+  }
+  .evd-count {
+    min-width: 3rem;
+    font-size: 0.8125rem;
+    text-align: center;
+    color: var(--evd-soft);
+  }
+  .evd-stage:fullscreen {
+    display: grid;
+    place-items: center;
+    border: 0;
+    border-radius: 0;
+  }
+  .evd-stage:fullscreen .evd-track {
+    width: min(100vw, 177.78vh);
+  }
+</style>
+
+<h1>电动汽车销量</h1>
+<p>
+  一份嵌在文档页面中的五页简报。每张幻灯片都是一个 16:9
+  的框，文字以容器单位设定大小，因此整张幻灯片会像演示文稿一样整体缩放，从手机到投影仪都是如此。可以滑动或滚动切换幻灯片，在演示获得焦点后使用按钮或方向键，或按
+  <kbd>F</kbd> 进入全屏。指向 <a href="#evd-3">#evd-3</a> 的链接会直接打开第三张幻灯片。
+</p>
+
+<h2>演示</h2>
+<div class="evd">
+  <div
+    class="evd-stage"
+    tabindex="0"
+    aria-roledescription="轮播"
+    aria-label="电动汽车销量"
+  >
+    <div class="evd-track">
+      <section
+        class="evd-slide evd-title"
+        id="evd-1"
+        aria-roledescription="幻灯片"
+        aria-label="第 1 张，共 5 张"
+      >
+        <p class="evd-kicker">市场简报 · 2026</p>
+        <h2 data-toc="false">电动化转折</h2>
+        <p>全球电动汽车销量，2012–2025 年 · IEA 数据</p>
+      </section>
+
+      <section
+        class="evd-slide evd-big"
+        id="evd-2"
+        aria-roledescription="幻灯片"
+        aria-label="第 2 张，共 5 张"
+      >
+        <div>
+          <p class="evd-kicker">2025 年销量</p>
+          <b>2120<small> 万</small></b>
+          <p>辆电动汽车，含纯电动与插电式混合动力，全球合计*</p>
+        </div>
+        <ul>
+          <li><strong>+21%</strong>较 2024 年的 1750 万辆</li>
+          <li><strong>×178</strong>自 2012 年以来，当年售出 11.9 万辆</li>
+          <li><strong>63%</strong>在中国售出</li>
+        </ul>
+        <p class="evd-folio">* IEA 最新年份数据，最有可能被修订</p>
+      </section>
+
+      <section
+        class="evd-slide"
+        id="evd-3"
+        aria-roledescription="幻灯片"
+        aria-label="第 3 张，共 5 张"
+      >
+        <p class="evd-kicker">全球销量，百万辆</p>
+        <h3 data-toc="false">翻一番，再翻一番</h3>
+        <div class="evd-chart" id="evd-columns"></div>
+        <p class="evd-folio">2025 年为斜线填充：最新年份 · 悬停查看各柱</p>
+      </section>
+
+      <section
+        class="evd-slide"
+        id="evd-4"
+        aria-roledescription="幻灯片"
+        aria-label="第 4 张，共 5 张"
+      >
+        <p class="evd-kicker">占全球销量的份额</p>
+        <h3 data-toc="false">2020 年欧洲领先；如今中国领先</h3>
+        <div class="evd-legend">
+          <span><i style="background: var(--evd-china)"></i>中国</span>
+          <span><i style="background: var(--evd-europe)"></i>欧洲</span>
+          <span><i style="background: var(--evd-us)"></i>美国</span>
+          <span><i style="background: var(--evd-rest)"></i>世界其他地区</span>
+        </div>
+        <div class="evd-chart" id="evd-shares"></div>
+      </section>
+
+      <section
+        class="evd-slide evd-takeaways"
+        id="evd-5"
+        aria-roledescription="幻灯片"
+        aria-label="第 5 张，共 5 张"
+      >
+        <p class="evd-kicker">要点</p>
+        <h3 data-toc="false">数字说明了什么</h3>
+        <ol>
+          <li>
+            <strong>增长从未停滞</strong>自 2012 年以来销量逐年上升，即使在持平的 2019
+            年也是如此，仅 2025 年就增加了 370 万辆。
+          </li>
+          <li>
+            <strong>中国就是市场</strong>2025 年 2120 万辆中有 1330
+            万辆在中国，超过其他所有市场的总和。
+          </li>
+          <li>
+            <strong>世界其他地区正在觉醒</strong>在中国、欧洲和美国之外，销量首次突破 200
+            万辆。
+          </li>
+        </ol>
+        <p>
+          来源：IEA《全球电动汽车展望》，经 Our World in Data
+          整理。电动汽车指纯电动和插电式混合动力乘用车。
+        </p>
+      </section>
+    </div>
+  </div>
+  <div class="evd-bar">
+    <button type="button" data-step="-1" aria-label="上一张幻灯片">←</button>
+    <div class="evd-dots"></div>
+    <span class="evd-count" aria-live="polite">1 / 5</span>
+    <button type="button" data-step="1" aria-label="下一张幻灯片">→</button>
+    <button type="button" data-fullscreen aria-label="全屏">⛶</button>
+  </div>
+
+  <h2>逐页说明</h2>
+  <ol>
+    <li>
+      <a href="#evd-1"><strong>电动化转折</strong></a
+      >：标题页，引出一份关于 2012 年至 2025 年全球电动汽车销量的简报。
+    </li>
+    <li>
+      <a href="#evd-2"><strong>2025 年销量</strong></a
+      >：核心数字 2120 万辆，以及它相比 2024 年和 2012 年的增长和中国所占的份额。
+    </li>
+    <li>
+      <a href="#evd-3"><strong>翻一番，再翻一番</strong></a
+      >：按年份绘制的全球销量柱状图，最新年份以斜线填充，因为它最有可能被修订。
+    </li>
+    <li>
+      <a href="#evd-4"><strong>2020 年欧洲领先；如今中国领先</strong></a
+      >：各市场在全球销量中所占份额随时间的变化。
+    </li>
+    <li>
+      <a href="#evd-5"><strong>数字说明了什么</strong></a
+      >：三条要点和数据来源。
+    </li>
+  </ol>
+  <h2>数据</h2>
+  <details>
+    <summary>数据表</summary>
+    <htmlpress-table>
+      <table id="evd-table">
+        <thead>
+          <tr>
+            <th>年份</th>
+            <th>世界</th>
+            <th>中国</th>
+            <th>欧洲</th>
+            <th>美国</th>
+            <th>世界其他地区</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </htmlpress-table>
+    <p>单位：百万辆。世界其他地区为全球总量减去三大市场。</p>
+  </details>
+</div>
+
+<h2>实现方式</h2>
+<ul>
+  <li>
+    <strong>幻灯片</strong>是 flex 行中的 <code>&lt;section&gt;</code>，使用
+    <code>scroll-snap-type: x mandatory</code>；每张都是一个尺寸容器，所有字号都以
+    <code>cqw</code> 为单位，因此幻灯片在任何宽度下都保持比例。
+  </li>
+  <li>
+    <strong>图表</strong>是带固定 <code>viewBox</code> 的
+    SVG，根据数据绘制一次并随幻灯片缩放，因此图表与文字总是一起放大。
+  </li>
+  <li>
+    <strong>导航</strong>大约只有三十行：按钮和方向键滚动轨道，<code
+      >IntersectionObserver</code
+    >
+    让计数器和圆点与滑动保持同步。<code>requestFullscreen()</code>
+    把舞台变成投影视图。
+  </li>
+</ul>
+<p>
+  数据来源：
+  <a href="https://www.iea.org/reports/global-ev-outlook-2025">IEA Global EV Outlook</a>
+  （国际能源署《全球电动汽车展望》），由
+  <a href="https://ourworldindata.org/grapher/electric-car-sales">Our World in Data</a>
+  整理（2026 年 6 月更新）。2025 年的数值是最新报告年份，最有可能被修订。
+</p>
+<script>
+  {
+    const years = [
+      2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025,
+    ]
+    const world = [
+      0.119, 0.201, 0.33, 0.52, 0.78, 1.2, 2.05, 2.08, 2.98, 6.6, 10.2, 13.7, 17.5, 21.2,
+    ]
+    const markets = [
+      {
+        name: "中国",
+        color: "--evd-china",
+        values: [
+          0.0099, 0.0157, 0.074, 0.211, 0.339, 0.58, 1.09, 1.07, 1.15, 3.25, 6.0, 8.2,
+          11.3, 13.3,
+        ],
+      },
+      {
+        name: "欧洲",
+        color: "--evd-europe",
+        values: [
+          0.0282, 0.059, 0.096, 0.162, 0.233, 0.32, 0.39, 0.57, 1.38, 2.3, 2.6, 3.2, 3.19,
+          4.3,
+        ],
+      },
+      {
+        name: "美国",
+        color: "--evd-us",
+        values: [
+          0.054, 0.097, 0.118, 0.114, 0.16, 0.194, 0.36, 0.325, 0.294, 0.63, 0.99, 1.39,
+          1.52, 1.53,
+        ],
+      },
+    ]
+    markets.push({
+      name: "世界其他地区",
+      color: "--evd-rest",
+      values: world.map((w, i) =>
+        Math.max(0, w - markets.reduce((sum, m) => sum + m.values[i], 0)),
+      ),
+    })
+    const NS = "http://www.w3.org/2000/svg"
+    const el = (name, attrs, parent) => {
+      const node = document.createElementNS(NS, name)
+      for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, value)
+      parent?.append(node)
+      return node
+    }
+    const text = (content, attrs, parent) => {
+      const node = el("text", attrs, parent)
+      node.textContent = content
+      return node
+    }
+    const millions = v => `${+(v * 100).toFixed(v >= 1 ? 0 : 1)} 万`
+
+    const tbody = document.querySelector("#evd-table tbody")
+    years.forEach((year, i) => {
+      const row = tbody.insertRow()
+      for (const v of [year, world[i], ...markets.map(m => m.values[i])]) {
+        row.insertCell().textContent = v > 1000 ? v : v.toFixed(2)
+      }
+    })
+
+    const tipFor = host => {
+      const tip = document.createElement("div")
+      tip.className = "evd-tip"
+      host.append(tip)
+      return (html, x, y) => {
+        tip.innerHTML = html
+        tip.style.left = `${x}%`
+        tip.style.top = `${y}%`
+        tip.toggleAttribute("data-on", html !== null)
+      }
+    }
+
+    {
+      const host = document.getElementById("evd-columns")
+      const W = 1000
+      const H = 380
+      const m = { top: 34, right: 10, bottom: 36, left: 48 }
+      const step = (W - m.left - m.right) / years.length
+      const y = v => H - m.bottom - (v / 24) * (H - m.top - m.bottom)
+      const svg = el(
+        "svg",
+        {
+          viewBox: `0 0 ${W} ${H}`,
+          role: "img",
+          "aria-label": "2012 年至 2025 年全球电动汽车年销量",
+        },
+        host,
+      )
+      const defs = el("defs", {}, svg)
+      const hatch = el(
+        "pattern",
+        {
+          id: "evd-hatch",
+          width: 8,
+          height: 8,
+          patternUnits: "userSpaceOnUse",
+          patternTransform: "rotate(45)",
+        },
+        defs,
+      )
+      el("rect", { width: 8, height: 8, fill: "var(--evd-china)", opacity: 0.35 }, hatch)
+      el("rect", { width: 4, height: 8, fill: "var(--evd-china)" }, hatch)
+      for (const tick of [0, 5, 10, 15, 20]) {
+        el(
+          "line",
+          {
+            x1: m.left,
+            x2: W - m.right,
+            y1: y(tick),
+            y2: y(tick),
+            stroke: "var(--evd-grid)",
+          },
+          svg,
+        )
+        text(tick, { x: m.left - 12, y: y(tick) + 7, "text-anchor": "end" }, svg)
+      }
+      const show = tipFor(host)
+      years.forEach((year, i) => {
+        const x = m.left + i * step + step * 0.16
+        const w = step * 0.68
+        const h = y(0) - y(world[i])
+        const g = el("g", { "data-bar": year }, svg)
+        el(
+          "path",
+          {
+            d: `M${x},${y(0)}V${y(world[i]) + Math.min(4, h)}q0,-4 4,-4H${x + w - 4}q4,0 4,4V${y(0)}Z`,
+            fill: year === 2025 ? "url(#evd-hatch)" : "var(--evd-china)",
+          },
+          g,
+        )
+        el(
+          "rect",
+          {
+            x: m.left + i * step,
+            y: m.top,
+            width: step,
+            height: H - m.top - m.bottom,
+            fill: "transparent",
+          },
+          g,
+        )
+        if (i % 3 === 1 || year === 2025) {
+          text(year, { x: x + w / 2, y: H - 6, "text-anchor": "middle" }, svg)
+        }
+        if ([2012, 2020, 2025].includes(year)) {
+          text(
+            millions(world[i]),
+            {
+              x: x + w / 2,
+              y: y(world[i]) - 10,
+              "text-anchor": "middle",
+              class: "evd-value",
+            },
+            svg,
+          )
+        }
+        g.addEventListener("pointerenter", () => {
+          const growth = i
+            ? ` · ${world[i] >= world[i - 1] ? "+" : ""}${Math.round((world[i] / world[i - 1] - 1) * 100)}%`
+            : ""
+          show(
+            `<strong>${year} 年</strong> ${millions(world[i])}${growth}`,
+            ((x + w / 2) / W) * 100,
+            (y(world[i]) / H) * 100,
+          )
+        })
+        g.addEventListener("pointerleave", () => show(null, 0, 0))
+      })
+    }
+
+    {
+      const host = document.getElementById("evd-shares")
+      const W = 1000
+      const H = 330
+      const picks = [2015, 2020, 2025]
+      const left = 90
+      const barH = 84
+      const gap = 26
+      const svg = el(
+        "svg",
+        {
+          viewBox: `0 0 ${W} ${H}`,
+          role: "img",
+          "aria-label": "2015、2020 和 2025 年各市场占全球电动汽车销量的份额",
+        },
+        host,
+      )
+      const show = tipFor(host)
+      picks.forEach((year, row) => {
+        const i = years.indexOf(year)
+        const top = 20 + row * (barH + gap)
+        text(year, { x: 0, y: top + barH / 2 + 8, class: "evd-value" }, svg)
+        let x = left
+        for (const market of markets) {
+          const share = market.values[i] / world[i]
+          const w = share * (W - left)
+          const g = el("g", { "data-bar": `${year}-${market.name}` }, svg)
+          el(
+            "rect",
+            {
+              x: x + 1,
+              y: top,
+              width: Math.max(0, w - 2),
+              height: barH,
+              rx: 4,
+              fill: `var(${market.color})`,
+            },
+            g,
+          )
+          if (w > 80) {
+            text(
+              `${Math.round(share * 100)}%`,
+              { x: x + 14, y: top + barH / 2 + 8, class: "evd-inside" },
+              g,
+            )
+          }
+          const cx = x + w / 2
+          g.addEventListener("pointerenter", () =>
+            show(
+              `<strong>${market.name}，${year} 年</strong> ${millions(market.values[i])} · ${(share * 100).toFixed(1)}%`,
+              (cx / W) * 100,
+              (top / H) * 100,
+            ),
+          )
+          g.addEventListener("pointerleave", () => show(null, 0, 0))
+          x += w
+        }
+      })
+    }
+
+    const stage = document.querySelector(".evd-stage")
+    const track = stage.querySelector(".evd-track")
+    const slides = [...track.children]
+    const count = document.querySelector(".evd-count")
+    const dots = document.querySelector(".evd-dots")
+    const [prev, next] = document.querySelectorAll(".evd-bar [data-step]")
+    let current = 0
+    const go = index => {
+      const target = Math.max(0, Math.min(slides.length - 1, index))
+      track.scrollTo({ left: slides[target].offsetLeft - track.offsetLeft })
+    }
+    slides.forEach((_, i) => {
+      const dot = document.createElement("button")
+      dot.type = "button"
+      dot.setAttribute("aria-label", `第 ${i + 1} 张幻灯片`)
+      dot.addEventListener("click", () => go(i))
+      dots.append(dot)
+    })
+    const mark = index => {
+      current = index
+      count.textContent = `${index + 1} / ${slides.length}`
+      prev.disabled = index === 0
+      next.disabled = index === slides.length - 1
+      ;[...dots.children].forEach((dot, i) =>
+        dot.setAttribute("aria-current", i === index),
+      )
+    }
+    const seen = new IntersectionObserver(
+      entries => {
+        for (const entry of entries)
+          if (entry.isIntersecting) mark(slides.indexOf(entry.target))
+      },
+      { root: track, threshold: 0.6 },
+    )
+    for (const slide of slides) seen.observe(slide)
+    mark(0)
+    const linked = slides.findIndex(slide => `#${slide.id}` === location.hash)
+    if (linked > 0) track.scrollLeft = slides[linked].offsetLeft - track.offsetLeft
+    for (const button of [prev, next]) {
+      button.addEventListener("click", () => go(current + Number(button.dataset.step)))
+    }
+    const fullscreen = () =>
+      document.fullscreenElement ? document.exitFullscreen() : stage.requestFullscreen?.()
+    document
+      .querySelector(".evd-bar [data-fullscreen]")
+      .addEventListener("click", fullscreen)
+    stage.addEventListener("keydown", event => {
+      const keys = {
+        ArrowRight: 1,
+        ArrowDown: 1,
+        PageDown: 1,
+        " ": 1,
+        ArrowLeft: -1,
+        ArrowUp: -1,
+        PageUp: -1,
+      }
+      if (event.key in keys) go(current + keys[event.key])
+      else if (event.key === "Home") go(0)
+      else if (event.key === "End") go(slides.length - 1)
+      else if (event.key === "f" || event.key === "F") fullscreen()
+      else return
+      event.preventDefault()
+    })
+  }
+</script>
