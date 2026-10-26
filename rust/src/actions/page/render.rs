@@ -6,6 +6,7 @@ use lol_html::html_content::ContentType;
 use lol_html::{RewriteStrSettings, element, rewrite_str};
 
 use crate::actions::code::highlight::highlight_code;
+use crate::actions::code::title::add_titles;
 use crate::actions::date::format::format_date;
 use crate::actions::icon::render::render_icon;
 use crate::actions::page::convert::create_markdown_path;
@@ -49,6 +50,7 @@ pub(crate) fn render_page(
     let content = add_byline(&page.content, create_byline(page)).map_err(fail)?;
     let (light, dark) = site.config.read_code_themes();
     let content = highlight_code(&content, light, dark).map_err(fail)?;
+    let content = add_titles(&content).map_err(fail)?;
     let tags = list_tags(&[layout, &content], &fragments).map_err(fail)?;
     let content = swap_components(&content, &fragments).map_err(fail)?;
     let head = create_head(site, page, &tags, reload);

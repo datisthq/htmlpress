@@ -12,6 +12,7 @@ mod actions {
     }
     pub(crate) mod code {
         pub(crate) mod highlight;
+        pub(crate) mod title;
     }
     pub(crate) mod config {
         pub(crate) mod load;

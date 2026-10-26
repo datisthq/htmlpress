@@ -89,6 +89,14 @@ fn simplify_components(html: &str) -> Result<String, String> {
                 Ok(())
             }
         ))
+        .append_element_content_handler(element!("pre[data-title]", |el| {
+            let title = el.get_attribute("data-title").unwrap_or_default();
+            el.before(
+                &format!("<p><strong>{}</strong></p>", title.replace('<', "&lt;")),
+                ContentType::Html,
+            );
+            Ok(())
+        }))
         .append_element_content_handler(element!("htmlpress-mermaid > pre", |el| {
             el.set_attribute("class", "language-mermaid")?;
             Ok(())

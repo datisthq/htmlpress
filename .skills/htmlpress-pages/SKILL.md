@@ -43,7 +43,9 @@ The theme styles the elements themselves: headings, `<p>`, lists, `<table>`, `<p
   `--htmlpress-radius`, `--htmlpress-width`.
 - Escape code inside `<pre><code>`: `&lt;` and `&amp;`. Name its language,
   `<pre><code class="language-rust">`, to highlight it at build time; `data-lines="2,4-5"`
-  marks lines and `data-line-numbers` numbers them. `codeThemeLight`/`codeThemeDark` in
+  marks lines, `data-line-numbers` numbers them, `data-add`/`data-remove` show a diff,
+  `data-focus` dims the other lines, `data-error`/`data-warning` flag lines and
+  `data-words="a,b"` marks words. `<pre data-title="file.yaml">` adds a title bar. `codeThemeLight`/`codeThemeDark` in
   the config pick the themes.
 
 ## Components

@@ -35,21 +35,12 @@
 
 <h2>Titles</h2>
 <p>
-  A <code>&lt;figure&gt;</code> with a <code>&lt;figcaption&gt;</code> names a block in
-  plain HTML:
+  <code>data-title</code> on the <code>&lt;pre&gt;</code> gives the block a title bar,
+  usually the file name; it works whether or not the block is highlighted.
 </p>
-<pre><code class="language-html">&lt;figure&gt;
-  &lt;pre&gt;&lt;code&gt;title: Htmlpress&lt;/code&gt;&lt;/pre&gt;
-  &lt;figcaption&gt;htmlpress.yaml&lt;/figcaption&gt;
-&lt;/figure&gt;</code></pre>
+<pre><code class="language-html">&lt;pre data-title="htmlpress.yaml"&gt;&lt;code class="language-yaml"&gt;title: Htmlpress&lt;/code&gt;&lt;/pre&gt;</code></pre>
 <p>Renders as:</p>
-<figure>
-  <pre><code class="language-yaml">title: Htmlpress</code></pre>
-  <figcaption>htmlpress.yaml</figcaption>
-</figure>
-<htmlpress-callout label="Coming soon">
-  <p>A title bar on the code block itself, holding the file name.</p>
-</htmlpress-callout>
+<pre data-title="htmlpress.yaml"><code class="language-yaml">title: Htmlpress</code></pre>
 
 <h2>Line Highlighting</h2>
 <p>
@@ -62,9 +53,13 @@ const b = 2
 const c = 3</code></pre>
 
 <h2>Word Highlighting</h2>
-<htmlpress-callout label="Coming soon">
-  <p>Highlighting every occurrence of a word in a code block.</p>
-</htmlpress-callout>
+<p>
+  <code>data-words</code> on a highlighted block marks every occurrence of each
+  comma-separated word. A word the grammar splits into two tokens is not marked.
+</p>
+<pre><code class="language-html">&lt;pre&gt;&lt;code class="language-js" data-words="greeting"&gt;…&lt;/code&gt;&lt;/pre&gt;</code></pre>
+<pre><code class="language-js" data-words="greeting">const greeting = "hello"
+console.log(greeting)</code></pre>
 
 <h2>Line Numbers</h2>
 <p>
@@ -76,23 +71,34 @@ const c = 3</code></pre>
 const b = 2</code></pre>
 
 <h2>Diff Lines</h2>
-<htmlpress-callout label="Coming soon">
-  <p>
-    Marking lines of a code block as added or removed. Inside a
-    <a href="#terminal">terminal</a>, <code>&lt;ins&gt;</code> and
-    <code>&lt;del&gt;</code> already color output green and red.
-  </p>
-</htmlpress-callout>
+<p>
+  <code>data-add</code> and <code>data-remove</code> on a highlighted block mark lines as
+  added or removed, with a <code>+</code> or <code>−</code> the copy button leaves out.
+  Inside a <a href="#terminal">terminal</a>, <code>&lt;ins&gt;</code> and
+  <code>&lt;del&gt;</code> color output green and red.
+</p>
+<pre><code class="language-html">&lt;pre&gt;&lt;code class="language-js" data-remove="1" data-add="2"&gt;…&lt;/code&gt;&lt;/pre&gt;</code></pre>
+<pre><code class="language-js" data-remove="1" data-add="2">const port = 8080
+const port = 8000
+serve(port)</code></pre>
 
 <h2>Focus Lines</h2>
-<htmlpress-callout label="Coming soon">
-  <p>Dimming every line of a code block but the focused ones.</p>
-</htmlpress-callout>
+<p>
+  <code>data-focus</code> on a highlighted block dims every other line, until the reader
+  points at the block.
+</p>
+<pre><code class="language-js" data-focus="2">import { build } from "htmlpress"
+await build("docs")
+console.log("done")</code></pre>
 
 <h2>Error and Warning</h2>
-<htmlpress-callout label="Coming soon">
-  <p>Marking lines of a code block as errors or warnings.</p>
-</htmlpress-callout>
+<p><code>data-error</code> and <code>data-warning</code> mark lines in red and yellow.</p>
+<pre><code class="language-js" data-error="1" data-warning="2">undefinedCall()
+const unused = 1</code></pre>
+<p>
+  Every line mark takes the same list as <code>data-lines</code>, such as
+  <code>2,4-5</code>, and an invalid list fails the build.
+</p>
 
 <h2>Collapsible Code</h2>
 <p>

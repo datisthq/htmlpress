@@ -73,12 +73,27 @@ fn load_registry() -> Option<&'static Registry> {
     registry.as_ref()
 }
 
+type Lines = Vec<std::ops::RangeInclusive<usize>>;
+
 #[derive(Clone)]
 struct Block {
     language: String,
-    lines: Vec<std::ops::RangeInclusive<usize>>,
+    lines: Lines,
     numbers: Option<isize>,
+    /// Each line mark: the attribute it sets on the line, its value and the lines.
+    marks: Vec<(&'static str, &'static str, Lines)>,
+    /// Lines left at full strength while the rest are dimmed; empty for no focus.
+    focus: Lines,
+    words: Vec<String>,
 }
+
+// The `data-*` on a block's <code> that mark lines, and what each sets on them
+const LINE_MARKS: &[(&str, &str, &str)] = &[
+    ("data-add", "data-diff", "add"),
+    ("data-remove", "data-diff", "remove"),
+    ("data-error", "data-severity", "error"),
+    ("data-warning", "data-severity", "warning"),
+];
 
 // For each `pre > code` in document order: its language, when it names one and holds only
 // text, since a block with its own markup (`<mark>`, links) would lose it to the colors
@@ -106,10 +121,33 @@ fn list_blocks(html: &str) -> Result<Vec<Option<Block>>, String> {
                 })?),
                 None => None,
             };
+            let mut marks = vec![];
+            for (attribute, name, value) in LINE_MARKS {
+                if let Some(text) = el.get_attribute(attribute) {
+                    let lines = read_lines(&text)
+                        .map_err(|error| error.replace("data-lines", attribute))?;
+                    marks.push((*name, *value, lines));
+                }
+            }
+            let focus = el
+                .get_attribute("data-focus")
+                .map_or(Ok(vec![]), |text| read_lines(&text))
+                .map_err(|error| error.replace("data-lines", "data-focus"))?;
+            let words = (el
+                .get_attribute("data-words")
+                .unwrap_or_default()
+                .split(','))
+            .map(str::trim)
+            .filter(|word| !word.is_empty())
+            .map(str::to_owned)
+            .collect();
             blocks.borrow_mut().push(language.map(|language| Block {
                 language,
                 lines,
                 numbers,
+                marks,
+                focus,
+                words,
             }));
             Ok(())
         }))
@@ -157,7 +195,86 @@ fn color_source(
     let start = html.find("<code")?;
     let open = start + html[start..].find('>')? + 1;
     let close = html.rfind("</code>")?;
-    Some(html[open..close].to_owned())
+    let html = mark_lines(&html[open..close], block);
+    Some(mark_words(&html, &block.words))
+}
+
+const LINE_START: &str = "<span class=\"giallo-l\"";
+
+// giallo writes each line as a sibling `<span class="giallo-l">`, in order, so the nth
+// one is line n; a mark is an attribute on it that the theme styles
+fn mark_lines(html: &str, block: &Block) -> String {
+    if block.marks.is_empty() && block.focus.is_empty() {
+        return html.to_owned();
+    }
+    let mut output = String::with_capacity(html.len());
+    for (line, part) in html.split(LINE_START).enumerate() {
+        if line == 0 {
+            output.push_str(part);
+            continue;
+        }
+        output.push_str(LINE_START);
+        for (name, value, lines) in &block.marks {
+            if lines.iter().any(|range| range.contains(&line)) {
+                output.push_str(&format!(" {name}=\"{value}\""));
+            }
+        }
+        if !block.focus.is_empty()
+            && !block.focus.iter().any(|range| range.contains(&line))
+        {
+            output.push_str(" data-dim");
+        }
+        output.push_str(part);
+    }
+    output
+}
+
+// Only in the text between tags, so a word never matches an attribute or a tag name; a
+// word split across two tokens by the grammar is not marked
+fn mark_words(html: &str, words: &[String]) -> String {
+    if words.is_empty() {
+        return html.to_owned();
+    }
+    // Attribute values come entity-encoded or not, so each is decoded, then escaped as the
+    // rendered tokens are
+    let escaped: Vec<String> = (words.iter())
+        .map(|word| escape_text(&decode_entities(word)))
+        .collect();
+    let mut output = String::with_capacity(html.len());
+    let mut rest = html;
+    while let Some(open) = rest.find('<') {
+        output.push_str(&mark_text(&rest[..open], &escaped));
+        let close = rest[open..]
+            .find('>')
+            .map_or(rest.len(), |end| open + end + 1);
+        output.push_str(&rest[open..close]);
+        rest = &rest[close..];
+    }
+    output.push_str(&mark_text(rest, &escaped));
+    output
+}
+
+fn mark_text(text: &str, words: &[String]) -> String {
+    let mut output = String::with_capacity(text.len());
+    let mut rest = text;
+    loop {
+        let next = (words.iter())
+            .filter_map(|word| rest.find(word.as_str()).map(|at| (at, word)))
+            .min_by_key(|(at, word)| (*at, std::cmp::Reverse(word.len())));
+        let Some((at, word)) = next else { break };
+        output.push_str(&rest[..at]);
+        output.push_str(&format!("<mark>{word}</mark>"));
+        rest = &rest[at + word.len()..];
+    }
+    output.push_str(rest);
+    output
+}
+
+fn escape_text(text: &str) -> String {
+    text.replace('&', "&amp;")
+        .replace('<', "&lt;")
+        .replace('>', "&gt;")
+        .replace('"', "&quot;")
 }
 
 // `2,4-5`: single lines and inclusive ranges, counted from 1

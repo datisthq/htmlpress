@@ -259,3 +259,76 @@ pre code .giallo-ln {
   text-align: right;
   user-select: none;
 }
+
+/* Line marks on a highlighted block, tinted from the theme's tones */
+pre code .giallo-l[data-diff],
+pre code .giallo-l[data-severity] {
+  margin-inline: -1.25rem;
+  padding-inline: 1.25rem;
+  width: calc(100% + 2.5rem);
+}
+pre code .giallo-l[data-diff="add"] {
+  background: color-mix(in oklab, var(--htmlpress-success) 14%, transparent);
+}
+pre code .giallo-l[data-diff="remove"] {
+  background: color-mix(in oklab, var(--htmlpress-danger) 14%, transparent);
+}
+pre code .giallo-l[data-severity="error"] {
+  background: color-mix(in oklab, var(--htmlpress-danger) 18%, transparent);
+}
+pre code .giallo-l[data-severity="warning"] {
+  background: color-mix(in oklab, var(--htmlpress-warning) 20%, transparent);
+}
+/* A sign, not text, so a copied block carries no +/- */
+pre code .giallo-l[data-diff]::before {
+  display: inline-block;
+  width: 1.25rem;
+  margin-left: -1.25rem;
+  text-align: center;
+  user-select: none;
+}
+pre code .giallo-l[data-diff="add"]::before {
+  content: "+";
+  color: var(--htmlpress-success);
+}
+pre code .giallo-l[data-diff="remove"]::before {
+  content: "−";
+  color: var(--htmlpress-danger);
+}
+pre code .giallo-l[data-dim] {
+  opacity: 0.4;
+  transition: opacity 0.2s;
+}
+pre:hover code .giallo-l[data-dim] {
+  opacity: 1;
+}
+pre code mark {
+  border-radius: 0.25rem;
+  background: color-mix(in oklab, var(--htmlpress-accent) 18%, transparent);
+  color: inherit;
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--htmlpress-accent) 40%, transparent);
+}
+
+/* A titled block: the caption is its title bar, joined to the block's frame */
+.htmlpress-code-figure {
+  margin: 0 0 1.25em;
+}
+.htmlpress-code-figure > figcaption {
+  margin: 0;
+  padding: 0.5rem 1.25rem;
+  border: 1px solid var(--htmlpress-border);
+  border-bottom: 0;
+  border-radius: var(--htmlpress-radius) var(--htmlpress-radius) 0 0;
+  background: var(--htmlpress-surface);
+  color: var(--htmlpress-muted);
+  font: 500 0.75rem var(--htmlpress-mono);
+  text-align: left;
+}
+.htmlpress-code-figure pre,
+.htmlpress-code-figure .htmlpress-code {
+  margin: 0;
+}
+.htmlpress-code-figure pre {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}

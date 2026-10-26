@@ -46,3 +46,36 @@ fn highlights_and_numbers_chosen_lines() -> Result<(), String> {
     assert!(highlight_code(bad, "catppuccin-latte", "catppuccin-mocha").is_err());
     Ok(())
 }
+
+#[test]
+fn marks_diff_severity_focus_and_words() -> Result<(), String> {
+    let html = "<pre><code class=\"language-js\" data-add=\"1\" data-remove=\"2\" data-error=\"3\" \
+                data-warning=\"4\" data-focus=\"1-2\" data-words=\"greet,&lt;b&gt;\">\
+                const greet = 1\nconst b = greet\nlet c = \"&lt;b&gt;\"\nlet d = 4</code></pre>";
+    let colored = highlight_code(html, "catppuccin-latte", "catppuccin-mocha")?;
+    let lines: Vec<&str> = colored.split("<span class=\"giallo-l\"").skip(1).collect();
+    assert_eq!(lines.len(), 4, "{colored}");
+    assert!(lines[0].starts_with(" data-diff=\"add\">"), "{}", lines[0]);
+    assert!(lines[1].starts_with(" data-diff=\"remove\">"));
+    assert!(
+        lines[2].starts_with(" data-severity=\"error\" data-dim>"),
+        "{}",
+        lines[2]
+    );
+    assert!(lines[3].starts_with(" data-severity=\"warning\" data-dim>"));
+    assert!(
+        colored.matches("<mark>greet</mark>").count() == 2,
+        "{colored}"
+    );
+    assert!(
+        colored.contains("<mark>&lt;b&gt;</mark>") || colored.contains("&lt;"),
+        "{colored}"
+    );
+    assert!(!colored.contains("data-words=\"<mark>"));
+    let bad = "<pre><code class=\"language-js\" data-add=\"x\">a</code></pre>";
+    let error = highlight_code(bad, "catppuccin-latte", "catppuccin-mocha")
+        .err()
+        .unwrap_or_default();
+    assert!(error.contains("data-add"), "{error}");
+    Ok(())
+}

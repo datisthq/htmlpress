@@ -44,3 +44,13 @@ fn puts_the_markdown_beside_the_page() {
     assert_eq!(create_markdown_path("index.html"), "index.md");
     assert_eq!(create_markdown_path("guides/build.html"), "guides/build.md");
 }
+
+#[test]
+fn names_a_titled_block_before_its_fence() -> crate::Result<()> {
+    let page = read_page(
+        "a.html",
+        "<h1>A</h1><pre data-title=\"a.yaml\"><code>x: 1</code></pre>",
+    )?;
+    assert!(convert_page(&page)?.contains("**a.yaml**\n\n```\nx: 1\n```"));
+    Ok(())
+}
