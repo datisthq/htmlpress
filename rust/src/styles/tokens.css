@@ -11,6 +11,8 @@
   --htmlpress-border: oklch(0.922 0 0);
   --htmlpress-accent: oklch(0.546 0.245 262.881);
   --htmlpress-accent-text: oklch(0.985 0 0);
+  --htmlpress-banner: oklch(0.894 0.057 293.283);
+  --htmlpress-banner-text: oklch(0.205 0 0);
   --htmlpress-info: oklch(0.6 0.18 255);
   --htmlpress-success: oklch(0.6 0.17 140);
   --htmlpress-warning: oklch(0.7 0.16 70);
@@ -33,6 +35,8 @@
     --htmlpress-border: oklch(0.269 0 0);
     --htmlpress-accent: oklch(0.68 0.17 259.815);
     --htmlpress-accent-text: oklch(0.145 0 0);
+    --htmlpress-banner: oklch(0.269 0 0);
+    --htmlpress-banner-text: oklch(0.985 0 0);
     --htmlpress-info: oklch(0.72 0.14 250);
     --htmlpress-success: oklch(0.78 0.18 135);
     --htmlpress-warning: oklch(0.82 0.16 85);
@@ -49,6 +53,8 @@
   --htmlpress-border: oklch(0.269 0 0);
   --htmlpress-accent: oklch(0.68 0.17 259.815);
   --htmlpress-accent-text: oklch(0.145 0 0);
+  --htmlpress-banner: oklch(0.269 0 0);
+  --htmlpress-banner-text: oklch(0.985 0 0);
   --htmlpress-info: oklch(0.72 0.14 250);
   --htmlpress-success: oklch(0.78 0.18 135);
   --htmlpress-warning: oklch(0.82 0.16 85);

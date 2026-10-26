@@ -2,13 +2,17 @@
   :scope {
     display: block;
     padding: 0.5rem 1.5rem;
-    border-bottom: 1px solid color-mix(in oklab, var(--htmlpress-accent) 20%, transparent);
-    background: color-mix(in oklab, var(--htmlpress-accent) 8%, var(--htmlpress-bg));
+    background: var(--htmlpress-banner);
+    color: var(--htmlpress-banner-text);
     font-size: 0.875rem;
     text-align: center;
   }
   a {
-    color: var(--htmlpress-accent);
+    color: inherit;
+    text-underline-offset: 0.25em;
+  }
+  a:hover {
+    text-decoration: none;
   }
   @media (max-width: 56rem) {
     :scope {
