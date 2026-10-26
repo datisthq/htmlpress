@@ -159,3 +159,18 @@ fn registers_every_built_in_asset_file() -> crate::Result<()> {
     assert_eq!(paths, registered);
     Ok(())
 }
+
+#[cfg(unix)]
+#[test]
+fn skips_a_base_that_links_outside_the_project() -> crate::Result<()> {
+    let outside = tempfile::tempdir().map_err(Error::io("tempdir"))?;
+    write_file(outside.path(), "secret.html", "<h1>Secret</h1>")?;
+    let root = tempfile::tempdir().map_err(Error::io("tempdir"))?;
+    let root = root.path();
+    std::os::unix::fs::symlink(outside.path(), root.join("docs"))
+        .map_err(Error::io("symlink"))?;
+    write_file(root, CONFIG_FILE, "include: docs/**/*.html\n")?;
+    let site = scan_site(root)?;
+    assert!(site.pages.is_empty());
+    Ok(())
+}

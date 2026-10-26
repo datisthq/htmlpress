@@ -15,8 +15,12 @@ use crate::settings::{ASSETS, CONFIG_FILE, LAYOUT_ELEMENTS, PROJECT_DIR};
 pub fn scan_site(root: &Path) -> crate::Result<Site> {
     let config = load_config(root)?;
     let mut paths = vec![];
+    // A symlinked base would read, and publish, files from outside the project
+    let canonical = root.canonicalize().map_err(Error::io(root))?;
     for base in read_bases(&config) {
-        if root.join(&base).is_dir() {
+        let inside = (root.join(&base).canonicalize())
+            .is_ok_and(|folder| folder.is_dir() && folder.starts_with(&canonical));
+        if inside {
             list_files(root, &base, &mut paths)?;
         }
     }
