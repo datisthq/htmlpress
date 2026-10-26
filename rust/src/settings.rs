@@ -92,6 +92,7 @@ pub const ASSETS: &[Asset] = &[
     asset!("components/search/search.css"),
     asset!("components/search/search.js"),
     asset!("components/sidebar/sidebar.css"),
+    asset!("components/sidebar/sidebar.js"),
     asset!("components/skip/skip.css"),
     asset!("components/soundcloud/soundcloud.css"),
     asset!("components/soundcloud/soundcloud.js"),

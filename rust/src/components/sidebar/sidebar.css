@@ -11,6 +11,25 @@
     font-size: 0.875rem;
     line-height: 1.43;
     scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+    transition: scrollbar-color 0.2s;
+  }
+  :scope:hover,
+  :scope:focus-within {
+    scrollbar-color: color-mix(in oklch, var(--htmlpress-text) 20%, transparent)
+      transparent;
+  }
+  /* Safari ignores scrollbar-color; Chromium ignores these once it is set */
+  :scope::-webkit-scrollbar {
+    width: 8px;
+  }
+  :scope::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 9999px;
+  }
+  :scope:hover::-webkit-scrollbar-thumb,
+  :scope:focus-within::-webkit-scrollbar-thumb {
+    background: color-mix(in oklch, var(--htmlpress-text) 20%, transparent);
   }
   :scope htmlpress-brand {
     display: flex;
@@ -25,7 +44,8 @@
       width: var(--htmlpress-nav-width);
       transition:
         translate 0.2s,
-        visibility 0.2s;
+        visibility 0.2s,
+        scrollbar-color 0.2s;
     }
     :root[data-nav-collapsed] :scope {
       visibility: hidden;
@@ -53,7 +73,9 @@
       height: 100dvh;
       border-right: 1px solid var(--htmlpress-border);
       translate: -100%;
-      transition: translate 0.2s;
+      transition:
+        translate 0.2s,
+        scrollbar-color 0.2s;
     }
     :root:has(htmlpress-nav-toggle:defined)[data-nav-open] :scope {
       translate: 0;
