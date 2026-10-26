@@ -3,6 +3,7 @@
     ".": {
       "release-type": "simple",
       "package-name": "htmlpress",
+      "initial-version": "0.1.0",
       "include-component-in-tag": false,
       "extra-files": [
         { "type": "toml", "path": "rust/Cargo.toml", "jsonpath": "$.package.version" },
