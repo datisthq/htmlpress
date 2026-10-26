@@ -664,7 +664,7 @@ fn create_brand(site: &Site, page: &Page) -> String {
     let logo = site.config.logo.as_ref().map_or(String::new(), |logo| {
         format!("<img src=\"{}\" alt=\"\">", escape_html(logo))
     });
-    let (title, link) = (escape_html(title), escape_html(link));
+    let (title, link) = (escape_html(title), escape_html(&link));
     let title = match description {
         Some(text) => format!("<span>{title}<small>{}</small></span>", escape_html(text)),
         None => title,
@@ -672,18 +672,22 @@ fn create_brand(site: &Site, page: &Page) -> String {
     format!("<a href=\"{link}\">{logo}{title}</a>")
 }
 
-// The open page's section may rename the brand and point it at its own home
-fn read_brand<'a>(site: &'a Site, page: &Page) -> (&'a str, Option<&'a str>, &'a str) {
+// The open page's section may rename the brand and point it at its own home; either
+// home leads to its version in the page's language, or the brand would leave it
+fn read_brand<'a>(site: &'a Site, page: &Page) -> (&'a str, Option<&'a str>, String) {
     let section = read_section(site, page);
     let title = section.and_then(|section| section.site_title.as_deref());
     let description = section.and_then(|section| section.site_description.as_deref());
     let link = section.and_then(|section| section.site_link.as_deref());
     let description = description.or(site.config.description.as_deref());
-    (
-        title.unwrap_or(&site.title),
-        description,
-        link.unwrap_or("/"),
-    )
+    let link = match link {
+        Some(link) => (site.translations.get(link))
+            .and_then(|versions| versions.get(&page.language))
+            .cloned()
+            .unwrap_or_else(|| link.to_owned()),
+        None => site.read_language(&page.language).prefix.clone(),
+    };
+    (title.unwrap_or(&site.title), description, link)
 }
 
 fn read_section<'a>(site: &'a Site, page: &Page) -> Option<&'a Section> {
@@ -719,7 +723,7 @@ fn create_breadcrumbs(site: &Site, page: &Page) -> Option<String> {
     let _ = write!(
         html,
         "<li><a href=\"{}\">{}</a></li>",
-        escape_html(link),
+        escape_html(&link),
         escape_html(title)
     );
     for depth in 1..=folders.len() {

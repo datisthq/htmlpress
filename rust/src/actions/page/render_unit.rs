@@ -628,6 +628,7 @@ fn writes_the_ui_in_the_pages_language() -> crate::Result<()> {
     site.pages[1].date = Some("2026-10-01".to_owned());
     let html = render_page(&site, &site.pages[1], false)?;
     assert!(html.contains(r#"<html lang="es">"#));
+    assert!(html.contains(r#"<htmlpress-brand><a href="/es/">"#));
     assert!(html.contains(r##"<a href="#content">Saltar al contenido</a>"##));
     assert!(html.contains("<p>Contenido</p>"));
     assert!(
