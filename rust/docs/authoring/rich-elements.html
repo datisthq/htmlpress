@@ -495,6 +495,13 @@ title: Htmlpress</code></pre>
   <dd>The previous and next pages in navigation order.</dd>
   <dt><code>&lt;htmlpress-edit&gt;</code></dt>
   <dd>An "Edit this page" link from <code>edit</code> in <code>htmlpress.yaml</code>.</dd>
+  <dt><code>&lt;htmlpress-search&gt;</code></dt>
+  <dd>
+    Search over every page, with the script: a header button, also opened by
+    <kbd>⌘K</kbd> / <kbd>Ctrl K</kbd> or <kbd>/</kbd>. The build writes the index to
+    <code>_htmlpress/search.json</code>, split at each page's headings, and the dialog
+    loads it on first open; results are grouped by page and land on the heading.
+  </dd>
   <dt><code>&lt;htmlpress-toolbar&gt;</code></dt>
   <dd>
     A link to the page's Markdown copy; the script adds "Copy Markdown", "Open in ChatGPT"

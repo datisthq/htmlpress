@@ -3,6 +3,7 @@ use std::path::Path;
 use crate::actions::page::read::read_page;
 use crate::actions::page::render::render_page;
 use crate::actions::site::describe::describe_site;
+use crate::actions::site::index::{SEARCH_INDEX, index_site};
 use crate::actions::site::scan::scan_site;
 use crate::models::build::{BuildOptions, BuildReport};
 use crate::models::error::Error;
@@ -50,6 +51,7 @@ pub fn build_site(options: &BuildOptions) -> crate::Result<BuildReport> {
     if options.reload {
         write_file(&assets.join("reload.js"), RELOAD.as_bytes())?;
     }
+    write_file(&assets.join(SEARCH_INDEX), index_site(&site)?.as_bytes())?;
     // A project's own file of the same name was copied above and wins; _headers merges it
     let shipped = |name: &str| site.files.contains_key(name);
     for (path, bytes) in describe_site(&site)? {

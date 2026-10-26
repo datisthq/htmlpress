@@ -65,6 +65,16 @@ fn check_icons(config: &Config) -> Option<String> {
 // Each kind needs its own key, and a prefix must be a folder path, so matching a page's
 // URL against it never splits a name (`/guide` would take `/guides.html`)
 fn check_sections(config: &Config) -> Option<String> {
+    for link in &config.links {
+        if let Some(prefix) = &link.prefix
+            && (!prefix.starts_with('/') || !prefix.ends_with('/'))
+        {
+            return Some(format!(
+                "link \"{}\": prefix must start and end with \"/\", got \"{prefix}\"",
+                link.title
+            ));
+        }
+    }
     for section in &config.sections {
         let title = &section.title;
         match (section.kind, &section.prefix, &section.url) {

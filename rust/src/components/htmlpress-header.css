@@ -19,6 +19,13 @@
   :scope htmlpress-theme-toggle {
     margin-left: auto;
   }
+  /* Search, when the layout has it, takes the push to the right edge */
+  :scope htmlpress-search {
+    margin-left: auto;
+  }
+  :scope htmlpress-search ~ htmlpress-theme-toggle {
+    margin-left: 0;
+  }
 
   @media (max-width: 56rem) {
     :scope {

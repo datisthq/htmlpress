@@ -78,7 +78,8 @@ Put block content (`<p>`, `<h3>`, `<pre>`) inside a component, not bare text.
 - `htmlpress.yaml` (optional, keys as in Livemark's config): `site`, `base` (a sub-path
   such as `/repo/`; root-relative URLs get it as a prefix, so write them without it), `title`,
   `description`, `logo` and `favicon` (URLs), `banner` (HTML), `links` (each `title`,
-  `url`, `position: header | sidebar`, optional `icon`), `sections` (each `title` and `prefix`, or
+  `url`, `position: header | sidebar`, optional `icon` and `prefix` to show it only
+  under one folder), `sections` (each `title` and `prefix`, or
   `type: custom` and `url`; optional `icon`, `position`, `siteTitle`, `siteLink`,
   `siteDescription`: the sidebar and pager then show only the open section's pages), `head` (`meta`, `links`, `scripts`: lists of
   attribute maps; a script's `children` is its source), `contentSignals` (`search`,

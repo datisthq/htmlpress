@@ -9,6 +9,7 @@ use crate::actions::icon::render::render_icon;
 use crate::actions::page::convert::create_markdown_path;
 use crate::actions::page::prefix::prefix_urls;
 use crate::actions::section::find::{find_section, is_custom_current};
+use crate::actions::site::index::SEARCH_INDEX;
 use crate::models::config::{Link, Position, Section, SectionKind};
 use crate::models::error::Error;
 use crate::models::page::Page;
@@ -123,6 +124,13 @@ pub(crate) fn render_page(
         settings =
             settings.append_element_content_handler(element!("htmlpress-toc", |el| {
                 fill_element(el, create_toc(page));
+                Ok(())
+            }));
+    }
+    if !replaced("htmlpress-search") {
+        settings =
+            settings.append_element_content_handler(element!("htmlpress-search", |el| {
+                el.set_attribute("data-index", &format!("/{ASSETS_DIR}/{SEARCH_INDEX}"))?;
                 Ok(())
             }));
     }
@@ -449,6 +457,9 @@ fn create_nav(site: &Site, page: &Page) -> String {
     }
     let links: Vec<&Link> = (site.config.links.iter())
         .filter(|link| link.position == Position::Sidebar)
+        .filter(|link| {
+            (link.prefix.as_deref()).is_none_or(|prefix| page.url.starts_with(prefix))
+        })
         .collect();
     if !links.is_empty() {
         html.push_str("<ul data-links>");
@@ -495,6 +506,9 @@ const FOOTER: &str = "<p>Created with <span aria-label=\"love\">❤</span> and \
 fn create_links(site: &Site, page: &Page) -> Option<String> {
     let links: Vec<&Link> = (site.config.links.iter())
         .filter(|link| link.position == Position::Header)
+        .filter(|link| {
+            (link.prefix.as_deref()).is_none_or(|prefix| page.url.starts_with(prefix))
+        })
         .collect();
     let sections: Vec<String> = (site.config.sections.iter().enumerate())
         .filter(|(_, section)| section.position == Position::Header)

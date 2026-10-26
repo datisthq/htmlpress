@@ -85,6 +85,7 @@ fn adds_the_links_and_the_edit_link_from_the_config() -> crate::Result<()> {
         url: "https://github.com/x".to_owned(),
         position: Position::Header,
         icon: None,
+        prefix: None,
     }];
     site.config.edit = Some("https://github.com/x/edit/main/docs/".to_owned());
     let html = render_page(&site, &site.pages[1], false)?;
@@ -261,12 +262,14 @@ fn puts_each_link_in_its_position() -> crate::Result<()> {
             url: "https://github.com/x".to_owned(),
             position: Position::Header,
             icon: None,
+            prefix: None,
         },
         Link {
             title: "Chat".to_owned(),
             url: "https://chat.x".to_owned(),
             position: Position::Sidebar,
             icon: None,
+            prefix: None,
         },
     ];
     let html = render_page(&site, &site.pages[0], false)?;
@@ -366,9 +369,26 @@ fn puts_icons_before_link_and_section_titles() -> crate::Result<()> {
         url: "https://chat.x".to_owned(),
         position: Position::Header,
         icon: Some("message-circle".to_owned()),
+        prefix: None,
     }];
     let html = render_page(&site, &site.pages[0], false)?;
     assert!(html.contains(r#"<a href="/api/" data-section><svg viewBox="0 0 24 24""#));
     assert!(html.contains(r#"<a href="https://chat.x"><svg viewBox="0 0 24 24""#));
+    Ok(())
+}
+
+#[test]
+fn shows_a_prefixed_link_only_under_its_folder() -> crate::Result<()> {
+    let mut site = create_site()?;
+    site.config.links = vec![Link {
+        title: "Report".to_owned(),
+        url: "https://issues.x".to_owned(),
+        prefix: Some("/api/".to_owned()),
+        ..Link::default()
+    }];
+    let cli = render_page(&site, &site.pages[3], false)?;
+    assert!(cli.contains(r#"<a href="https://issues.x">Report</a>"#));
+    let guide = render_page(&site, &site.pages[1], false)?;
+    assert!(!guide.contains("issues.x"));
     Ok(())
 }

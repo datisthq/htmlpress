@@ -35,6 +35,7 @@ mod actions {
         pub(crate) mod build;
         pub(crate) mod clear;
         pub(crate) mod describe;
+        pub(crate) mod index;
         pub(crate) mod preview;
         pub(crate) mod scan;
         pub(crate) mod serve;

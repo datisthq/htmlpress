@@ -72,6 +72,8 @@ pub const ASSETS: &[Asset] = &[
     asset!("components/htmlpress-nav.css"),
     asset!("components/htmlpress-page.css"),
     asset!("components/htmlpress-pager.css"),
+    asset!("components/htmlpress-search.css"),
+    asset!("components/htmlpress-search.js"),
     asset!("components/htmlpress-shell.css"),
     asset!("components/htmlpress-sidebar.css"),
     asset!("components/htmlpress-skip.css"),
@@ -113,6 +115,7 @@ pub const LAYOUT_ELEMENTS: &[&str] = &[
     "htmlpress-links",
     "htmlpress-nav",
     "htmlpress-pager",
+    "htmlpress-search",
     "htmlpress-toc",
     "htmlpress-toolbar",
 ];

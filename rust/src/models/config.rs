@@ -90,6 +90,9 @@ pub struct Link {
     pub icon: Option<String>,
     #[serde(default)]
     pub position: Position,
+    /// Show the link only on pages whose URL starts with this folder path, such as
+    /// `/api/`.
+    pub prefix: Option<String>,
 }
 
 /// One section from the config: `type: article` (the default) owns the pages under

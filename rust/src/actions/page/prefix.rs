@@ -1,12 +1,19 @@
 use lol_html::{RewriteStrSettings, element, rewrite_str};
 
-const URL_ATTRIBUTES: &[&str] = &["href", "src", "poster", "action", "data-endpoint"];
+const URL_ATTRIBUTES: &[&str] = &[
+    "href",
+    "src",
+    "poster",
+    "action",
+    "data-endpoint",
+    "data-index",
+];
 
 /// Put `base` (`/repo`) before every root-relative URL in a rendered page's attributes,
 /// `srcset` included. Relative, absolute and protocol-relative URLs are left alone.
 pub(crate) fn prefix_urls(html: &str, base: &str) -> Result<String, String> {
     let settings = RewriteStrSettings::new().append_element_content_handler(element!(
-        "[href], [src], [srcset], [poster], [action], [data-endpoint]",
+        "[href], [src], [srcset], [poster], [action], [data-endpoint], [data-index]",
         |el| {
             for name in URL_ATTRIBUTES {
                 if let Some(value) = el.get_attribute(name) {

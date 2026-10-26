@@ -231,7 +231,13 @@ fn prefixes_every_url_with_the_base() -> crate::Result<()> {
         "404.html",
     ] {
         let html = read(page);
-        for attribute in ["href=\"/", "src=\"/", "srcset=\"/", "data-endpoint=\"/"] {
+        for attribute in [
+            "href=\"/",
+            "src=\"/",
+            "srcset=\"/",
+            "data-endpoint=\"/",
+            "data-index=\"/",
+        ] {
             for (at, _) in html.match_indices(attribute) {
                 let url = &html[at + attribute.len() - 1..];
                 assert!(
@@ -255,6 +261,13 @@ fn prefixes_every_url_with_the_base() -> crate::Result<()> {
     assert!(read("robots.txt").contains("Sitemap: https://x.dev/repo/sitemap.xml"));
     assert!(read("llms.txt").contains("(https://x.dev/repo/guides/build.md)"));
     assert!(read("_headers").starts_with("/repo/\n  Link: </repo/llms.txt>"));
+    assert!(
+        read("index.html")
+            .contains(r#"<htmlpress-search data-index="/repo/_htmlpress/search.json">"#)
+    );
+    assert!(
+        read("_htmlpress/search.json").contains("\"url\":\"/repo/guides/build.html\"")
+    );
     assert!(
         read(".well-known/agent-skills/index.json")
             .contains("\"url\": \"/repo/.well-known/agent-skills/one/SKILL.md\"")

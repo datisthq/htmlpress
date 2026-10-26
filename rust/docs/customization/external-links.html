@@ -44,6 +44,13 @@ links:
           <td>Where the link renders: <code>header</code> or <code>sidebar</code>.</td>
         </tr>
         <tr>
+          <td><code>prefix</code></td>
+          <td>none</td>
+          <td>
+            Show the link only on pages under this folder, such as <code>/api/</code>.
+          </td>
+        </tr>
+        <tr>
           <td><code>icon</code></td>
           <td>none</td>
           <td>
@@ -86,13 +93,15 @@ links:
     <pre><code>edit: https://github.com/acme/docs/edit/main/</code></pre>
 
     <h2>Scoping a link to a section</h2>
-    <htmlpress-callout label="Coming soon"
-      ><p>
-        A <code>prefix</code> per link, showing it only on the pages under one folder, for
-        per-section shortcuts such as "Report issue". Today every link shows on every
-        page.
-      </p></htmlpress-callout
-    >
+    <p>
+      A <code>prefix</code> shows a link only on the pages whose URL starts with it, for a
+      per-section shortcut such as "Report issue". Like a section's prefix, it starts and
+      ends with <code>/</code>.
+    </p>
+    <pre><code>links:
+  - title: Report an API issue
+    url: https://github.com/acme/api/issues
+    prefix: /api/</code></pre>
 
     <h2>See also</h2>
     <ul>
