@@ -41,9 +41,9 @@
   h1 {
     margin: 1.25rem 0 0;
     font-size: 3rem;
-    font-weight: 650;
-    line-height: 1.1;
-    letter-spacing: -0.03em;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.025em;
   }
   mark {
     padding: 0;
@@ -75,12 +75,21 @@
       margin-top: 3rem;
     }
     h1 {
-      font-size: clamp(2rem, 7vw, 3.75rem);
+      font-size: 3.75rem;
+    }
+  }
+  @media (max-width: 48rem) {
+    h1 {
+      font-size: 3rem;
     }
   }
   @media (max-width: 40rem) {
     :scope > section {
       padding-block: 3rem;
+    }
+    h1 {
+      font-size: 2rem;
+      line-height: 1.5;
     }
     :scope > section > div > p {
       font-size: 1rem;
