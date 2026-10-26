@@ -41,12 +41,12 @@
     gap: 0.5rem;
     padding: 0.375rem 0.75rem;
     border: 0;
-    border-radius: 0.625rem;
+    border-radius: 9999px;
     background: none;
     color: var(--htmlpress-muted);
     font: inherit;
     font-size: 0.875rem;
-    line-height: 1.43;
+    line-height: 1.25rem;
     white-space: nowrap;
     cursor: pointer;
     overflow: hidden;
@@ -61,7 +61,9 @@
     background: var(--htmlpress-bg);
     color: var(--htmlpress-text);
     font-weight: 500;
-    box-shadow: var(--htmlpress-shadow);
+    box-shadow:
+      0 1px 3px 0 oklch(0 0 0 / 0.1),
+      0 1px 2px -1px oklch(0 0 0 / 0.1);
   }
   [role="tab"] > span:first-child {
     font: 0.75rem var(--htmlpress-mono);

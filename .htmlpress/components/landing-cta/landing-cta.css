@@ -13,7 +13,8 @@
     margin: 0;
     font-size: 3rem;
     font-weight: 800;
-    letter-spacing: -0.03em;
+    line-height: 1;
+    letter-spacing: -0.025em;
   }
   h2 > em {
     color: var(--htmlpress-accent);
@@ -23,6 +24,16 @@
     margin: 1.5rem 0 0;
     color: var(--htmlpress-muted);
     font-size: 1.125rem;
+    line-height: 1.75rem;
+  }
+  /* The second action is quieter here: a ghost, no border or fill until hovered */
+  htmlpress-landing-actions a + a {
+    border-color: transparent;
+    background: transparent;
+    box-shadow: none;
+  }
+  htmlpress-landing-actions a + a:hover {
+    background: var(--landing-action-hover);
   }
   @media (max-width: 48rem) {
     :scope > section {
@@ -30,6 +41,7 @@
     }
     h2 {
       font-size: 1.875rem;
+      line-height: 2.25rem;
     }
   }
 }

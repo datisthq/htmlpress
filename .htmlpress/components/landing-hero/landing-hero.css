@@ -35,6 +35,7 @@
     color: var(--htmlpress-accent);
     font-size: 0.75rem;
     font-weight: 600;
+    line-height: 1rem;
     letter-spacing: 0.18em;
     text-transform: uppercase;
   }
@@ -59,8 +60,8 @@
     max-width: 52ch;
     margin: 1.5rem 0 0;
     color: var(--htmlpress-muted);
-    font-size: 1.125rem;
-    line-height: 1.65;
+    font-size: 1.25rem;
+    line-height: 1.625;
   }
   @media (max-width: 64rem) {
     :scope > section {
@@ -81,6 +82,9 @@
   @media (max-width: 48rem) {
     h1 {
       font-size: 3rem;
+    }
+    :scope > section > div > p {
+      font-size: 1.125rem;
     }
   }
   @media (max-width: 40rem) {

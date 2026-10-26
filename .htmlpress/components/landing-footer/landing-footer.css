@@ -17,13 +17,15 @@
     color: var(--htmlpress-muted);
     font-size: 0.75rem;
     font-weight: 600;
-    letter-spacing: 0.15em;
+    line-height: 1rem;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
   }
   a {
     color: color-mix(in oklab, var(--htmlpress-text) 70%, transparent);
     font-size: 0.875rem;
     font-weight: 500;
+    line-height: 1.25rem;
     text-decoration: none;
     transition: color 0.2s;
   }

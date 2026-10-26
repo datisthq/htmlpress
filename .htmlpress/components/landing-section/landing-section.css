@@ -22,12 +22,14 @@
     margin: 0;
     font-size: 2.25rem;
     font-weight: 700;
+    line-height: 2.5rem;
     letter-spacing: -0.025em;
   }
   header > p {
     margin: 1rem 0 0;
     color: var(--htmlpress-muted);
     font-size: 1.125rem;
+    line-height: 1.75rem;
   }
   /* Two columns, the list beside a window, stacked on a phone */
   :scope > section > div {
@@ -57,6 +59,7 @@
     }
     h2 {
       font-size: 1.875rem;
+      line-height: 2.25rem;
     }
     :scope > section > div {
       grid-template-columns: minmax(0, 1fr);

@@ -21,7 +21,7 @@
     box-shadow: none;
     color: var(--landing-code-text);
     font-size: 0.875rem;
-    line-height: 1.65;
+    line-height: 1.625;
   }
   [data-token="dim"],
   [data-token="note"],

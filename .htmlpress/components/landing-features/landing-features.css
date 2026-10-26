@@ -6,7 +6,10 @@
   :scope htmlpress-card {
     height: 100%;
     padding: 1.5rem;
+    border: 1px solid var(--htmlpress-border);
+    box-shadow: none;
     font-size: 0.875rem;
+    line-height: 1.625;
     color: var(--htmlpress-muted);
     transition:
       border-color 0.2s,
@@ -20,9 +23,12 @@
       var(--htmlpress-border)
     );
     translate: 0 -0.125rem;
-    box-shadow: 0 12px 24px -8px oklch(0 0 0 / 0.15);
+    box-shadow:
+      0 10px 15px -3px oklch(0 0 0 / 0.1),
+      0 4px 6px -4px oklch(0 0 0 / 0.1);
   }
   :scope htmlpress-card > svg[aria-hidden] {
+    display: block;
     width: 2.5rem;
     height: 2.5rem;
     margin-bottom: 1rem;
@@ -38,6 +44,8 @@
   :scope htmlpress-card > h3 {
     margin: 0 0 0.5rem;
     font-size: 1.125rem;
+    font-weight: 600;
+    line-height: 1.75rem;
   }
   :scope htmlpress-grid {
     margin: 0;
