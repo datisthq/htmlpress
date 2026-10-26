@@ -5,12 +5,28 @@ class HtmlpressBackToTop extends HTMLElement {
     const link = document.createElement("a")
     link.href = "#"
     link.setAttribute("aria-label", "Back to top")
+    link.setAttribute("aria-keyshortcuts", "B")
     link.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true">${ICON}</svg>`
     this.replaceChildren(link)
     const update = () => this.toggleAttribute("data-visible", scrollY > 400)
     addEventListener("scroll", update, { passive: true })
     update()
+    document.addEventListener("keydown", event => {
+      if (isShortcut(event, "b")) scrollTo({ top: 0, behavior: "smooth" })
+    })
   }
+}
+
+function isShortcut(event, key) {
+  const modified = event.metaKey || event.ctrlKey || event.altKey || event.shiftKey
+  return !modified && event.key.toLowerCase() === key && !isTyping(event.target)
+}
+
+function isTyping(target) {
+  return (
+    target instanceof HTMLElement &&
+    (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName))
+  )
 }
 
 customElements.define("htmlpress-back-to-top", HtmlpressBackToTop)

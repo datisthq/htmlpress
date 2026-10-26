@@ -6,13 +6,16 @@ const MOON =
 class HtmlpressThemeToggle extends HTMLElement {
   connectedCallback() {
     const button = createButton("Toggle dark mode")
-    button.addEventListener("click", () => {
+    button.setAttribute("aria-keyshortcuts", "T")
+    const flip = () => {
       const root = document.documentElement
       const dark = matchMedia("(prefers-color-scheme: dark)").matches
       const current = root.dataset.theme ?? (dark ? "dark" : "light")
       root.dataset.theme = current === "dark" ? "light" : "dark"
       writeStorage("htmlpress-theme", root.dataset.theme)
-    })
+    }
+    button.addEventListener("click", flip)
+    document.addEventListener("keydown", event => isShortcut(event, "t") && flip())
     this.replaceChildren(button)
   }
 }
@@ -34,6 +37,18 @@ function writeStorage(key, value) {
   try {
     localStorage.setItem(key, value)
   } catch {}
+}
+
+function isShortcut(event, key) {
+  const modified = event.metaKey || event.ctrlKey || event.altKey || event.shiftKey
+  return !modified && event.key.toLowerCase() === key && !isTyping(event.target)
+}
+
+function isTyping(target) {
+  return (
+    target instanceof HTMLElement &&
+    (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName))
+  )
 }
 
 customElements.define("htmlpress-theme-toggle", HtmlpressThemeToggle)

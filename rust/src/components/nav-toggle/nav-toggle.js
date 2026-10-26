@@ -7,6 +7,7 @@ class HtmlpressNavToggle extends HTMLElement {
   connectedCallback() {
     const button = createButton("Toggle sidebar", ICON)
     button.setAttribute("aria-controls", "htmlpress-sidebar")
+    button.setAttribute("aria-keyshortcuts", "L")
     const root = document.documentElement
     const update = () => {
       const open = PHONE.matches
@@ -18,16 +19,20 @@ class HtmlpressNavToggle extends HTMLElement {
       root.toggleAttribute("data-nav-open", open)
       update()
     }
-    button.addEventListener("click", () => {
+    const flip = () => {
       if (PHONE.matches) return toggle(!root.hasAttribute("data-nav-open"))
       const collapsed = root.toggleAttribute("data-nav-collapsed")
       writeStorage("htmlpress-nav", collapsed ? "collapsed" : "open")
       update()
-    })
+    }
+    button.addEventListener("click", flip)
     document.addEventListener("click", event => {
       if (event.target === document.body) toggle(false)
     })
-    document.addEventListener("keydown", event => event.key === "Escape" && toggle(false))
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape") toggle(false)
+      if (isShortcut(event, "l")) flip()
+    })
     PHONE.addEventListener("change", update)
     update()
     this.replaceChildren(button)
@@ -51,6 +56,18 @@ function writeStorage(key, value) {
   try {
     localStorage.setItem(key, value)
   } catch {}
+}
+
+function isShortcut(event, key) {
+  const modified = event.metaKey || event.ctrlKey || event.altKey || event.shiftKey
+  return !modified && event.key.toLowerCase() === key && !isTyping(event.target)
+}
+
+function isTyping(target) {
+  return (
+    target instanceof HTMLElement &&
+    (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName))
+  )
 }
 
 customElements.define("htmlpress-nav-toggle", HtmlpressNavToggle)

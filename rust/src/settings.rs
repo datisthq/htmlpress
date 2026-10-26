@@ -47,6 +47,7 @@ pub const ASSETS: &[Asset] = &[
     asset!("styles/content.css"),
     asset!("scripts/code.js"),
     asset!("scripts/hints.js"),
+    asset!("scripts/keys.js"),
     asset!("components/aside/aside.css"),
     asset!("components/back-to-top/back-to-top.css"),
     asset!("components/back-to-top/back-to-top.js"),
