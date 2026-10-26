@@ -46,6 +46,7 @@ mod actions {
     }
     pub(crate) mod text {
         pub(crate) mod enrich;
+        pub(crate) mod math;
     }
     pub(crate) mod skill {
         pub(crate) mod load;

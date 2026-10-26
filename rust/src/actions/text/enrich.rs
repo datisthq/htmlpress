@@ -55,16 +55,42 @@ fn enrich_node(raw: &str) -> String {
         && !raw.contains("www.")
         && !raw.contains('@')
         && !raw.contains(':')
+        && !raw.contains('$')
     {
         return raw.to_owned();
     }
     let text = decode_entities(raw);
+    let mut html = String::new();
+    let mut changed = false;
+    for segment in split_math(&text) {
+        match segment {
+            Segment::Text(text) => html.push_str(&link_text(&text, &mut changed)),
+            Segment::Math(latex, display) => {
+                let display = if display { " display" } else { "" };
+                html.push_str(&format!(
+                    "<htmlpress-math{display}>{}</htmlpress-math>",
+                    escape_text(&latex)
+                ));
+                changed = true;
+            }
+            Segment::Dollar => {
+                html.push('$');
+                changed = true;
+            }
+        }
+    }
+    match changed {
+        true => html,
+        false => raw.to_owned(),
+    }
+}
+
+fn link_text(text: &str, changed: &mut bool) -> String {
     let mut finder = LinkFinder::new();
     finder.url_must_have_scheme(false);
     let mut html = String::new();
-    let mut changed = false;
     let mut last = 0;
-    for link in finder.links(&text) {
+    for link in finder.links(text) {
         let url = link.as_str();
         let href = match link.kind() {
             LinkKind::Email => format!("mailto:{url}"),
@@ -73,20 +99,88 @@ fn enrich_node(raw: &str) -> String {
             _ if url.starts_with("www.") => format!("https://{url}"),
             _ => continue,
         };
-        html.push_str(&replace_shortcodes(&text[last..link.start()], &mut changed));
+        html.push_str(&replace_shortcodes(&text[last..link.start()], changed));
         html.push_str(&format!(
             "<a href=\"{}\">{}</a>",
             escape_text(&href),
             escape_text(url)
         ));
-        changed = true;
+        *changed = true;
         last = link.end();
     }
-    html.push_str(&replace_shortcodes(&text[last..], &mut changed));
-    match changed {
-        true => html,
-        false => raw.to_owned(),
+    html.push_str(&replace_shortcodes(&text[last..], changed));
+    html
+}
+
+enum Segment {
+    Text(String),
+    /// LaTeX source, and whether it is display math (`$$`).
+    Math(String, bool),
+    /// An escaped `\$`, a literal dollar sign.
+    Dollar,
+}
+
+// Livemark's `$…$` and `$$…$$`, read by pandoc's rule so prices stay text: an opening `$`
+// is followed by a non-space, a closing one follows a non-space and is not followed by a
+// digit, so neither `$5 and $10` nor `costs $ 5` is math
+fn split_math(text: &str) -> Vec<Segment> {
+    let mut segments = vec![];
+    let mut plain = String::new();
+    let mut rest = text;
+    while let Some(at) = rest.find('$') {
+        plain.push_str(&rest[..at]);
+        let after = &rest[at..];
+        if plain.ends_with('\\') {
+            plain.pop();
+            segments.push(Segment::Text(std::mem::take(&mut plain)));
+            segments.push(Segment::Dollar);
+            rest = &after[1..];
+            continue;
+        }
+        let found = match after.strip_prefix("$$") {
+            Some(inner) => inner.find("$$").and_then(|end| {
+                let latex = inner[..end].trim();
+                (!latex.is_empty()).then(|| (latex.to_owned(), true, end + 4))
+            }),
+            None => find_inline(&after[1..])
+                .map(|(latex, end)| (latex.to_owned(), false, end + 1)),
+        };
+        match found {
+            Some((latex, display, length)) => {
+                segments.push(Segment::Text(std::mem::take(&mut plain)));
+                segments.push(Segment::Math(latex, display));
+                rest = &after[length..];
+            }
+            None => {
+                plain.push('$');
+                rest = &after[1..];
+            }
+        }
     }
+    plain.push_str(rest);
+    segments.push(Segment::Text(plain));
+    segments
+}
+
+// The LaTeX of an inline `$…$` starting right after its opening `$`, and how far its
+// closing `$` reaches
+fn find_inline(text: &str) -> Option<(&str, usize)> {
+    if text.starts_with(char::is_whitespace) || text.is_empty() {
+        return None;
+    }
+    let mut search = 0;
+    while let Some(offset) = text[search..].find('$') {
+        let end = search + offset;
+        let before = text[..end].chars().next_back();
+        let after = text[end + 1..].chars().next();
+        let closes = before.is_some_and(|char| !char.is_whitespace() && char != '\\')
+            && !after.is_some_and(|char| char.is_ascii_digit());
+        if closes && end > 0 {
+            return Some((&text[..end], end + 1));
+        }
+        search = end + 1;
+    }
+    None
 }
 
 // `:name:` with a GitHub shortcode becomes its emoji; anything else, `10:30:00` included,

@@ -67,6 +67,7 @@ pub const ASSETS: &[Asset] = &[
     asset!("components/icon/icon.css"),
     asset!("components/links/links.css"),
     asset!("components/main/main.css"),
+    asset!("components/math/math.css"),
     asset!("components/mermaid/mermaid.css"),
     asset!("components/mermaid/mermaid.js"),
     asset!("components/nav-toggle/nav-toggle.css"),

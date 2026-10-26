@@ -48,21 +48,38 @@
 </p>
 
 <h2>LaTeX Expressions</h2>
-<htmlpress-callout label="Coming soon">
-  <p>
-    LaTeX math rendered at build time. Until then, MathML is plain HTML that browsers draw
-    natively.
-  </p>
-</htmlpress-callout>
-<pre><code class="language-html">&lt;math&gt;&lt;mi&gt;E&lt;/mi&gt;&lt;mo&gt;=&lt;/mo&gt;&lt;mi&gt;m&lt;/mi&gt;&lt;msup&gt;&lt;mi&gt;c&lt;/mi&gt;&lt;mn&gt;2&lt;/mn&gt;&lt;/msup&gt;&lt;/math&gt;</code></pre>
 <p>
-  Renders as:
-  <math>
-    <mi>E</mi>
-    <mo>=</mo>
-    <mi>m</mi>
-    <msup><mi>c</mi><mn>2</mn></msup>
-  </math>
+  LaTeX between dollar signs is rendered to MathML at build time, which browsers draw
+  natively, with no script or web font. Single dollars are inline, double dollars a
+  centered block:
+</p>
+<pre><code class="language-html">&lt;p&gt;Inline: $E = mc^2$, with $x$, $\alpha$ or $\sum_{i=1}^{n} i$.&lt;/p&gt;
+&lt;p&gt;$$\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}$$&lt;/p&gt;</code></pre>
+<p>Renders as:</p>
+<p>Inline: $E = mc^2$, with $x$, $\alpha$ or $\sum_{i=1}^{n} i$.</p>
+<p>$$\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}$$</p>
+<p>$$f(x) = \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{(x-\mu)^2}{2\sigma^2}}$$</p>
+<p>Matrices and aligned equations:</p>
+<p>
+  $$\begin{pmatrix} a &amp; b \\ c &amp; d \end{pmatrix} \begin{pmatrix} x \\ y
+  \end{pmatrix} = \begin{pmatrix} ax + by \\ cx + dy \end{pmatrix}$$
+</p>
+<p>
+  A dollar sign is math only around something that looks like it: the opening one is
+  followed by a non-space, and the closing one follows a non-space and is not followed by
+  a digit. So prices, as in "it costs $5 and $10", stay text, and <code>\$</code> is
+  always a plain dollar sign. A <code>$$</code> pair must sit in one element. Code, links
+  and <code>data-literal</code> elements are left alone.
+</p>
+<p>
+  <code>&lt;htmlpress-math&gt;</code> writes the same without dollars;
+  <code>display</code> makes it a block:
+</p>
+<pre><code class="language-html">&lt;htmlpress-math display&gt;a^2 + b^2 = c^2&lt;/htmlpress-math&gt;</code></pre>
+<htmlpress-math display>a^2 + b^2 = c^2</htmlpress-math>
+<p>
+  Invalid LaTeX fails the build with the parser's message. The page's Markdown copy keeps
+  the <code>$…$</code> source. A page can still write MathML by hand.
 </p>
 
 <h2>Mermaid Diagrams</h2>

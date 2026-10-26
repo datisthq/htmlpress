@@ -1,0 +1,16 @@
+@scope (htmlpress-math) {
+  /* Display math is a centered block that scrolls rather than overflows the column */
+  :scope[display] {
+    display: block;
+    margin: 0 0 1.25em;
+    /* Stretched brackets draw past the box MathML reports; room so hidden does not clip them */
+    padding: 0.6em 0;
+    overflow-x: auto;
+    /* auto on one axis makes the other scroll too; tall glyphs would show a bar */
+    overflow-y: hidden;
+    text-align: center;
+  }
+  math {
+    font-size: 1.05em;
+  }
+}

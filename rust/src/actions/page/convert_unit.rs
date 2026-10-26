@@ -54,3 +54,15 @@ fn names_a_titled_block_before_its_fence() -> crate::Result<()> {
     assert!(convert_page(&page)?.contains("**a.yaml**\n\n```\nx: 1\n```"));
     Ok(())
 }
+
+#[test]
+fn writes_math_back_as_latex() -> crate::Result<()> {
+    let page = read_page(
+        "a.html",
+        "<h1>A</h1><p>Inline $x_1^2$ here.</p><p>$$\\frac{a}{b}$$</p>",
+    )?;
+    let markdown = convert_page(&page)?;
+    assert!(markdown.contains("Inline $x_1^2$ here."), "{markdown}");
+    assert!(markdown.contains("$$\n\\frac{a}{b}\n$$"), "{markdown}");
+    Ok(())
+}

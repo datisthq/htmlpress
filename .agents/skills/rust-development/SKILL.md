@@ -56,8 +56,9 @@ run from source: `cargo run --manifest-path rust/Cargo.toml -- build docs`.
    `scan_site` resolves `<htmlpress-include>` (`page/include`, through `path/contain`) in a
    page's source before `read_page`, which has no filesystem access, so included content
    reaches the TOC, search and the Markdown copies like the page's own.
-2. `read_page` first runs `text/enrich` (auto links and emoji shortcodes, on whole text
-   nodes outside links, code and `data-literal`), then lol_html over the source three times — facts (title, first `<h1>`, metas,
+2. `read_page` first runs `text/enrich` (`$…$` math, auto links and emoji shortcodes, on whole text
+   nodes outside links, code and `data-literal`), then `text/math` (every `<htmlpress-math>` to
+   MathML with math-core, the LaTeX kept in `data-latex`), then lol_html over the source three times — facts (title, first `<h1>`, metas,
    whether a `<head>` exists), content (wrappers and layout-owned tags removed) and, only when a
    `<head>` exists, the extra head tags. lol_html builds no tree and adds no implied `<head>` or
    `<body>`: a fragment stays a fragment, which is why the head pass is skipped without one.

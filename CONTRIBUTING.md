@@ -25,7 +25,7 @@ pnpm test
 htmlpress/
 ├── rust/                # the binary and the crates.io package `htmlpress`
 │   ├── src/
-│   │   ├── actions/     #   asset/escape + list, changelog/split, code/highlight + title, config/load, date/format, git/read, markdown/render, icon/render, package/convert, path/contain + select, page/convert + include + patch + prefix + read + render, section/find + generate, skill/load, text/enrich, site/…
+│   │   ├── actions/     #   asset/escape + list, changelog/split, code/highlight + title, config/load, date/format, git/read, markdown/render, icon/render, package/convert, path/contain + select, page/convert + include + patch + prefix + read + render, section/find + generate, skill/load, text/enrich + math, site/…
 │   │   ├── commands/    #   the `build`, `start`, `preview`, `clear` and `escape` commands
 │   │   ├── models/      #   Asset, Config, Page, Site, BuildOptions, Error
 │   │   ├── components/  #   built-in components, compiled in, like styles/ and scripts/

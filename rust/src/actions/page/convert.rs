@@ -1,7 +1,8 @@
 use std::cell::Cell;
 
-use htmd::HtmlToMarkdown;
+use htmd::element_handler::Handlers;
 use htmd::options::{BulletListMarker, Options};
+use htmd::{Element, HtmlToMarkdown};
 use lol_html::html_content::ContentType;
 use lol_html::{RewriteStrSettings, element, rewrite_str};
 
@@ -19,6 +20,24 @@ pub(crate) fn convert_page(page: &Page) -> crate::Result<String> {
             ..Options::default()
         })
         .skip_tags(vec!["script", "style", "template", "svg"])
+        // The LaTeX, not the MathML: `$…$` is what Markdown readers and agents understand,
+        // and htmd would escape the source's `_` and `\\` if it went in as text
+        .add_handler(
+            vec!["htmlpress-math"],
+            |_: &dyn Handlers, element: Element| {
+                let latex = (element.attrs.iter())
+                    .find(|attribute| &*attribute.name.local == "data-latex")
+                    .map(|attribute| attribute.value.to_string())?;
+                let display = element
+                    .attrs
+                    .iter()
+                    .any(|attribute| &*attribute.name.local == "display");
+                Some(match display {
+                    true => format!("\n\n$$\n{latex}\n$$\n\n").into(),
+                    false => format!("${latex}$").into(),
+                })
+            },
+        )
         .build();
     let body = converter
         .convert(&html)
