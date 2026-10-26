@@ -24,7 +24,9 @@
   box-sizing: border-box;
 }
 
+/* Android paints a cyan box over every tapped link or button; Tailwind clears it in Livemark */
 html {
+  -webkit-tap-highlight-color: transparent;
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
   scroll-padding-top: 5.5rem;
