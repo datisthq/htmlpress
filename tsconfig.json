@@ -8,7 +8,6 @@
     "${configDir}/**/compile/",
     "${configDir}/**/fixtures/",
     "${configDir}/**/examples/",
-    "${configDir}/docs/",
     "${configDir}/typescript/",
     "${configDir}/python/",
     "${configDir}/rust/"

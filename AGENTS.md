@@ -1,6 +1,6 @@
 # htmlpress
 
-Htmlpress turns a folder of HTML pages into a site: one layout, one theme, a navigation and a live-reloading dev server, made for coding agents. It is one Rust binary in `rust/`, shipped three ways: crates.io (`cargo install htmlpress`), npm (`gethtmlpress` in `typescript/`, a shim plus one prebuilt binary per platform) and PyPI (`htmlpress` in `python/`, binary wheels built by maturin). The repo root holds the tooling shared across them and htmlpress' own docs site, written in HTML under `docs/` and built by htmlpress itself.
+Htmlpress turns a folder of HTML pages into a site: one layout, one theme, a navigation and a live-reloading dev server, made for coding agents. It is one Rust binary in `rust/`, shipped three ways: crates.io (`cargo install htmlpress`), npm (`gethtmlpress` in `typescript/`, a shim plus one prebuilt binary per platform) and PyPI (`htmlpress` in `python/`, binary wheels built by maturin). The repo root holds the tooling shared across them and htmlpress' own docs site, written in HTML under `rust/docs/` and built by htmlpress itself.
 
 ## Terminology
 
@@ -11,7 +11,7 @@ Htmlpress turns a folder of HTML pages into a site: one layout, one theme, a nav
 - **page** — an `.html` file in a project, read by `rust/src/actions/page/read.rs` into title, order, head and content
 - **escape** — a project file under `.htmlpress/` at a built-in asset's path (`ASSETS` in `rust/src/settings.rs`), replacing it: `layout.html`, `styles/*.css`, `scripts/*.js`, `components/<tag>.{css,js}`; beside escapes a project may add its own `components/<tag>.{html,css,js}` and `layouts/<name>.html`, which a page picks with `<meta name="layout">`
 - **component** — a custom element tag with up to three files, `components/<tag>.{html,css,js}`: its CSS scoped with `@scope (<tag>)`, its JS defining only that element, linked only on pages that use the tag; a project's own tag adds one, and its `.html` replaces the tag at build time
-- **docs site** — this repo's own htmlpress project: the root's `htmlpress.yaml` and `.htmlpress/`, its pages in `docs/` (`include: docs/**/*.html`), built by `pnpm build:docs` and deployed to htmlpress.dev
+- **docs site** — this repo's own htmlpress project: the root's `htmlpress.yaml` and `.htmlpress/`, its pages in `rust/docs/` (`include: rust/docs/**/*.html`), built by `pnpm build:docs` and deployed to htmlpress.dev
 
 ## Rules
 
@@ -81,9 +81,9 @@ The root is a private pnpm workspace (`package.json`, `pnpm-workspace.yaml`): fo
   - `src/commands/` — the fireargs commands `build`, `start`, `preview`, `clear` and `escape`; `src/program.rs` the CLI; `src/main.rs` runs it
   - `src/models/`, `src/settings.rs` (paths and the embedded assets), `src/lib.rs` the façade; `src/assets/` the layout, `styles/`, `scripts/`, `components/` and the reload script compiled into the binary
   - Unit tests beside their module as `<module>_unit.rs`; `tests/` the CLI integration tests
+  - `docs/` — the docs site's HTML pages, outside the crate's `include`; the repo root is their project, with `htmlpress.yaml` and `.htmlpress/`
 - `typescript/` — the npm package `gethtmlpress`: `entrypoints/main.ts` runs the binary `actions/binary/resolve.ts` finds; `settings.ts` lists the platforms; `scripts/` packs and publishes the platform packages into `typescript/compile/` (**`package-distribution`**)
 - `python/` — the PyPI package `htmlpress`: only `pyproject.toml`, which points maturin at `rust/Cargo.toml` with `bindings = "bin"`
-- `docs/` — the docs site's HTML pages; the repo root is its project, with `htmlpress.yaml` and `.htmlpress/`
 - `.skills/` — the shipped agent skills
 - `README.md`, `CONTRIBUTING.md` — the GitHub overview and the contributor guide; `rust/README.md`, `typescript/README.md` and `python/README.md` are each registry's page
 
@@ -97,7 +97,7 @@ Dot-directories hold non-package code: `.agents/` repo skills, `.skills/` shippe
 - `package.json` script names are `verb[:object]` (`check:lint`, `build:docs`), never noun-first
 - Specs: Vitest via `vite-plus/test`, `<module>.unit.ts`, no "Arrange / Act / Assert" comments
 - Rust: edition 2024, rustfmt (90 columns), clippy with `-D warnings`; snake_case **verb_noun** functions; no `unwrap` / `expect` / `unsafe` outside tests (**`rust-development`**)
-- HTML in `docs/` and `.skills/`: semantic elements and the documented `htmlpress-*` components only, no inline styles — the docs are the first project htmlpress must serve well. The one exception is the home page, `docs/index.html`: it uses the `landing` layout and the `landing-*` components in `.htmlpress/`, the way any project builds its own look
+- HTML in `rust/docs/` and `.skills/`: semantic elements and the documented `htmlpress-*` components only, no inline styles — the docs are the first project htmlpress must serve well. The one exception is the home page, `rust/docs/index.html`: it uses the `landing` layout and the `landing-*` components in `.htmlpress/`, the way any project builds its own look
 - Commits: Conventional Commits, typed by what an installer gets (below)
 
 ## Releases

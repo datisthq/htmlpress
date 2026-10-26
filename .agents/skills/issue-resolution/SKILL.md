@@ -47,7 +47,7 @@ Run it with `cargo test <name>` from `rust/` and watch it fail.
 ## 5. Fix it minimally, through the area skill
 
 `rust-development` for the binary, `package-distribution` for the wrappers. Change only what the
-root cause needs. A behaviour a project or agent can see updates its `docs/` page and the
+root cause needs. A behaviour a project or agent can see updates its `rust/docs/` page and the
 `htmlpress-pages` skill in the same commit.
 
 ## 6. Gate it

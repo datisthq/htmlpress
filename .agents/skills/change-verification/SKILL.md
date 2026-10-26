@@ -25,7 +25,7 @@ gate belongs to the lefthook pre-push hook and CI; a commit runs the **commit ga
 | `pnpm -C rust test:unit`                     | every Rust unit and `tests/cli.rs`         |
 | `pnpm -C typescript test:unit`               | the shim's units                           |
 | `vp test .scripts/-test/docs.unit.ts`        | paths, scripts and skill tables in docs    |
-| `pnpm build:docs`                            | the real build over `docs/`                |
+| `pnpm build:docs`                            | the real build over `rust/docs/`           |
 
 The first clippy or test run after a dependency change compiles for a minute; later ones take
 seconds. The changed files come from `git diff --name-only main...` plus `git status --short`.
@@ -35,7 +35,7 @@ seconds. The changed files come from `git diff --name-only main...` plus `git st
 Pick the **highest** rung the diff reaches, and run everything that rung lists.
 
 1. **Markdown, copy, a docs page.** `vp fmt --check` on Markdown files. For `AGENTS.md`,
-   `README.md`, `CONTRIBUTING.md` or a skill, add the docs guard. For a page under `docs/`, run
+   `README.md`, `CONTRIBUTING.md` or a skill, add the docs guard. For a page under `rust/docs/`, run
    `pnpm build:docs`: a page htmlpress cannot read fails there.
 2. **Theme, components, layout** — anything under `rust/src/assets/`. `cargo test page::render`,
    then **look at it**: `pnpm start` (from a worktree, `--port 0`), open the page in Claude in

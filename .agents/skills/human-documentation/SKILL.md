@@ -37,7 +37,7 @@ files, and is no longer true.
   `description`, which decides whether a skill gets picked up at all.
 - `README.md`, `rust/README.md`, `typescript/README.md`, `python/README.md` — the three package
   READMEs share their usage section; change all three together.
-- `docs/` — the user manual, in HTML. Code in `<pre>` must be escaped (`&lt;`), and a page
+- `rust/docs/` — the user manual, in HTML. Code in `<pre>` must be escaped (`&lt;`), and a page
   should build cleanly with `pnpm build:docs`.
 
 ## Where a fact belongs
@@ -47,7 +47,7 @@ area they are in: hard rules, invariants that fail silently, terminology, one li
 and per source folder, and the skills tables. Procedure, rationale and an area's traps go in that
 area's skill. Keep `AGENTS.md` near 10 KB.
 
-- How to **use** htmlpress (pages, components, CLI) → the matching `docs/` page and the shipped
+- How to **use** htmlpress (pages, components, CLI) → the matching `rust/docs/` page and the shipped
   `.skills/htmlpress-pages/SKILL.md`, kept in step.
 - How to **work on** htmlpress → a repo skill in `.agents/skills/`.
 - How a person contributes → `CONTRIBUTING.md`.

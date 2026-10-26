@@ -13,7 +13,7 @@ pnpm install
 pnpm start
 ```
 
-`pnpm install` also fetches the Rust crates when `cargo` is on your `PATH`. `pnpm start` runs htmlpress from source over the docs site in `docs/`, with live reload. To run every check:
+`pnpm install` also fetches the Rust crates when `cargo` is on your `PATH`. `pnpm start` runs htmlpress from source over the docs site in `rust/docs/`, with live reload. To run every check:
 
 ```bash
 pnpm test
@@ -31,14 +31,14 @@ htmlpress/
 │   │   ├── assets/      #   layout, styles, scripts, components, reload — compiled in
 │   │   ├── program.rs   #   the CLI
 │   │   └── lib.rs       #   the library façade
-│   └── tests/           #   CLI integration tests
+│   ├── tests/           #   CLI integration tests
+│   └── docs/            #   the docs site, HTML built by htmlpress itself
 ├── typescript/          # the npm package `gethtmlpress`: a shim that runs the binary
 │   ├── actions/         #   resolveBinary — find the platform package's binary
 │   ├── entrypoints/     #   main.ts, the `htmlpress` bin
 │   ├── scripts/         #   pack and publish the per-platform packages
 │   └── settings.ts      #   the platform list
 ├── python/              # the PyPI package `htmlpress`: maturin binary wheels
-├── docs/                # the docs site, HTML built by htmlpress itself
 ├── .skills/             # shipped agent skills for people who use htmlpress
 ├── .agents/skills/      # repo skills for coding agents (see AGENTS.md)
 ├── .scripts/            # repo-wide guards and the `pnpm squash` script
