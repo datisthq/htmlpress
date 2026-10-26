@@ -28,8 +28,8 @@
   span {
     display: flex;
     flex-direction: column;
-    gap: 0.125rem;
     min-width: 0;
+    margin-bottom: 1px;
   }
   small {
     overflow: hidden;
