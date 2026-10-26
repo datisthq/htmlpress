@@ -35,6 +35,9 @@ run from source: `cargo run --manifest-path rust/Cargo.toml -- build docs`.
   `serde-saphyr` (only its `deserialize` feature); `deny_unknown_fields` everywhere, and an
   empty file means the defaults, since an empty YAML document is not a mapping
 - `src/commands/` — one fireargs command per file; `src/program.rs` mounts them
+- `src/icons.rs` — the built-in Lucide icons (`ICONS`, sorted by name for binary search),
+  generated once from lucide-react's icon nodes; `icon/render` turns a name into an inline
+  `<svg>`, and an unknown name fails the config load or the page
 - `src/settings.rs` — every path constant, and `ASSETS`: each built-in asset embedded with
   `include_str!` through the `asset!` macro, keyed by its path under `.htmlpress/`
 - Unit tests sit beside their module as `<module>_unit.rs`, wired in with

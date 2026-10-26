@@ -84,6 +84,7 @@ fn adds_the_links_and_the_edit_link_from_the_config() -> crate::Result<()> {
         title: "GitHub".to_owned(),
         url: "https://github.com/x".to_owned(),
         position: Position::Header,
+        icon: None,
     }];
     site.config.edit = Some("https://github.com/x/edit/main/docs/".to_owned());
     let html = render_page(&site, &site.pages[1], false)?;
@@ -258,11 +259,13 @@ fn puts_each_link_in_its_position() -> crate::Result<()> {
             title: "GitHub".to_owned(),
             url: "https://github.com/x".to_owned(),
             position: Position::Header,
+            icon: None,
         },
         Link {
             title: "Chat".to_owned(),
             url: "https://chat.x".to_owned(),
             position: Position::Sidebar,
+            icon: None,
         },
     ];
     let html = render_page(&site, &site.pages[0], false)?;
@@ -350,5 +353,21 @@ fn shows_only_the_open_sections_pages_with_its_brand() -> crate::Result<()> {
         !guide
             .contains(r#"<a href="https://github.com/x" data-section>GitHub</a></nav>"#)
     );
+    Ok(())
+}
+
+#[test]
+fn puts_icons_before_link_and_section_titles() -> crate::Result<()> {
+    let mut site = create_sectioned_site()?;
+    site.config.sections[1].icon = Some("code".to_owned());
+    site.config.links = vec![Link {
+        title: "Chat".to_owned(),
+        url: "https://chat.x".to_owned(),
+        position: Position::Header,
+        icon: Some("message-circle".to_owned()),
+    }];
+    let html = render_page(&site, &site.pages[0], false)?;
+    assert!(html.contains(r#"<a href="/api/" data-section><svg viewBox="0 0 24 24""#));
+    assert!(html.contains(r#"<a href="https://chat.x"><svg viewBox="0 0 24 24""#));
     Ok(())
 }

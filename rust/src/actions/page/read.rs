@@ -4,6 +4,7 @@ use std::rc::Rc;
 use lol_html::html_content::ContentType;
 use lol_html::{RewriteStrSettings, doctype, element, rewrite_str, text};
 
+use crate::actions::icon::render::{list_icons, render_icon};
 use crate::actions::package::convert::{MANAGERS, convert_command};
 use crate::models::error::Error;
 use crate::models::page::{Heading, Page};
@@ -222,6 +223,17 @@ fn read_content(html: &str, headings: &[(Heading, bool)]) -> Result<String, Stri
                 Ok(())
             });
             el.on_end_tag(handler)
+        }))
+        .append_element_content_handler(element!("htmlpress-icon", |el| {
+            let name = el.get_attribute("name").unwrap_or_default();
+            let svg = render_icon(&name).ok_or_else(|| {
+                format!(
+                    "<htmlpress-icon name=\"{name}\">: no such icon; the icons are: {}",
+                    list_icons()
+                )
+            })?;
+            el.set_inner_content(&svg, ContentType::Html);
+            Ok(())
         }))
         .append_element_content_handler(element!("htmlpress-package-tabs *", |el| {
             el.remove_and_keep_content();

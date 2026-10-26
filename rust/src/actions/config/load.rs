@@ -1,5 +1,6 @@
 use std::path::Path;
 
+use crate::actions::icon::render::{list_icons, render_icon};
 use crate::models::config::{Config, SectionKind};
 use crate::models::error::Error;
 use crate::settings::CONFIG_FILE;
@@ -35,10 +36,30 @@ pub fn load_config(root: &Path) -> crate::Result<Config> {
             message: format!("base must start with \"/\", got \"{base}\""),
         });
     }
+    if let Some(message) = check_icons(&config) {
+        return Err(Error::Config { path, message });
+    }
     if let Some(message) = check_sections(&config) {
         return Err(Error::Config { path, message });
     }
     Ok(config)
+}
+
+fn check_icons(config: &Config) -> Option<String> {
+    let links = config.links.iter().map(|link| (&link.title, &link.icon));
+    let sections =
+        (config.sections.iter()).map(|section| (&section.title, &section.icon));
+    for (title, icon) in links.chain(sections) {
+        if let Some(icon) = icon
+            && render_icon(icon).is_none()
+        {
+            return Some(format!(
+                "\"{title}\": no built-in icon \"{icon}\"; the icons are: {}",
+                list_icons()
+            ));
+        }
+    }
+    None
 }
 
 // Each kind needs its own key, and a prefix must be a folder path, so matching a page's

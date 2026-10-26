@@ -155,3 +155,19 @@ fn expands_package_tabs_into_tabs() -> crate::Result<()> {
     );
     Ok(())
 }
+
+#[test]
+fn fills_inline_icons_and_refuses_unknown_ones() -> crate::Result<()> {
+    let page = read_page(
+        "a.html",
+        "<p><htmlpress-icon name=\"rocket\"></htmlpress-icon> Go</p>",
+    )?;
+    assert!(
+        page.content
+            .contains("<htmlpress-icon name=\"rocket\"><svg viewBox")
+    );
+    let error =
+        read_page("a.html", "<htmlpress-icon name=\"rockt\"></htmlpress-icon>").err();
+    assert!(error.is_some_and(|error| error.to_string().contains("no such icon")));
+    Ok(())
+}

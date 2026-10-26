@@ -13,6 +13,9 @@ mod actions {
     pub(crate) mod path {
         pub(crate) mod select;
     }
+    pub(crate) mod icon {
+        pub(crate) mod render;
+    }
     pub(crate) mod package {
         pub(crate) mod convert;
     }
@@ -53,6 +56,7 @@ mod models {
     pub(crate) mod site;
     pub(crate) mod skill;
 }
+mod icons;
 mod program;
 mod settings;
 

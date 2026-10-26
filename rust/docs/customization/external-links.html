@@ -43,18 +43,20 @@ links:
           <td><code>header</code></td>
           <td>Where the link renders: <code>header</code> or <code>sidebar</code>.</td>
         </tr>
+        <tr>
+          <td><code>icon</code></td>
+          <td>none</td>
+          <td>
+            A <a href="/authoring/rich-elements.html#icons">built-in icon</a> before the
+            title, such as <code>github</code>; an unknown name is an error.
+          </td>
+        </tr>
       </tbody>
     </table>
     <p>
       Any other field is an error. A root-relative <code>url</code> gets the
       <code>base</code> prefix like every other URL in the build.
     </p>
-    <htmlpress-callout label="Coming soon"
-      ><p>
-        An <code>icon</code> per link. Until then, escape
-        <code>components/htmlpress-links.css</code> to style them.
-      </p></htmlpress-callout
-    >
 
     <h2>Header links</h2>
     <p>

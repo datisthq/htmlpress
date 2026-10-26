@@ -5,6 +5,7 @@ use std::fmt::Write;
 use lol_html::html_content::ContentType;
 use lol_html::{RewriteStrSettings, element, rewrite_str};
 
+use crate::actions::icon::render::render_icon;
 use crate::actions::page::convert::create_markdown_path;
 use crate::actions::page::prefix::prefix_urls;
 use crate::actions::section::find::{find_section, is_custom_current};
@@ -454,7 +455,8 @@ fn create_nav(site: &Site, page: &Page) -> String {
         for link in links {
             let url = escape_html(&link.url);
             let title = escape_html(&link.title);
-            let _ = write!(html, "<li><a href=\"{url}\">{title}</a></li>");
+            let icon = create_icon(link.icon.as_deref());
+            let _ = write!(html, "<li><a href=\"{url}\">{icon}{title}</a></li>");
         }
         html.push_str("</ul>");
     }
@@ -506,7 +508,8 @@ fn create_links(site: &Site, page: &Page) -> Option<String> {
     for link in links {
         let url = escape_html(&link.url);
         let title = escape_html(&link.title);
-        let _ = write!(html, "<a href=\"{url}\">{title}</a>");
+        let icon = create_icon(link.icon.as_deref());
+        let _ = write!(html, "<a href=\"{url}\">{icon}{title}</a>");
     }
     html.push_str("</nav>");
     Some(html)
@@ -560,7 +563,8 @@ fn create_section_link(site: &Site, page: &Page, index: usize) -> String {
         false => "",
     };
     let (href, title) = (escape_html(&href), escape_html(&section.title));
-    format!("<a href=\"{href}\" data-section{current}>{title}</a>")
+    let icon = create_icon(section.icon.as_deref());
+    format!("<a href=\"{href}\" data-section{current}>{icon}{title}</a>")
 }
 
 fn create_pager(site: &Site, page: &Page) -> Option<String> {
@@ -620,6 +624,11 @@ fn create_toolbar(page: &Page) -> Option<String> {
 fn create_edit(site: &Site, page: &Page) -> Option<String> {
     let url = escape_html(&format!("{}{}", site.config.edit.as_ref()?, page.source));
     Some(format!("<a href=\"{url}\">Edit this page</a>"))
+}
+
+// Names were checked when the config loaded, so an unknown one cannot reach here
+fn create_icon(name: Option<&str>) -> String {
+    name.and_then(render_icon).unwrap_or_default()
 }
 
 fn escape_html(text: &str) -> String {

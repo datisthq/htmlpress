@@ -16,6 +16,12 @@
     padding-top: 0.75rem;
     border-top: 1px solid var(--htmlpress-border);
   }
+  a > svg {
+    width: 1rem;
+    height: 1rem;
+    margin-right: 0.5rem;
+    vertical-align: -0.1875rem;
+  }
   ul[data-sections] {
     padding-bottom: 0.75rem;
     border-bottom: 1px solid var(--htmlpress-border);

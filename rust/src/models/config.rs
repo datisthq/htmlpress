@@ -86,6 +86,8 @@ impl Config {
 pub struct Link {
     pub url: String,
     pub title: String,
+    /// A built-in Lucide icon's name, shown before the title.
+    pub icon: Option<String>,
     #[serde(default)]
     pub position: Position,
 }
@@ -96,6 +98,8 @@ pub struct Link {
 #[serde(deny_unknown_fields, rename_all = "camelCase")]
 pub struct Section {
     pub title: String,
+    /// A built-in Lucide icon's name, shown before the title.
+    pub icon: Option<String>,
     #[serde(default, rename = "type")]
     pub kind: SectionKind,
     /// The URL prefix its pages share, such as `/guides/`; `article` sections only.

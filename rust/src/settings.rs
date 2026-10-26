@@ -60,6 +60,7 @@ pub const ASSETS: &[Asset] = &[
     asset!("components/htmlpress-file-tree.css"),
     asset!("components/htmlpress-footer.css"),
     asset!("components/htmlpress-grid.css"),
+    asset!("components/htmlpress-icon.css"),
     asset!("components/htmlpress-links.css"),
     asset!("components/htmlpress-mermaid.css"),
     asset!("components/htmlpress-mermaid.js"),

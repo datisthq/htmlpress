@@ -113,3 +113,22 @@ fn reads_sections_and_rejects_incomplete_ones() -> crate::Result<()> {
     }
     Ok(())
 }
+
+#[test]
+fn rejects_an_unknown_icon() -> crate::Result<()> {
+    let root = tempfile::tempdir().map_err(Error::io("tempdir"))?;
+    let path = root.path().join(CONFIG_FILE);
+    std::fs::write(
+        &path,
+        "links:\n  - title: A\n    url: /\n    icon: github\n",
+    )
+    .map_err(Error::io("write"))?;
+    assert!(load_config(root.path()).is_ok());
+    std::fs::write(&path, "links:\n  - title: A\n    url: /\n    icon: githb\n")
+        .map_err(Error::io("write"))?;
+    let error = load_config(root.path())
+        .err()
+        .map(|error| error.to_string());
+    assert!(error.is_some_and(|message| message.contains("no built-in icon \"githb\"")));
+    Ok(())
+}

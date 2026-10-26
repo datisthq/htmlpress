@@ -18,7 +18,7 @@ pub(crate) fn convert_page(page: &Page) -> crate::Result<String> {
             ul_bullet_spacing: 1,
             ..Options::default()
         })
-        .skip_tags(vec!["script", "style", "template"])
+        .skip_tags(vec!["script", "style", "template", "svg"])
         .build();
     let body = converter
         .convert(&html)
