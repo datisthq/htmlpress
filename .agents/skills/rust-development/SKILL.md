@@ -53,7 +53,8 @@ run from source: `cargo run --manifest-path rust/Cargo.toml -- build docs`.
    files under a base, `.html` outside `include` too, are copied. Every path is served
    without its base, so `Page.path` is the output path and `Page.source` the file's. Pages sort `index.html`
    first, then by `<meta name="order">`, then by path.
-2. `read_page` runs lol_html over the source three times — facts (title, first `<h1>`, metas,
+2. `read_page` first runs `text/enrich` (auto links and emoji shortcodes, on whole text
+   nodes outside links, code and `data-literal`), then lol_html over the source three times — facts (title, first `<h1>`, metas,
    whether a `<head>` exists), content (wrappers and layout-owned tags removed) and, only when a
    `<head>` exists, the extra head tags. lol_html builds no tree and adds no implied `<head>` or
    `<body>`: a fragment stays a fragment, which is why the head pass is skipped without one.

@@ -44,6 +44,8 @@ The theme styles the elements themselves: headings, `<p>`, lists, `<table>`, `<p
 - To change the look site-wide, override a token in a stylesheet: `--htmlpress-accent`, `--htmlpress-font`,
   `--htmlpress-mono`, `--htmlpress-bg`, `--htmlpress-surface`, `--htmlpress-text`, `--htmlpress-muted`, `--htmlpress-border`,
   `--htmlpress-radius`, `--htmlpress-width`.
+- Bare URLs and emails in prose become links and GitHub shortcodes (`:rocket:`) become emoji
+  at build time; text in links, code and `data-literal` elements stays as written.
 - Escape code inside `<pre><code>`: `&lt;` and `&amp;`. Name its language,
   `<pre><code class="language-rust">`, to highlight it at build time; `data-lines="2,4-5"`
   marks lines, `data-line-numbers` numbers them, `data-add`/`data-remove` show a diff,

@@ -49,9 +49,15 @@
 </p>
 
 <h2>Auto Links</h2>
-<htmlpress-callout label="Coming soon">
-  <p>
-    A bare URL in text stays text in HTML; turning it into a link automatically at build
-    time is planned. Until then, wrap it in an <code>&lt;a&gt;</code>.
-  </p>
-</htmlpress-callout>
+<p>
+  A bare URL in prose becomes a link at build time, as in GitHub-flavored Markdown:
+  <code>http://</code> and <code>https://</code> URLs, <code>www.</code> addresses and
+  emails. Trailing punctuation stays outside the link.
+</p>
+<pre><code class="language-html">&lt;p&gt;See https://htmlpress.dev, or mail team@example.com.&lt;/p&gt;</code></pre>
+<p>Renders as: See https://htmlpress.dev, or mail team@example.com.</p>
+<p>
+  Text in links, code, code blocks and terminals stays as written, and so does any element
+  with <code>data-literal</code>, for prose that must show a raw URL:
+</p>
+<pre><code class="language-html">&lt;p data-literal&gt;Type https://htmlpress.dev in the address bar.&lt;/p&gt;</code></pre>

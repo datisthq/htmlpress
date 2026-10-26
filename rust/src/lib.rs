@@ -42,6 +42,9 @@ mod actions {
         pub(crate) mod read;
         pub(crate) mod render;
     }
+    pub(crate) mod text {
+        pub(crate) mod enrich;
+    }
     pub(crate) mod skill {
         pub(crate) mod load;
     }

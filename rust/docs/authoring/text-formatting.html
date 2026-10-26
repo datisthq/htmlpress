@@ -136,9 +136,9 @@
 <p>Write emoji characters directly; pages are UTF-8:</p>
 <pre><code>🚀 Launch 🎉 Celebrate ❤️ Love ⚠️ Careful ✅ Done</code></pre>
 <p>Renders as: 🚀 Launch 🎉 Celebrate ❤️ Love ⚠️ Careful ✅ Done</p>
-<htmlpress-callout label="Coming soon">
-  <p>
-    GitHub-style shortcodes such as <code>:rocket:</code>, turned into emoji at build
-    time.
-  </p>
-</htmlpress-callout>
+<p>
+  GitHub's shortcodes become emoji at build time; an unknown one, and anything inside code
+  or a <code>data-literal</code> element, stays as written:
+</p>
+<pre><code class="language-html">Ship it :rocket: :tada:</code></pre>
+<p>Renders as: Ship it :rocket: :tada:</p>

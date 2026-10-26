@@ -18,10 +18,12 @@ name = "htmlpress"
 path = "src/main.rs"
 
 [dependencies]
+emojis = "0.9.1"
 fireargs = "0.3.0"
 giallo = { version = "0.5.2", features = ["dump"] }
 glob = "0.3.4"
 htmd = "0.5.6"
+linkify = "0.11.0"
 lol_html = "3.0.2"
 notify = "8.2.0"
 pulldown-cmark = { version = "0.13.4", default-features = false, features = ["html"] }
