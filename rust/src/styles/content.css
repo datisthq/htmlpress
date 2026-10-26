@@ -172,6 +172,12 @@ kbd {
 .htmlpress-code > span:focus-within {
   opacity: 1;
 }
+/* A touch screen has no hover to reveal them */
+@media (hover: none) {
+  .htmlpress-code > span {
+    opacity: 1;
+  }
+}
 pre[data-wrap],
 pre[data-wrap] code {
   white-space: pre-wrap;

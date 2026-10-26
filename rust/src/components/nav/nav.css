@@ -52,8 +52,10 @@
   ul[data-sections]:not(:has(> [data-position="sidebar"])) {
     display: none;
   }
+  /* Repeats the hiding selector: a bare ul[data-sections] loses to its :not(:has()) */
   @media (max-width: 56rem) {
     ul[data-sections],
+    ul[data-sections]:not(:has(> [data-position="sidebar"])),
     ul[data-sections] > [data-position="header"] {
       display: flex;
     }

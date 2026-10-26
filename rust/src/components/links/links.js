@@ -2,14 +2,18 @@
 // links fold into a "More" menu. Without the script the links scroll, as before.
 
 const CHEVRON =
-  '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>'
+  '<svg viewBox="0 0 24 24" data-icon="chevron" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>'
+const DOTS =
+  '<svg viewBox="0 0 24 24" data-icon="dots" aria-hidden="true"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg>'
 
 class HtmlpressLinks extends HTMLElement {
   connectedCallback() {
     const nav = this.querySelector(":scope > nav")
     if (!nav || this.querySelector("details")) return
+    const label = readMessages()["nav.more"] ?? "More"
     const more = document.createElement("details")
-    more.innerHTML = `<summary>${readMessages()["nav.more"] ?? "More"}${CHEVRON}</summary><div></div>`
+    more.innerHTML = `<summary><span>${label}</span>${CHEVRON}${DOTS}</summary><div></div>`
+    more.querySelector("summary")?.setAttribute("aria-label", label)
     more.hidden = true
     nav.append(more)
     document.addEventListener("click", event => {

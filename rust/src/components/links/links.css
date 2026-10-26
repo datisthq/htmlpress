@@ -93,8 +93,11 @@
   details[open] > summary {
     margin: 0;
   }
-  details[open] summary svg {
+  details[open] [data-icon="chevron"] {
     transform: rotate(180deg);
+  }
+  [data-icon="dots"] {
+    display: none;
   }
   details > div {
     position: absolute;
@@ -132,6 +135,15 @@
   @media (max-width: 56rem) {
     nav {
       padding: 0;
+    }
+    /* A phone has room for the menu's icon only */
+    summary :is(span, [data-icon="chevron"]) {
+      display: none;
+    }
+    summary [data-icon="dots"] {
+      display: block;
+      width: 1.25rem;
+      height: 1.25rem;
     }
     a[data-section] {
       display: none;

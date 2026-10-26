@@ -46,6 +46,19 @@
       display: block;
       flex: 0 1 auto;
     }
+    /* No room for the tagline beside the links; the sidebar's brand keeps it */
+    :scope htmlpress-brand small {
+      display: none;
+    }
+    :scope htmlpress-brand {
+      flex-shrink: 0;
+    }
+    :scope htmlpress-brand a {
+      align-items: center;
+    }
+    :scope htmlpress-brand img {
+      margin-bottom: 0;
+    }
     :scope htmlpress-nav-toggle:defined {
       margin-right: 0;
     }
