@@ -484,6 +484,14 @@ fn create_nav(site: &Site, page: &Page) -> String {
     }
     let mut html = String::from("<nav aria-label=\"Pages\">");
     html.push_str(&create_section_list(site, page));
+    if !groups.is_empty() {
+        let label = match read_section(site, page).map(|section| &section.kind) {
+            Some(SectionKind::Blog) => "Posts",
+            Some(SectionKind::Changelog) => "Releases",
+            _ => "Articles",
+        };
+        let _ = write!(html, "<p data-label>{label}</p>");
+    }
     for (folder, items) in groups {
         let index_only = |folder: &str| {
             let index = format!("{prefix}{folder}/index.html");
@@ -530,7 +538,7 @@ fn create_nav(site: &Site, page: &Page) -> String {
         })
         .collect();
     if !links.is_empty() {
-        html.push_str("<ul data-links>");
+        html.push_str("<p data-label>Links</p><ul data-links>");
         for link in links {
             let url = escape_html(&link.url);
             let title = escape_html(&link.title);

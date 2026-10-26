@@ -55,6 +55,22 @@ fn groups_the_navigation_by_folder() -> crate::Result<()> {
 }
 
 #[test]
+fn labels_the_navigation_and_its_links() -> crate::Result<()> {
+    let mut site = create_site()?;
+    let html = render_page(&site, &site.pages[0], false)?;
+    assert!(html.contains(r#"<nav aria-label="Pages"><p data-label>Articles</p><ul>"#));
+    site.config.links = vec![Link {
+        title: "Chat".to_owned(),
+        url: "https://chat.x".to_owned(),
+        position: Position::Sidebar,
+        ..Link::default()
+    }];
+    let html = render_page(&site, &site.pages[0], false)?;
+    assert!(html.contains(r#"<p data-label>Links</p><ul data-links>"#));
+    Ok(())
+}
+
+#[test]
 fn links_a_group_to_its_index_page() -> crate::Result<()> {
     let mut site = create_site()?;
     let api = render_page(&site, &site.pages[2], false)?;
