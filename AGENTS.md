@@ -11,7 +11,7 @@ Htmlpress turns a folder of HTML pages into a site: one layout, one theme, a nav
 - **page** — an `.html` file in a project, read by `rust/src/actions/page/read.rs` into title, order, head and content
 - **escape** — a project file under `.htmlpress/` at a built-in asset's path (`ASSETS` in `rust/src/settings.rs`), replacing it: `layout.html`, `styles/*.css`, `scripts/*.js`, `components/<tag>.{css,js}`; beside escapes a project may add its own `components/<tag>.{html,css,js}` and `layouts/<name>.html`, which a page picks with `<meta name="layout">`
 - **component** — a custom element tag with up to three files, `components/<tag>.{html,css,js}`: its CSS scoped with `@scope (<tag>)`, its JS defining only that element, linked only on pages that use the tag; a project's own tag adds one, and its `.html` replaces the tag at build time
-- **docs site** — `docs/`, this repo's own htmlpress project, built by `pnpm build:docs` and deployed to htmlpress.dev
+- **docs site** — this repo's own htmlpress project: the root's `htmlpress.yaml` and `.htmlpress/`, its pages in `docs/` (`include: docs/**/*.html`), built by `pnpm build:docs` and deployed to htmlpress.dev
 
 ## Rules
 
@@ -61,7 +61,7 @@ Shipped skills live in `.skills/` and teach coding agents to **use** htmlpress; 
 ## Commands
 
 - `pnpm install` — dependencies, lefthook, the `.claude/skills` symlink and `cargo fetch`
-- `pnpm start` — `htmlpress start docs` from source, the docs site with live reload · `pnpm build:docs` — its production build into `docs/.htmlpress/build`
+- `pnpm start` — `htmlpress start` from source, the docs site with live reload · `pnpm build:docs` — its production build into `.htmlpress/build`
 - `pnpm build` — the release binary (`cargo build --release`), the npm shim into `typescript/build/` with `tsgo`, then the wheel into `python/build/` with maturin (needs `uv`)
 - `pnpm test` — full gate: lint + type + unit · `pnpm check` — lint + type
 - `pnpm check:lint` — `vp fmt --check && vp lint`, then `cargo fmt --check` and clippy · `pnpm format` — `vp fmt`, `cargo fmt` · `pnpm check:types` — `tsgo --noEmit`, then `cargo check`
@@ -83,7 +83,7 @@ The root is a private pnpm workspace (`package.json`, `pnpm-workspace.yaml`): fo
   - Unit tests beside their module as `<module>_unit.rs`; `tests/` the CLI integration tests
 - `typescript/` — the npm package `gethtmlpress`: `entrypoints/main.ts` runs the binary `actions/binary/resolve.ts` finds; `settings.ts` lists the platforms; `scripts/` packs and publishes the platform packages into `typescript/compile/` (**`package-distribution`**)
 - `python/` — the PyPI package `htmlpress`: only `pyproject.toml`, which points maturin at `rust/Cargo.toml` with `bindings = "bin"`
-- `docs/` — the docs site: HTML pages and `docs/htmlpress.yaml`
+- `docs/` — the docs site's HTML pages; the repo root is its project, with `htmlpress.yaml` and `.htmlpress/`
 - `.skills/` — the shipped agent skills
 - `README.md`, `CONTRIBUTING.md` — the GitHub overview and the contributor guide; `rust/README.md`, `typescript/README.md` and `python/README.md` are each registry's page
 
@@ -97,7 +97,7 @@ Dot-directories hold non-package code: `.agents/` repo skills, `.skills/` shippe
 - `package.json` script names are `verb[:object]` (`check:lint`, `build:docs`), never noun-first
 - Specs: Vitest via `vite-plus/test`, `<module>.unit.ts`, no "Arrange / Act / Assert" comments
 - Rust: edition 2024, rustfmt (90 columns), clippy with `-D warnings`; snake_case **verb_noun** functions; no `unwrap` / `expect` / `unsafe` outside tests (**`rust-development`**)
-- HTML in `docs/` and `.skills/`: semantic elements and the documented `htmlpress-*` components only, no inline styles — the docs are the first project htmlpress must serve well. The one exception is the home page, `docs/index.html`: it uses the `landing` layout and the `landing-*` components in `docs/.htmlpress/`, the way any project builds its own look
+- HTML in `docs/` and `.skills/`: semantic elements and the documented `htmlpress-*` components only, no inline styles — the docs are the first project htmlpress must serve well. The one exception is the home page, `docs/index.html`: it uses the `landing` layout and the `landing-*` components in `.htmlpress/`, the way any project builds its own look
 - Commits: Conventional Commits, typed by what an installer gets (below)
 
 ## Releases

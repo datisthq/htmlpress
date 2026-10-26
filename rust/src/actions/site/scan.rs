@@ -3,18 +3,23 @@ use std::path::Path;
 
 use crate::actions::config::load::load_config;
 use crate::actions::page::read::{is_layout_name, read_page};
-use crate::actions::path::select::select_paths;
+use crate::actions::path::select::{read_bases, select_paths};
 use crate::actions::skill::load::load_skills;
 use crate::models::error::Error;
+use crate::models::page::Page;
 use crate::models::site::Site;
 use crate::settings::{ASSETS, CONFIG_FILE, LAYOUT_ELEMENTS, PROJECT_DIR};
 
-/// Read a project: its config, every `.html` page and every other file under the root.
+/// Read a project: its config, its pages and the other files under its include bases.
 /// Dot-folders and dot-files (`.htmlpress/`, `.git/`) and `node_modules/` are skipped.
 pub fn scan_site(root: &Path) -> crate::Result<Site> {
     let config = load_config(root)?;
     let mut paths = vec![];
-    list_files(root, "", &mut paths)?;
+    for base in read_bases(&config) {
+        if root.join(&base).is_dir() {
+            list_files(root, &base, &mut paths)?;
+        }
+    }
     paths.sort();
 
     paths.retain(|path| path != CONFIG_FILE);
@@ -27,10 +32,20 @@ pub fn scan_site(root: &Path) -> crate::Result<Site> {
         eprintln!("warning: {CONFIG_FILE}: \"{pattern}\" matches no file");
     }
     let mut pages = vec![];
-    for path in &selection.pages {
-        let file = root.join(path);
+    for (path, source) in &selection.pages {
+        let file = root.join(source);
         let html = std::fs::read_to_string(&file).map_err(Error::io(&file))?;
-        pages.push(read_page(path, &html)?);
+        let page = read_page(path, &html).map_err(|error| match error {
+            Error::Page { message, .. } => Error::Page {
+                path: source.clone(),
+                message,
+            },
+            error => error,
+        })?;
+        pages.push(Page {
+            source: source.clone(),
+            ..page
+        });
     }
     let files = selection.files;
     pages.sort_by(|a, b| {
@@ -44,7 +59,7 @@ pub fn scan_site(root: &Path) -> crate::Result<Site> {
         if let Some(layout) = &page.layout
             && !assets.contains_key(&format!("layouts/{layout}.html"))
         {
-            return Err(Error::page(&page.path)(format!(
+            return Err(Error::page(&page.source)(format!(
                 "no layout \"{layout}\": add {PROJECT_DIR}/layouts/{layout}.html"
             )));
         }

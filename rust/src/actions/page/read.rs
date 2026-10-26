@@ -30,6 +30,7 @@ pub fn read_page(path: &str, html: &str) -> crate::Result<Page> {
         .unwrap_or_else(|| read_stem(path));
     Ok(Page {
         path: path.to_owned(),
+        source: path.to_owned(),
         url: create_url(path),
         title,
         description: facts.description,

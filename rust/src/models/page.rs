@@ -3,8 +3,11 @@ use serde::Serialize;
 /// One HTML source page, split into what the layout needs.
 #[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct Page {
-    /// The source path relative to the project root, with `/` separators.
+    /// The path it is built to, relative to the output, with `/` separators.
     pub path: String,
+    /// The source file's path relative to the project root, which `include`'s base
+    /// prefixes: `docs/guide.html` for the page built to `guide.html`.
+    pub source: String,
     /// The root-relative URL it is served at: `/`, `/guides/`, `/guides/build.html`.
     pub url: String,
     /// `<title>`, else the first `<h1>`, else the file name.

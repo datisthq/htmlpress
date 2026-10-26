@@ -13,8 +13,9 @@ pub struct Site {
     /// The site title: `title` from the config, else the project folder's name.
     pub title: String,
     pub pages: Vec<Page>,
-    /// Every non-page file, relative to the root with `/` separators, copied as-is.
-    pub files: Vec<String>,
+    /// Every non-page file copied as-is: its path in the output to its source path in
+    /// the project, both with `/` separators.
+    pub files: BTreeMap<String, String>,
     /// Every asset the build uses, by its path under `.htmlpress/`: the built-in ones with
     /// the project's escapes and own components laid over them.
     pub assets: BTreeMap<String, String>,

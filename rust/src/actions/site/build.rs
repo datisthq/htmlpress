@@ -28,8 +28,8 @@ pub fn build_site(options: &BuildOptions) -> crate::Result<BuildReport> {
         let html = render_page(&built_in, &page, options.reload)?;
         write_file(&options.output.join(NOT_FOUND_PAGE), html.as_bytes())?;
     }
-    for file in &site.files {
-        let source = options.root.join(file);
+    for (file, source) in &site.files {
+        let source = options.root.join(source);
         let target = options.output.join(file);
         create_parent(&target)?;
         std::fs::copy(&source, &target).map_err(Error::io(&source))?;
@@ -51,7 +51,7 @@ pub fn build_site(options: &BuildOptions) -> crate::Result<BuildReport> {
         write_file(&assets.join("reload.js"), RELOAD.as_bytes())?;
     }
     // A project's own file of the same name was copied above and wins; _headers merges it
-    let shipped = |name: &str| site.files.iter().any(|file| file == name);
+    let shipped = |name: &str| site.files.contains_key(name);
     for (path, bytes) in describe_site(&site)? {
         if path == "_headers" || !shipped(&path) {
             write_file(&options.output.join(&path), &bytes)?;

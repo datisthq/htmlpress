@@ -43,9 +43,12 @@ run from source: `cargo run --manifest-path rust/Cargo.toml -- build docs`.
 
 ## The pipeline
 
-1. `scan_site` lists the project, skipping dot-entries and `node_modules/`, so `.htmlpress/build`
-   is never read back. `select_paths` sorts the rest by the config's `include` (pages, `**/*.html` when unset) and
-   `exclude` (dropped); other files, `.html` outside `include` too, are copied. Pages sort `index.html`
+1. `scan_site` lists only the include bases (`read_bases`: each glob's folders before its
+   first wildcard), skipping dot-entries and `node_modules/`, so `.htmlpress/build` is
+   never read back and a repo-root project never walks `rust/target`. `select_paths`
+   sorts them by `include` (pages, `**/*.html` when unset) and `exclude` (dropped); other
+   files under a base, `.html` outside `include` too, are copied. Every path is served
+   without its base, so `Page.path` is the output path and `Page.source` the file's. Pages sort `index.html`
    first, then by `<meta name="order">`, then by path.
 2. `read_page` runs lol_html over the source three times — facts (title, first `<h1>`, metas,
    whether a `<head>` exists), content (wrappers and layout-owned tags removed) and, only when a
@@ -85,8 +88,9 @@ chunked responses, so a stream would sit unsent. `reload.js` asks
 
 The watcher's filter is load-bearing: a build reads every source (inotify `Access` events) and
 rewrites the output, so counting either would rebuild forever. `is_source_event` drops access
-events, the output, other dot-folders and the bare `.htmlpress` folder, but keeps files inside
-`.htmlpress/` such as an escape.
+events, the output, other dot-folders, the bare `.htmlpress` folder and anything outside
+the include bases and `htmlpress.yaml`, but keeps files inside `.htmlpress/` such as an
+escape.
 
 ## The CLI
 

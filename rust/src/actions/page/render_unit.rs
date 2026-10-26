@@ -19,7 +19,7 @@ fn create_site() -> crate::Result<Site> {
             read_page("api/index.html", "<title>API</title><p>Reference.</p>")?,
             read_page("api/cli.html", "<title>CLI</title><p>Flags.</p>")?,
         ],
-        files: vec![],
+        files: std::collections::BTreeMap::new(),
         assets: ASSETS
             .iter()
             .map(|asset| (asset.path.to_owned(), asset.content.to_owned()))

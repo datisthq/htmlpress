@@ -20,7 +20,7 @@ pub(crate) fn render_page(
     page: &Page,
     reload: bool,
 ) -> crate::Result<String> {
-    let fail = |error: String| Error::page(&page.path)(error);
+    let fail = |error: String| Error::page(&page.source)(error);
     let layout = match &page.layout {
         Some(name) => format!("layouts/{name}.html"),
         None => "layout.html".to_owned(),
@@ -533,7 +533,7 @@ fn create_toolbar(page: &Page) -> Option<String> {
 }
 
 fn create_edit(site: &Site, page: &Page) -> Option<String> {
-    let url = escape_html(&format!("{}{}", site.config.edit.as_ref()?, page.path));
+    let url = escape_html(&format!("{}{}", site.config.edit.as_ref()?, page.source));
     Some(format!("<a href=\"{url}\">Edit this page</a>"))
 }
 

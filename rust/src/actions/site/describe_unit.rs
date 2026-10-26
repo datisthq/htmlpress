@@ -23,7 +23,7 @@ fn create_site() -> crate::Result<Site> {
             read_page("guides/build.html", "<title>Build</title><p>Run it.</p>")?,
             read_page("404.html", "<h1>Lost</h1>")?,
         ],
-        files: vec![],
+        files: std::collections::BTreeMap::new(),
         assets: Default::default(),
         skills: vec![],
     })

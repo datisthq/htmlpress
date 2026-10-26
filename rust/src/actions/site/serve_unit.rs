@@ -48,30 +48,26 @@ fn answers_at_once_when_the_client_is_behind() {
 fn keeps_watching_sources_and_the_project_folder_only() {
     let root = Path::new("/site");
     let output = Path::new("/site/.htmlpress/build");
+    let all = [String::new()];
+    let docs = ["docs/".to_owned()];
     let event = |path: &str| {
         Ok(notify::Event::new(notify::EventKind::Any).add_path(PathBuf::from(path)))
     };
-    assert!(is_source_event(&event("/site/index.html"), root, output));
-    assert!(is_source_event(
-        &event("/site/.htmlpress/layout.html"),
-        root,
-        output
-    ));
-    assert!(!is_source_event(
-        &event("/site/.htmlpress/build/index.html"),
-        root,
-        output
-    ));
-    assert!(!is_source_event(&event("/site/.htmlpress"), root, output));
-    assert!(!is_source_event(&event("/site/.git/index"), root, output));
+    let watched =
+        |path: &str, bases: &[String]| is_source_event(&event(path), root, output, bases);
+    assert!(watched("/site/index.html", &all));
+    assert!(watched("/site/.htmlpress/layout.html", &all));
+    assert!(!watched("/site/.htmlpress/build/index.html", &all));
+    assert!(!watched("/site/.htmlpress", &all));
+    assert!(!watched("/site/.git/index", &all));
+    assert!(!watched("/site/node_modules/x.html", &all));
     let access = notify::EventKind::Access(notify::event::AccessKind::Any);
     let read = Ok(notify::Event::new(access).add_path(PathBuf::from("/site/index.html")));
-    assert!(!is_source_event(&read, root, output));
-    assert!(!is_source_event(
-        &event("/site/node_modules/x.html"),
-        root,
-        output
-    ));
+    assert!(!is_source_event(&read, root, output, &all));
+    assert!(watched("/site/docs/index.html", &docs));
+    assert!(watched("/site/htmlpress.yaml", &docs));
+    assert!(watched("/site/.htmlpress/layouts/landing.html", &docs));
+    assert!(!watched("/site/rust/target/debug/htmlpress", &docs));
 }
 
 #[test]

@@ -38,7 +38,7 @@ fn skips_dot_folders_and_the_config_and_keeps_other_files() -> crate::Result<()>
     let site = scan_site(root)?;
     assert_eq!(site.title, "Docs");
     assert_eq!(site.pages.len(), 1);
-    assert_eq!(site.files, ["images/logo.svg"]);
+    assert_eq!(site.files.keys().collect::<Vec<_>>(), ["images/logo.svg"]);
     assert_eq!(site.assets.len(), ASSETS.len());
     Ok(())
 }

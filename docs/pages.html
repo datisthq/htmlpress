@@ -188,8 +188,11 @@ edit: https://github.com/datisthq/htmlpress/edit/main/docs/</code></pre>
       <td><code>**/*.html</code></td>
       <td>
         one glob or a list: the <code>.html</code> files that become pages. It replaces
-        the default, so list every folder you want; other <code>.html</code> files are
-        copied as they are, like any other file
+        the default, so list every folder you want. Each glob's folders before its first
+        wildcard are its base: only files under a base are read, and they are served
+        without it, so <code>docs/**/*.html</code> builds <code>docs/guide.html</code> to
+        <code>/guide.html</code>. Other files under a base, <code>.html</code> ones
+        <code>include</code> leaves out too, are copied as they are
       </td>
     </tr>
     <tr>

@@ -8,10 +8,11 @@ use notify::{RecursiveMode, Watcher};
 use tiny_http::{Header, Request, Response, Server};
 
 use crate::actions::config::load::load_config;
+use crate::actions::path::select::read_bases;
 use crate::actions::site::build::build_site;
 use crate::models::build::BuildOptions;
 use crate::models::error::Error;
-use crate::settings::{PORTS, PROJECT_DIR, RELOAD_PATH};
+use crate::settings::{CONFIG_FILE, PORTS, PROJECT_DIR, RELOAD_PATH};
 
 /// Build the project, serve the output and rebuild on every change, reloading open pages.
 /// `host` defaults to localhost and `port` to the first free one of [`PORTS`]. Calls
@@ -107,7 +108,11 @@ fn rebuild_on_change(options: &BuildOptions, events: &Events, state: &Reload) {
     let output = output.canonicalize().unwrap_or(output);
     let root = root.canonicalize().unwrap_or(root);
     while let Ok(event) = events.recv() {
-        if !is_source_event(&event, &root, &output) {
+        let bases = match load_config(&root) {
+            Ok(config) => read_bases(&config),
+            Err(_) => vec![String::new()],
+        };
+        if !is_source_event(&event, &root, &output, &bases) {
             continue;
         }
         // Editors save in bursts (temp file, rename, chmod): settle before building once.
@@ -131,10 +136,12 @@ fn rebuild_on_change(options: &BuildOptions, events: &Events, state: &Reload) {
 
 // A build reads every source and rewrites the output, so access events and anything under
 // the output, or the project folder itself, must not count: each would rebuild forever.
+// Outside the include bases nothing is read, so a `cargo build` beside docs/ is no change.
 fn is_source_event(
     event: &notify::Result<notify::Event>,
     root: &Path,
     output: &Path,
+    bases: &[String],
 ) -> bool {
     let Ok(event) = event else { return false };
     if matches!(event.kind, notify::EventKind::Access(_)) {
@@ -152,10 +159,14 @@ fn is_source_event(
             return false;
         };
         let first = first.to_string_lossy();
-        match first == PROJECT_DIR {
-            true => parts.next().is_some(),
-            false => !first.starts_with('.') && first != "node_modules",
+        if first == PROJECT_DIR {
+            return parts.next().is_some();
         }
+        let inside = inside.to_string_lossy().replace('\\', "/");
+        let in_base = bases.iter().any(|base| inside.starts_with(base.as_str()));
+        !first.starts_with('.')
+            && first != "node_modules"
+            && (inside == CONFIG_FILE || in_base)
     })
 }
 

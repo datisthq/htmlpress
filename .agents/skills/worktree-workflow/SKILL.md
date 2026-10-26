@@ -32,7 +32,7 @@ process listening on a port you did not start: it is another session's server.
 ## Running the docs site
 
 Start the server from inside the worktree: `pnpm start` serves the worktree's own `docs/`, and
-`pnpm build:docs` writes into the worktree's `docs/.htmlpress/build`, never the root's. The
+`pnpm build:docs` writes into the worktree's `.htmlpress/build`, never the root's. The
 first run compiles the binary into the worktree's own `rust/target/`, which takes a minute.
 
 ## Landing

@@ -8,7 +8,7 @@
     "command": "pnpm build:docs",
   },
   "assets": {
-    "directory": "docs/.htmlpress/build",
+    "directory": ".htmlpress/build",
   },
   "routes": [
     {

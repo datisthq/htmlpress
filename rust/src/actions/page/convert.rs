@@ -11,7 +11,7 @@ use crate::models::page::Page;
 /// Render a page as the Markdown agents read: its title and description, then its content
 /// with each `htmlpress-*` component reduced to the plain Markdown it stands for.
 pub(crate) fn convert_page(page: &Page) -> crate::Result<String> {
-    let html = simplify_components(&page.content).map_err(Error::page(&page.path))?;
+    let html = simplify_components(&page.content).map_err(Error::page(&page.source))?;
     let converter = HtmlToMarkdown::builder()
         .options(Options {
             bullet_list_marker: BulletListMarker::Dash,
@@ -22,7 +22,7 @@ pub(crate) fn convert_page(page: &Page) -> crate::Result<String> {
         .build();
     let body = converter
         .convert(&html)
-        .map_err(|error| Error::page(&page.path)(error.to_string()))?;
+        .map_err(|error| Error::page(&page.source)(error.to_string()))?;
     let mut parts = vec![format!("# {}", page.title)];
     if let Some(description) = &page.description {
         parts.push(format!("> {description}"));

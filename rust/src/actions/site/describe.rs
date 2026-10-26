@@ -112,10 +112,10 @@ fn create_headers(site: &Site) -> crate::Result<String> {
         ));
     }
     let rule = format!("{base}/\n  Link: {}\n", links.join(", "));
-    if !site.files.iter().any(|file| file == "_headers") {
+    let Some(source) = site.files.get("_headers") else {
         return Ok(rule);
-    }
-    let path = site.root.join("_headers");
+    };
+    let path = site.root.join(source);
     let existing = std::fs::read_to_string(&path).map_err(Error::io(&path))?;
     Ok(format!("{}\n\n{rule}", existing.trim_end()))
 }

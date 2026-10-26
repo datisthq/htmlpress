@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "pnpm -C rust build && pnpm -C typescript build && pnpm -C python build",
-    "build:docs": "cargo run --quiet --release --manifest-path rust/Cargo.toml -- build docs",
+    "build:docs": "cargo run --quiet --release --manifest-path rust/Cargo.toml -- build",
     "check": "pnpm check:lint && pnpm check:types",
     "check:lint": "vp fmt --check && vp lint && pnpm -C rust check:lint",
     "check:types": "tsgo --noEmit && pnpm -C typescript check:types && pnpm -C rust check:types",
@@ -15,7 +15,7 @@
     "scan:leaks": "gitleaks git --config=.gitleaks.toml --verbose --redact",
     "scan:vulns": "semgrep --config=p/typescript --config=p/nodejs --config=p/rust --config=p/owasp-top-ten --config=p/secrets --exclude=\"**/fixtures/**\" --metrics=off",
     "squash": "node .scripts/squash-branch.ts",
-    "start": "cargo run --quiet --manifest-path rust/Cargo.toml -- start docs",
+    "start": "cargo run --quiet --manifest-path rust/Cargo.toml -- start",
     "test": "pnpm check && pnpm test:unit",
     "test:unit": "vp test && pnpm -C typescript test:unit && pnpm -C rust test:unit",
     "update:deps": "ncu -ws --root -u --cooldown 7d"
