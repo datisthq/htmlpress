@@ -71,6 +71,18 @@ fn labels_the_navigation_and_its_links() -> crate::Result<()> {
 }
 
 #[test]
+fn keeps_a_page_ordered_after_a_folder_below_it() -> crate::Result<()> {
+    let mut site = create_site()?;
+    site.pages
+        .push(read_page("zz.html", "<title>Last</title>")?);
+    let html = render_page(&site, &site.pages[0], false)?;
+    let folder = html.find(r#"<a href="/api/cli.html">"#);
+    let last = html.find(r#"<a href="/zz.html">"#);
+    assert!(folder.is_some() && last > folder);
+    Ok(())
+}
+
+#[test]
 fn links_a_group_to_its_index_page() -> crate::Result<()> {
     let mut site = create_site()?;
     let api = render_page(&site, &site.pages[2], false)?;

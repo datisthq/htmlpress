@@ -477,7 +477,13 @@ fn create_nav(site: &Site, page: &Page) -> String {
             true => None,
             false => relative.split_once('/').map(|(folder, _)| folder),
         };
-        match groups.iter_mut().find(|(key, _)| *key == folder) {
+        // Loose pages join only the group right before them, so a page ordered after a
+        // folder stays after it instead of rising into the first group
+        let group = match folder {
+            Some(_) => groups.iter_mut().find(|(key, _)| *key == folder),
+            None => groups.last_mut().filter(|(key, _)| key.is_none()),
+        };
+        match group {
             Some((_, items)) => items.push(item),
             None => groups.push((folder, vec![item])),
         }
