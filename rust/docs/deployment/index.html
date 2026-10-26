@@ -1,0 +1,71 @@
+<title>Deployment</title>
+<meta name="description" content="How to publish your built htmlpress site to a host." />
+<meta name="order" content="50" />
+
+<h1>Deployment</h1>
+<p>
+  <code>htmlpress build</code> produces a fully static site in
+  <code>.htmlpress/build/</code>: one <code>.html</code> file for every page at the same
+  path as its source, a <code>404.html</code>, <code>robots.txt</code>, a
+  <code>sitemap.xml</code> (when <code>site</code> is set), a <code>_headers</code> file,
+  the
+  <a href="/customization/ai-agents.html">Markdown copies and <code>llms.txt</code></a>
+  for agents, the theme and component scripts under <code>_htmlpress/</code>, and every
+  other file of the project. Drop that directory on any static host and you're live.
+</p>
+<p>
+  These guides walk through the most common targets. Pick one: every guide is
+  self-contained and shows both the manual command and a CI workflow.
+</p>
+
+<h2>Hosts</h2>
+<htmlpress-grid cols="2">
+  <htmlpress-card>
+    <h3><a href="/deployment/static-hosting.html">Static Hosting</a></h3>
+    <p>
+      Any host that serves a directory of files: nginx, S3 + CloudFront, Caddy, and
+      friends.
+    </p>
+  </htmlpress-card>
+  <htmlpress-card>
+    <h3><a href="/deployment/github-pages.html">GitHub Pages</a></h3>
+    <p>
+      Free, git-native, and works well for project sites under a
+      <code>/repo-name/</code> path.
+    </p>
+  </htmlpress-card>
+  <htmlpress-card>
+    <h3><a href="/deployment/cloudflare.html">Cloudflare</a></h3>
+    <p>Workers + static assets. The setup <code>htmlpress.dev</code> itself uses.</p>
+  </htmlpress-card>
+  <htmlpress-card>
+    <h3><a href="/deployment/vercel.html">Vercel</a></h3>
+    <p>Git-connected with previews per pull request and zero-config domains.</p>
+  </htmlpress-card>
+  <htmlpress-card>
+    <h3><a href="/deployment/netlify.html">Netlify</a></h3>
+    <p>Git-connected with branch deploys, atomic releases, and built-in form handling.</p>
+  </htmlpress-card>
+</htmlpress-grid>
+
+<h2>What every guide assumes</h2>
+<ul>
+  <li>
+    You run <code>htmlpress build</code> at the project root and the output lands in
+    <code>.htmlpress/build/</code>. In CI, <code>npx gethtmlpress build</code> runs the
+    same binary without installing it first; see
+    <a href="/introduction.html">Introduction</a>
+    for the other channels.
+  </li>
+  <li>
+    You've set <code>site</code> in <code>htmlpress.yaml</code> if you want
+    <code>sitemap.xml</code>, the sitemap line in <code>robots.txt</code>, canonical URLs
+    and absolute social tags; see
+    <a href="/customization/site-metadata.html">Site Metadata</a>.
+  </li>
+  <li>
+    You only need <code>base</code> if your site is mounted at a sub-path (e.g. GitHub
+    Pages project sites). The <a href="/deployment/github-pages.html">GitHub Pages</a>
+    guide is the only one that covers it.
+  </li>
+</ul>

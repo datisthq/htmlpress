@@ -1,0 +1,140 @@
+<title>Text Formatting</title>
+<meta
+  name="description"
+  content="Bold, italic, code, blockquotes, lists, footnotes, definition lists and abbreviations."
+/>
+<meta name="order" content="35" />
+
+<h1>Text Formatting</h1>
+<p>
+  Text is plain HTML, and the theme styles the elements themselves: write semantic markup
+  and it already looks right. No classes, no inline styles.
+</p>
+
+<h2>Bold and Italic</h2>
+<pre><code>&lt;strong&gt;bold text&lt;/strong&gt; and &lt;em&gt;italic text&lt;/em&gt; and &lt;strong&gt;&lt;em&gt;bold italic&lt;/em&gt;&lt;/strong&gt;</code></pre>
+<p>
+  Renders as: <strong>bold text</strong> and <em>italic text</em> and
+  <strong><em>bold italic</em></strong>
+</p>
+
+<h2>Strikethrough</h2>
+<pre><code>&lt;s&gt;deleted text&lt;/s&gt;</code></pre>
+<p>Renders as: <s>deleted text</s></p>
+
+<h2>Inline Code</h2>
+<pre><code>Use &lt;code&gt;const x = 1&lt;/code&gt; for inline code.</code></pre>
+<p>Renders as: Use <code>const x = 1</code> for inline code.</p>
+<p><code>&lt;kbd&gt;</code> marks a key: press <kbd>Ctrl</kbd> + <kbd>C</kbd> to copy.</p>
+
+<h2>Inline Code Highlighting</h2>
+<htmlpress-callout label="Coming soon">
+  <p>Language-aware syntax highlighting for inline code and code blocks.</p>
+</htmlpress-callout>
+
+<h2>Blockquotes</h2>
+<pre><code>&lt;blockquote&gt;&lt;p&gt;This is a blockquote.&lt;/p&gt;&lt;/blockquote&gt;</code></pre>
+<p>Renders as:</p>
+<blockquote><p>This is a blockquote.</p></blockquote>
+
+<h2>Lists</h2>
+<p>Unordered and ordered lists:</p>
+<ul>
+  <li>First item</li>
+  <li>
+    Second item
+    <ul>
+      <li>Nested item</li>
+    </ul>
+  </li>
+</ul>
+<ol>
+  <li>Step one</li>
+  <li>Step two</li>
+  <li>Step three</li>
+</ol>
+<pre><code>&lt;ul&gt;
+  &lt;li&gt;First item&lt;/li&gt;
+  &lt;li&gt;Second item&lt;ul&gt;&lt;li&gt;Nested item&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;ol&gt;&lt;li&gt;Step one&lt;/li&gt;&lt;li&gt;Step two&lt;/li&gt;&lt;/ol&gt;</code></pre>
+
+<h2>Task Lists</h2>
+<p>A list item led by a disabled checkbox:</p>
+<pre><code>&lt;ul&gt;
+  &lt;li&gt;&lt;input type="checkbox" checked disabled&gt; Completed task&lt;/li&gt;
+  &lt;li&gt;&lt;input type="checkbox" disabled&gt; Pending task&lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+<p>Renders as:</p>
+<ul>
+  <li><input type="checkbox" checked disabled /> Completed task</li>
+  <li><input type="checkbox" disabled /> Pending task</li>
+</ul>
+
+<h2>Horizontal Rules</h2>
+<pre><code>&lt;hr&gt;</code></pre>
+<hr />
+
+<h2>Footnotes</h2>
+<p>
+  No component needed. A footnote reference is a <code>&lt;sup&gt;</code> link to an
+  <code>&lt;li&gt;</code> with that id; hovering or focusing the reference previews its
+  note, without the links back. Without the script, the link still jumps to the note.
+</p>
+<pre><code>Here is a sentence with a footnote&lt;sup&gt;&lt;a href="#note-1" id="ref-1"&gt;1&lt;/a&gt;&lt;/sup&gt;.
+
+&lt;ol&gt;
+  &lt;li id="note-1"&gt;This is a numbered footnote. &lt;a href="#ref-1"&gt;↩&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;</code></pre>
+<p>Renders as:</p>
+<p>
+  Here is a sentence with a footnote<sup><a href="#note-1" id="ref-1">1</a></sup> and
+  another<sup><a href="#note-2" id="ref-2">2</a></sup
+  >.
+</p>
+<ol>
+  <li id="note-1">This is a numbered footnote. <a href="#ref-1">↩</a></li>
+  <li id="note-2">
+    Hover the reference to read the note in place. <a href="#ref-2">↩</a>
+  </li>
+</ol>
+
+<h2>Definition Lists</h2>
+<p>Define terms with their descriptions:</p>
+<pre><code>&lt;dl&gt;
+  &lt;dt&gt;Page&lt;/dt&gt;
+  &lt;dd&gt;An .html file in a project&lt;/dd&gt;
+  &lt;dt&gt;Escape&lt;/dt&gt;
+  &lt;dd&gt;A project file that replaces a built-in asset&lt;/dd&gt;
+  &lt;dd&gt;Kept under .htmlpress/&lt;/dd&gt;
+&lt;/dl&gt;</code></pre>
+<p>Renders as:</p>
+<dl>
+  <dt>Page</dt>
+  <dd>An <code>.html</code> file in a project</dd>
+  <dt>Escape</dt>
+  <dd>A project file that replaces a built-in asset</dd>
+  <dd>Kept under <code>.htmlpress/</code></dd>
+</dl>
+
+<h2>Abbreviations</h2>
+<p>
+  No component needed. An <code>&lt;abbr title&gt;</code> shows its full form on hover or
+  focus; without the script, the title stays a native tooltip.
+</p>
+<pre><code>The &lt;abbr title="HyperText Markup Language"&gt;HTML&lt;/abbr&gt; standard is maintained by &lt;abbr title="World Wide Web Consortium"&gt;W3C&lt;/abbr&gt;.</code></pre>
+<p>
+  Renders as: The <abbr title="HyperText Markup Language">HTML</abbr> standard is
+  maintained by <abbr title="World Wide Web Consortium">W3C</abbr>.
+</p>
+
+<h2>Emoji</h2>
+<p>Write emoji characters directly; pages are UTF-8:</p>
+<pre><code>🚀 Launch 🎉 Celebrate ❤️ Love ⚠️ Careful ✅ Done</code></pre>
+<p>Renders as: 🚀 Launch 🎉 Celebrate ❤️ Love ⚠️ Careful ✅ Done</p>
+<htmlpress-callout label="Coming soon">
+  <p>
+    GitHub-style shortcodes such as <code>:rocket:</code>, turned into emoji at build
+    time.
+  </p>
+</htmlpress-callout>

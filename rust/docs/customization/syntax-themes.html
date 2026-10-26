@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Syntax Themes</title>
+    <meta name="description" content="Pick light and dark themes for code blocks." />
+    <meta name="order" content="47" />
+  </head>
+  <body>
+    <h1>Syntax Themes</h1>
+    <htmlpress-callout label="Coming soon"
+      ><p>
+        Htmlpress does not highlight code yet. Syntax highlighting will color
+        <code>&lt;pre&gt;&lt;code&gt;</code> blocks at build time, with a light and a dark
+        theme that follow the visitor's theme.
+      </p></htmlpress-callout
+    >
+    <p>
+      Today a code block is styled by the theme alone:
+      <code>styles/content.css</code> sets its font, background and border from the
+      <code>--htmlpress-*</code> tokens, in light and dark, and
+      <code>scripts/code.js</code> adds a copy button.
+    </p>
+
+    <h2>Configuration</h2>
+    <p>
+      Light and dark theme keys in <code>htmlpress.yaml</code> will pick the themes. Until
+      then, restyle code blocks by escaping <code>styles/content.css</code> or overriding
+      the tokens it reads in <code>styles/tokens.css</code>.
+    </p>
+
+    <h2>Popular pairings</h2>
+    <p>A list of light and dark theme pairs that read well together will go here.</p>
+
+    <h2>A note on accessibility</h2>
+    <p>
+      Whatever colors you give code, check each one against the code block's background
+      with a contrast tool before shipping. The threshold you need for normal-size text is
+      4.5:1 (WCAG AA).
+    </p>
+
+    <h2>See also</h2>
+    <ul>
+      <li><a href="/authoring/code-blocks.html">Code Blocks</a>: the authoring side.</li>
+      <li>
+        <a href="/customization/overriding-escaping.html">Overriding/Escaping</a>: replace
+        the theme's code styles or the copy button script.
+      </li>
+    </ul>
+  </body>
+</html>

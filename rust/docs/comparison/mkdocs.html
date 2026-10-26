@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>MkDocs vs Htmlpress</title>
+    <meta name="description" content="Rust + plain HTML vs Python + Jinja2 + Markdown." />
+    <meta name="order" content="67" />
+  </head>
+  <body>
+    <h1>MkDocs vs Htmlpress</h1>
+    <p>
+      <a href="https://www.mkdocs.org">MkDocs</a> is a Python-based docs generator.
+      Content is plain Markdown, layouts are Jinja2 templates, and themes are
+      pip-installable Python packages. The de-facto theme is
+      <a href="https://squidfunk.github.io/mkdocs-material/">Material for MkDocs</a>,
+      which is what most consumers actually use.
+    </p>
+    <h2>At a glance</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Axis</th>
+          <th>Htmlpress</th>
+          <th>MkDocs</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Language / runtime</td>
+          <td>Rust (single binary, no runtime)</td>
+          <td>Python 3.8+</td>
+        </tr>
+        <tr>
+          <td>UI framework</td>
+          <td>None (plain HTML + CSS, <code>htmlpress-*</code> web components)</td>
+          <td>Jinja2 templates (HTML + CSS)</td>
+        </tr>
+        <tr>
+          <td>Build tool</td>
+          <td>htmlpress binary</td>
+          <td>MkDocs CLI</td>
+        </tr>
+        <tr>
+          <td>Content format</td>
+          <td>HTML pages</td>
+          <td>Markdown (CommonMark + Python-Markdown extensions)</td>
+        </tr>
+        <tr>
+          <td>License</td>
+          <td>MIT, self-hosted</td>
+          <td>BSD-2-Clause, self-hosted</td>
+        </tr>
+        <tr>
+          <td>Output model</td>
+          <td>Prerendered static</td>
+          <td>Prerendered static</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>Architecture</h2>
+    <p>
+      htmlpress is one Rust binary, installed from npm (<code>gethtmlpress</code>), PyPI
+      or crates.io. It wraps each HTML page in one layout with a navigation and a theme;
+      there is no bundler, no UI framework and no plugin API. Every built-in file — the
+      layout, the styles, the scripts and each component — can be escaped: a file at the
+      same path under <code>.htmlpress/</code> replaces it. On PyPI it ships as a binary
+      wheel, so <code>pip install htmlpress</code> needs no Python code at run time.
+    </p>
+    <p>
+      MkDocs is a Python CLI. The site is configured through <code>mkdocs.yml</code>.
+      Themes are pip-installable; the build pipeline runs Markdown content through
+      Python-Markdown (or pymdown-extensions) and through Jinja2 templates. There's no
+      JavaScript build step — interactivity in the rendered site is whatever the theme's
+      templates emit.
+    </p>
+    <p>
+      Material for MkDocs adds a curated theme, a search index based on lunr.js, instant
+      navigation, and a wide plugin ecosystem (<code>mkdocs-material</code> extras, plus
+      the broader <code>mkdocs-*</code> plugin namespace on PyPI).
+    </p>
+    <p>
+      Content layout is unconstrained on the htmlpress side: it scans by glob
+      (<code>include</code>/<code>exclude</code> in <code>htmlpress.yaml</code>, every
+      <code>.html</code> file by default), and a page's URL follows its file path below
+      the glob's base, so <code>docs/**/*.html</code> serves
+      <code>docs/guide.html</code> at <code>/guide.html</code>. There's no required
+      <code>docs/</code> folder. The navigation is built from the folders and each page's
+      <code>&lt;meta name="order"&gt;</code>; a folder's <code>index.html</code> names its
+      group. MkDocs reads from <code>docs/</code> (configurable via
+      <code>docs_dir</code> in <code>mkdocs.yml</code>), with routes derived from file
+      paths under that directory.
+    </p>
+    <h2>Content surface</h2>
+    <p>
+      MkDocs accepts Markdown with frontmatter; htmlpress accepts HTML only. MkDocs
+      extends Markdown through Python-Markdown extensions (admonitions, tabs, footnotes,
+      definition lists) and <code>pymdown-extensions</code> (which adds the full Material
+      syntax: <code>=== "Tab 1"</code> tabs, <code>:::note</code> admonitions,
+      <code>++ctrl++</code> keyboard shortcuts, etc.). Customization beyond what
+      extensions offer requires writing a Python plugin or overriding a Jinja template.
+    </p>
+    <p>
+      htmlpress pages are plain semantic HTML, styled by the theme from the elements
+      themselves. Richer blocks are <code>htmlpress-*</code> custom elements
+      (<code>htmlpress-callout</code>, <code>htmlpress-tabs</code>,
+      <code>htmlpress-steps</code>, <code>htmlpress-grid</code>, …), whose CSS and JS are
+      linked only on pages that use the tag. A project adds its own tag with
+      <code>.htmlpress/components/&lt;tag&gt;.html</code>, which replaces the tag at build
+      time. The same blocks are plain HTML elements here: <code>&lt;dl&gt;</code>,
+      <code>&lt;kbd&gt;</code>, <code>&lt;details&gt;</code>.
+    </p>
+    <p>
+      htmlpress has no frontmatter: a page's metadata is its own
+      <code>&lt;head&gt;</code> — <code>&lt;title&gt;</code>,
+      <code>&lt;meta name="description"&gt;</code>,
+      <code>&lt;meta name="order"&gt;</code>, <code>&lt;meta name="layout"&gt;</code> and
+      <code>&lt;meta name="image"&gt;</code>; other <code>&lt;head&gt;</code> tags are
+      kept. MkDocs reads <code>title</code>, <code>summary</code>, <code>tags</code> (with
+      a plugin), <code>template</code>, and uses <code>mkdocs.yml</code> for navigation.
+    </p>
+    <h2>Feature matrix</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Capability</th>
+          <th>Htmlpress</th>
+          <th>MkDocs</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Versioning</td>
+          <td>No</td>
+          <td>Yes (via <code>mike</code> plugin)</td>
+        </tr>
+        <tr>
+          <td>Internationalization (i18n)</td>
+          <td>No</td>
+          <td>Yes (Material's i18n plugin)</td>
+        </tr>
+        <tr>
+          <td>Search</td>
+          <td>No</td>
+          <td>Yes (built-in, client-side)</td>
+        </tr>
+        <tr>
+          <td>Blog</td>
+          <td>No</td>
+          <td>Yes (Material's blog plugin)</td>
+        </tr>
+        <tr>
+          <td>Changelog</td>
+          <td>No</td>
+          <td>No (manual)</td>
+        </tr>
+        <tr>
+          <td>Sitemap</td>
+          <td>Yes (with <code>site</code> set)</td>
+          <td>Yes</td>
+        </tr>
+        <tr>
+          <td>RSS</td>
+          <td>No</td>
+          <td>Via plugin</td>
+        </tr>
+        <tr>
+          <td>Themes</td>
+          <td>Escapes in <code>.htmlpress/</code> + <code>--htmlpress-*</code> tokens</td>
+          <td>Theme packages + Jinja overrides</td>
+        </tr>
+        <tr>
+          <td>Plugins</td>
+          <td>No (project components in <code>.htmlpress/components/</code>)</td>
+          <td>Python plugins (<code>mkdocs-*</code> on PyPI)</td>
+        </tr>
+        <tr>
+          <td>Custom routes</td>
+          <td>
+            Any <code>.html</code> file; extra layouts in <code>.htmlpress/layouts/</code>
+          </td>
+          <td>No (content-only)</td>
+        </tr>
+        <tr>
+          <td>Standalone toolchain</td>
+          <td>Single Rust binary (npm, PyPI or crates.io)</td>
+          <td>Python + pip</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>Output &amp; deployment</h2>
+    <p>
+      Both tools produce static HTML + assets ready for any static host. MkDocs emits to
+      <code>site/</code> by default; htmlpress emits to <code>.htmlpress/build/</code>.
+    </p>
+    <p>
+      htmlpress writes every page to static HTML in <code>.htmlpress/build/</code>, along
+      with <code>robots.txt</code>, a <code>sitemap.xml</code> when <code>site</code> is
+      set, a Markdown copy of each page, <code>llms.txt</code> and the agent skills under
+      <code>.well-known/agent-skills/</code>. The <code>base</code> key serves the site
+      under a sub-path. See <a href="/deployment/">Deployment</a> for host guides.
+    </p>
+    <h2>See also</h2>
+    <ul>
+      <li><a href="/authoring/">Authoring</a> — htmlpress' HTML surface.</li>
+      <li>
+        <a href="/customization/">Customization</a> — htmlpress' config keys and escapes.
+      </li>
+      <li><a href="/comparison/">Comparison</a> — back to the index.</li>
+    </ul>
+  </body>
+</html>

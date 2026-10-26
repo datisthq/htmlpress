@@ -1,0 +1,92 @@
+<title>Netlify</title>
+<meta
+  name="description"
+  content="Deploy via Netlify's git integration or the CLI, with branch previews and atomic releases."
+/>
+<meta name="order" content="55" />
+
+<h1>Netlify</h1>
+<p>
+  Netlify reads a small <code>netlify.toml</code> at your project root to pick up the
+  build command and publish directory. The rest (Git previews, atomic deploys, custom
+  domains) is handled automatically. Netlify also reads the <code>_headers</code> file
+  every build writes and serves the build's <code>404.html</code> for unknown paths.
+</p>
+
+<h2>Build the site</h2>
+<pre><code>htmlpress build</code></pre>
+<p>Output lands in <code>.htmlpress/build/</code>.</p>
+
+<h2>Configure <code>netlify.toml</code></h2>
+<pre><code>[build]
+command = "npx gethtmlpress build"
+publish = ".htmlpress/build"</code></pre>
+<p>
+  That's all Netlify needs. The same file unlocks <code>netlify dev</code> locally if you
+  ever want to mirror the platform's edge behavior.
+</p>
+
+<h2>Deploy with the git integration</h2>
+<p>
+  The recommended path: connect your repo at
+  <a href="https://app.netlify.com/start">app.netlify.com/start</a>. Netlify reads
+  <code>netlify.toml</code>, runs the build, and ships every push to <code>main</code> to
+  production. Other branches and PRs get unique deploy preview URLs automatically.
+</p>
+
+<h2>Deploy with the CLI</h2>
+<p>For one-shot or scripted deploys:</p>
+<pre><code>htmlpress build
+netlify deploy --prod --dir=.htmlpress/build</code></pre>
+<p>
+  The first run prompts for <code>netlify login</code> and links the directory to a site.
+</p>
+
+<h2>Deploy with GitHub Actions</h2>
+<p>
+  Netlify's git integration is usually enough, but a workflow gives you test-before-deploy
+  gating:
+</p>
+<pre><code>name: deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npx gethtmlpress build
+      - uses: nwtgck/actions-netlify@v3
+        with:
+          publish-dir: .htmlpress/build
+          production-deploy: true
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}</code></pre>
+<p>
+  Get the auth token from
+  <strong>User settings → Applications → Personal access tokens</strong>, and the site ID
+  from <strong>Site settings → General</strong>.
+</p>
+
+<h2>Custom domain</h2>
+<p>
+  In the site dashboard, <strong>Domain management → Add a domain</strong>. Netlify
+  provisions DNS and a certificate. Set the same domain as <code>site</code> in
+  <code>htmlpress.yaml</code>.
+</p>
+
+<h2>See also</h2>
+<ul>
+  <li>
+    <a href="/customization/site-metadata.html">Site Metadata</a>: <code>site</code>
+    populates the sitemap URLs.
+  </li>
+  <li><a href="/deployment/">Deployment</a>: back to the host index.</li>
+</ul>

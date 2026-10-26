@@ -1,0 +1,136 @@
+<title>Code Blocks</title>
+<meta
+  name="description"
+  content="Code blocks with copy buttons, package manager tabs and terminal windows."
+/>
+<meta name="order" content="37" />
+
+<h1>Code Blocks</h1>
+<p>
+  A code block is a <code>&lt;pre&gt;&lt;code&gt;</code>, styled by the theme in its mono
+  font. Every code block gets a copy button. Escape the code inside it:
+  <code>&amp;lt;</code> for <code>&lt;</code> and <code>&amp;amp;</code> for
+  <code>&amp;</code>. Tabs of code blocks are covered under
+  <a href="/authoring/rich-elements.html#code-tabs">Code Tabs</a>.
+</p>
+<pre><code>&lt;pre&gt;&lt;code&gt;const greeting = "&amp;lt;hello&amp;gt;"&lt;/code&gt;&lt;/pre&gt;</code></pre>
+<p>Renders as:</p>
+<pre><code>const greeting = "&lt;hello&gt;"</code></pre>
+<htmlpress-callout label="Coming soon">
+  <p>Syntax highlighting for code blocks.</p>
+</htmlpress-callout>
+
+<h2>Titles</h2>
+<p>
+  A <code>&lt;figure&gt;</code> with a <code>&lt;figcaption&gt;</code> names a block in
+  plain HTML:
+</p>
+<pre><code>&lt;figure&gt;
+  &lt;pre&gt;&lt;code&gt;title: Htmlpress&lt;/code&gt;&lt;/pre&gt;
+  &lt;figcaption&gt;htmlpress.yaml&lt;/figcaption&gt;
+&lt;/figure&gt;</code></pre>
+<p>Renders as:</p>
+<figure>
+  <pre><code>title: Htmlpress</code></pre>
+  <figcaption>htmlpress.yaml</figcaption>
+</figure>
+<htmlpress-callout label="Coming soon">
+  <p>A title bar on the code block itself, holding the file name.</p>
+</htmlpress-callout>
+
+<h2>Line Highlighting</h2>
+<htmlpress-callout label="Coming soon">
+  <p>
+    Highlighting chosen lines of a code block. Inside a
+    <a href="#terminal">terminal</a>, <code>&lt;mark&gt;</code> already colors output
+    yellow.
+  </p>
+</htmlpress-callout>
+
+<h2>Word Highlighting</h2>
+<htmlpress-callout label="Coming soon">
+  <p>Highlighting every occurrence of a word in a code block.</p>
+</htmlpress-callout>
+
+<h2>Line Numbers</h2>
+<htmlpress-callout label="Coming soon">
+  <p>Line numbers beside a code block, optionally starting from a given line.</p>
+</htmlpress-callout>
+
+<h2>Diff Lines</h2>
+<htmlpress-callout label="Coming soon">
+  <p>
+    Marking lines of a code block as added or removed. Inside a
+    <a href="#terminal">terminal</a>, <code>&lt;ins&gt;</code> and
+    <code>&lt;del&gt;</code> already color output green and red.
+  </p>
+</htmlpress-callout>
+
+<h2>Focus Lines</h2>
+<htmlpress-callout label="Coming soon">
+  <p>Dimming every line of a code block but the focused ones.</p>
+</htmlpress-callout>
+
+<h2>Error and Warning</h2>
+<htmlpress-callout label="Coming soon">
+  <p>Marking lines of a code block as errors or warnings.</p>
+</htmlpress-callout>
+
+<h2>Collapsible Code</h2>
+<p>
+  A <code>&lt;details&gt;</code> around a long block hides it behind its
+  <code>&lt;summary&gt;</code>:
+</p>
+<pre><code>&lt;details&gt;
+  &lt;summary&gt;The full config&lt;/summary&gt;
+  &lt;pre&gt;&lt;code&gt;…&lt;/code&gt;&lt;/pre&gt;
+&lt;/details&gt;</code></pre>
+<htmlpress-callout label="Coming soon">
+  <p>Limiting a code block to its first lines, with a button that reveals the rest.</p>
+</htmlpress-callout>
+
+<h2>Language Icons</h2>
+<htmlpress-callout label="Coming soon">
+  <p>A language icon in a titled code block's title bar.</p>
+</htmlpress-callout>
+
+<h2>TypeScript Support</h2>
+<htmlpress-callout label="Coming soon">
+  <p>Inline type information on hover in TypeScript code blocks.</p>
+</htmlpress-callout>
+
+<h2>NPM Commands</h2>
+<p>
+  Write one <code>npm</code> or <code>npx</code> command inside
+  <code>&lt;htmlpress-package-tabs&gt;</code> and the build turns it into tabs for npm,
+  pnpm, yarn and bun, synced across the site. Other lines stay as written.
+</p>
+<pre><code>&lt;htmlpress-package-tabs&gt;
+  &lt;pre&gt;&lt;code&gt;npm install --save-dev gethtmlpress&lt;/code&gt;&lt;/pre&gt;
+&lt;/htmlpress-package-tabs&gt;</code></pre>
+<p>Renders as:</p>
+<htmlpress-package-tabs>
+  <pre><code>npm install --save-dev gethtmlpress</code></pre>
+</htmlpress-package-tabs>
+
+<h2>Terminal</h2>
+<p>
+  A <code>&lt;pre&gt;</code> inside <code>&lt;htmlpress-terminal&gt;</code> looks like a
+  terminal window, dark in both themes and named by <code>title</code>. Inside it,
+  <code>&lt;kbd&gt;</code> is a typed command (the prompt is added),
+  <code>&lt;samp&gt;</code> plain output, and <code>&lt;ins&gt;</code>,
+  <code>&lt;del&gt;</code> and <code>&lt;mark&gt;</code> green, red and yellow output.
+</p>
+<pre><code>&lt;htmlpress-terminal title="zsh"&gt;
+  &lt;pre&gt;&lt;kbd&gt;htmlpress build docs&lt;/kbd&gt;
+&lt;samp&gt;built 7 pages…&lt;/samp&gt;
+&lt;ins&gt;✓ ready&lt;/ins&gt;&lt;/pre&gt;
+&lt;/htmlpress-terminal&gt;</code></pre>
+<p>Renders as:</p>
+<htmlpress-terminal title="zsh">
+  <pre><kbd>htmlpress build docs</kbd>
+<samp>built 7 pages and 0 files into docs/.htmlpress/build</samp>
+<ins>✓ ready</ins>
+<del>✗ 1 page failed</del>
+<mark>! 1 warning</mark></pre>
+</htmlpress-terminal>

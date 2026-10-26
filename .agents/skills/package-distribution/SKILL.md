@@ -48,7 +48,7 @@ fail for `cargo install`.
 `.github/workflows/release.yaml`: release-please → a `binaries` matrix (one job per platform:
 `cargo build --release --target`, the wheel, both uploaded as artifacts) → `npm`, `pypi` and
 `crates` jobs. Adding a platform means three edits in one commit: a `PLATFORMS` entry, a matrix
-row with the same key and target, and the platform table in `rust/docs/installation.html`. The pack
+row with the same key and target, and the platform table in `rust/docs/introduction.html`. The pack
 script refuses to run while any platform's binary is missing.
 
 ## Versions

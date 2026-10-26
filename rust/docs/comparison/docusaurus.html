@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Docusaurus vs Htmlpress</title>
+    <meta
+      name="description"
+      content="Technical side-by-side of a React + MDX docs framework and a plain-HTML site builder."
+    />
+    <meta name="order" content="61" />
+  </head>
+  <body>
+    <h1>Docusaurus vs Htmlpress</h1>
+    <p>
+      <a href="https://docusaurus.io">Docusaurus</a> is an open-source docs framework
+      maintained by Meta. It renders React + MDX content through a Webpack-based build
+      pipeline, ships first-class versioning and internationalization, and has a large
+      plugin ecosystem.
+    </p>
+    <h2>At a glance</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Axis</th>
+          <th>Htmlpress</th>
+          <th>Docusaurus</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Language / runtime</td>
+          <td>Rust (single binary, no runtime)</td>
+          <td>TypeScript / Node 18+</td>
+        </tr>
+        <tr>
+          <td>UI framework</td>
+          <td>None (plain HTML + CSS, <code>htmlpress-*</code> web components)</td>
+          <td>React 18</td>
+        </tr>
+        <tr>
+          <td>Build tool</td>
+          <td>htmlpress binary</td>
+          <td>Webpack</td>
+        </tr>
+        <tr>
+          <td>Content format</td>
+          <td>HTML pages</td>
+          <td>Markdown + MDX</td>
+        </tr>
+        <tr>
+          <td>License</td>
+          <td>MIT, self-hosted</td>
+          <td>MIT, self-hosted</td>
+        </tr>
+        <tr>
+          <td>Output model</td>
+          <td>Prerendered static</td>
+          <td>Prerendered static</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>Architecture</h2>
+    <p>
+      htmlpress is one Rust binary, installed from npm (<code>gethtmlpress</code>), PyPI
+      or crates.io. It wraps each HTML page in one layout with a navigation and a theme;
+      there is no bundler, no UI framework and no plugin API. Every built-in file — the
+      layout, the styles, the scripts and each component — can be escaped: a file at the
+      same path under <code>.htmlpress/</code> replaces it.
+    </p>
+    <p>
+      Docusaurus is built on Webpack. The runtime is React Router + a Docusaurus core that
+      handles theming, plugins, and content sources. Plugins are first-class — every
+      built-in feature (docs, blog, pages, search) is itself a plugin, and third parties
+      extend the system the same way.
+    </p>
+    <p>
+      Content layout is unconstrained on the htmlpress side: it scans by glob
+      (<code>include</code>/<code>exclude</code> in <code>htmlpress.yaml</code>, every
+      <code>.html</code> file by default), and a page's URL follows its file path below
+      the glob's base, so <code>docs/**/*.html</code> serves
+      <code>docs/guide.html</code> at <code>/guide.html</code>. There's no required
+      <code>docs/</code> folder. The navigation is built from the folders and each page's
+      <code>&lt;meta name="order"&gt;</code>; a folder's <code>index.html</code> names its
+      group. Docusaurus's docs plugin expects a <code>docs/</code> directory (configurable
+      via <code>path</code>, but folder-based rather than glob-based).
+    </p>
+    <h2>Content surface</h2>
+    <p>
+      Docusaurus accepts Markdown and MDX with frontmatter and lets you embed React
+      components inside <code>.md</code>/<code>.mdx</code> files. htmlpress accepts
+      neither: a page is an <code>.html</code> file, a full document or a bare fragment.
+    </p>
+    <p>
+      htmlpress pages are plain semantic HTML, styled by the theme from the elements
+      themselves. Richer blocks are <code>htmlpress-*</code> custom elements
+      (<code>htmlpress-callout</code>, <code>htmlpress-tabs</code>,
+      <code>htmlpress-steps</code>, <code>htmlpress-grid</code>, …), whose CSS and JS are
+      linked only on pages that use the tag. A project adds its own tag with
+      <code>.htmlpress/components/&lt;tag&gt;.html</code>, which replaces the tag at build
+      time. Docusaurus uses MDX components plus an <code>admonition</code> extension for
+      callouts.
+    </p>
+    <p>
+      htmlpress has no frontmatter: a page's metadata is its own
+      <code>&lt;head&gt;</code> — <code>&lt;title&gt;</code>,
+      <code>&lt;meta name="description"&gt;</code>,
+      <code>&lt;meta name="order"&gt;</code>, <code>&lt;meta name="layout"&gt;</code> and
+      <code>&lt;meta name="image"&gt;</code>; other <code>&lt;head&gt;</code> tags are
+      kept. Docusaurus uses <code>id</code>, <code>slug</code>,
+      <code>sidebar_position</code>, <code>sidebar_label</code>, <code>tags</code>.
+    </p>
+    <h2>Feature matrix</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Capability</th>
+          <th>Htmlpress</th>
+          <th>Docusaurus</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Versioning</td>
+          <td>No</td>
+          <td>Yes (built-in)</td>
+        </tr>
+        <tr>
+          <td>Internationalization (i18n)</td>
+          <td>No</td>
+          <td>Yes (built-in)</td>
+        </tr>
+        <tr>
+          <td>Search</td>
+          <td>No</td>
+          <td>Algolia DocSearch integration</td>
+        </tr>
+        <tr>
+          <td>Blog</td>
+          <td>No</td>
+          <td>Yes (built-in plugin)</td>
+        </tr>
+        <tr>
+          <td>Changelog</td>
+          <td>No</td>
+          <td>No (community plugins)</td>
+        </tr>
+        <tr>
+          <td>Sitemap</td>
+          <td>Yes (with <code>site</code> set)</td>
+          <td>Yes</td>
+        </tr>
+        <tr>
+          <td>RSS</td>
+          <td>No</td>
+          <td>Yes (for blog plugin)</td>
+        </tr>
+        <tr>
+          <td>Themes</td>
+          <td>Escapes in <code>.htmlpress/</code> + <code>--htmlpress-*</code> tokens</td>
+          <td>Theme packages (<code>@docusaurus/theme-*</code>)</td>
+        </tr>
+        <tr>
+          <td>Plugins</td>
+          <td>No (project components in <code>.htmlpress/components/</code>)</td>
+          <td>First-class plugin API</td>
+        </tr>
+        <tr>
+          <td>Custom routes</td>
+          <td>
+            Any <code>.html</code> file; extra layouts in <code>.htmlpress/layouts/</code>
+          </td>
+          <td>Plugin-defined routes</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>Output &amp; deployment</h2>
+    <p>
+      htmlpress writes every page to static HTML in <code>.htmlpress/build/</code>, along
+      with <code>robots.txt</code>, a <code>sitemap.xml</code> when <code>site</code> is
+      set, a Markdown copy of each page, <code>llms.txt</code> and the agent skills under
+      <code>.well-known/agent-skills/</code>. The <code>base</code> key serves the site
+      under a sub-path. See <a href="/deployment/">Deployment</a> for host guides.
+    </p>
+    <p>
+      Docusaurus also prerenders to static HTML, output at <code>build/</code>. The static
+      output works on any of the same hosts (GitHub Pages, Cloudflare, Vercel, Netlify,
+      static hosting). Docusaurus's built-in i18n produces separate output trees per
+      locale.
+    </p>
+    <h2>See also</h2>
+    <ul>
+      <li><a href="/authoring/">Authoring</a> — htmlpress' HTML surface.</li>
+      <li>
+        <a href="/customization/">Customization</a> — htmlpress' config keys and escapes.
+      </li>
+      <li><a href="/comparison/">Comparison</a> — back to the index.</li>
+    </ul>
+  </body>
+</html>

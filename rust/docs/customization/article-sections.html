@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Article Sections</title>
+    <meta
+      name="description"
+      content="Split a site into sections, each with its own tab and navigation."
+    />
+    <meta name="order" content="43" />
+  </head>
+  <body>
+    <h1>Article Sections</h1>
+    <p>
+      A section is a part of the site, such as a guide and an API reference, with its own
+      URL prefix, its own tab and its own navigation: while one of its pages is open, the
+      sidebar and the previous and next links show only that section's pages. Htmlpress
+      ships two section types:
+    </p>
+    <ul>
+      <li>
+        <strong>Article</strong>: the default. The pages under a prefix, grouped in the
+        sidebar by folder.
+      </li>
+      <li><strong>Custom</strong>: just a tab, leading to a URL.</li>
+      <li><strong>Blog</strong>: date-sorted posts with tags (coming soon).</li>
+      <li><strong>Changelog</strong>: one page per released version (coming soon).</li>
+    </ul>
+
+    <h2>Basic usage</h2>
+    <pre><code>site: https://example.com
+sections:
+  - title: Guide
+    prefix: /
+  - title: API
+    prefix: /api/
+    siteTitle: API Reference
+  - title: GitHub
+    type: custom
+    url: https://github.com/datisthq/htmlpress</code></pre>
+    <p>
+      When <code>sections</code> is omitted, every page renders into a single navigation,
+      which suits small sites.
+    </p>
+
+    <h2>Common fields</h2>
+    <p>Every section accepts:</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Field</th>
+          <th>Default</th>
+          <th>Purpose</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>title</code></td>
+          <td>none, required</td>
+          <td>The tab's name, and the section's group in <code>llms.txt</code>.</td>
+        </tr>
+        <tr>
+          <td><code>type</code></td>
+          <td><code>article</code></td>
+          <td>
+            <code>article</code> owns pages; <code>custom</code> is just a tab to its
+            <code>url</code>.
+          </td>
+        </tr>
+        <tr>
+          <td><code>prefix</code></td>
+          <td>none, required for <code>article</code></td>
+          <td>
+            The folder path its pages share, starting and ending with
+            <code>/</code> (<code>/</code>, <code>/api/</code>). The tab leads to the page
+            at the prefix, else the section's first page.
+          </td>
+        </tr>
+        <tr>
+          <td><code>url</code></td>
+          <td>none, required for <code>custom</code></td>
+          <td>Where a <code>custom</code> tab leads.</td>
+        </tr>
+        <tr>
+          <td><code>position</code></td>
+          <td><code>header</code></td>
+          <td>
+            <code>header</code> for a tab beside the header links,
+            <code>sidebar</code> for an entry above the sidebar's pages.
+          </td>
+        </tr>
+        <tr>
+          <td><code>siteTitle</code></td>
+          <td>the site's <code>title</code></td>
+          <td>The brand's title while one of the section's pages is open.</td>
+        </tr>
+        <tr>
+          <td><code>siteLink</code></td>
+          <td><code>/</code></td>
+          <td>Where the brand links while one of the section's pages is open.</td>
+        </tr>
+        <tr>
+          <td><code>siteDescription</code></td>
+          <td>the site's <code>description</code></td>
+          <td>The description for the section's pages without one of their own.</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      Any other field is an error, and so is an <code>article</code> section without a
+      <code>prefix</code>, a prefix that does not start and end with <code>/</code>, or a
+      <code>custom</code> section without a <code>url</code>. On a phone every section,
+      header or sidebar, is listed in the sidebar.
+    </p>
+
+    <h2>Article sections</h2>
+    <p>Plain docs, and the default: you can omit <code>type</code> entirely.</p>
+    <pre><code>- title: Guide
+  prefix: /guide/</code></pre>
+    <p>
+      Inside a section, the sidebar groups its pages by top folder. Pages at the root come
+      ungrouped, and each top folder gets its own collapsible group, named by the title of
+      its <code>index.html</code>, else the folder's name:
+    </p>
+    <htmlpress-file-tree>
+      <ul>
+        <li>introduction.html</li>
+        <li>
+          guides
+          <ul>
+            <li>index.html</li>
+            <li>install.html</li>
+            <li>deploy.html</li>
+          </ul>
+        </li>
+        <li>
+          reference
+          <ul>
+            <li>index.html</li>
+            <li>cli.html</li>
+          </ul>
+        </li>
+      </ul>
+    </htmlpress-file-tree>
+    <p>
+      <code>guides/index.html</code> is served at <code>/guides/</code>, the group's own
+      page, and also names the folder in the breadcrumbs. Without <code>sections</code>,
+      the whole site is grouped this way.
+    </p>
+    <p>
+      A <code>custom</code> section owns no pages. Its tab is marked current when its
+      <code>url</code> is internal and points at the open page or a folder above it (<code
+        >/</code
+      >
+      only on the home page); an external URL never is.
+    </p>
+    <pre><code>- title: Blog
+  type: custom
+  url: https://blog.example.com</code></pre>
+
+    <h2>Blog sections</h2>
+    <htmlpress-callout label="Coming soon"
+      ><p>
+        Blog sections will sort pages by date, newest first, and generate an index and one
+        page per tag.
+      </p></htmlpress-callout
+    >
+
+    <h2>Changelog sections</h2>
+    <htmlpress-callout label="Coming soon"
+      ><p>
+        Changelog sections will split a <code>CHANGELOG.md</code> into one page per
+        version, with the latest version shown beside the section's title.
+      </p></htmlpress-callout
+    >
+
+    <h2>Ordering and matching</h2>
+    <p>
+      Page URLs are matched to sections by longest prefix wins. Given
+      <code>/api/v2/auth.html</code> and sections with prefixes <code>/</code> and
+      <code>/api/</code>, the page is placed in <code>/api/</code>. Because a prefix is a
+      folder path, <code>/guide/</code> never takes <code>/guides.html</code>. Pages no
+      section owns form one more part of their own, with its own navigation.
+    </p>
+    <p>
+      <code>llms.txt</code> groups its links by section too, in the config's order, with
+      the pages no section owns last under "Other"; without <code>sections</code>, by top
+      folder.
+    </p>
+    <p>
+      Within a navigation, a page belongs to the group of its <em>top</em> folder:
+      <code>guides/cli/run.html</code> sits in "Guides" with the rest, there is no
+      nesting. Pages sort by <code>&lt;meta name="order"&gt;</code>, lower first: the root
+      <code>index.html</code> always leads, ordered pages follow, the rest by path. Groups
+      keep the order their first page has, so give a folder's <code>index.html</code> an
+      order to place the whole group. Root pages are placed the same way, so with a root
+      <code>index.html</code> they come first. The pager walks the section's pages in
+      their sorted order, across groups.
+    </p>
+    <p>
+      A <code>404.html</code> at the root is left out of the sidebar; it is the page a
+      host shows for a missing URL, and a project without one gets a built-in "Page not
+      found".
+    </p>
+
+    <h2>See also</h2>
+    <ul>
+      <li>
+        <a href="/customization/external-links.html">External Links</a>: add links next to
+        your section tabs.
+      </li>
+      <li>
+        <a href="/authoring/frontmatter.html">Frontmatter</a>: the
+        <code>&lt;title&gt;</code> and <code>&lt;meta name="order"&gt;</code> that drive
+        section content.
+      </li>
+    </ul>
+  </body>
+</html>

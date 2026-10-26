@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Fumadocs vs Htmlpress</title>
+    <meta
+      name="description"
+      content="A standalone plain-HTML site builder vs Next.js App Router for docs."
+    />
+    <meta name="order" content="65" />
+  </head>
+  <body>
+    <h1>Fumadocs vs Htmlpress</h1>
+    <p>
+      <a href="https://fumadocs.dev">Fumadocs</a> is a Next.js-based docs framework built
+      around the App Router. It splits responsibilities across separate packages:
+      <code>fumadocs-core</code> (headless logic), <code>fumadocs-ui</code> (default UI
+      components), and <code>fumadocs-mdx</code> (content source loader).
+    </p>
+    <h2>At a glance</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Axis</th>
+          <th>Htmlpress</th>
+          <th>Fumadocs</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Language / runtime</td>
+          <td>Rust (single binary, no runtime)</td>
+          <td>TypeScript / Node 18+</td>
+        </tr>
+        <tr>
+          <td>UI framework</td>
+          <td>None (plain HTML + CSS, <code>htmlpress-*</code> web components)</td>
+          <td>React 18/19 (Next.js App Router)</td>
+        </tr>
+        <tr>
+          <td>Build tool</td>
+          <td>htmlpress binary</td>
+          <td>Next.js (Turbopack/Webpack)</td>
+        </tr>
+        <tr>
+          <td>Content format</td>
+          <td>HTML pages</td>
+          <td>Markdown + MDX</td>
+        </tr>
+        <tr>
+          <td>License</td>
+          <td>MIT, self-hosted</td>
+          <td>MIT, self-hosted</td>
+        </tr>
+        <tr>
+          <td>Output model</td>
+          <td>Prerendered static</td>
+          <td>Static or SSR (Next.js modes)</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>Architecture</h2>
+    <p>
+      htmlpress is one Rust binary, installed from npm (<code>gethtmlpress</code>), PyPI
+      or crates.io. It wraps each HTML page in one layout with a navigation and a theme;
+      there is no bundler, no UI framework and no plugin API. Every built-in file — the
+      layout, the styles, the scripts and each component — can be escaped: a file at the
+      same path under <code>.htmlpress/</code> replaces it.
+    </p>
+    <p>
+      Fumadocs assumes you already have (or want) a Next.js application. It's not a
+      self-contained CLI — you scaffold a Next project, install Fumadocs packages, and
+      wire <code>fumadocs-core</code> and <code>fumadocs-ui</code> into your App Router.
+      Content is read by <code>fumadocs-mdx</code> from <code>.md</code>/<code>.mdx</code>
+      files and surfaced as typed objects.
+    </p>
+    <p>
+      The package split is intentional: <code>fumadocs-core</code> exposes hooks and
+      primitives without UI, so projects can swap <code>fumadocs-ui</code> for a custom UI
+      without forking.
+    </p>
+    <p>
+      Content layout is unconstrained on the htmlpress side: it scans by glob
+      (<code>include</code>/<code>exclude</code> in <code>htmlpress.yaml</code>, every
+      <code>.html</code> file by default), and a page's URL follows its file path below
+      the glob's base, so <code>docs/**/*.html</code> serves
+      <code>docs/guide.html</code> at <code>/guide.html</code>. There's no required
+      <code>docs/</code> folder. The navigation is built from the folders and each page's
+      <code>&lt;meta name="order"&gt;</code>; a folder's <code>index.html</code> names its
+      group. Fumadocs reads from a single configured content directory (defined in
+      <code>fumadocs-mdx</code>'s source plugin); routes are derived from file paths under
+      that root.
+    </p>
+    <h2>Content surface</h2>
+    <p>
+      Fumadocs accepts Markdown + MDX with frontmatter and embedded React components. It
+      uses <code>fumadocs-mdx</code> (a custom MDX loader) which produces TypeScript-typed
+      content objects with full IntelliSense for frontmatter. Custom components live
+      alongside your Next app code.
+    </p>
+    <p>
+      htmlpress pages are plain semantic HTML, styled by the theme from the elements
+      themselves. Richer blocks are <code>htmlpress-*</code> custom elements
+      (<code>htmlpress-callout</code>, <code>htmlpress-tabs</code>,
+      <code>htmlpress-steps</code>, <code>htmlpress-grid</code>, …), whose CSS and JS are
+      linked only on pages that use the tag. A project adds its own tag with
+      <code>.htmlpress/components/&lt;tag&gt;.html</code>, which replaces the tag at build
+      time.
+    </p>
+    <p>
+      htmlpress has no frontmatter: a page's metadata is its own
+      <code>&lt;head&gt;</code> — <code>&lt;title&gt;</code>,
+      <code>&lt;meta name="description"&gt;</code>,
+      <code>&lt;meta name="order"&gt;</code>, <code>&lt;meta name="layout"&gt;</code> and
+      <code>&lt;meta name="image"&gt;</code>; other <code>&lt;head&gt;</code> tags are
+      kept. Fumadocs uses frontmatter: <code>title</code>, <code>description</code>,
+      <code>icon</code>, <code>full</code>.
+    </p>
+    <h2>Feature matrix</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Capability</th>
+          <th>Htmlpress</th>
+          <th>Fumadocs</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Versioning</td>
+          <td>No</td>
+          <td>Partial (via separate content sources)</td>
+        </tr>
+        <tr>
+          <td>Internationalization (i18n)</td>
+          <td>No</td>
+          <td>Yes (built-in)</td>
+        </tr>
+        <tr>
+          <td>Search</td>
+          <td>No</td>
+          <td>Yes (Orama-based, optional Algolia)</td>
+        </tr>
+        <tr>
+          <td>OpenAPI rendering</td>
+          <td>No</td>
+          <td>Yes (<code>fumadocs-openapi</code>)</td>
+        </tr>
+        <tr>
+          <td>Blog</td>
+          <td>No</td>
+          <td>No (use Next routes)</td>
+        </tr>
+        <tr>
+          <td>Changelog</td>
+          <td>No</td>
+          <td>No</td>
+        </tr>
+        <tr>
+          <td>Sitemap</td>
+          <td>Yes (with <code>site</code> set)</td>
+          <td>Via Next.js <code>sitemap.ts</code></td>
+        </tr>
+        <tr>
+          <td>RSS</td>
+          <td>No</td>
+          <td>Via Next.js routes</td>
+        </tr>
+        <tr>
+          <td>Themes</td>
+          <td>Escapes in <code>.htmlpress/</code> + <code>--htmlpress-*</code> tokens</td>
+          <td>Swap <code>fumadocs-ui</code> or override per-component</td>
+        </tr>
+        <tr>
+          <td>Custom routes</td>
+          <td>
+            Any <code>.html</code> file; extra layouts in <code>.htmlpress/layouts/</code>
+          </td>
+          <td>Any Next App Router page</td>
+        </tr>
+        <tr>
+          <td>Standalone CLI</td>
+          <td>Yes (<code>htmlpress build</code>)</td>
+          <td>No (Next.js commands)</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>Output &amp; deployment</h2>
+    <p>
+      htmlpress writes every page to static HTML in <code>.htmlpress/build/</code>, along
+      with <code>robots.txt</code>, a <code>sitemap.xml</code> when <code>site</code> is
+      set, a Markdown copy of each page, <code>llms.txt</code> and the agent skills under
+      <code>.well-known/agent-skills/</code>. The <code>base</code> key serves the site
+      under a sub-path. See <a href="/deployment/">Deployment</a> for host guides.
+    </p>
+    <p>
+      Fumadocs inherits Next.js's output modes: full static export (<code
+        >output: 'export'</code
+      >), hybrid SSG/SSR, or fully dynamic. Deployment matches whatever Next.js supports —
+      Vercel is the default target, but any Node host or Cloudflare Workers (via OpenNext)
+      works.
+    </p>
+    <h2>See also</h2>
+    <ul>
+      <li><a href="/authoring/">Authoring</a> — htmlpress' HTML surface.</li>
+      <li>
+        <a href="/customization/">Customization</a> — htmlpress' config keys and escapes.
+      </li>
+      <li><a href="/comparison/">Comparison</a> — back to the index.</li>
+    </ul>
+  </body>
+</html>

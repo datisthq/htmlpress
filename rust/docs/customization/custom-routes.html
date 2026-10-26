@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Custom Routes</title>
+    <meta
+      name="description"
+      content="Add pages with their own chrome: any .html file is a route, and a layout in .htmlpress/layouts/ dresses it."
+    />
+    <meta name="order" content="48" />
+  </head>
+  <body>
+    <h1>Custom Routes</h1>
+    <p>
+      In htmlpress every <code>.html</code> file is already a route: a page is written to
+      the same path it was read from, no registration, no config change. What a custom
+      route adds is its own chrome: a layout of its own in
+      <code>.htmlpress/layouts/</code>, picked by the page with
+      <code>&lt;meta name="layout"&gt;</code>.
+    </p>
+
+    <h2>Minimal example</h2>
+    <pre><code>&lt;!-- about.html --&gt;
+&lt;title&gt;About&lt;/title&gt;
+&lt;meta name="layout" content="landing"&gt;
+
+&lt;h1&gt;About&lt;/h1&gt;
+&lt;p&gt;Anything you'd write in a normal HTML page, here.&lt;/p&gt;
+
+&lt;!-- .htmlpress/layouts/landing.html --&gt;
+&lt;body&gt;
+  &lt;header class="htmlpress-header"&gt;
+    &lt;htmlpress-brand&gt;&lt;/htmlpress-brand&gt;
+    &lt;htmlpress-theme-toggle&gt;&lt;/htmlpress-theme-toggle&gt;
+  &lt;/header&gt;
+  &lt;main&gt;&lt;htmlpress-content&gt;&lt;/htmlpress-content&gt;&lt;/main&gt;
+&lt;/body&gt;</code></pre>
+    <p>
+      Save and visit <code>/about.html</code>. Without the meta, the page gets the site's
+      layout, the same chrome as every other page: banner, header, sidebar, table of
+      contents and pager.
+    </p>
+
+    <h2>Choosing the chrome</h2>
+    <p>
+      A layout is plain HTML like <code>layout.html</code>, and starts
+      <strong>bare</strong>: nothing is drawn around the page until you add it. Compose as
+      many layout elements as the page needs:
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th>You put in the layout</th>
+          <th>You get</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>&lt;htmlpress-content&gt;</code></td>
+          <td>the page's content</td>
+        </tr>
+        <tr>
+          <td><code>&lt;htmlpress-brand&gt;</code></td>
+          <td>the site title, after the <code>logo</code> when set, linking home</td>
+        </tr>
+        <tr>
+          <td><code>&lt;htmlpress-banner&gt;</code></td>
+          <td>the <code>banner</code> from <code>htmlpress.yaml</code></td>
+        </tr>
+        <tr>
+          <td><code>&lt;htmlpress-links&gt;</code></td>
+          <td>the header <code>links</code></td>
+        </tr>
+        <tr>
+          <td><code>&lt;htmlpress-nav&gt;</code></td>
+          <td>every page, grouped by top folder, then the sidebar <code>links</code></td>
+        </tr>
+        <tr>
+          <td><code>&lt;htmlpress-breadcrumbs&gt;</code></td>
+          <td>home, every folder above the page, then the page</td>
+        </tr>
+        <tr>
+          <td><code>&lt;htmlpress-toc&gt;</code></td>
+          <td>the page's <code>&lt;h2&gt;</code> and <code>&lt;h3&gt;</code></td>
+        </tr>
+        <tr>
+          <td><code>&lt;htmlpress-pager&gt;</code></td>
+          <td>the previous and next pages</td>
+        </tr>
+        <tr>
+          <td><code>&lt;htmlpress-edit&gt;</code></td>
+          <td>the "Edit this page" link from <code>edit</code></td>
+        </tr>
+        <tr>
+          <td><code>&lt;htmlpress-toolbar&gt;</code></td>
+          <td>the page's Markdown copy, to view, copy or open in a chat</td>
+        </tr>
+        <tr>
+          <td><code>&lt;htmlpress-footer&gt;</code></td>
+          <td>a "Created with Htmlpress" credit</td>
+        </tr>
+        <tr>
+          <td>nothing but <code>&lt;htmlpress-content&gt;</code></td>
+          <td>a blank page, all yours</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      Htmlpress fills the layout's <code>&lt;head&gt;</code> the same way for every
+      layout, so the theme, the site's metadata and the page's own head tags are always
+      there. A landing page usually wants just the header, as in the example above. This
+      site's
+      <a href="https://github.com/datisthq/htmlpress/tree/main/.htmlpress">home page</a>
+      is built this way.
+    </p>
+
+    <h2>How it fits with the rest of the site</h2>
+    <ul>
+      <li>
+        <strong>Paths are URLs.</strong> File paths mirror URL paths:
+        <code>guide/quickstart.html</code> is <code>/guide/quickstart.html</code>, and
+        <code>index.html</code> is served at its folder, <code>guide/index.html</code> at
+        <code>/guide/</code>. Relative links between pages keep working.
+      </li>
+      <li>
+        <strong>The root path <code>/</code>.</strong> <code>index.html</code> at the root
+        is the home page; give it its own layout to replace the docs chrome with a hero.
+      </li>
+      <li>
+        <strong>The navigation still lists it.</strong> A page with its own layout is a
+        page like any other: it appears in the sidebar, <code>llms.txt</code> and the
+        sitemap.
+      </li>
+      <li>
+        <strong>Layout names.</strong> A name is lowercase letters, digits and hyphens. A
+        page naming a layout that is not there fails the build.
+      </li>
+      <li>
+        <strong>Not found.</strong> A <code>404.html</code> at the root is the page a host
+        shows for a missing URL; it is left out of the navigation, and a project without
+        one gets a built-in "Page not found".
+      </li>
+    </ul>
+
+    <h2>Importing htmlpress primitives</h2>
+    <p>
+      A layout and a page both use the same components htmlpress uses itself: any
+      <code>htmlpress-*</code> component, and your own from
+      <code>.htmlpress/components/</code>, render the same way in either, linking their
+      styles and scripts only where used. Style a layout with its own components, as this
+      site's home page does with its <code>landing-*</code> ones, or with the
+      <code>--htmlpress-*</code> tokens.
+    </p>
+    <pre><code>&lt;!-- .htmlpress/layouts/landing.html --&gt;
+&lt;body&gt;
+  &lt;landing-hero&gt;&lt;/landing-hero&gt;
+  &lt;main&gt;&lt;htmlpress-content&gt;&lt;/htmlpress-content&gt;&lt;/main&gt;
+  &lt;htmlpress-footer&gt;&lt;/htmlpress-footer&gt;
+&lt;/body&gt;</code></pre>
+
+    <h2>Static assets</h2>
+    <p>
+      Every file in the project that is not a page is copied to the output as-is, at the
+      same path. Put a <code>robots.txt</code>, a custom <code>favicon.svg</code>, or an
+      <code>og-image.png</code> beside your pages; a project file named like a generated
+      one (<code>robots.txt</code>, <code>sitemap.xml</code>, <code>llms.txt</code>) wins
+      over it.
+    </p>
+
+    <h2>See also</h2>
+    <ul>
+      <li>
+        <a href="/customization/overriding-escaping.html">Overriding/Escaping</a>: replace
+        the site's layout or a component instead of adding a new one.
+      </li>
+      <li>
+        <a href="/customization/site-metadata.html">Site Metadata</a>: the site title and
+        favicon that show on custom routes too.
+      </li>
+    </ul>
+  </body>
+</html>

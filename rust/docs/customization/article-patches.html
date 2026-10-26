@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Article Patches</title>
+    <meta
+      name="description"
+      content="Override a page's metadata from your config, without touching the file."
+    />
+    <meta name="order" content="45" />
+  </head>
+  <body>
+    <h1>Article Patches</h1>
+    <htmlpress-callout label="Coming soon"
+      ><p>
+        A <code>patches</code> key in <code>htmlpress.yaml</code> will set a page's title,
+        order or description from config, for an HTML file that is also read elsewhere and
+        should stay free of htmlpress-only metas. Today a page's metadata lives only in
+        its own <code>&lt;head&gt;</code>.
+      </p></htmlpress-callout
+    >
+    <p>
+      Sometimes a file doubles as both site content and a file that's read elsewhere, a
+      shared page in another project. Adding htmlpress-only
+      <code>&lt;meta&gt;</code> tags to it pollutes the other view.
+    </p>
+
+    <h2>Basic usage</h2>
+    <p>
+      Each patch will name a file by its path and the metadata to apply, as if the
+      matching
+      <code>&lt;title&gt;</code> and <code>&lt;meta&gt;</code> tags were in its head.
+    </p>
+
+    <h2>Fields</h2>
+    <p>
+      A patch will take a <code>file</code>, the project-relative path, and the page
+      fields to set: those a page's <a href="/authoring/frontmatter.html">head</a> sets
+      today, such as the title, description, order and layout.
+    </p>
+
+    <h2>Merge semantics</h2>
+    <p>
+      A patch's fields will apply on top of the page's own head; anything a patch leaves
+      out keeps its normal value.
+    </p>
+
+    <h2>What you can't patch</h2>
+    <p>The content: the body of a page is always the body of the file.</p>
+
+    <h2>See also</h2>
+    <ul>
+      <li>
+        <a href="/authoring/frontmatter.html">Frontmatter</a>: the head tags a page sets
+        itself.
+      </li>
+      <li>
+        <a href="/customization/configuration-file.html">Config File</a>: the
+        <code>include</code> glob that decides which files are pages.
+      </li>
+    </ul>
+  </body>
+</html>

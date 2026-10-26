@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>GitBook vs Htmlpress</title>
+    <meta
+      name="description"
+      content="Hosted SaaS with a block editor and Git Sync vs file-based, self-hosted static HTML."
+    />
+    <meta name="order" content="70" />
+  </head>
+  <body>
+    <h1>GitBook vs Htmlpress</h1>
+    <p>
+      <a href="https://www.gitbook.com">GitBook</a> is a commercial hosted documentation
+      platform. Authoring happens in a browser-based block editor (Notion-flavored),
+      content lives in GitBook's database, and publishing is to GitBook-hosted sites under
+      <code>gitbook.io</code> or a custom domain. A Git Sync feature can mirror that
+      database to and from a GitHub/GitLab repository as Markdown, but the source of truth
+      is GitBook itself, not the repo.
+    </p>
+    <p>
+      The older open-source <code>gitbook-cli</code> static generator was deprecated in
+      2018 and is unrelated to today's product; this page covers the current hosted
+      platform.
+    </p>
+    <h2>At a glance</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Axis</th>
+          <th>Htmlpress</th>
+          <th>GitBook</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Language / runtime</td>
+          <td>Rust (single binary, no runtime)</td>
+          <td>Hosted SaaS (no local runtime)</td>
+        </tr>
+        <tr>
+          <td>UI framework</td>
+          <td>None (plain HTML + CSS, <code>htmlpress-*</code> web components)</td>
+          <td>Proprietary (rendered by GitBook)</td>
+        </tr>
+        <tr>
+          <td>Build tool</td>
+          <td>htmlpress binary</td>
+          <td>None (no user-side build)</td>
+        </tr>
+        <tr>
+          <td>Content format</td>
+          <td>HTML pages</td>
+          <td>Block model in editor; GitBook-flavored Markdown via Git</td>
+        </tr>
+        <tr>
+          <td>License</td>
+          <td>MIT, self-hosted</td>
+          <td>Proprietary; free tier + paid plans; self-host on Enterprise only</td>
+        </tr>
+        <tr>
+          <td>Output model</td>
+          <td>Prerendered static</td>
+          <td>Hosted on GitBook infrastructure</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>Architecture</h2>
+    <p>
+      htmlpress is one Rust binary, installed from npm (<code>gethtmlpress</code>), PyPI
+      or crates.io. It wraps each HTML page in one layout with a navigation and a theme;
+      there is no bundler, no UI framework and no plugin API. Every built-in file — the
+      layout, the styles, the scripts and each component — can be escaped: a file at the
+      same path under <code>.htmlpress/</code> replaces it. Pages are files in your
+      repository and are prerendered to static HTML at build time.
+    </p>
+    <p>
+      GitBook is a multi-tenant SaaS. Content is authored in a block-based WYSIWYG editor:
+      each paragraph, heading, code block, hint, or embed is a typed block stored in
+      GitBook's database. The runtime is GitBook's own — there is no build step the user
+      runs and no static site they deploy. Hosting, search indexing, CDN, redirects, and
+      analytics are all managed by the platform.
+    </p>
+    <p>
+      Git Sync is an optional integration that maps a GitBook space to a branch of a
+      GitHub or GitLab repository. Content round-trips between the editor and a directory
+      of <code>.md</code> files written in GitBook's extended Markdown flavor (hints with
+      <code>{% hint %}</code>, tabs, content refs, OpenAPI blocks, etc.). It is two-way:
+      edits in the editor push commits to the repo; commits pushed to the branch update
+      the editor. The repo is a mirror, not a source — GitBook's schema is the canonical
+      model.
+    </p>
+    <p>
+      Content layout is unconstrained on the htmlpress side: it scans by glob
+      (<code>include</code>/<code>exclude</code> in <code>htmlpress.yaml</code>, every
+      <code>.html</code> file by default), and a page's URL follows its file path below
+      the glob's base, so <code>docs/**/*.html</code> serves
+      <code>docs/guide.html</code> at <code>/guide.html</code>. There's no required
+      <code>docs/</code> folder. The navigation is built from the folders and each page's
+      <code>&lt;meta name="order"&gt;</code>; a folder's <code>index.html</code> names its
+      group. GitBook content is organized into a hierarchy fixed by the product —
+      <strong>Organizations → Collections → Spaces → Pages</strong> — with site URLs
+      derived from that tree. The Git Sync mirror reflects this hierarchy as nested
+      directories.
+    </p>
+    <h2>Content surface</h2>
+    <p>
+      htmlpress pages are plain semantic HTML, styled by the theme from the elements
+      themselves. Richer blocks are <code>htmlpress-*</code> custom elements
+      (<code>htmlpress-callout</code>, <code>htmlpress-tabs</code>,
+      <code>htmlpress-steps</code>, <code>htmlpress-grid</code>, …), whose CSS and JS are
+      linked only on pages that use the tag. A project adds its own tag with
+      <code>.htmlpress/components/&lt;tag&gt;.html</code>, which replaces the tag at build
+      time. htmlpress has no frontmatter: a page's metadata is its own
+      <code>&lt;head&gt;</code> — <code>&lt;title&gt;</code>,
+      <code>&lt;meta name="description"&gt;</code>,
+      <code>&lt;meta name="order"&gt;</code>, <code>&lt;meta name="layout"&gt;</code> and
+      <code>&lt;meta name="image"&gt;</code>; other <code>&lt;head&gt;</code> tags are
+      kept.
+    </p>
+    <p>
+      GitBook's surface is the editor's block palette: paragraphs, headings, lists,
+      tables, hints (info/warning/danger/success), tabs, expandable blocks, code blocks
+      with tab groups, files, images, drawings, math (KaTeX), embeds (Figma, Loom, etc.),
+      API method blocks, OpenAPI references, and content refs (transclusion across
+      spaces). Custom components are not user-extensible — the block set is what GitBook
+      ships. The Git Sync flavor of Markdown encodes blocks not in CommonMark via
+      Liquid-like tags such as <code>{% hint style="info" %}…{% endhint %}</code> and
+      <code>{% tabs %}…{% endtabs %}</code>.
+    </p>
+    <p>
+      OpenAPI is a first-class input: GitBook can import an OpenAPI spec and render API
+      reference pages from it, which is closer to Mintlify's surface than to htmlpress'.
+    </p>
+    <h2>Feature matrix</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Capability</th>
+          <th>Htmlpress</th>
+          <th>GitBook</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Versioning</td>
+          <td>No</td>
+          <td>Yes (space variants / version groups)</td>
+        </tr>
+        <tr>
+          <td>Internationalization (i18n)</td>
+          <td>No</td>
+          <td>Yes (per-language variants of a space)</td>
+        </tr>
+        <tr>
+          <td>Search</td>
+          <td>No</td>
+          <td>Yes (hosted, with GitBook AI / "Lens" Q&amp;A on paid tiers)</td>
+        </tr>
+        <tr>
+          <td>Blog</td>
+          <td>No</td>
+          <td>No</td>
+        </tr>
+        <tr>
+          <td>Changelog</td>
+          <td>No</td>
+          <td>No (Change Requests are an editorial workflow, not a published section)</td>
+        </tr>
+        <tr>
+          <td>Sitemap</td>
+          <td>Yes (with <code>site</code> set)</td>
+          <td>Yes (generated by the platform)</td>
+        </tr>
+        <tr>
+          <td>RSS</td>
+          <td>No</td>
+          <td>No</td>
+        </tr>
+        <tr>
+          <td>Themes</td>
+          <td>Escapes in <code>.htmlpress/</code> + <code>--htmlpress-*</code> tokens</td>
+          <td>
+            Customization through site settings (colors, fonts, layout); no template
+            overrides
+          </td>
+        </tr>
+        <tr>
+          <td>Plugins</td>
+          <td>No (project components in <code>.htmlpress/components/</code>)</td>
+          <td>Proprietary integrations (Intercom, Segment, GA, etc.)</td>
+        </tr>
+        <tr>
+          <td>Custom routes</td>
+          <td>
+            Any <code>.html</code> file; extra layouts in <code>.htmlpress/layouts/</code>
+          </td>
+          <td>No (URLs follow the space → page hierarchy)</td>
+        </tr>
+        <tr>
+          <td>API reference from OpenAPI</td>
+          <td>No</td>
+          <td>Yes (built-in)</td>
+        </tr>
+        <tr>
+          <td>Standalone toolchain</td>
+          <td>Single Rust binary (npm, PyPI or crates.io)</td>
+          <td>None on user side; SaaS</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>Output &amp; deployment</h2>
+    <p>
+      htmlpress writes every page to static HTML in <code>.htmlpress/build/</code>, along
+      with <code>robots.txt</code>, a <code>sitemap.xml</code> when <code>site</code> is
+      set, a Markdown copy of each page, <code>llms.txt</code> and the agent skills under
+      <code>.well-known/agent-skills/</code>. The <code>base</code> key serves the site
+      under a sub-path. See <a href="/deployment/">Deployment</a> for host guides.
+    </p>
+    <p>
+      GitBook does not emit a deployable artifact. The site is hosted at
+      <code>&lt;space&gt;.gitbook.io</code> by default, or attached to a custom domain via
+      DNS. CDN, TLS, redirects, access control, and analytics are configured in the
+      GitBook dashboard. Self-hosting is restricted to the Enterprise tier and is not
+      available on the standard plans. The artifact closest to "your content" is whatever
+      the Git Sync mirror writes into the connected repository, which is content only —
+      not a buildable site.
+    </p>
+    <h2>See also</h2>
+    <ul>
+      <li><a href="/authoring/">Authoring</a> — htmlpress' HTML surface.</li>
+      <li>
+        <a href="/customization/">Customization</a> — htmlpress' config keys and escapes.
+      </li>
+      <li><a href="/comparison/">Comparison</a> — back to the index.</li>
+    </ul>
+  </body>
+</html>

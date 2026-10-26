@@ -4,16 +4,16 @@
     <title>Introduction</title>
     <meta
       name="description"
-      content="Htmlpress turns a folder of HTML pages into a site, made for coding agents."
+      content="Learn how to set up your first htmlpress project: install, write pages, run and build."
     />
-    <meta name="order" content="0" />
+    <meta name="order" content="10" />
   </head>
   <body>
     <h1>Htmlpress</h1>
     <p>
       Htmlpress turns a folder of HTML pages into a site. Each page keeps its own markup,
       and htmlpress adds one layout, one theme, a navigation and a live-reloading dev
-      server.
+      server. It is one Rust binary, installed from npm, PyPI or crates.io.
     </p>
     <p>
       It is made for coding agents. They write plain semantic HTML, which they know better
@@ -21,41 +21,376 @@
       no framework, no build config, no utility classes.
     </p>
 
-    <htmlpress-grid>
-      <htmlpress-card>
-        <h3>Plain HTML in</h3>
-        <p>A page is any <code>.html</code> file, a full document or a bare fragment.</p>
-      </htmlpress-card>
-      <htmlpress-card>
-        <h3>A site out</h3>
-        <p>
-          One layout, a navigation and a theme styled from the HTML elements themselves.
-        </p>
-      </htmlpress-card>
-      <htmlpress-card>
-        <h3>One binary</h3>
-        <p>A single Rust binary, installed from npm, PyPI or crates.io.</p>
-      </htmlpress-card>
-    </htmlpress-grid>
-
-    <h2>Quick start</h2>
-    <pre><code>npx gethtmlpress start docs</code></pre>
-    <p>
-      That serves <code>docs/</code> on <code>http://localhost:8000</code> and rebuilds on
-      every save. When it looks right, build it:
-    </p>
-    <pre><code>npx gethtmlpress build docs</code></pre>
-    <p>
-      The site lands in <code>docs/.htmlpress/build</code>, ready for any static host.
-      This site is built that way from the
-      <a href="https://github.com/datisthq/htmlpress/tree/main/docs">docs/</a>
-      folder of the repository.
-    </p>
-
     <htmlpress-callout type="warning">
       <p>
         Htmlpress is in technical preview: the page contract may still change before 1.0.
       </p>
     </htmlpress-callout>
+
+    <h2>What you get</h2>
+    <ul>
+      <li>
+        <strong>Just write HTML.</strong> A page is any <code>.html</code> file, a full
+        document or a bare fragment. Its <code>&lt;title&gt;</code> and
+        <code>&lt;meta&gt;</code> tags do what frontmatter does elsewhere.
+      </li>
+      <li>
+        <strong>A theme styled from the elements.</strong> Headings, tables, code blocks,
+        <code>&lt;details&gt;</code>, <code>&lt;figure&gt;</code> and the rest look right
+        with no classes, in light and dark mode.
+      </li>
+      <li>
+        <strong>Rich elements.</strong> Callouts, tabs, steps, cards, badges, file trees,
+        sortable tables, terminals, package tabs (npm/pnpm/yarn/bun), Mermaid diagrams and
+        embeds (YouTube, SoundCloud), all as <code>htmlpress-*</code> custom elements.
+      </li>
+      <li>
+        <strong>Navigation for free.</strong> A sidebar grouped by folder, breadcrumbs, a
+        table of contents, previous/next links and an "Edit this page" link.
+      </li>
+      <li>
+        <strong>Made for agents.</strong> Every build publishes a Markdown copy of each
+        page, <code>llms.txt</code> and your agent skills; every command speaks JSON.
+      </li>
+      <li>
+        <strong>Themable.</strong> <code>--htmlpress-*</code> tokens, and per-file
+        overrides of the layout, styles and components via a <code>.htmlpress/</code>
+        folder.
+      </li>
+      <li>
+        <strong>One binary.</strong> No runtime and no dependencies: a static site with
+        <code>sitemap.xml</code>, <code>robots.txt</code> and a 404 page, ready for any
+        host.
+      </li>
+    </ul>
+
+    <h2>Quick start</h2>
+    <p>
+      You need nothing but the binary. Every channel ships the same binary at the same
+      version, so pick the package manager the project already uses.
+    </p>
+
+    <h3>Install</h3>
+    <htmlpress-tabs sync="channel">
+      <section title="npm">
+        <pre><code>npm install --global gethtmlpress
+# or run it without installing
+npx gethtmlpress --version</code></pre>
+        <p>
+          The <code>gethtmlpress</code> package pulls in one platform package, such as
+          <code>gethtmlpress-linux-x64</code>, through an optional dependency. Installing
+          with <code>--omit=optional</code> leaves the binary out.
+        </p>
+      </section>
+      <section title="PyPI">
+        <pre><code>pip install htmlpress
+# or run it without installing
+uvx htmlpress --version</code></pre>
+        <p>The wheel for your platform carries the binary; no Python code runs.</p>
+      </section>
+      <section title="Cargo">
+        <pre><code>cargo install htmlpress</code></pre>
+        <p>Builds from source with the Rust toolchain, 1.88 or newer.</p>
+      </section>
+    </htmlpress-tabs>
+    <p>Prebuilt binaries cover Linux, macOS and Windows on x64 and arm64:</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Platform</th>
+          <th>npm package</th>
+          <th>Rust target</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Linux x64</td>
+          <td><code>gethtmlpress-linux-x64</code></td>
+          <td><code>x86_64-unknown-linux-musl</code></td>
+        </tr>
+        <tr>
+          <td>Linux arm64</td>
+          <td><code>gethtmlpress-linux-arm64</code></td>
+          <td><code>aarch64-unknown-linux-musl</code></td>
+        </tr>
+        <tr>
+          <td>macOS x64</td>
+          <td><code>gethtmlpress-darwin-x64</code></td>
+          <td><code>x86_64-apple-darwin</code></td>
+        </tr>
+        <tr>
+          <td>macOS arm64</td>
+          <td><code>gethtmlpress-darwin-arm64</code></td>
+          <td><code>aarch64-apple-darwin</code></td>
+        </tr>
+        <tr>
+          <td>Windows x64</td>
+          <td><code>gethtmlpress-win32-x64</code></td>
+          <td><code>x86_64-pc-windows-msvc</code></td>
+        </tr>
+        <tr>
+          <td>Windows arm64</td>
+          <td><code>gethtmlpress-win32-arm64</code></td>
+          <td><code>aarch64-pc-windows-msvc</code></td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      On any other platform, build with <code>cargo install htmlpress</code> and, for the
+      npm package, point <code>HTMLPRESS_BINARY</code> at the result.
+    </p>
+
+    <h3>Configure</h3>
+    <p>
+      Configuration is optional. To set the site's metadata, create
+      <code>htmlpress.yaml</code> at the root of your project:
+    </p>
+    <pre><code>title: My docs
+description: Documentation for my project
+include: docs/**/*.html</code></pre>
+    <p>
+      Without <code>include</code>, every <code>.html</code> file in the project is a
+      page; with it, only the matching ones are, served without the glob's base, so
+      <code>docs/usage.html</code> is at <code>/usage.html</code>. See
+      <a href="/customization/configuration-file.html">Configuration File</a> for every
+      key.
+    </p>
+
+    <h3>Add content</h3>
+    <htmlpress-file-tree>
+      <ul>
+        <li>
+          docs/
+          <ul>
+            <li>index.html</li>
+            <li>getting-started.html</li>
+            <li>usage.html</li>
+          </ul>
+        </li>
+      </ul>
+    </htmlpress-file-tree>
+    <p>Each page sets its title, description and order in tags a fragment may carry:</p>
+    <pre><code>&lt;title&gt;Getting Started&lt;/title&gt;
+&lt;meta name="description" content="Set up the project in five minutes." /&gt;
+&lt;meta name="order" content="1" /&gt;
+
+&lt;h1&gt;Getting Started&lt;/h1&gt;
+&lt;p&gt;Welcome!&lt;/p&gt;</code></pre>
+    <p>
+      See <a href="/authoring/frontmatter.html">Frontmatter</a> for what each tag means.
+    </p>
+
+    <h3>Run</h3>
+    <pre><code>htmlpress start    # dev server with live reload at http://localhost:8000
+htmlpress build    # production build to .htmlpress/build/
+htmlpress preview  # serve the production build locally
+htmlpress clear    # remove .htmlpress/build/</code></pre>
+    <p>
+      That's the whole loop. Add <code>.htmlpress/build/</code> to your
+      <code>.gitignore</code>. This site is built that way from the
+      <a href="https://github.com/datisthq/htmlpress/tree/main/rust/docs">rust/docs/</a>
+      folder of the repository.
+    </p>
+
+    <h2>Project structure</h2>
+    <p>A typical htmlpress site:</p>
+    <htmlpress-file-tree>
+      <ul>
+        <li>
+          my-project/
+          <ul>
+            <li>htmlpress.yaml — configuration (optional)</li>
+            <li>index.html — the home page</li>
+            <li>
+              guides/ — a sidebar group, named by its <code>index.html</code>
+              <ul>
+                <li>index.html</li>
+                <li>build.html</li>
+              </ul>
+            </li>
+            <li>logo.svg — any other file, copied as-is</li>
+            <li>
+              .htmlpress/ — escapes and the build output
+              <ul>
+                <li>layout.html</li>
+                <li>build/</li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </htmlpress-file-tree>
+    <p>
+      A file under <code>.htmlpress/</code> at a built-in's path, such as
+      <code>layout.html</code>, <code>styles/tokens.css</code> or
+      <code>components/htmlpress-tabs.css</code>, replaces the default, so you can
+      customize the layout, the theme and components without forking. Run
+      <code>htmlpress escape &lt;name&gt;</code> to copy a default into
+      <code>.htmlpress/</code> ready to edit.
+    </p>
+
+    <h2>Commands</h2>
+
+    <h3><code>htmlpress build [root]</code></h3>
+    <p>
+      Renders the project at <code>root</code> (default <code>.</code>) into
+      <code>root/.htmlpress/build</code>, replacing what is there. <code>--out</code> /
+      <code>-o</code> picks another folder; one that would hold the project, or a visible
+      folder inside it, is refused, since its pages would be read back as sources.
+    </p>
+    <pre><code>$ htmlpress build docs
+built 6 pages and 0 files into docs/.htmlpress/build</code></pre>
+
+    <h3><code>htmlpress start [root]</code></h3>
+    <p>
+      Builds the project, serves it on <code>http://localhost:8000</code> and rebuilds on
+      every change. Open pages reload themselves after each build. A broken page prints
+      its error and keeps the last good build up.
+    </p>
+    <p>
+      When 8000 is taken it tries 8001 and on to 8009, and prints the URL it got.
+      <code>--port</code> / <code>-p</code> names one port instead (<code>0</code> picks
+      any free one). <code>--host</code> alone serves on every address, so a phone on the
+      same network can open the site, and prints that URL too;
+      <code>--host &lt;address&gt;</code> serves on one. With <code>base</code> in
+      <code>htmlpress.yaml</code> the site is served under it, the printed URLs include
+      it, and <code>/</code> leads there; restart after changing <code>base</code>.
+      <code>--out</code> / <code>-o</code> works as for <code>build</code>.
+    </p>
+    <pre><code>$ htmlpress start docs --host
+serving http://localhost:8000
+network http://192.168.1.107:8000</code></pre>
+
+    <h3><code>htmlpress preview [root]</code></h3>
+    <p>
+      Builds the project for production and serves it as it will be deployed: no watching,
+      no reload. Takes <code>--port</code>, <code>--host</code> and
+      <code>--out</code> like <code>start</code>.
+    </p>
+
+    <h3><code>htmlpress clear [root]</code></h3>
+    <p>
+      Removes the build output (<code>--out</code> to name another), with the same guard
+      as <code>build</code>.
+    </p>
+
+    <h3><code>htmlpress escape [names…]</code></h3>
+    <p>
+      Copies built-in files into <code>.htmlpress/</code> to edit them: a name is a path
+      such as <code>components/htmlpress-tabs.js</code>, or a component's tag for all its
+      files. Without names it lists every built-in file and whether the project has
+      escaped it. <code>--root</code> / <code>-r</code> picks the project (default
+      <code>.</code>). It refuses to overwrite a file; see
+      <a href="/customization/overriding-escaping.html">Overriding/Escaping</a>.
+    </p>
+    <pre><code>$ htmlpress escape htmlpress-tabs
+escaped .htmlpress/components/htmlpress-tabs.css
+escaped .htmlpress/components/htmlpress-tabs.js</code></pre>
+
+    <h3>For scripts and agents</h3>
+    <p>
+      The CLI is built with <a href="https://fireargs.dev">Fireargs</a>, so every command
+      speaks JSON. <code>--json</code> prints the result as JSON, and with a value it also
+      takes the input as JSON:
+    </p>
+    <pre><code>$ htmlpress build docs --json
+{
+  "output": "docs/.htmlpress/build",
+  "pages": 6,
+  "files": 0
+}
+$ htmlpress build --json '{"root":"docs","out":"dist"}'</code></pre>
+    <p>
+      <code>htmlpress --llms</code> prints every command's input and output schema as an
+      MCP-shaped tool list, so an agent learns the CLI without reading this page.
+    </p>
+
+    <h2>Customization</h2>
+    <p>
+      Htmlpress is meant to look right with zero configuration and stay out of your way
+      when you need more. Common customizations:
+    </p>
+    <ul>
+      <li>
+        <strong>Site metadata</strong>: title, description, favicon, logo. See
+        <a href="/customization/site-metadata.html">Site Metadata</a>.
+      </li>
+      <li>
+        <strong>Sections</strong>: group pages by folder in the sidebar. See
+        <a href="/customization/article-sections.html">Article Sections</a>.
+      </li>
+      <li>
+        <strong>External links</strong>: header and sidebar links to anywhere. See
+        <a href="/customization/external-links.html">External Links</a>.
+      </li>
+      <li>
+        <strong>Overriding/Escaping</strong>: replace the layout, any stylesheet or
+        component from your project. See
+        <a href="/customization/overriding-escaping.html">Overriding/Escaping</a>.
+      </li>
+      <li>
+        <strong>AI agents</strong>: what every build publishes for agents. See
+        <a href="/customization/ai-agents.html">AI Agents</a>.
+      </li>
+    </ul>
+
+    <h2>Documentation</h2>
+    <p>
+      Full documentation lives at
+      <strong><a href="https://htmlpress.dev">htmlpress.dev</a></strong
+      >:
+    </p>
+    <ul>
+      <li>
+        <a href="/authoring/">Authoring reference</a>: every element and component with
+        examples
+      </li>
+      <li>
+        <a href="/customization/">Customization</a>: every knob, with copy-pasteable
+        snippets
+      </li>
+      <li><a href="/deployment/">Deployment</a>: publishing the build to a host</li>
+      <li><a href="/contributing.html">Contributing</a>: local setup and PR flow</li>
+    </ul>
+
+    <h2>Resources</h2>
+    <ul>
+      <li>
+        <strong>npm</strong>:
+        <a href="https://www.npmjs.com/package/gethtmlpress"
+          >npmjs.com/package/gethtmlpress</a
+        >
+      </li>
+      <li>
+        <strong>PyPI</strong>:
+        <a href="https://pypi.org/project/htmlpress/">pypi.org/project/htmlpress</a>
+      </li>
+      <li>
+        <strong>crates.io</strong>:
+        <a href="https://crates.io/crates/htmlpress">crates.io/crates/htmlpress</a>
+      </li>
+      <li>
+        <strong>GitHub</strong>:
+        <a href="https://github.com/datisthq/htmlpress">github.com/datisthq/htmlpress</a>
+      </li>
+      <li>
+        <strong>Issues</strong>:
+        <a href="https://github.com/datisthq/htmlpress/issues"
+          >github.com/datisthq/htmlpress/issues</a
+        >
+      </li>
+      <li>
+        <strong>Discussions</strong>:
+        <a href="https://github.com/datisthq/htmlpress/discussions"
+          >github.com/datisthq/htmlpress/discussions</a
+        >
+      </li>
+    </ul>
+
+    <h2>License</h2>
+    <p>
+      MIT; see
+      <a href="https://github.com/datisthq/htmlpress/blob/main/LICENSE.md">LICENSE.md</a>.
+    </p>
   </body>
 </html>

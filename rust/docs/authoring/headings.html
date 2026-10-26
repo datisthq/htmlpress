@@ -1,0 +1,66 @@
+<title>Headings</title>
+<meta
+  name="description"
+  content="Generated heading IDs, custom anchors and the page's table of contents."
+/>
+<meta name="order" content="32" />
+
+<h1>Headings</h1>
+<p>Headings automatically get anchor IDs for linking.</p>
+
+<h2>Auto-generated IDs</h2>
+<pre><code>&lt;h2&gt;My Heading&lt;/h2&gt;</code></pre>
+<p>
+  Renders as <code>&lt;h2 id="my-heading"&gt;My Heading&lt;/h2&gt;</code>. Every
+  <code>&lt;h2&gt;</code> and <code>&lt;h3&gt;</code> without an <code>id</code> gets one
+  from its text: lowercased, with every run of other characters turned into a hyphen. A
+  slug already taken on the page gets a number, <code>my-heading-2</code>.
+</p>
+
+<h2 id="custom-ids">Custom Heading IDs</h2>
+<p>Give the heading its own <code>id</code> and htmlpress keeps it:</p>
+<pre><code>&lt;h2 id="custom-id"&gt;My Heading&lt;/h2&gt;</code></pre>
+<p>
+  Link to it with <code>#custom-id</code>. Ids written in the page are reserved first, so
+  a generated slug never takes one a link elsewhere points at. Give a heading an
+  <code>id</code> only when a link needs it fixed. This heading itself uses
+  <code>id="custom-ids"</code>.
+</p>
+
+<h2>Heading Levels</h2>
+<p>
+  Use <code>&lt;h2&gt;</code> to <code>&lt;h4&gt;</code> for content structure. The
+  <code>&lt;h1&gt;</code> is reserved for the page title.
+</p>
+<p>
+  Only <code>&lt;h2&gt;</code> and <code>&lt;h3&gt;</code> appear in the table of
+  contents; deeper headings are styled but not listed.
+</p>
+
+<h2>TOC Control</h2>
+<p>
+  The table of contents lists the page's <code>&lt;h2&gt;</code> and
+  <code>&lt;h3&gt;</code>, highlighting the one in view. Headings inside a callout, card,
+  steps or tabs component stay out of it, so a component's own headings never crowd the
+  page's outline.
+</p>
+<htmlpress-callout label="Coming soon">
+  <p>
+    Hiding a single heading from the table of contents, and a heading listed there but not
+    shown on the page.
+  </p>
+</htmlpress-callout>
+
+<h2>Anchor Links on Hover</h2>
+<p>
+  Every <code>&lt;h2&gt;</code> and <code>&lt;h3&gt;</code> with an id shows a
+  <code>#</code> link to itself on hover, to copy the anchor URL for sharing.
+</p>
+
+<h2>Inline Table of Contents</h2>
+<htmlpress-callout label="Coming soon">
+  <p>
+    An element that inserts the page's table of contents anywhere in its content, with a
+    depth limit.
+  </p>
+</htmlpress-callout>

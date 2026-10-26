@@ -1,0 +1,396 @@
+<title>Rich Elements</title>
+<meta
+  name="description"
+  content="Tables, callouts, tabs, steps, cards, badges, buttons, file trees, the theme tokens and the layout."
+/>
+<meta name="order" content="36" />
+
+<h1>Rich Elements</h1>
+<p>
+  A few <code>htmlpress-*</code> elements cover what HTML has no element for. They are
+  light-DOM custom elements, so their content stays plain HTML that reads well even before
+  the script loads. Each one's styles and script are linked only on pages that use it. Put
+  block content (<code>&lt;p&gt;</code>, <code>&lt;h3&gt;</code>,
+  <code>&lt;pre&gt;</code>) inside a component, not bare text.
+</p>
+
+<h2>Tables</h2>
+<p>
+  A plain <code>&lt;table&gt;</code> is styled as it is. Wrap one that has a
+  <code>&lt;thead&gt;</code> in <code>&lt;htmlpress-table&gt;</code> and a click on any
+  header sorts by it:
+</p>
+<pre><code>&lt;htmlpress-table&gt;
+  &lt;table&gt;
+    &lt;thead&gt;&lt;tr&gt;&lt;th&gt;Language&lt;/th&gt;&lt;th&gt;Year&lt;/th&gt;&lt;th&gt;Typing&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+    &lt;tbody&gt;&lt;tr&gt;&lt;td&gt;TypeScript&lt;/td&gt;&lt;td&gt;2012&lt;/td&gt;&lt;td&gt;Static&lt;/td&gt;&lt;/tr&gt;…&lt;/tbody&gt;
+  &lt;/table&gt;
+&lt;/htmlpress-table&gt;</code></pre>
+<p>Renders as:</p>
+<htmlpress-table>
+  <table>
+    <thead>
+      <tr>
+        <th>Language</th>
+        <th>Year</th>
+        <th>Typing</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>TypeScript</td>
+        <td>2012</td>
+        <td>Static</td>
+      </tr>
+      <tr>
+        <td>Python</td>
+        <td>1991</td>
+        <td>Dynamic</td>
+      </tr>
+      <tr>
+        <td>Rust</td>
+        <td>2010</td>
+        <td>Static</td>
+      </tr>
+      <tr>
+        <td>JavaScript</td>
+        <td>1995</td>
+        <td>Dynamic</td>
+      </tr>
+    </tbody>
+  </table>
+</htmlpress-table>
+
+<h2>Callouts</h2>
+<p>
+  Callouts highlight important information. <code>type</code> is <code>info</code> (the
+  default), <code>success</code>, <code>warning</code> or <code>danger</code>, and
+  <code>label</code> replaces the heading the type gives:
+</p>
+<pre><code>&lt;htmlpress-callout&gt;&lt;p&gt;This is a note.&lt;/p&gt;&lt;/htmlpress-callout&gt;
+
+&lt;htmlpress-callout type="warning" label="Breaking Change"&gt;
+  &lt;p&gt;This API has been removed in v2.&lt;/p&gt;
+&lt;/htmlpress-callout&gt;</code></pre>
+<p>Renders as:</p>
+<htmlpress-callout><p>This is a note.</p></htmlpress-callout>
+<htmlpress-callout type="success"><p>Every page built.</p></htmlpress-callout>
+<htmlpress-callout type="warning"><p>Be careful with this.</p></htmlpress-callout>
+<htmlpress-callout type="danger">
+  <p>Never edit <code>.htmlpress/build</code>: every build replaces it.</p>
+</htmlpress-callout>
+<htmlpress-callout type="warning" label="Breaking Change">
+  <p>This API has been removed in v2.</p>
+</htmlpress-callout>
+<p>Headings inside a callout stay out of the page's table of contents.</p>
+
+<h2>Expandable</h2>
+<p>No component needed: the theme styles a plain <code>&lt;details&gt;</code>.</p>
+<pre><code>&lt;details&gt;
+  &lt;summary&gt;Click to expand&lt;/summary&gt;
+  &lt;p&gt;Hidden content here with &lt;strong&gt;HTML&lt;/strong&gt; support.&lt;/p&gt;
+&lt;/details&gt;</code></pre>
+<p>Renders as:</p>
+<details>
+  <summary>Click to expand</summary>
+  <p>Hidden content here with <strong>HTML</strong> support.</p>
+</details>
+<p>You can nest any HTML inside, including code blocks, lists and callouts:</p>
+<details>
+  <summary>Configuration example</summary>
+  <pre><code>site: https://htmlpress.dev
+title: Htmlpress</code></pre>
+</details>
+
+<h2>Code Tabs</h2>
+<p>
+  Tabs that hold only code blocks join into one framed block. Each
+  <code>&lt;section&gt;</code> is a tab, named by its <code>title</code>:
+</p>
+<pre><code>&lt;htmlpress-tabs sync="lang"&gt;
+  &lt;section title="JavaScript"&gt;&lt;pre&gt;&lt;code&gt;console.log("hello")&lt;/code&gt;&lt;/pre&gt;&lt;/section&gt;
+  &lt;section title="Python"&gt;&lt;pre&gt;&lt;code&gt;print("hello")&lt;/code&gt;&lt;/pre&gt;&lt;/section&gt;
+&lt;/htmlpress-tabs&gt;</code></pre>
+<p>Renders as:</p>
+<htmlpress-tabs sync="lang">
+  <section title="JavaScript">
+    <pre><code>console.log("hello")</code></pre>
+  </section>
+  <section title="Python">
+    <pre><code>print("hello")</code></pre>
+  </section>
+</htmlpress-tabs>
+<p>
+  Add <code>sync="key"</code> to keep tab groups in sync, as described under Content Tabs
+  below.
+</p>
+
+<h2>Content Tabs</h2>
+<p>
+  Group arbitrary content into tabs with <code>&lt;htmlpress-tabs&gt;</code>, one
+  <code>&lt;section title&gt;</code> per tab.
+</p>
+<p>
+  Add a <code>sync</code> attribute to synchronize tab selection across tab groups. When a
+  reader selects a tab in one group, every other group with the same <code>sync</code> key
+  switches to the matching tab, and the choice is remembered across pages in
+  <code>localStorage</code>.
+</p>
+<pre><code>&lt;htmlpress-tabs sync="channel"&gt;
+  &lt;section title="cargo"&gt;&lt;p&gt;From crates.io, built on your machine.&lt;/p&gt;&lt;/section&gt;
+  &lt;section title="npm"&gt;&lt;p&gt;A prebuilt binary per platform.&lt;/p&gt;&lt;/section&gt;
+  &lt;section title="pip"&gt;&lt;p&gt;A binary wheel.&lt;/p&gt;&lt;/section&gt;
+&lt;/htmlpress-tabs&gt;</code></pre>
+<p>Renders as (both groups share <code>sync="channel"</code>; switch one):</p>
+<htmlpress-tabs sync="channel">
+  <section title="cargo">
+    <pre><code>cargo install htmlpress</code></pre>
+  </section>
+  <section title="npm">
+    <pre><code>npm install -g gethtmlpress</code></pre>
+  </section>
+  <section title="pip">
+    <pre><code>pip install htmlpress</code></pre>
+  </section>
+</htmlpress-tabs>
+<htmlpress-tabs sync="channel">
+  <section title="cargo"><p>From crates.io, built on your machine.</p></section>
+  <section title="npm"><p>A prebuilt binary per platform.</p></section>
+  <section title="pip"><p>A binary wheel.</p></section>
+</htmlpress-tabs>
+
+<h2>Steps</h2>
+<p>
+  An <code>&lt;ol&gt;</code> inside <code>&lt;htmlpress-steps&gt;</code> is a numbered
+  guide, one step per <code>&lt;li&gt;</code>, each led by an <code>&lt;h3&gt;</code>.
+  Those headings stay out of the page's table of contents.
+</p>
+<pre><code>&lt;htmlpress-steps&gt;
+  &lt;ol&gt;
+    &lt;li&gt;&lt;h3&gt;Install&lt;/h3&gt;&lt;p&gt;…&lt;/p&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;h3&gt;Write a page&lt;/h3&gt;&lt;p&gt;…&lt;/p&gt;&lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/htmlpress-steps&gt;</code></pre>
+<p>Renders as:</p>
+<htmlpress-steps>
+  <ol>
+    <li>
+      <h3>Install</h3>
+      <p>Pick a channel from the tabs above.</p>
+    </li>
+    <li>
+      <h3>Write a page</h3>
+      <p>Any <code>.html</code> file in the folder.</p>
+    </li>
+    <li>
+      <h3>Start</h3>
+      <p>Run <code>htmlpress start</code> and open the URL it prints.</p>
+    </li>
+  </ol>
+</htmlpress-steps>
+
+<h2>Cards</h2>
+<p>
+  Cards in <code>&lt;htmlpress-grid&gt;</code> fill responsive columns;
+  <code>cols</code> fixes their number from 2 to 4, and narrow screens fall back to one. A
+  link in a card's heading makes the whole card clickable.
+</p>
+<pre><code>&lt;htmlpress-grid cols="2"&gt;
+  &lt;htmlpress-card&gt;
+    &lt;h3&gt;&lt;a href="/introduction.html"&gt;Getting Started&lt;/a&gt;&lt;/h3&gt;
+    &lt;p&gt;Learn how to set up your first project.&lt;/p&gt;
+  &lt;/htmlpress-card&gt;
+  &lt;htmlpress-card&gt;&lt;h3&gt;Plain HTML&lt;/h3&gt;&lt;p&gt;…&lt;/p&gt;&lt;/htmlpress-card&gt;
+&lt;/htmlpress-grid&gt;</code></pre>
+<p>Renders as:</p>
+<htmlpress-grid cols="2">
+  <htmlpress-card>
+    <h3><a href="/introduction.html">Getting Started</a></h3>
+    <p>Learn how to set up your first project.</p>
+  </htmlpress-card>
+  <htmlpress-card>
+    <h3><a href="/customization/configuration-file.html">Configuration</a></h3>
+    <p>Configure your htmlpress project.</p>
+  </htmlpress-card>
+  <htmlpress-card>
+    <h3><a href="https://github.com/datisthq/htmlpress">GitHub</a></h3>
+    <p>View the source code on GitHub.</p>
+  </htmlpress-card>
+  <htmlpress-card>
+    <h3>Plain HTML</h3>
+    <p>A card without a link is not clickable.</p>
+  </htmlpress-card>
+</htmlpress-grid>
+<p>Headings inside a card stay out of the page's table of contents.</p>
+
+<h2>Badges</h2>
+<p>
+  An inline label. <code>type</code> is <code>info</code>, <code>success</code>,
+  <code>warning</code>, <code>danger</code> or <code>neutral</code>; without it, the
+  accent.
+</p>
+<pre><code>&lt;htmlpress-badge&gt;New&lt;/htmlpress-badge&gt;
+&lt;htmlpress-badge type="success"&gt;Stable&lt;/htmlpress-badge&gt;</code></pre>
+<p>
+  Renders as:
+  <htmlpress-badge>New</htmlpress-badge>
+  <htmlpress-badge type="info">Info</htmlpress-badge>
+  <htmlpress-badge type="success">Stable</htmlpress-badge>
+  <htmlpress-badge type="warning">Beta</htmlpress-badge>
+  <htmlpress-badge type="danger">Removed</htmlpress-badge>
+  <htmlpress-badge type="neutral">v1</htmlpress-badge>
+</p>
+
+<h2>Buttons</h2>
+<p>
+  A link inside <code>&lt;htmlpress-button&gt;</code> is a call to action;
+  <code>type="secondary"</code> makes it quieter.
+</p>
+<pre><code>&lt;htmlpress-button&gt;&lt;a href="/introduction.html"&gt;Get Started&lt;/a&gt;&lt;/htmlpress-button&gt;
+&lt;htmlpress-button type="secondary"&gt;&lt;a href="…"&gt;GitHub&lt;/a&gt;&lt;/htmlpress-button&gt;</code></pre>
+<p>Renders as:</p>
+<p>
+  <htmlpress-button><a href="/introduction.html">Get Started</a></htmlpress-button>
+  <htmlpress-button type="secondary">
+    <a href="https://github.com/datisthq/htmlpress">GitHub</a>
+  </htmlpress-button>
+</p>
+
+<h2>Icons</h2>
+<htmlpress-callout label="Coming soon">
+  <p>
+    A built-in icon set for inline icons. Until then, an inline
+    <code>&lt;svg&gt;</code> is plain HTML like any other.
+  </p>
+</htmlpress-callout>
+
+<h2>File Tree</h2>
+<p>
+  A nested list inside <code>&lt;htmlpress-file-tree&gt;</code>; an item holding a list is
+  a folder.
+</p>
+<pre><code>&lt;htmlpress-file-tree&gt;
+  &lt;ul&gt;
+    &lt;li&gt;docs&lt;ul&gt;&lt;li&gt;index.html&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;
+    &lt;li&gt;htmlpress.yaml&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/htmlpress-file-tree&gt;</code></pre>
+<p>Renders as:</p>
+<htmlpress-file-tree>
+  <ul>
+    <li>
+      docs
+      <ul>
+        <li>index.html</li>
+        <li>
+          guides
+          <ul>
+            <li>build.html</li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li>htmlpress.yaml</li>
+  </ul>
+</htmlpress-file-tree>
+
+<h2>Columns</h2>
+<p>
+  <code>&lt;htmlpress-grid&gt;</code> lays out any children side by side, not only cards:
+</p>
+<pre><code>&lt;htmlpress-grid cols="2"&gt;
+  &lt;div&gt;&lt;p&gt;&lt;strong&gt;Left column&lt;/strong&gt; with content.&lt;/p&gt;&lt;/div&gt;
+  &lt;div&gt;&lt;p&gt;&lt;strong&gt;Right column&lt;/strong&gt; with more content.&lt;/p&gt;&lt;/div&gt;
+&lt;/htmlpress-grid&gt;</code></pre>
+<p>Renders as:</p>
+<htmlpress-grid cols="2">
+  <div>
+    <p><strong>Left column</strong> with content, including lists:</p>
+    <ul>
+      <li>Item one</li>
+      <li>Item two</li>
+    </ul>
+  </div>
+  <div>
+    <p><strong>Right column</strong> with more content:</p>
+    <blockquote><p>A blockquote works here too.</p></blockquote>
+  </div>
+</htmlpress-grid>
+
+<h2>Theme tokens</h2>
+<p>
+  Colors, fonts and widths are CSS custom properties on <code>:root</code>, with a dark
+  set under <code>prefers-color-scheme</code> or the header's theme toggle:
+  <code>--htmlpress-accent</code>, <code>--htmlpress-accent-text</code>,
+  <code>--htmlpress-bg</code>, <code>--htmlpress-surface</code>,
+  <code>--htmlpress-text</code>, <code>--htmlpress-muted</code>,
+  <code>--htmlpress-border</code>, <code>--htmlpress-info</code>,
+  <code>--htmlpress-success</code>, <code>--htmlpress-warning</code>,
+  <code>--htmlpress-danger</code>, <code>--htmlpress-font</code>,
+  <code>--htmlpress-mono</code>, <code>--htmlpress-radius</code>,
+  <code>--htmlpress-shadow</code>, <code>--htmlpress-width</code> and
+  <code>--htmlpress-nav-width</code>. Override them from a page's own stylesheet:
+</p>
+<pre><code>:root {
+  --htmlpress-accent: oklch(0.6 0.18 30);
+  --htmlpress-font: "Inter", system-ui, sans-serif;
+  --htmlpress-width: 52rem;
+}</code></pre>
+
+<h2>Layout</h2>
+<p>
+  The layout is plain HTML. Htmlpress fills its <code>&lt;head&gt;</code> (charset,
+  viewport, title, description, social preview tags, canonical link, favicon, the theme,
+  the styles and scripts of the components the page uses, the <code>head</code> tags from
+  <code>htmlpress.yaml</code>, then the page's own head tags) and replaces these elements
+  at build time:
+</p>
+<dl>
+  <dt><code>&lt;htmlpress-content&gt;</code></dt>
+  <dd>The page's content.</dd>
+  <dt><code>&lt;htmlpress-brand&gt;</code></dt>
+  <dd>The site title, after the <code>logo</code> when set, linking home.</dd>
+  <dt><code>&lt;htmlpress-banner&gt;</code></dt>
+  <dd>The <code>banner</code> from <code>htmlpress.yaml</code>.</dd>
+  <dt><code>&lt;htmlpress-breadcrumbs&gt;</code></dt>
+  <dd>
+    Home, every folder above the page (named and linked by its index page when it has
+    one), then the page.
+  </dd>
+  <dt><code>&lt;htmlpress-nav&gt;</code></dt>
+  <dd>
+    The open section's pages (every page without <code>sections</code>), grouped by top
+    folder; a folder's group is named by its index page. The sidebar sections open it and
+    the sidebar <code>links</code> close it.
+  </dd>
+  <dt><code>&lt;htmlpress-links&gt;</code></dt>
+  <dd>
+    The header sections, the open one marked, then the header <code>links</code> from
+    <code>htmlpress.yaml</code>.
+  </dd>
+  <dt><code>&lt;htmlpress-toc&gt;</code></dt>
+  <dd>
+    The page's <code>&lt;h2&gt;</code> and <code>&lt;h3&gt;</code>, highlighting the one
+    in view. A heading without an <code>id</code> gets one from its text.
+  </dd>
+  <dt><code>&lt;htmlpress-pager&gt;</code></dt>
+  <dd>The previous and next pages in navigation order.</dd>
+  <dt><code>&lt;htmlpress-edit&gt;</code></dt>
+  <dd>An "Edit this page" link from <code>edit</code> in <code>htmlpress.yaml</code>.</dd>
+  <dt><code>&lt;htmlpress-toolbar&gt;</code></dt>
+  <dd>
+    A link to the page's Markdown copy; the script adds "Copy Markdown", "Open in ChatGPT"
+    and "Open in Claude".
+  </dd>
+  <dt><code>&lt;htmlpress-footer&gt;</code></dt>
+  <dd>A "Created with Htmlpress" credit.</dd>
+</dl>
+<p>
+  An element with nothing to show is removed. <code>&lt;htmlpress-nav-toggle&gt;</code>,
+  <code>&lt;htmlpress-theme-toggle&gt;</code> and
+  <code>&lt;htmlpress-back-to-top&gt;</code> are built by the script in the browser. A
+  <code>.htmlpress/layout.html</code> in the project replaces the built-in layout, and a
+  page can pick its own from <code>.htmlpress/layouts/</code>. Every component's styles
+  and script can be replaced or added the same way: see
+  <a href="/customization/overriding-escaping.html">Overriding and Escaping</a>.
+</p>

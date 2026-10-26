@@ -1,0 +1,148 @@
+<title>Static Hosting</title>
+<meta
+  name="description"
+  content="Serve the build directory from any static host — nginx, S3 + CloudFront, Caddy, and friends."
+/>
+<meta name="order" content="51" />
+
+<h1>Static Hosting</h1>
+<p>
+  Htmlpress' build is a plain directory of <code>.html</code>, <code>.css</code>,
+  <code>.js</code>, and asset files. Anything that can serve a directory of files will
+  work. This guide covers the common shapes.
+</p>
+
+<h2>Build the site</h2>
+<pre><code>htmlpress build</code></pre>
+<p>
+  Output lands in <code>.htmlpress/build/</code>. Treat that directory as your document
+  root. <code>htmlpress preview</code> serves the same build locally, the way a host will.
+</p>
+
+<h2>Prerendering vs SPA fallback</h2>
+<p>
+  Every page is a real file, written at the path of its source:
+  <code>guides/build.html</code> is served at <code>/guides/build.html</code>, and a
+  folder's <code>index.html</code> answers its <code>/guides/</code> URL. There is no
+  client-side routing, so no host needs an SPA fallback.
+</p>
+<p>
+  What is worth configuring is the not-found page. Every build writes a
+  <code>404.html</code> at the root (the project's own, or a built-in one); point the
+  host's error page at it so unknown paths get the site's layout instead of the host's
+  default error.
+</p>
+
+<h2>nginx</h2>
+<pre><code>server {
+  listen 80;
+  server_name docs.example.com;
+  root /var/www/docs;
+  index index.html;
+
+  # Try the exact file, then a folder's index.html, else the site's 404 page.
+  location / {
+    try_files $uri $uri/ =404;
+  }
+  error_page 404 /404.html;
+}</code></pre>
+<p>
+  Copy <code>.htmlpress/build/*</code> to <code>/var/www/docs/</code> on each release.
+</p>
+
+<h2>Caddy</h2>
+<pre><code>docs.example.com {
+  root * /var/www/docs
+  file_server
+  encode gzip zstd
+  handle_errors {
+    rewrite * /404.html
+    file_server
+  }
+}</code></pre>
+<p>Caddy auto-provisions Let's Encrypt certificates when the domain resolves to it.</p>
+
+<h2>AWS S3 + CloudFront</h2>
+<p>The standard pattern is an S3 bucket as origin and CloudFront in front:</p>
+<ol>
+  <li>
+    Upload <code>.htmlpress/build/</code> to an S3 bucket (<code
+      >aws s3 sync .htmlpress/build/ s3://my-docs --delete</code
+    >).
+  </li>
+  <li>
+    Set <strong>Static website hosting → Index document</strong> to
+    <code>index.html</code> and <strong>Error document</strong> to <code>404.html</code>.
+  </li>
+  <li>Create a CloudFront distribution pointing at the bucket's website endpoint.</li>
+  <li>
+    In CloudFront, add a <strong>Custom error response</strong> mapping
+    <code>404</code> to <code>/404.html</code>, keeping the response code
+    <code>404</code>.
+  </li>
+  <li>Set the distribution's default root object to <code>index.html</code>.</li>
+</ol>
+<p>
+  The files under <code>_htmlpress/</code> keep their names from build to build, so cache
+  them for a short time, or invalidate them on each release.
+</p>
+
+<h2>Apache</h2>
+<pre><code>DirectoryIndex index.html
+ErrorDocument 404 /404.html</code></pre>
+<p>
+  Put these in an <code>.htaccess</code> at the docroot and place the build there. Real
+  files and folders are served directly; anything else gets the site's 404 page.
+</p>
+<htmlpress-callout type="warning">
+  <p>
+    Htmlpress skips dot-files when it copies a project, so keep the
+    <code>.htaccess</code> on the server or copy it in after the build.
+  </p>
+</htmlpress-callout>
+
+<h2>Other hosts</h2>
+<p>
+  The same recipe works on Render Static, Surge, Fly Static, Bunny, or any object store
+  with a CDN: upload the directory, point a domain at it, and serve
+  <code>404.html</code> for unknown paths.
+</p>
+
+<h2>Deploy with GitHub Actions</h2>
+<p>A minimal nginx/SSH example:</p>
+<pre><code>name: deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npx gethtmlpress build
+      - uses: easingthemes/ssh-deploy@v5
+        with:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
+          REMOTE_HOST: ${{ secrets.SSH_HOST }}
+          REMOTE_USER: ${{ secrets.SSH_USER }}
+          SOURCE: .htmlpress/build/
+          TARGET: /var/www/docs/
+          ARGS: -avzr --delete</code></pre>
+<p>
+  For S3, swap the deploy step for <code>aws-actions/configure-aws-credentials</code> +
+  <code>aws s3 sync</code>.
+</p>
+
+<h2>See also</h2>
+<ul>
+  <li>
+    <a href="/customization/site-metadata.html">Site Metadata</a>: <code>site</code>
+    powers absolute URLs and the sitemap.
+  </li>
+  <li><a href="/deployment/">Deployment</a>: back to the host index.</li>
+</ul>

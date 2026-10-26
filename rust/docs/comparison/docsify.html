@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Docsify vs Htmlpress</title>
+    <meta
+      name="description"
+      content="Static site builder vs runtime Markdown renderer in the browser."
+    />
+    <meta name="order" content="69" />
+  </head>
+  <body>
+    <h1>Docsify vs Htmlpress</h1>
+    <p>
+      <a href="https://docsify.js.org">Docsify</a> is a documentation site tool that takes
+      a different approach from every other entry in this section: it does not generate
+      static HTML at build time. Instead, it ships a single <code>index.html</code> plus a
+      JavaScript runtime that fetches Markdown files in the browser and renders them on
+      the fly. There is no build step.
+    </p>
+    <h2>At a glance</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Axis</th>
+          <th>Htmlpress</th>
+          <th>Docsify</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Language / runtime</td>
+          <td>Rust (single binary, no runtime)</td>
+          <td>Browser JavaScript (no build)</td>
+        </tr>
+        <tr>
+          <td>UI framework</td>
+          <td>None (plain HTML + CSS, <code>htmlpress-*</code> web components)</td>
+          <td>Vanilla JS + Vue-flavored template directives</td>
+        </tr>
+        <tr>
+          <td>Build tool</td>
+          <td>htmlpress binary</td>
+          <td>None (runtime fetch + render)</td>
+        </tr>
+        <tr>
+          <td>Content format</td>
+          <td>HTML pages</td>
+          <td>Markdown (marked / Prism in the browser)</td>
+        </tr>
+        <tr>
+          <td>License</td>
+          <td>MIT, self-hosted</td>
+          <td>MIT, self-hosted</td>
+        </tr>
+        <tr>
+          <td>Output model</td>
+          <td>Prerendered static</td>
+          <td>Client-rendered from raw <code>.md</code> files</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>Architecture</h2>
+    <p>
+      htmlpress is one Rust binary, installed from npm (<code>gethtmlpress</code>), PyPI
+      or crates.io. It wraps each HTML page in one layout with a navigation and a theme;
+      there is no bundler, no UI framework and no plugin API. Every built-in file — the
+      layout, the styles, the scripts and each component — can be escaped: a file at the
+      same path under <code>.htmlpress/</code> replaces it. Pages are prerendered to
+      static HTML at build time; <code>htmlpress start</code> serves them with live reload
+      while you edit.
+    </p>
+    <p>
+      Docsify has no build pipeline. A site is an <code>index.html</code> that loads
+      <code>docsify.js</code> from a CDN (or <code>node_modules</code>) along with a small
+      config object on <code>window.$docsify</code>. At runtime, the script reads the URL
+      hash (<code>#/some/page</code>), fetches the corresponding <code>.md</code> file
+      with <code>fetch()</code>, runs it through <code>marked</code> for Markdown parsing
+      and <code>Prism</code> for syntax highlighting, and injects the result into the
+      page. Navigation is hash-based by default; History API mode is opt-in but requires
+      server rewrites.
+    </p>
+    <p>
+      Content layout is unconstrained on the htmlpress side: it scans by glob
+      (<code>include</code>/<code>exclude</code> in <code>htmlpress.yaml</code>, every
+      <code>.html</code> file by default), and a page's URL follows its file path below
+      the glob's base, so <code>docs/**/*.html</code> serves
+      <code>docs/guide.html</code> at <code>/guide.html</code>. There's no required
+      <code>docs/</code> folder. The navigation is built from the folders and each page's
+      <code>&lt;meta name="order"&gt;</code>; a folder's <code>index.html</code> names its
+      group. Docsify reads from a single source root (the directory containing
+      <code>index.html</code>, configurable via <code>basePath</code>), and the request
+      URL maps directly to a file path on disk — <code>#/guide/install</code> fetches
+      <code>guide/install.md</code>. Sidebar navigation is authored manually in
+      <code>_sidebar.md</code>; there is no auto-generated nav.
+    </p>
+    <h2>Content surface</h2>
+    <p>
+      Docsify supports plain Markdown (CommonMark via <code>marked</code>) with a handful
+      of built-in extensions: helpers (<code>&gt; [!TIP]</code>-style callouts via the
+      <a href="https://jhildenbiddle.github.io/docsify-tabs/">docsify-tabs</a> and
+      admonition plugins), HTML pass-through, and limited Vue-template-style directives if
+      the optional Vue compiler is loaded. There is no MDX, no frontmatter parsing by
+      default (a plugin can add it), and no per-page React components. Plugins are
+      registered by pushing functions into <code>window.$docsify.plugins</code>, where
+      they hook into the lifecycle (<code>init</code>, <code>mounted</code>,
+      <code>beforeEach</code>, <code>afterEach</code>, <code>doneEach</code>,
+      <code>ready</code>).
+    </p>
+    <p>
+      htmlpress pages are plain semantic HTML, styled by the theme from the elements
+      themselves. Richer blocks are <code>htmlpress-*</code> custom elements
+      (<code>htmlpress-callout</code>, <code>htmlpress-tabs</code>,
+      <code>htmlpress-steps</code>, <code>htmlpress-grid</code>, …), whose CSS and JS are
+      linked only on pages that use the tag. A project adds its own tag with
+      <code>.htmlpress/components/&lt;tag&gt;.html</code>, which replaces the tag at build
+      time.
+    </p>
+    <p>
+      htmlpress has no frontmatter: a page's metadata is its own
+      <code>&lt;head&gt;</code> — <code>&lt;title&gt;</code>,
+      <code>&lt;meta name="description"&gt;</code>,
+      <code>&lt;meta name="order"&gt;</code>, <code>&lt;meta name="layout"&gt;</code> and
+      <code>&lt;meta name="image"&gt;</code>; other <code>&lt;head&gt;</code> tags are
+      kept.
+    </p>
+    <h2>Feature matrix</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Capability</th>
+          <th>Htmlpress</th>
+          <th>Docsify</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Versioning</td>
+          <td>No</td>
+          <td>Yes (multi-instance via <code>alias</code> config)</td>
+        </tr>
+        <tr>
+          <td>Internationalization (i18n)</td>
+          <td>No</td>
+          <td>Yes (<code>fallbackLanguages</code> + per-locale files)</td>
+        </tr>
+        <tr>
+          <td>Search</td>
+          <td>No</td>
+          <td>Yes (built-in full-text plugin)</td>
+        </tr>
+        <tr>
+          <td>Blog</td>
+          <td>No</td>
+          <td>No</td>
+        </tr>
+        <tr>
+          <td>Changelog</td>
+          <td>No</td>
+          <td>No (manual)</td>
+        </tr>
+        <tr>
+          <td>Sitemap</td>
+          <td>Yes (with <code>site</code> set)</td>
+          <td>No (third-party plugin)</td>
+        </tr>
+        <tr>
+          <td>RSS</td>
+          <td>No</td>
+          <td>No</td>
+        </tr>
+        <tr>
+          <td>Themes</td>
+          <td>Escapes in <code>.htmlpress/</code> + <code>--htmlpress-*</code> tokens</td>
+          <td>CSS themes (<code>vue.css</code>, <code>buble.css</code>, etc.)</td>
+        </tr>
+        <tr>
+          <td>Plugins</td>
+          <td>No (project components in <code>.htmlpress/components/</code>)</td>
+          <td>Runtime JS plugins on <code>window.$docsify</code></td>
+        </tr>
+        <tr>
+          <td>Custom routes</td>
+          <td>
+            Any <code>.html</code> file; extra layouts in <code>.htmlpress/layouts/</code>
+          </td>
+          <td>No (URL maps 1:1 to file paths)</td>
+        </tr>
+        <tr>
+          <td>Standalone toolchain</td>
+          <td>Single Rust binary (npm, PyPI or crates.io)</td>
+          <td>None at runtime; <code>docsify-cli</code> for init only</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>Output &amp; deployment</h2>
+    <p>This is where the tools diverge most sharply.</p>
+    <p>
+      htmlpress produces a directory of prerendered HTML + assets
+      (<code>.htmlpress/build/</code>). Every page is a real HTML file; crawlers, link
+      previews, and JS-disabled clients all see the rendered content. htmlpress writes
+      every page to static HTML in <code>.htmlpress/build/</code>, along with
+      <code>robots.txt</code>, a <code>sitemap.xml</code> when <code>site</code> is set, a
+      Markdown copy of each page, <code>llms.txt</code> and the agent skills under
+      <code>.well-known/agent-skills/</code>. The <code>base</code> key serves the site
+      under a sub-path. See <a href="/deployment/">Deployment</a> for host guides.
+    </p>
+    <p>
+      Docsify ships the raw <code>.md</code> files alongside <code>index.html</code>. The
+      "deploy" is uploading the source directory to any static host. The trade-off: zero
+      build time and edit-and-refresh authoring, at the cost of empty HTML on first paint
+      — search engines, social previews, and no-JS clients see only the loader shell. The
+      project documents an
+      <a href="https://docsify.js.org/#/ssr">SSR/prerender workflow</a> using
+      <code>docsify-ssr</code> or external prerenderers to mitigate this for SEO-sensitive
+      sites.
+    </p>
+    <h2>See also</h2>
+    <ul>
+      <li><a href="/authoring/">Authoring</a> — htmlpress' HTML surface.</li>
+      <li>
+        <a href="/customization/">Customization</a> — htmlpress' config keys and escapes.
+      </li>
+      <li><a href="/comparison/">Comparison</a> — back to the index.</li>
+    </ul>
+  </body>
+</html>

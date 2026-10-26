@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Config File</title>
+    <meta
+      name="description"
+      content="Where the htmlpress config lives, what it controls, and a tour of the top-level options."
+    />
+    <meta name="order" content="41" />
+  </head>
+  <body>
+    <h1>Config File</h1>
+    <htmlpress-callout
+      ><p>
+        The config file is optional. By default htmlpress picks up every
+        <code>.html</code> file in the folder you point it at.
+      </p></htmlpress-callout
+    >
+    <p>
+      Htmlpress is configured by a single file at the root of your project:
+      <strong><code>htmlpress.yaml</code></strong
+      >. Drop it next to your pages and htmlpress picks it up automatically: no flag, no
+      env var. Its keys follow <a href="https://livemark.dev">Livemark</a>'s config.
+    </p>
+
+    <h2>Minimal config</h2>
+    <p>
+      Every key is optional, so a project needs no config at all. The smallest useful one
+      names the site:
+    </p>
+    <pre><code>title: My docs</code></pre>
+    <p>
+      An empty <code>htmlpress.yaml</code> is the same as none. Without one, every
+      <code>.html</code> file under the project (default
+      <code>include: "**/*.html"</code>) becomes a page, rendered with the built-in layout
+      and theme: sidebar, table of contents, dark mode, all defaults. Every other file is
+      copied to the output as-is, at the same path. Dot-folders such as
+      <code>.git/</code> and <code>.htmlpress/</code>, and <code>node_modules/</code>, are
+      skipped.
+    </p>
+
+    <h2>What you can configure</h2>
+    <p>Every key falls back to a sensible default. The full set:</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Key</th>
+          <th>Default</th>
+          <th>Use</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>include</code></td>
+          <td><code>**/*.html</code></td>
+          <td>one glob or a list: the <code>.html</code> files that become pages</td>
+        </tr>
+        <tr>
+          <td><code>exclude</code></td>
+          <td>none</td>
+          <td>one glob or a list: files left out of the build entirely, pages or not</td>
+        </tr>
+        <tr>
+          <td><code>title</code></td>
+          <td>the folder name</td>
+          <td>the header and every tab title</td>
+        </tr>
+        <tr>
+          <td><code>description</code></td>
+          <td>none</td>
+          <td>for pages without their own</td>
+        </tr>
+        <tr>
+          <td><code>site</code></td>
+          <td>none</td>
+          <td>
+            the public URL, for canonical and social links and <code>sitemap.xml</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>base</code></td>
+          <td>none</td>
+          <td>
+            the sub-path the site is served under, such as <code>/repo/</code> on GitHub
+            Pages; see <a href="#base-path">Base path</a>
+          </td>
+        </tr>
+        <tr>
+          <td><code>logo</code></td>
+          <td>none</td>
+          <td>an image's URL, shown before the site title</td>
+        </tr>
+        <tr>
+          <td><code>favicon</code></td>
+          <td>the logo</td>
+          <td>the site icon's URL</td>
+        </tr>
+        <tr>
+          <td><code>banner</code></td>
+          <td>none</td>
+          <td>HTML for an announcement bar above the header</td>
+        </tr>
+        <tr>
+          <td><code>head</code></td>
+          <td>none</td>
+          <td>
+            <code>meta</code>, <code>links</code> and <code>scripts</code> added to every
+            page's head; see <a href="/customization/site-metadata.html">Site Metadata</a>
+          </td>
+        </tr>
+        <tr>
+          <td><code>links</code></td>
+          <td>none</td>
+          <td>
+            links in the header or the sidebar; see
+            <a href="/customization/external-links.html">External Links</a>
+          </td>
+        </tr>
+        <tr>
+          <td><code>sections</code></td>
+          <td>none</td>
+          <td>
+            parts of the site with a navigation of their own; see
+            <a href="/customization/article-sections.html">Article Sections</a>
+          </td>
+        </tr>
+        <tr>
+          <td><code>edit</code></td>
+          <td>none</td>
+          <td>an "Edit this page" link: this URL followed by the page's path</td>
+        </tr>
+        <tr>
+          <td><code>contentSignals</code></td>
+          <td>all <code>true</code></td>
+          <td>
+            <code>search</code>, <code>aiInput</code> and <code>aiTrain</code>: how
+            automated systems may use the content, written to <code>robots.txt</code>; see
+            <a href="/customization/ai-agents.html">AI Agents</a>
+          </td>
+        </tr>
+        <tr>
+          <td><code>skills</code></td>
+          <td>none</td>
+          <td>
+            one glob or a list of <code>SKILL.md</code> files, relative to the project, to
+            publish as <a href="/customization/ai-agents.html">agent skills</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      The full schema lives in
+      <a href="https://github.com/datisthq/htmlpress/blob/main/rust/src/models/config.rs"
+        ><code>rust/src/models/config.rs</code></a
+      >. An unknown key is an error, so a typo never passes silently.
+    </p>
+
+    <h3>Include and exclude</h3>
+    <p>
+      <code>include</code> replaces the default, so list every folder you want. Each
+      glob's folders before its first wildcard are its base: only files under a base are
+      read, and they are served without it, so <code>docs/**/*.html</code> builds
+      <code>docs/guide.html</code> to <code>/guide.html</code>. Other files under a base,
+      <code>.html</code> ones <code>include</code> leaves out too, are copied as they are.
+    </p>
+    <p>
+      Globs are relative to the project and cannot leave it (<code>..</code> or an
+      absolute path is an error): <code>*</code> stays within a folder,
+      <code>**</code> crosses folders, and an <code>include</code> or
+      <code>exclude</code> pattern that matches no file prints a warning.
+    </p>
+
+    <h3 id="base-path">Base path</h3>
+    <p>
+      With <code>base</code> set, every root-relative URL in the build (in
+      <code>href</code>, <code>src</code>, <code>srcset</code>, <code>poster</code> and
+      <code>action</code>, in pages, the layout and the config's HTML alike) gets it as a
+      prefix: write <code>/guide.html</code> and the site links to
+      <code>/repo/guide.html</code>. Relative and absolute URLs are left alone, and so are
+      <code>url()</code>s in a page's own CSS. <code>start</code> and
+      <code>preview</code> serve the site under the base too, and send
+      <code>/</code> there; restart <code>start</code> after changing <code>base</code>.
+    </p>
+
+    <h2>Worked example</h2>
+    <p>Most real sites end up looking something like this:</p>
+    <pre><code>site: https://htmlpress.dev
+title: Htmlpress
+description: Turn a folder of HTML pages into a site.
+logo: /logo.svg
+banner: 'Version 1 is out: &lt;a href="/changelog.html"&gt;read more&lt;/a&gt;'
+include: docs/**/*.html
+exclude: docs/**/_*
+links:
+  - title: GitHub
+    url: https://github.com/datisthq/htmlpress
+  - title: Chat
+    url: https://discord.gg/example
+    position: sidebar
+head:
+  scripts:
+    - src: https://stats.example.com/script.js
+      defer: ""
+contentSignals:
+  aiTrain: false
+skills: .skills/*/SKILL.md
+edit: https://github.com/datisthq/htmlpress/edit/main/docs/</code></pre>
+
+    <h2>Where to go next</h2>
+    <ul>
+      <li>
+        <a href="/customization/site-metadata.html">Site Metadata</a>: title, description,
+        favicon, logo.
+      </li>
+      <li>
+        <a href="/customization/article-sections.html">Article Sections</a>: split the
+        site into sections with their own navigation.
+      </li>
+      <li>
+        <a href="/customization/external-links.html">External Links</a>: header and
+        sidebar links.
+      </li>
+      <li>
+        <a href="/customization/syntax-themes.html">Syntax Themes</a>: the look of code
+        blocks.
+      </li>
+      <li>
+        <a href="/customization/article-patches.html">Article Patches</a>: override page
+        metadata from config.
+      </li>
+      <li>
+        <a href="/customization/overriding-escaping.html">Overriding/Escaping</a>: replace
+        any built-in layout, stylesheet or component.
+      </li>
+      <li>
+        <a href="/customization/custom-routes.html">Custom Routes</a>: pages with their
+        own layout.
+      </li>
+    </ul>
+  </body>
+</html>

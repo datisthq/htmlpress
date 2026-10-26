@@ -1,0 +1,126 @@
+<title>GitHub Pages</title>
+<meta
+  name="description"
+  content="Deploy your site to GitHub Pages, including project sites under a sub-path."
+/>
+<meta name="order" content="52" />
+
+<h1>GitHub Pages</h1>
+<p>GitHub Pages serves a directory of static files at one of two URL shapes:</p>
+<ul>
+  <li>
+    <strong>User/org site</strong>: <code>https://&lt;user&gt;.github.io/</code>, served
+    from a repo named <code>&lt;user&gt;.github.io</code>. No sub-path.
+  </li>
+  <li>
+    <strong>Project site</strong>:
+    <code>https://&lt;user&gt;.github.io/&lt;repo&gt;/</code>, served from any other repo.
+    The <code>/&lt;repo&gt;/</code> prefix matters; page and asset URLs must include it.
+  </li>
+</ul>
+
+<h2>Build the site</h2>
+<pre><code>htmlpress build</code></pre>
+<p>Output lands in <code>.htmlpress/build/</code>.</p>
+
+<h2>Configure <code>base</code> for project sites</h2>
+<p>
+  If you're publishing under <code>https://&lt;user&gt;.github.io/&lt;repo&gt;/</code>,
+  set <code>base</code> so every root-relative URL in the build gets the prefix. Keep
+  writing links without it (<code>/guides/build.html</code>); htmlpress adds it.
+  <code>htmlpress start</code> and <code>preview</code> serve under the same base, so dev
+  matches production:
+</p>
+<pre><code>site: https://acme.github.io
+base: /my-docs/</code></pre>
+<p>For user/org sites at the root, omit <code>base</code> entirely.</p>
+<htmlpress-callout type="success" label="Tip">
+  <p>
+    Custom domains skip the <code>/&lt;repo&gt;/</code> sub-path even on project sites. If
+    you're attaching a domain like <code>docs.example.com</code>, leave
+    <code>base</code> unset and set <code>site</code> to the final domain.
+  </p>
+</htmlpress-callout>
+
+<h2>Deploy manually</h2>
+<p>
+  The simplest one-shot deploy uses the
+  <a href="https://www.npmjs.com/package/gh-pages"><code>gh-pages</code></a> package:
+</p>
+<pre><code>htmlpress build
+npx gh-pages -d .htmlpress/build --nojekyll --dotfiles</code></pre>
+<p>
+  This pushes the build to the <code>gh-pages</code> branch. In your repo settings, set
+  <strong>Pages → Source</strong> to "Deploy from a branch" and pick
+  <code>gh-pages</code> / <code>/ (root)</code>.
+</p>
+<htmlpress-callout type="warning">
+  <p>
+    Keep <code>--nojekyll</code>: a branch deploy runs Jekyll, which drops folders
+    starting with <code>_</code>, and with them the theme in <code>_htmlpress/</code>.
+    <code>--dotfiles</code> keeps <code>.well-known/</code>, where the agent skills live.
+  </p>
+</htmlpress-callout>
+
+<h2>Deploy with GitHub Actions</h2>
+<p>
+  The official Pages actions are the cleanest path: no extra branch, no service tokens.
+</p>
+<pre><code>name: deploy
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npx gethtmlpress build
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .htmlpress/build
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/deploy-pages@v4
+        id: deployment</code></pre>
+<p>Set <strong>Pages → Source</strong> to "GitHub Actions" in your repo settings.</p>
+
+<h2>Custom domain</h2>
+<p>Add a <code>CNAME</code> file with your domain to the project, beside your pages:</p>
+<pre><code>docs.example.com</code></pre>
+<p>
+  Every file in the project that is not a page is copied to the build output as-is, at the
+  same path, so a <code>CNAME</code> next to the root <code>index.html</code> lands at the
+  root of your deployment. Configure the DNS at your registrar (a
+  <code>CNAME</code> record pointing at <code>&lt;user&gt;.github.io</code>) and set the
+  domain in <strong>Pages → Custom domain</strong>.
+</p>
+
+<h2>See also</h2>
+<ul>
+  <li>
+    <a href="/customization/site-metadata.html">Site Metadata</a>: <code>site</code> is
+    required for absolute URLs in the sitemap and Open Graph tags.
+  </li>
+  <li><a href="/deployment/">Deployment</a>: back to the host index.</li>
+</ul>

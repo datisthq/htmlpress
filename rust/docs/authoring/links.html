@@ -1,0 +1,55 @@
+<title>Links</title>
+<meta
+  name="description"
+  content="Internal, external and anchor links, page URLs and the base path."
+/>
+<meta name="order" content="33" />
+
+<h1>Links</h1>
+<p>
+  A page is written to the same path it was read from, so links between pages keep
+  working. <code>index.html</code> is served at its folder:
+  <code>guides/index.html</code> at <code>/guides/</code>.
+</p>
+
+<h2>Internal Links</h2>
+<p>Link to other pages in your documentation, root-relative or relative to the page:</p>
+<pre><code>&lt;a href="/introduction.html"&gt;Introduction&lt;/a&gt;
+&lt;a href="headings.html"&gt;Headings&lt;/a&gt;</code></pre>
+<p>Renders as: <a href="/introduction.html">Introduction</a></p>
+<p>
+  With <code>base</code> set in <code>htmlpress.yaml</code>, every root-relative URL in
+  the build (in <code>href</code>, <code>src</code>, <code>srcset</code>,
+  <code>poster</code> and <code>action</code>, in pages, the layout and the config's HTML
+  alike) gets it as a prefix: write <code>/guide.html</code> and the site links to
+  <code>/repo/guide.html</code>. Relative and absolute URLs are left alone, and so are
+  <code>url()</code>s in a page's own CSS. <code>start</code> and
+  <code>preview</code> serve the site under the base too, and send <code>/</code> there.
+</p>
+<p>
+  The navigation groups pages by their top folder, named by the folder's
+  <code>index.html</code> title, else the folder's name. Pages at the root come ungrouped.
+</p>
+
+<h2>External Links</h2>
+<p>Link to external resources:</p>
+<pre><code>&lt;a href="https://github.com"&gt;GitHub&lt;/a&gt;</code></pre>
+<p>Renders as: <a href="https://github.com">GitHub</a></p>
+
+<h2>Anchor Links</h2>
+<p>Link to a specific heading on the current page by its id:</p>
+<pre><code>&lt;a href="#internal-links"&gt;See Internal Links&lt;/a&gt;</code></pre>
+<p>Renders as: <a href="#internal-links">See Internal Links</a></p>
+<p>
+  A heading on another page is its URL plus the id:
+  <a href="/authoring/headings.html#custom-ids">Custom Heading IDs</a>. See
+  <a href="/authoring/headings.html">Headings</a> for how ids are made.
+</p>
+
+<h2>Auto Links</h2>
+<htmlpress-callout label="Coming soon">
+  <p>
+    A bare URL in text stays text in HTML; turning it into a link automatically at build
+    time is planned. Until then, wrap it in an <code>&lt;a&gt;</code>.
+  </p>
+</htmlpress-callout>

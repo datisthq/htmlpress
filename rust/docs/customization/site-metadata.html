@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Site Metadata</title>
+    <meta
+      name="description"
+      content="Set site title, description, URL, logo, favicon, and banner."
+    />
+    <meta name="order" content="42" />
+  </head>
+  <body>
+    <h1>Site Metadata</h1>
+    <p>
+      A few top-level keys in <code>htmlpress.yaml</code> describe your site to browsers,
+      search engines, and social cards.
+    </p>
+
+    <h2>Fields</h2>
+    <pre><code>site: https://example.com
+title: My Docs
+description: Everything you need to build things.
+logo: /logo.svg
+favicon: /favicon.ico
+banner: 'v2 is out · &lt;a href="/blog/v2.html"&gt;Read the release notes&lt;/a&gt;'
+head:
+  meta:
+    - name: twitter:site
+      content: "@me"</code></pre>
+    <table>
+      <thead>
+        <tr>
+          <th>Key</th>
+          <th>Default</th>
+          <th>Where it surfaces</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>site</code></td>
+          <td>none</td>
+          <td>
+            Canonical origin used by the sitemap,
+            <code>&lt;link rel="canonical"&gt;</code>, <code>og:url</code> and absolute
+            <code>og:image</code> URLs
+          </td>
+        </tr>
+        <tr>
+          <td><code>title</code></td>
+          <td>the folder name</td>
+          <td>
+            Every tab title (after the page's own, the home page's alone),
+            <code>og:site_name</code>, the header site title
+          </td>
+        </tr>
+        <tr>
+          <td><code>description</code></td>
+          <td>none</td>
+          <td>
+            <code>&lt;meta name="description"&gt;</code> and
+            <code>og:description</code> for pages without their own
+          </td>
+        </tr>
+        <tr>
+          <td><code>logo</code></td>
+          <td>none</td>
+          <td>
+            Image shown before the site title in the header (and as favicon default)
+          </td>
+        </tr>
+        <tr>
+          <td><code>favicon</code></td>
+          <td>the logo</td>
+          <td>Browser tab icon</td>
+        </tr>
+        <tr>
+          <td><code>banner</code></td>
+          <td>none</td>
+          <td>Announcement bar above the header on every page</td>
+        </tr>
+        <tr>
+          <td><code>head</code></td>
+          <td>none</td>
+          <td>
+            Extra <code>meta</code>, <code>links</code> and <code>scripts</code> in every
+            page's <code>&lt;head&gt;</code>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>Sitemap and <code>site</code></h2>
+    <p>
+      If <code>site</code> is set, every build writes a <code>sitemap.xml</code> of every
+      page at the root of the output, using <code>site</code> (and <code>base</code>) as
+      the absolute origin for every URL, and <code>robots.txt</code> points at it. Without
+      <code>site</code>, the sitemap is skipped: it lists absolute URLs only. A project
+      file named <code>sitemap.xml</code> or <code>robots.txt</code> wins over the
+      generated one.
+    </p>
+
+    <h2>Logo and favicon</h2>
+    <ul>
+      <li>
+        <code>logo</code> and <code>favicon</code> accept any URL or root-relative path
+        (<code>/logo.svg</code>). Any file in the project is copied to the output at the
+        same path, so <code>logo.svg</code> at the root works as <code>/logo.svg</code>.
+      </li>
+      <li>
+        If <code>favicon</code> is omitted, htmlpress falls back to <code>logo</code>;
+        with neither, no icon link is written.
+      </li>
+      <li>
+        The logo is an <code>&lt;img&gt;</code> before the site title in
+        <code>&lt;htmlpress-brand&gt;</code>, which links home.
+      </li>
+    </ul>
+    <htmlpress-callout
+      ><p>
+        Keep the <code>logo</code> file small (an SVG is ideal). Every page loads it in
+        the header.
+      </p></htmlpress-callout
+    >
+
+    <h2>Banner</h2>
+    <p>
+      <code>banner</code> shows a full-width bar above the header on every page. The value
+      is HTML, written into <code>&lt;htmlpress-banner&gt;</code> as it is, so a link or
+      any inline markup needs no custom component:
+    </p>
+    <pre><code>banner: 'Htmlpress is in technical preview · &lt;a href="https://github.com/datisthq/htmlpress/discussions"&gt;Share feedback&lt;/a&gt;'</code></pre>
+    <ul>
+      <li>Root-relative links get your <code>base</code> prefix.</li>
+      <li>
+        For different markup or styling, escape
+        <code>components/htmlpress-banner.css</code>, or replace the element with
+        <code>components/htmlpress-banner.html</code> (<a
+          href="/customization/overriding-escaping.html"
+          >Overriding/Escaping</a
+        >).
+      </li>
+    </ul>
+
+    <h2>Per-page tags</h2>
+    <p>
+      Every page overrides the site defaults with its own
+      <code>&lt;title&gt;</code> (followed by <code>· site title</code>),
+      <code>description</code>, <code>og:title</code> and <code>og:description</code>;
+      <code>og:type</code> is <code>website</code>. With <code>site</code> set, it also
+      gets <code>og:url</code> and a <code>&lt;link rel="canonical"&gt;</code>. A page's
+      <code>&lt;meta name="image"&gt;</code> becomes its <code>og:image</code>, made
+      absolute with <code>site</code> when root-relative, and switches
+      <code>twitter:card</code> from <code>summary</code> to
+      <code>summary_large_image</code>.
+    </p>
+
+    <h2>Extra head tags</h2>
+    <p>
+      <code>head</code> adds tags to every page, after the defaults and the theme: lists
+      of attribute maps. A script's <code>children</code> is its inline source, and a
+      <code>meta</code> entry with the same <code>name</code> or <code>property</code> as
+      a default replaces it:
+    </p>
+    <pre><code>head:
+  meta:
+    - name: twitter:card
+      content: summary_large_image
+    - name: google-site-verification
+      content: abc123
+  links:
+    - rel: me
+      href: https://mastodon.social/@me
+  scripts:
+    - src: https://example.com/analytics.js
+      defer: ""
+    - children: console.log("hello")</code></pre>
+    <p>
+      A page's own <code>&lt;link&gt;</code>, <code>&lt;style&gt;</code> or
+      <code>&lt;script&gt;</code> in its <code>&lt;head&gt;</code> comes after these, for
+      that page only.
+    </p>
+
+    <h2>See also</h2>
+    <ul>
+      <li>
+        <a href="/customization/external-links.html">External Links</a>: header and
+        sidebar links that live next to the title.
+      </li>
+      <li>
+        <a href="/customization/article-sections.html">Article Sections</a>: structuring
+        the content of the site itself.
+      </li>
+    </ul>
+  </body>
+</html>

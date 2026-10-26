@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Overriding/Escaping</title>
+    <meta
+      name="description"
+      content="Replace the built-in layout, styles, scripts and components, or add your own, from .htmlpress/."
+    />
+    <meta name="order" content="44" />
+  </head>
+  <body>
+    <h1>Overriding/Escaping</h1>
+    <p>
+      Htmlpress ships a layout, a theme, two scripts and a library of components, all
+      compiled into the binary. Every built-in file can be replaced: drop a file at the
+      same path under <code>.htmlpress/</code> and the build uses it instead.
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th>To override</th>
+          <th>Drop a file at</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>the page around the content</td>
+          <td><code>.htmlpress/layout.html</code></td>
+        </tr>
+        <tr>
+          <td>the global theme</td>
+          <td><code>.htmlpress/styles/&lt;name&gt;.css</code></td>
+        </tr>
+        <tr>
+          <td>a global script</td>
+          <td><code>.htmlpress/scripts/&lt;name&gt;.js</code></td>
+        </tr>
+        <tr>
+          <td>one component</td>
+          <td><code>.htmlpress/components/&lt;tag&gt;.css</code> or <code>.js</code></td>
+        </tr>
+      </tbody>
+    </table>
+    <htmlpress-file-tree>
+      <ul>
+        <li>
+          .htmlpress
+          <ul>
+            <li>layout.html</li>
+            <li>
+              layouts
+              <ul>
+                <li>landing.html</li>
+              </ul>
+            </li>
+            <li>
+              styles
+              <ul>
+                <li>tokens.css</li>
+                <li>layout.css</li>
+                <li>content.css</li>
+              </ul>
+            </li>
+            <li>
+              scripts
+              <ul>
+                <li>code.js</li>
+              </ul>
+            </li>
+            <li>
+              components
+              <ul>
+                <li>htmlpress-callout.css</li>
+                <li>htmlpress-tabs.css</li>
+                <li>htmlpress-tabs.js</li>
+                <li>site-footer.html</li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </htmlpress-file-tree>
+    <dl>
+      <dt><code>layout.html</code></dt>
+      <dd>
+        The page around the content, plain HTML with the layout elements htmlpress fills,
+        such as <code>&lt;htmlpress-content&gt;</code> and
+        <code>&lt;htmlpress-nav&gt;</code>.
+      </dd>
+      <dt><code>styles/*.css</code></dt>
+      <dd>
+        The global theme, joined into one <code>theme.css</code> on every page:
+        <code>tokens.css</code> (the <code>--htmlpress-*</code> values),
+        <code>layout.css</code> (the chrome around the page) and
+        <code>content.css</code> (headings, prose, tables, code).
+      </dd>
+      <dt><code>scripts/code.js</code></dt>
+      <dd>The copy button on code blocks and the link on each heading.</dd>
+      <dt><code>scripts/hints.js</code></dt>
+      <dd>The hover hint on abbreviations and footnote references.</dd>
+      <dt><code>components/&lt;tag&gt;.css</code> and <code>.js</code></dt>
+      <dd>
+        One component each. Its styles sit in <code>@scope (&lt;tag&gt;)</code>, so they
+        never reach outside it, and its script defines only that element. A page links
+        only the components it uses.
+      </dd>
+    </dl>
+    <p>
+      No other change is needed: the rest of htmlpress picks up the escaped file
+      automatically.
+    </p>
+
+    <h2>The <code>htmlpress escape</code> command</h2>
+    <p>
+      <code>htmlpress escape</code> copies a default into <code>.htmlpress/</code> to
+      start from. Name a file by its path, or a component by its tag for all of its files:
+    </p>
+    <pre><code>$ htmlpress escape                       # list every file, marking the escaped ones
+$ htmlpress escape htmlpress-tabs        # its .css and .js
+$ htmlpress escape layout.html styles/tokens.css
+$ htmlpress escape htmlpress-tabs -r docs  # in another project folder</code></pre>
+    <p>
+      <code>htmlpress escape</code> never overwrites a file you already have: delete it
+      first to start over. An escaped copy keeps the code it was copied from, so after an
+      upgrade it misses the new defaults.
+    </p>
+    <p>
+      Deleting an escape restores the default: at once while
+      <code>htmlpress start</code> runs, otherwise on the next <code>start</code> or
+      <code>build</code>.
+    </p>
+
+    <h2>Example: custom footer</h2>
+    <p>
+      A file under <code>components/</code> with a new tag adds a component of your own.
+      Its <code>.html</code> replaces every <code>&lt;tag&gt;</code> in the layout and the
+      pages at build time; its <code>.css</code> and <code>.js</code> load wherever the
+      tag appears.
+    </p>
+    <pre><code>&lt;!-- .htmlpress/components/site-footer.html --&gt;
+&lt;footer class="site-footer"&gt;&lt;p&gt;Built by my team · 2026&lt;/p&gt;&lt;/footer&gt;
+
+/* .htmlpress/components/site-footer.css */
+@scope (.site-footer) {
+  p { color: var(--htmlpress-muted); }
+}</code></pre>
+    <p>
+      Then put <code>&lt;site-footer&gt;&lt;/site-footer&gt;</code> in an escaped
+      <code>layout.html</code> or any page. Save: the dev server picks it up immediately.
+      A tag needs a hyphen and lowercase letters, as every custom element does.
+    </p>
+
+    <h2>Example: retheme buttons</h2>
+    <pre><code>$ htmlpress escape components/htmlpress-button.css</code></pre>
+    <p>
+      Edit <code>.htmlpress/components/htmlpress-button.css</code> to change button
+      styling everywhere: every page that uses <code>&lt;htmlpress-button&gt;</code> links
+      your copy instead of the built-in one.
+    </p>
+
+    <h2>Example: tweak a token</h2>
+    <pre><code>$ htmlpress escape styles/tokens.css</code></pre>
+    <p>
+      Edit the <code>:root</code> block in <code>.htmlpress/styles/tokens.css</code> to
+      rebrand:
+    </p>
+    <pre><code>:root {
+  --htmlpress-accent: oklch(0.55 0.24 27); /* red */
+}</code></pre>
+    <p>
+      For a single page, override the token from that page's own
+      <code>&lt;style&gt;</code> instead; no escape needed.
+    </p>
+
+    <h2>Using other components from an override</h2>
+    <p>
+      An escaped <code>layout.html</code>, a layout of your own and a component's
+      <code>.html</code> may hold any <code>htmlpress-*</code> component, which renders
+      and links its styles as it would in a page. A component's <code>.html</code> may not
+      hold another project component's tag: it is pasted in once, never rewritten again.
+    </p>
+
+    <h3>Scoping a component's styles</h3>
+    <p>
+      A component's tag is gone once its <code>.html</code> replaces it, so the
+      <code>.css</code> of a component with an <code>.html</code> scopes to a class on
+      that markup, <code>@scope (.site-footer)</code>, not to the tag. A component without
+      an <code>.html</code> keeps its tag in the page and scopes to it,
+      <code>@scope (site-footer)</code>.
+    </p>
+
+    <h2>What you can't override this way</h2>
+    <ul>
+      <li>
+        <strong>Layout element markup</strong>: the markup inside
+        <code>&lt;htmlpress-nav&gt;</code>, <code>&lt;htmlpress-toc&gt;</code>,
+        <code>&lt;htmlpress-pager&gt;</code> and the other layout elements is built from
+        the site, so only their <code>.css</code> and <code>.js</code> can be escaped. A
+        <code>components/htmlpress-brand.html</code> replaces one with your own static
+        HTML.
+      </li>
+      <li>
+        <strong>Pages with a different layout</strong>: use
+        <a href="/customization/custom-routes.html"><code>.htmlpress/layouts/</code></a>
+        instead.
+      </li>
+      <li>
+        <strong>The binary</strong>: reading pages, the navigation and the commands are
+        not overridable; fork the repo if you need to change these.
+      </li>
+      <li>
+        <strong>Config schema</strong>: the shape of <code>htmlpress.yaml</code> is fixed.
+      </li>
+    </ul>
+    <htmlpress-callout type="warning"
+      ><p>
+        The <code>htmlpress-</code> prefix is reserved. A file named for a tag htmlpress
+        does not ship, such as <code>htmlpress-calout.css</code>, fails the build, and so
+        does any file under <code>styles/</code> or <code>scripts/</code> that replaces
+        nothing.
+      </p></htmlpress-callout
+    >
+
+    <h2>See also</h2>
+    <ul>
+      <li>
+        <a href="/customization/syntax-themes.html">Syntax Themes</a>: the look of code
+        blocks.
+      </li>
+      <li>
+        <a href="/customization/custom-routes.html">Custom Routes</a>: pages with a layout
+        of their own, rather than replacing the default one.
+      </li>
+    </ul>
+  </body>
+</html>

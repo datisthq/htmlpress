@@ -1,0 +1,57 @@
+<title>Authoring</title>
+<meta
+  name="description"
+  content="Write pages in plain HTML, with a few htmlpress-* components for documentation."
+/>
+<meta name="order" content="30" />
+
+<h1>Authoring</h1>
+<p>
+  Htmlpress accepts plain semantic HTML out of the box, plus a small set of
+  <code>htmlpress-*</code> components for what HTML has no element for: callouts, tabs,
+  steps, cards, terminals, diagrams and more. A project is a folder: every
+  <code>.html</code> file in it is a page, and every other file is copied to the output
+  as-is, at the same path. Dot-folders such as <code>.git/</code> and
+  <code>.htmlpress/</code>, and <code>node_modules/</code>, are skipped. Each page below
+  covers one area of the authoring surface.
+</p>
+
+<h2>Features</h2>
+<htmlpress-grid cols="2">
+  <htmlpress-card>
+    <h3><a href="/authoring/frontmatter.html">Frontmatter</a></h3>
+    <p>
+      The <code>&lt;head&gt;</code> tags that set a page's title, description and order.
+    </p>
+  </htmlpress-card>
+  <htmlpress-card>
+    <h3><a href="/authoring/headings.html">Headings</a></h3>
+    <p>Generated IDs, custom anchors and the table of contents.</p>
+  </htmlpress-card>
+  <htmlpress-card>
+    <h3><a href="/authoring/links.html">Links</a></h3>
+    <p>Internal, external and anchor links, URLs and the base path.</p>
+  </htmlpress-card>
+  <htmlpress-card>
+    <h3><a href="/authoring/media.html">Media</a></h3>
+    <p>Images with zoom, video and audio embeds.</p>
+  </htmlpress-card>
+  <htmlpress-card>
+    <h3><a href="/authoring/text-formatting.html">Text Formatting</a></h3>
+    <p>
+      Bold, italic, lists, blockquotes, footnotes, definition lists and abbreviations.
+    </p>
+  </htmlpress-card>
+  <htmlpress-card>
+    <h3><a href="/authoring/rich-elements.html">Rich Elements</a></h3>
+    <p>Tables, callouts, tabs, steps, cards, badges, buttons and file trees.</p>
+  </htmlpress-card>
+  <htmlpress-card>
+    <h3><a href="/authoring/code-blocks.html">Code Blocks</a></h3>
+    <p>Copy buttons, code tabs, package manager tabs and terminals.</p>
+  </htmlpress-card>
+  <htmlpress-card>
+    <h3><a href="/authoring/advanced-syntax.html">Advanced Syntax</a></h3>
+    <p>Head tags, scripts, Mermaid diagrams and project components.</p>
+  </htmlpress-card>
+</htmlpress-grid>

@@ -99,7 +99,7 @@ escape.
 Commands are fireargs commands: `#[fireargs::input]` / `#[fireargs::output]` structs and an
 async handler, so `--json` and `--llms` come free. Anything a command logs goes to **stderr**;
 under `--json` stdout carries only the result. Flags, defaults and output fields are public API
-(`AGENTS.md`); a change updates `rust/docs/cli.html` and the `htmlpress-pages` skill.
+(`AGENTS.md`); a change updates the commands in `rust/docs/introduction.html` and the `htmlpress-pages` skill.
 
 ## Assets
 
@@ -112,7 +112,7 @@ global `theme.css`; `components/<tag>.css` and `.js` are served one file each, a
 defines that element alone, with its own copies of any helper: an escaped file must never
 depend on another. Components are light DOM and must leave readable HTML when the script
 never loads. A new component, token or asset path is public API: add it to
-`rust/docs/components.html` and the `htmlpress-pages` skill in the same commit, and look at it
+its `rust/docs/authoring/` article and the `htmlpress-pages` skill in the same commit, and look at it
 in light, dark and phone width (**`change-verification`**).
 
 - Inside `@scope`, a bare `ul` ties the global `ul` on specificity and wins on scope

@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Nextra vs Htmlpress</title>
+    <meta
+      name="description"
+      content="A standalone plain-HTML site builder vs Next.js with the theme-package model."
+    />
+    <meta name="order" content="66" />
+  </head>
+  <body>
+    <h1>Nextra vs Htmlpress</h1>
+    <p>
+      <a href="https://nextra.site">Nextra</a> is a Next.js docs framework with a
+      theme-package architecture. It originated on the Pages Router and has migrated to
+      support the App Router as well. Documentation sites pick a theme (<code
+        >nextra-theme-docs</code
+      >
+      for docs, <code>nextra-theme-blog</code> for blogs) and configure it.
+    </p>
+    <h2>At a glance</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Axis</th>
+          <th>Htmlpress</th>
+          <th>Nextra</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Language / runtime</td>
+          <td>Rust (single binary, no runtime)</td>
+          <td>TypeScript / Node 18+</td>
+        </tr>
+        <tr>
+          <td>UI framework</td>
+          <td>None (plain HTML + CSS, <code>htmlpress-*</code> web components)</td>
+          <td>React 18/19 (Next.js)</td>
+        </tr>
+        <tr>
+          <td>Build tool</td>
+          <td>htmlpress binary</td>
+          <td>Next.js (Turbopack/Webpack)</td>
+        </tr>
+        <tr>
+          <td>Content format</td>
+          <td>HTML pages</td>
+          <td>Markdown + MDX</td>
+        </tr>
+        <tr>
+          <td>License</td>
+          <td>MIT, self-hosted</td>
+          <td>MIT, self-hosted</td>
+        </tr>
+        <tr>
+          <td>Output model</td>
+          <td>Prerendered static</td>
+          <td>Static or SSR (Next.js modes)</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>Architecture</h2>
+    <p>
+      htmlpress is one Rust binary, installed from npm (<code>gethtmlpress</code>), PyPI
+      or crates.io. It wraps each HTML page in one layout with a navigation and a theme;
+      there is no bundler, no UI framework and no plugin API. Every built-in file — the
+      layout, the styles, the scripts and each component — can be escaped: a file at the
+      same path under <code>.htmlpress/</code> replaces it. One tool, one optional config
+      file, content in <code>.html</code> files.
+    </p>
+    <p>
+      Nextra is a layer on top of an existing Next.js application. Setup involves
+      installing <code>nextra</code> and a theme package, wiring them into
+      <code>next.config.js</code>, and defining navigation in a
+      <code>_meta.json</code> (Pages Router) or <code>meta.js</code> (App Router) file per
+      directory. The theme package owns the entire UI; customization happens through the
+      theme's documented hooks.
+    </p>
+    <p>
+      <code>nextra-theme-docs</code> is the documentation theme used by Vercel, SWR,
+      Turbo, and many others. It's stable, maintained, and feature-complete for docs use
+      cases.
+    </p>
+    <p>
+      Content layout is unconstrained on the htmlpress side: it scans by glob
+      (<code>include</code>/<code>exclude</code> in <code>htmlpress.yaml</code>, every
+      <code>.html</code> file by default), and a page's URL follows its file path below
+      the glob's base, so <code>docs/**/*.html</code> serves
+      <code>docs/guide.html</code> at <code>/guide.html</code>. There's no required
+      <code>docs/</code> folder. The navigation is built from the folders and each page's
+      <code>&lt;meta name="order"&gt;</code>; a folder's <code>index.html</code> names its
+      group. Nextra reads content from <code>pages/</code> (Pages Router) or
+      <code>content/</code> (App Router) with routes determined by file paths and
+      <code>_meta.json</code> files alongside.
+    </p>
+    <h2>Content surface</h2>
+    <p>
+      Nextra accepts Markdown + MDX with frontmatter and embedded React components. It
+      supports remote MDX via <code>next-mdx-remote</code>, KaTeX/Mermaid through plugins,
+      and image optimization through Next's <code>&lt;Image&gt;</code> component.
+    </p>
+    <p>
+      htmlpress pages are plain semantic HTML, styled by the theme from the elements
+      themselves. Richer blocks are <code>htmlpress-*</code> custom elements
+      (<code>htmlpress-callout</code>, <code>htmlpress-tabs</code>,
+      <code>htmlpress-steps</code>, <code>htmlpress-grid</code>, …), whose CSS and JS are
+      linked only on pages that use the tag. A project adds its own tag with
+      <code>.htmlpress/components/&lt;tag&gt;.html</code>, which replaces the tag at build
+      time. Mermaid diagrams come built in as <code>htmlpress-mermaid</code>.
+    </p>
+    <p>
+      htmlpress has no frontmatter: a page's metadata is its own
+      <code>&lt;head&gt;</code> — <code>&lt;title&gt;</code>,
+      <code>&lt;meta name="description"&gt;</code>,
+      <code>&lt;meta name="order"&gt;</code>, <code>&lt;meta name="layout"&gt;</code> and
+      <code>&lt;meta name="image"&gt;</code>; other <code>&lt;head&gt;</code> tags are
+      kept. Nextra uses frontmatter (<code>title</code>, <code>description</code>,
+      <code>searchable</code>, <code>hide_title</code>) plus per-directory
+      <code>_meta.json</code> for navigation; htmlpress has no navigation file.
+    </p>
+    <h2>Feature matrix</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Capability</th>
+          <th>Htmlpress</th>
+          <th>Nextra</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Versioning</td>
+          <td>No</td>
+          <td>No (community workarounds)</td>
+        </tr>
+        <tr>
+          <td>Internationalization (i18n)</td>
+          <td>No</td>
+          <td>Yes (via Next i18n + Nextra hooks)</td>
+        </tr>
+        <tr>
+          <td>Search</td>
+          <td>No</td>
+          <td>Yes (FlexSearch built-in, optional Algolia/Pagefind)</td>
+        </tr>
+        <tr>
+          <td>Blog</td>
+          <td>No</td>
+          <td>Yes (<code>nextra-theme-blog</code>)</td>
+        </tr>
+        <tr>
+          <td>Changelog</td>
+          <td>No</td>
+          <td>No (community plugins)</td>
+        </tr>
+        <tr>
+          <td>Sitemap</td>
+          <td>Yes (with <code>site</code> set)</td>
+          <td>Via Next.js <code>sitemap.ts</code></td>
+        </tr>
+        <tr>
+          <td>RSS</td>
+          <td>No</td>
+          <td>Yes (blog theme), via Next routes for docs</td>
+        </tr>
+        <tr>
+          <td>Themes</td>
+          <td>Escapes in <code>.htmlpress/</code> + <code>--htmlpress-*</code> tokens</td>
+          <td>Theme packages; customize via theme config</td>
+        </tr>
+        <tr>
+          <td>Custom routes</td>
+          <td>
+            Any <code>.html</code> file; extra layouts in <code>.htmlpress/layouts/</code>
+          </td>
+          <td>Any Next page/route</td>
+        </tr>
+        <tr>
+          <td>Standalone CLI</td>
+          <td>Yes (<code>htmlpress build</code>)</td>
+          <td>No (Next.js commands)</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>Output &amp; deployment</h2>
+    <p>
+      htmlpress writes every page to static HTML in <code>.htmlpress/build/</code>, along
+      with <code>robots.txt</code>, a <code>sitemap.xml</code> when <code>site</code> is
+      set, a Markdown copy of each page, <code>llms.txt</code> and the agent skills under
+      <code>.well-known/agent-skills/</code>. The <code>base</code> key serves the site
+      under a sub-path. See <a href="/deployment/">Deployment</a> for host guides.
+    </p>
+    <p>
+      Nextra inherits Next.js's output modes. The most common docs setup is full static
+      export (<code>output: 'export'</code>), which produces a static directory deployable
+      anywhere. SSR setups target Vercel or Node hosts.
+    </p>
+    <h2>See also</h2>
+    <ul>
+      <li><a href="/authoring/">Authoring</a> — htmlpress' HTML surface.</li>
+      <li>
+        <a href="/customization/">Customization</a> — htmlpress' config keys and escapes.
+      </li>
+      <li><a href="/comparison/">Comparison</a> — back to the index.</li>
+    </ul>
+  </body>
+</html>

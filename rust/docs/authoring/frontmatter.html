@@ -1,0 +1,150 @@
+<title>Frontmatter</title>
+<meta
+  name="description"
+  content="The head tags that set a page's title, description, image, order and layout."
+/>
+<meta name="order" content="31" />
+
+<h1>Frontmatter</h1>
+<p>
+  A page has no YAML frontmatter: its metadata is the HTML <code>&lt;head&gt;</code>
+  itself. A page is a full document or a fragment, and htmlpress reads both the same way.
+  Every tag is optional; htmlpress derives sensible defaults from the file when one is
+  missing.
+</p>
+<pre><code>&lt;title&gt;Getting started&lt;/title&gt;
+&lt;meta name="description" content="Install and run it."&gt;
+&lt;meta name="order" content="1"&gt;
+
+&lt;h1&gt;Getting started&lt;/h1&gt;
+&lt;p&gt;Plain HTML, styled by the theme.&lt;/p&gt;</code></pre>
+<p>
+  The body becomes the page's content inside the layout. Give every page one
+  <code>&lt;title&gt;</code> and one <code>&lt;h1&gt;</code>.
+</p>
+
+<h2>Article metadata</h2>
+<p>Identity and presentation of the page.</p>
+<table>
+  <thead>
+    <tr>
+      <th>Tag</th>
+      <th>Default</th>
+      <th>Purpose</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>&lt;title&gt;</code></td>
+      <td>first <code>&lt;h1&gt;</code>, else the file name</td>
+      <td>Names the page in the navigation and the browser tab.</td>
+    </tr>
+    <tr>
+      <td><code>&lt;meta name="description"&gt;</code></td>
+      <td><code>description</code> from <code>htmlpress.yaml</code></td>
+      <td>The page's description for search engines and social previews.</td>
+    </tr>
+    <tr>
+      <td><code>&lt;meta name="image"&gt;</code></td>
+      <td>none</td>
+      <td>
+        The image shown when the page is shared, as <code>og:image</code>; a root-relative
+        URL is made absolute with <code>site</code>.
+      </td>
+    </tr>
+    <tr>
+      <td>anything else in <code>&lt;head&gt;</code></td>
+      <td>none</td>
+      <td>
+        Kept: a page's own <code>&lt;link&gt;</code>, <code>&lt;style&gt;</code> or
+        <code>&lt;script&gt;</code> is added to the layout's head, after the theme.
+      </td>
+    </tr>
+  </tbody>
+</table>
+<htmlpress-callout label="Coming soon">
+  <p>
+    A short navigation label, an icon, authors, a date and tags for a page will come as
+    further <code>&lt;meta&gt;</code> tags.
+  </p>
+</htmlpress-callout>
+
+<h2>Sidebar settings</h2>
+<p>How the page shows up in the navigation.</p>
+<table>
+  <thead>
+    <tr>
+      <th>Tag</th>
+      <th>Default</th>
+      <th>Purpose</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>&lt;meta name="order"&gt;</code></td>
+      <td>none (sorted by path)</td>
+      <td>An integer sort position; see "Ordering rules" below.</td>
+    </tr>
+    <tr>
+      <td><code>&lt;meta name="layout"&gt;</code></td>
+      <td>the site's layout</td>
+      <td>
+        Wraps the page in <code>.htmlpress/layouts/&lt;name&gt;.html</code> instead, for a
+        page that wants different chrome, such as a landing page without the sidebar. A
+        missing layout fails the build; see
+        <a href="/customization/overriding-escaping.html">Overriding and Escaping</a>.
+      </td>
+    </tr>
+  </tbody>
+</table>
+<htmlpress-callout label="Coming soon">
+  <p>
+    Hiding a page from the navigation while keeping it reachable, and turning off a page's
+    table of contents, will come as <code>&lt;meta&gt;</code> tags.
+  </p>
+</htmlpress-callout>
+
+<h3>Ordering rules</h3>
+<ul>
+  <li>The root <code>index.html</code> always leads.</li>
+  <li>
+    Pages with an <code>order</code> come next, ascending; a negative order sorts before a
+    positive one.
+  </li>
+  <li>Pages without one follow, by path.</li>
+</ul>
+<p>
+  An <code>order</code> that is not an integer fails the build. A <code>404.html</code> at
+  the root is the page a host shows for a missing URL; it is left out of the navigation,
+  and a project without one gets a built-in "Page not found".
+</p>
+
+<h2>URL</h2>
+<p>
+  A page is written to the same path it was read from, and <code>index.html</code> is
+  served at its folder: <code>guides/index.html</code> at <code>/guides/</code>. See
+  <a href="/authoring/links.html">Links</a>.
+</p>
+<htmlpress-callout label="Coming soon">
+  <p>Overriding a page's URL from its head, independent of its file path.</p>
+</htmlpress-callout>
+
+<h2>Overriding without editing</h2>
+<htmlpress-callout label="Coming soon">
+  <p>
+    Setting a page's metadata from <code>htmlpress.yaml</code> without touching the file;
+    see <a href="/customization/article-patches.html">Article Patches</a>.
+  </p>
+</htmlpress-callout>
+
+<h2>See also</h2>
+<ul>
+  <li>
+    <a href="/customization/article-sections.html">Article Sections</a> — how folders
+    group pages in the navigation.
+  </li>
+  <li>
+    <a href="/customization/article-patches.html">Article Patches</a> — set page metadata
+    from config.
+  </li>
+</ul>

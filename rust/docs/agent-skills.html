@@ -1,0 +1,113 @@
+<title>Agent Skills</title>
+<meta
+  name="description"
+  content="Teach your coding agent to write, check and customize an htmlpress site."
+/>
+<meta name="order" content="20" />
+
+<h1>Agent Skills</h1>
+<p>
+  Htmlpress ships an <a href="https://agentskills.io/">Agent Skill</a> that tells coding
+  agents such as Claude Code, Cursor and Codex how an htmlpress project works. Once
+  installed, your agent knows the page contract, which components exist, which config keys
+  are allowed, how to escape the layout and how to check its work. You don't have to
+  explain any of it in the prompt.
+</p>
+<p>
+  Htmlpress keeps an agent's job small: write semantic HTML, use a component only where
+  HTML has none, and leave the styling to the theme. The fewer choices a page offers, the
+  more pages look like one site.
+</p>
+<table>
+  <thead>
+    <tr>
+      <th>Skill</th>
+      <th>Your agent uses it when</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>htmlpress-pages</code></td>
+      <td>
+        writing or editing pages, components, <code>htmlpress.yaml</code> and escapes, and
+        checking the result
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Install from the website</h2>
+<p>
+  htmlpress.dev publishes its skills under
+  <a href="/.well-known/agent-skills/index.json">/.well-known/agent-skills/</a>, so the
+  <a href="https://github.com/vercel-labs/skills"><code>skills</code> CLI</a> can install
+  them from the site URL. Run this at your project root:
+</p>
+<pre><code>npx skills add https://htmlpress.dev</code></pre>
+<p>
+  It asks which skills and agents to install for. To skip the prompts, pass them as flags:
+</p>
+<pre><code>npx skills add https://htmlpress.dev --skill htmlpress-pages --agent claude-code</code></pre>
+<p>
+  Add <code>--global</code> to install for your user instead of the project, and
+  <code>--list</code> to see what's available without installing anything. Run
+  <code>npx skills update</code> later to pull newer versions.
+</p>
+
+<h2>Install from the package</h2>
+<htmlpress-callout type="info" label="Coming soon">
+  <p>
+    The skill is not yet bundled in the npm, PyPI or crates.io packages. Until it is,
+    install it from the website, or copy it from
+    <a href="https://github.com/datisthq/htmlpress/tree/main/.skills">.skills/</a> in the
+    repository.
+  </p>
+</htmlpress-callout>
+
+<h2>Use them</h2>
+<p>
+  You don't need to invoke a skill yourself. Agents read each skill's description and load
+  it when a task matches: asking for a new page or a change to the site's look loads
+  <code>htmlpress-pages</code>. If your agent supports invoking skills by name, you can
+  also call one directly, as with <code>/htmlpress-pages</code> in Claude Code.
+</p>
+
+<h3>The loop</h3>
+<ol>
+  <li>Run <code>htmlpress --llms</code> once to learn the commands.</li>
+  <li>Write or edit pages in the project folder.</li>
+  <li>
+    Run <code>htmlpress build &lt;root&gt; --json</code> and read <code>pages</code> and
+    any error on stderr.
+  </li>
+  <li>
+    For a visual check, run <code>htmlpress start &lt;root&gt;</code> and open the page in
+    a browser.
+  </li>
+</ol>
+
+<h3>Rules worth giving an agent</h3>
+<ul>
+  <li>
+    One <code>&lt;title&gt;</code> and one <code>&lt;h1&gt;</code> per page; a
+    <code>&lt;meta name="order"&gt;</code> where navigation order matters.
+  </li>
+  <li>
+    No inline <code>style</code>, no classes for looks: override a
+    <code>--htmlpress-*</code> token instead.
+  </li>
+  <li>
+    Only the <a href="/authoring/rich-elements.html">documented components</a>; anything
+    else is plain HTML.
+  </li>
+  <li>Never edit <code>.htmlpress/build</code>.</li>
+</ul>
+
+<h2>See also</h2>
+<ul>
+  <li>
+    <a href="/customization/ai-agents.html">AI Agents</a>: publish your own project's
+    skills the same way, beside the Markdown copies and <code>llms.txt</code> every build
+    writes.
+  </li>
+</ul>

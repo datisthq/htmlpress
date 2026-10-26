@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Hugo vs Htmlpress</title>
+    <meta
+      name="description"
+      content="Two single-binary static site generators: docs-first plain HTML vs general-purpose Go."
+    />
+    <meta name="order" content="68" />
+  </head>
+  <body>
+    <h1>Hugo vs Htmlpress</h1>
+    <p>
+      <a href="https://gohugo.io">Hugo</a> is a general-purpose static site generator
+      written in Go. It ships as a single binary, builds extremely quickly, and powers
+      everything from blogs and portfolios to documentation sites via community themes
+      like <a href="https://www.docsy.dev">Docsy</a> and
+      <a href="https://github.com/alex-shpak/hugo-book">Hugo Book</a>.
+    </p>
+    <h2>At a glance</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Axis</th>
+          <th>Htmlpress</th>
+          <th>Hugo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Language / runtime</td>
+          <td>Rust (single binary, no runtime)</td>
+          <td>Go (single binary, no runtime)</td>
+        </tr>
+        <tr>
+          <td>UI framework</td>
+          <td>None (plain HTML + CSS, <code>htmlpress-*</code> web components)</td>
+          <td>Go templates (HTML + CSS)</td>
+        </tr>
+        <tr>
+          <td>Build tool</td>
+          <td>htmlpress binary</td>
+          <td>Hugo binary</td>
+        </tr>
+        <tr>
+          <td>Content format</td>
+          <td>HTML pages</td>
+          <td>Markdown with Hugo shortcodes</td>
+        </tr>
+        <tr>
+          <td>License</td>
+          <td>MIT, self-hosted</td>
+          <td>Apache-2.0, self-hosted</td>
+        </tr>
+        <tr>
+          <td>Output model</td>
+          <td>Prerendered static</td>
+          <td>Prerendered static</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>Architecture</h2>
+    <p>
+      htmlpress is one Rust binary, installed from npm (<code>gethtmlpress</code>), PyPI
+      or crates.io. It wraps each HTML page in one layout with a navigation and a theme;
+      there is no bundler, no UI framework and no plugin API. Every built-in file — the
+      layout, the styles, the scripts and each component — can be escaped: a file at the
+      same path under <code>.htmlpress/</code> replaces it.
+    </p>
+    <p>
+      Hugo is a single Go binary — no runtime dependencies, no package install step. The
+      site structure is convention-based: <code>content/</code>, <code>layouts/</code>,
+      <code>static/</code>, <code>themes/</code>, <code>config.toml</code> (or
+      <code>.yaml</code>/<code>.json</code>). Layouts use Go's
+      <code>html/template</code> syntax. Themes are git-submoduled or copied into
+      <code>themes/&lt;name&gt;/</code>. htmlpress' layout is plain HTML with no template
+      syntax: the binary fills its <code>htmlpress-*</code> placeholder elements.
+    </p>
+    <p>
+      Hugo is not docs-specific. The same binary powers blogs, marketing sites,
+      portfolios, and docs — the docs use case is supported through themes rather than
+      first-class section types.
+    </p>
+    <p>
+      Content layout is unconstrained on the htmlpress side: it scans by glob
+      (<code>include</code>/<code>exclude</code> in <code>htmlpress.yaml</code>, every
+      <code>.html</code> file by default), and a page's URL follows its file path below
+      the glob's base, so <code>docs/**/*.html</code> serves
+      <code>docs/guide.html</code> at <code>/guide.html</code>. There's no required
+      <code>docs/</code> folder. The navigation is built from the folders and each page's
+      <code>&lt;meta name="order"&gt;</code>; a folder's <code>index.html</code> names its
+      group. Hugo reads from <code>content/</code> with URL structure mirroring the
+      directory tree (and per-section frontmatter overrides).
+    </p>
+    <h2>Content surface</h2>
+    <p>Hugo accepts Markdown with frontmatter; htmlpress accepts HTML pages.</p>
+    <p>
+      Hugo embeds components with <strong>shortcodes</strong> — Go-templated functions
+      invoked from Markdown with <code>{{&lt; shortcode-name arg="value" &gt;}}</code>.
+      Shortcodes are defined in <code>layouts/shortcodes/*.html</code> as Go template
+      snippets and emit HTML directly. The closest htmlpress equivalent is a project
+      component: <code>.htmlpress/components/&lt;tag&gt;.html</code> replaces every
+      <code>&lt;tag&gt;</code> at build time.
+    </p>
+    <p>
+      Hugo supports Goldmark-based Markdown extensions (footnotes, tables, definition
+      lists, math via plugins). For richer interactivity, the typical pattern is to embed
+      a <code>&lt;script&gt;</code> or use a JS framework as an island inside a shortcode.
+    </p>
+    <p>
+      htmlpress pages are plain semantic HTML, styled by the theme from the elements
+      themselves. Richer blocks are <code>htmlpress-*</code> custom elements
+      (<code>htmlpress-callout</code>, <code>htmlpress-tabs</code>,
+      <code>htmlpress-steps</code>, <code>htmlpress-grid</code>, …), whose CSS and JS are
+      linked only on pages that use the tag. A project adds its own tag with
+      <code>.htmlpress/components/&lt;tag&gt;.html</code>, which replaces the tag at build
+      time.
+    </p>
+    <p>
+      htmlpress has no frontmatter: a page's metadata is its own
+      <code>&lt;head&gt;</code> — <code>&lt;title&gt;</code>,
+      <code>&lt;meta name="description"&gt;</code>,
+      <code>&lt;meta name="order"&gt;</code>, <code>&lt;meta name="layout"&gt;</code> and
+      <code>&lt;meta name="image"&gt;</code>; other <code>&lt;head&gt;</code> tags are
+      kept. Hugo accepts TOML, YAML, or JSON frontmatter with fields like
+      <code>title</code>, <code>date</code>, <code>draft</code>, <code>weight</code>,
+      <code>taxonomies</code>, plus user-defined fields.
+    </p>
+    <h2>Feature matrix</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Capability</th>
+          <th>Htmlpress</th>
+          <th>Hugo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Versioning</td>
+          <td>No</td>
+          <td>No (manual via branches/sites)</td>
+        </tr>
+        <tr>
+          <td>Internationalization (i18n)</td>
+          <td>No</td>
+          <td>Yes (built-in, multilingual mode)</td>
+        </tr>
+        <tr>
+          <td>Search</td>
+          <td>No</td>
+          <td>No (theme-provided or external)</td>
+        </tr>
+        <tr>
+          <td>Blog</td>
+          <td>No</td>
+          <td>Yes (any section can be date-sorted)</td>
+        </tr>
+        <tr>
+          <td>Changelog</td>
+          <td>No</td>
+          <td>No (manual)</td>
+        </tr>
+        <tr>
+          <td>Sitemap</td>
+          <td>Yes (with <code>site</code> set)</td>
+          <td>Yes (built-in)</td>
+        </tr>
+        <tr>
+          <td>RSS</td>
+          <td>No</td>
+          <td>Yes (built-in, per section)</td>
+        </tr>
+        <tr>
+          <td>Themes</td>
+          <td>Escapes in <code>.htmlpress/</code> + <code>--htmlpress-*</code> tokens</td>
+          <td>Theme directories with template overrides</td>
+        </tr>
+        <tr>
+          <td>Plugins</td>
+          <td>No (project components in <code>.htmlpress/components/</code>)</td>
+          <td>Hugo Modules (Go), shortcodes, hooks</td>
+        </tr>
+        <tr>
+          <td>Custom routes</td>
+          <td>
+            Any <code>.html</code> file; extra layouts in <code>.htmlpress/layouts/</code>
+          </td>
+          <td>Layouts + content sections</td>
+        </tr>
+        <tr>
+          <td>Standalone toolchain</td>
+          <td>Single Rust binary (npm, PyPI or crates.io)</td>
+          <td>Single Go binary</td>
+        </tr>
+        <tr>
+          <td>Build speed</td>
+          <td>Native binary, no bundler</td>
+          <td>Among the fastest SSGs</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>Output &amp; deployment</h2>
+    <p>
+      Both tools produce static HTML + assets ready for any static host. Hugo emits to
+      <code>public/</code> by default; htmlpress emits to <code>.htmlpress/build/</code>.
+    </p>
+    <p>
+      htmlpress writes every page to static HTML in <code>.htmlpress/build/</code>, along
+      with <code>robots.txt</code>, a <code>sitemap.xml</code> when <code>site</code> is
+      set, a Markdown copy of each page, <code>llms.txt</code> and the agent skills under
+      <code>.well-known/agent-skills/</code>. The <code>base</code> key serves the site
+      under a sub-path. See <a href="/deployment/">Deployment</a> for host guides.
+    </p>
+    <h2>See also</h2>
+    <ul>
+      <li><a href="/authoring/">Authoring</a> — htmlpress' HTML surface.</li>
+      <li>
+        <a href="/customization/">Customization</a> — htmlpress' config keys and escapes.
+      </li>
+      <li><a href="/comparison/">Comparison</a> — back to the index.</li>
+    </ul>
+  </body>
+</html>

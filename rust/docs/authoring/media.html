@@ -1,0 +1,107 @@
+<title>Media</title>
+<meta
+  name="description"
+  content="Images, images that zoom, and YouTube and SoundCloud embeds."
+/>
+<meta name="order" content="34" />
+
+<h1>Media</h1>
+<p>
+  Images are plain <code>&lt;img&gt;</code> elements, scaled to the content width. Wrap
+  one in <code>&lt;figure&gt;</code> with a <code>&lt;figcaption&gt;</code> for a caption.
+</p>
+
+<h2>Internal Images</h2>
+<p>
+  Reference images from your project; every file that is not a page is copied to the
+  output at the same path:
+</p>
+<pre><code>&lt;img src="/screenshots/docs.webp" alt="An htmlpress docs page"&gt;</code></pre>
+<p>Renders as:</p>
+<figure>
+  <img
+    src="/screenshots/docs.webp"
+    alt="An htmlpress docs page with the navigation, a code block and the table of contents"
+    width="1440"
+    height="900"
+  />
+  <figcaption>An htmlpress docs page.</figcaption>
+</figure>
+
+<h2>External Images</h2>
+<p>Reference images from external URLs:</p>
+<pre><code>&lt;img src="https://picsum.photos/seed/htmlpress/800/300" alt="Placeholder"&gt;</code></pre>
+<p>Renders as:</p>
+<p>
+  <img
+    src="https://picsum.photos/seed/htmlpress/800/300"
+    alt="Placeholder"
+    width="800"
+    height="300"
+  />
+</p>
+
+<h2>Base64 Images</h2>
+<p>Embed small images directly using data URIs:</p>
+<pre><code>&lt;img src="data:image/png;base64,iVBORw0KGgo…" alt="banner"&gt;</code></pre>
+<p>Renders as:</p>
+<p>
+  <img
+    src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAABQCAIAAADTD63nAAABU0lEQVR4nO3csU3DUBRAUUCIGVJlHLcwAVV2YIbsQJUJUmccJCRmoKKgthOR3IDNOe138WxdveZLvn0c3m/g0u5+ewCWSVgkhEVCWCSERUJYJIRFQlgkhEXifvr47eP1OnMwR+vVZuzIxiJxZGN9e3p+qedgXva77fQDNhYJYZEQFglhkRAWCWGREBYJYZEQFglhkRAWCWGROOkSeswwPFxqjr/jcPgcO1rk+06b+BrTbCwSwiIhLBLCIiEsEsIiISwSwiIhLBLCIiEsEsIiISwSwiIhLBLCIiEsEsIiISwSwiIhLBLCIiEsEsIiISwSwiIhLBLCIiEsEsIicdZvjH78j5uZ+m/vew4bi4SwSAiLhLBICIuEsEgIi4SwSAiLhLBICIuEsEicdAm9323rOVgYG4vEkY21Xm2uMwcLY2OREBYJYZEQFglhkRAWCWGREBaJL1tnFXf+b+eSAAAAAElFTkSuQmCC"
+    alt="banner"
+    width="200"
+    height="80"
+  />
+</p>
+
+<h2>Themed Images</h2>
+<htmlpress-callout label="Coming soon">
+  <p>
+    An image shown only in the light or only in the dark theme. A
+    <code>&lt;picture&gt;</code> with a <code>prefers-color-scheme</code> source follows
+    the system setting today, but not the header's theme toggle.
+  </p>
+</htmlpress-callout>
+
+<h2>Image Zooming</h2>
+<p>
+  An image inside <code>&lt;htmlpress-zoom&gt;</code> opens full screen on click; a click
+  anywhere closes it. It works with internal, external and base64 images alike.
+</p>
+<pre><code>&lt;htmlpress-zoom&gt;&lt;img src="screenshot.png" alt="The docs site"&gt;&lt;/htmlpress-zoom&gt;</code></pre>
+<p>Renders as (click it):</p>
+<htmlpress-zoom>
+  <img
+    src="/screenshots/components.webp"
+    alt="The htmlpress components page with callouts in four colors"
+    width="1440"
+    height="900"
+  />
+</htmlpress-zoom>
+
+<h2>Video Blocks</h2>
+<p>
+  A link inside <code>&lt;htmlpress-youtube&gt;</code> becomes the video's player (a
+  <code>watch</code>, <code>youtu.be</code>, <code>embed</code>, <code>shorts</code> or
+  <code>live</code> URL); without the script it stays a link:
+</p>
+<pre><code>&lt;htmlpress-youtube&gt;
+  &lt;a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"&gt;The video&lt;/a&gt;
+&lt;/htmlpress-youtube&gt;</code></pre>
+<p>Renders as:</p>
+<htmlpress-youtube>
+  <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">The video</a>
+</htmlpress-youtube>
+
+<h2>Audio Blocks</h2>
+<p>
+  A link inside <code>&lt;htmlpress-soundcloud&gt;</code> becomes the track's player;
+  without the script it stays a link:
+</p>
+<pre><code>&lt;htmlpress-soundcloud&gt;
+  &lt;a href="https://soundcloud.com/flume/never-be-like-you-feat-kai"&gt;The track&lt;/a&gt;
+&lt;/htmlpress-soundcloud&gt;</code></pre>
+<p>Renders as:</p>
+<htmlpress-soundcloud>
+  <a href="https://soundcloud.com/flume/never-be-like-you-feat-kai">The track</a>
+</htmlpress-soundcloud>

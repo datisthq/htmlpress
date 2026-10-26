@@ -125,4 +125,4 @@ After editing, run `build --json` and confirm `pages` counts every page and the 
 ## References
 
 - Docs: https://htmlpress.dev
-- Pages: https://htmlpress.dev/pages.html · Components: https://htmlpress.dev/components.html
+- Pages: https://htmlpress.dev/authoring/ · Components: https://htmlpress.dev/authoring/rich-elements.html

@@ -1,0 +1,197 @@
+<title>Cloudflare</title>
+<meta
+  name="description"
+  content="Deploy via Cloudflare Workers with static assets — the setup htmlpress.dev itself uses."
+/>
+<meta name="order" content="53" />
+
+<h1>Cloudflare</h1>
+<p>
+  Cloudflare Workers can serve a directory of static assets directly: no separate compute,
+  no SPA shim. This is how <code>htmlpress.dev</code> ships, and the same
+  <code>wrangler.jsonc</code> shape works for any htmlpress site. Workers static assets
+  also read the <code>_headers</code> file every build writes.
+</p>
+
+<h2>Build the site</h2>
+<pre><code>htmlpress build</code></pre>
+<p>Output lands in <code>.htmlpress/build/</code>.</p>
+
+<h2>Configure <code>wrangler.jsonc</code></h2>
+<p>Drop this at your project root:</p>
+<pre><code>{
+  "name": "my-docs",
+  "compatibility_date": "2026-04-01",
+  "workers_dev": true,
+  "assets": {
+    "directory": ".htmlpress/build",
+    "html_handling": "none",
+    "not_found_handling": "404-page",
+  },
+}</code></pre>
+<p>Four fields do the heavy lifting:</p>
+<table>
+  <thead>
+    <tr>
+      <th>Field</th>
+      <th>Purpose</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>assets.directory</code></td>
+      <td>Points Wrangler at the htmlpress build output. Every file is served as-is.</td>
+    </tr>
+    <tr>
+      <td><code>assets.html_handling</code></td>
+      <td>
+        Serves every file at its own path. The default redirects
+        <code>/guide.html</code> to <code>/guide</code>, away from the URLs htmlpress
+        links to and the Markdown rule below matches.
+      </td>
+    </tr>
+    <tr>
+      <td><code>assets.not_found_handling</code></td>
+      <td>Answers unknown paths with the build's <code>404.html</code>.</td>
+    </tr>
+    <tr>
+      <td><code>workers_dev</code></td>
+      <td>
+        Gives you a <code>&lt;name&gt;.&lt;account&gt;.workers.dev</code> preview URL
+        while testing.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Deploy from your machine</h2>
+<pre><code>htmlpress build
+npx wrangler deploy</code></pre>
+<p>
+  The first run prompts for <code>wrangler login</code> to authorize against your
+  Cloudflare account.
+</p>
+
+<h2>Deploy with GitHub Actions</h2>
+<pre><code>name: deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npx gethtmlpress build
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}</code></pre>
+<p>
+  Create a scoped API token at <strong>My Profile → API Tokens</strong> (the "Edit
+  Cloudflare Workers" template grants exactly what you need) and store both values as repo
+  secrets.
+</p>
+<p>
+  Without a workflow, Workers Builds can run the build itself: connect the repository in
+  the dashboard and add a <code>build</code> block to <code>wrangler.jsonc</code>, as
+  htmlpress.dev does with <code>"build": { "command": "pnpm build:docs" }</code>.
+</p>
+
+<h2>Custom domain</h2>
+<p>Add a <code>routes</code> block once your zone is on Cloudflare:</p>
+<pre><code>{
+  "name": "my-docs",
+  "compatibility_date": "2026-04-01",
+  "assets": { "directory": ".htmlpress/build", "not_found_handling": "404-page" },
+  "routes": [{ "pattern": "docs.example.com", "custom_domain": true }],
+}</code></pre>
+<p>
+  <code>custom_domain: true</code> tells Cloudflare to provision a managed domain: DNS,
+  certificate, and route are all handled for you. Set <code>site</code> to the same domain
+  in <code>htmlpress.yaml</code> so absolute URLs in the sitemap line up.
+</p>
+<htmlpress-callout type="success" label="Tip">
+  <p>
+    The htmlpress repo's own <code>wrangler.jsonc</code> is a working reference; see the
+    <a href="https://github.com/datisthq/htmlpress/blob/main/wrangler.jsonc"
+      >project root</a
+    >.
+  </p>
+</htmlpress-callout>
+
+<h2>Markdown for agents</h2>
+<p>
+  AI agents ask for a page as Markdown by sending <code>Accept: text/markdown</code>.
+  Static assets always answer with HTML, so add a URL Rewrite Rule to your zone that
+  points those requests at the page's
+  <a href="/customization/ai-agents.html">Markdown copy</a>:
+  <code>guides/build.html</code> has <code>guides/build.md</code> beside it. URL Rewrite
+  Rules are available on every plan, including Free, and the site stays fully static.
+</p>
+<p>
+  In the dashboard, open your domain, go to
+  <strong>Rules → Overview → Create rule → URL Rewrite Rule</strong>, and fill in:
+</p>
+<table>
+  <thead>
+    <tr>
+      <th>Field</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Rule name</td>
+      <td><code>Markdown for agents</code></td>
+    </tr>
+    <tr>
+      <td>If incoming requests match</td>
+      <td>Custom filter expression (below)</td>
+    </tr>
+    <tr>
+      <td>Path</td>
+      <td>
+        Rewrite to → <strong>Dynamic</strong> →
+        <code>wildcard_replace(http.request.uri.path, "*.html", "${1}.md")</code>
+      </td>
+    </tr>
+    <tr>
+      <td>Query</td>
+      <td>Preserve</td>
+    </tr>
+  </tbody>
+</table>
+<pre><code>any(http.request.headers["accept"][*] contains "text/markdown") and ends_with(http.request.uri.path, ".html")</code></pre>
+<p>
+  Page URLs end in <code>.html</code>, so the rule only touches pages. For folder URLs
+  such as <code>/guides/</code>, add a second rule matching
+  <code>ends_with(http.request.uri.path, "/")</code> that rewrites to
+  <code>concat(http.request.uri.path, "index.md")</code>. Static assets serve
+  <code>.md</code> files as <code>text/markdown</code>, so the response type needs no
+  extra rule.
+</p>
+<htmlpress-callout type="warning">
+  <p>
+    Deploy a build that contains the Markdown copies before enabling the rule. Otherwise
+    an agent asking for Markdown gets a 404.
+  </p>
+</htmlpress-callout>
+
+<h2>See also</h2>
+<ul>
+  <li>
+    <a href="/customization/ai-agents.html">AI Agents</a>: what the build publishes for
+    agents.
+  </li>
+  <li>
+    <a href="/customization/site-metadata.html">Site Metadata</a>: <code>site</code>
+    powers absolute URLs and the sitemap.
+  </li>
+  <li><a href="/deployment/">Deployment</a>: back to the host index.</li>
+</ul>

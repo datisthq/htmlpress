@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>AI Agents</title>
+    <meta
+      name="description"
+      content="Serve Markdown, llms.txt, content signals and agent skills to AI agents."
+    />
+    <meta name="order" content="49" />
+  </head>
+  <body>
+    <h1>AI Agents</h1>
+    <p>
+      Every build publishes your site in the forms AI agents read best, beside the HTML
+      that browsers get. You don't need to configure anything for this. The two keys below
+      only adjust it.
+    </p>
+
+    <h2>What the build emits</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>File</th>
+          <th>Purpose</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>&lt;page&gt;.md</code></td>
+          <td>
+            A Markdown copy of every page beside its HTML:
+            <code>guides/build.html</code> gets <code>guides/build.md</code>, with its
+            title, description and content, each component reduced to plain Markdown (a
+            callout to a quote, tabs to bold headings)
+          </td>
+        </tr>
+        <tr>
+          <td><code>/llms.txt</code></td>
+          <td>
+            An <a href="https://llmstxt.org/">llms.txt</a> index: the site title and
+            description, then every page's Markdown copy with its description, grouped as
+            the navigation groups them
+          </td>
+        </tr>
+        <tr>
+          <td><code>/index.md</code></td>
+          <td>
+            The home page's copy, or a copy of <code>llms.txt</code> when the project has
+            no <code>index.html</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>/robots.txt</code></td>
+          <td>
+            A <code>Content-Signal</code> line stating how automated systems may use your
+            content
+          </td>
+        </tr>
+        <tr>
+          <td><code>/_headers</code></td>
+          <td>
+            For Cloudflare and Netlify: a <code>Link</code> header on the home page
+            pointing at <code>llms.txt</code>, <code>index.md</code> and the skills index
+          </td>
+        </tr>
+        <tr>
+          <td><code>/.well-known/agent-skills/index.json</code></td>
+          <td>
+            An <a href="https://agentskills.io/">Agent Skills</a> discovery index, when
+            <code>skills</code> is set
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      Each page also carries
+      <code>&lt;link rel="alternate" type="text/markdown"&gt;</code> pointing at its copy,
+      and the page toolbar beside it links the copy and, with its script, copies it or
+      opens the page in ChatGPT or Claude.
+    </p>
+    <p>
+      A project file of the same name replaces the generated one. <code>_headers</code> is
+      the one exception: your rules are kept and the generated <code>Link</code> rule is
+      appended after them. <code>htmlpress start</code> runs the same build, so it serves
+      these files too.
+    </p>
+
+    <h2>Content signals</h2>
+    <p>
+      <code>contentSignals</code> controls the
+      <a href="https://contentsignals.org/">Content Signals</a> line in
+      <code>robots.txt</code>. All three signals default to <code>true</code>:
+    </p>
+    <pre><code>contentSignals:
+  search: true # build a search index and show links to your pages
+  aiInput: true # feed pages to a model answering a question in real time
+  aiTrain: false # train or fine-tune models on your content</code></pre>
+    <p>
+      The line it produces sits in the <code>User-agent: *</code> group:
+      <code>Content-Signal: search=yes, ai-input=yes, ai-train=no</code>.
+    </p>
+
+    <h2>Agent skills</h2>
+    <p>
+      If your project ships
+      <a href="https://agentskills.io/specification">Agent Skills</a>, point
+      <code>skills</code> at their <code>SKILL.md</code> files, one glob or a list,
+      relative to the project:
+    </p>
+    <pre><code>skills: .skills/*/SKILL.md</code></pre>
+    <p>
+      Each matched skill is published at
+      <code>/.well-known/agent-skills/&lt;name&gt;/SKILL.md</code> and listed in
+      <code>index.json</code> with a <code>sha256</code> digest. Its frontmatter needs a
+      <code>name</code>
+      (lowercase letters, digits and single hyphens, at most 64 characters) and a
+      <code>description</code> (at most 1024), and the build fails if either is missing or
+      two skills share a name. This site publishes htmlpress' own skill at
+      <a href="/.well-known/agent-skills/index.json">/.well-known/agent-skills/</a>.
+    </p>
+
+    <h2>Markdown on request</h2>
+    <p>
+      Agents ask for Markdown by sending <code>Accept: text/markdown</code> to the page
+      URL. A static host can't answer that on its own, but a rewrite on your CDN can serve
+      the page's <code>.md</code> copy for those requests and leave the HTML for everyone
+      else. Every page has a copy, so the rewrite never points at a missing file. For a
+      ready-made rule, see <a href="/deployment/cloudflare.html">Cloudflare</a>.
+    </p>
+
+    <h2>See also</h2>
+    <ul>
+      <li>
+        <a href="/agent-skills.html">Agent Skills</a>: install htmlpress' own skill into
+        your coding agent.
+      </li>
+      <li>
+        <a href="/customization/configuration-file.html">Config File</a>: every top-level
+        key.
+      </li>
+      <li>
+        <a href="/customization/custom-routes.html">Custom Routes</a>: static files copied
+        beside your pages.
+      </li>
+    </ul>
+  </body>
+</html>

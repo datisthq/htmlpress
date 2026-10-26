@@ -1,0 +1,147 @@
+<title>Advanced Syntax</title>
+<meta
+  name="description"
+  content="Any HTML element, a page's own styles and scripts, math, Mermaid diagrams and project components."
+/>
+<meta name="order" content="38" />
+
+<h1>Advanced Syntax</h1>
+
+<h2>HTML Blocks</h2>
+<p>
+  A page is HTML, so every element works directly. Common examples include
+  <code>&lt;kbd&gt;</code> for keyboard shortcuts, <code>&lt;sup&gt;</code>/<code
+    >&lt;sub&gt;</code
+  >
+  for superscripts and subscripts, and <code>&lt;details&gt;</code>/<code
+    >&lt;summary&gt;</code
+  >
+  for accordions.
+</p>
+<pre><code>Press &lt;kbd&gt;Ctrl&lt;/kbd&gt; + &lt;kbd&gt;C&lt;/kbd&gt; to copy. Water is H&lt;sub&gt;2&lt;/sub&gt;O.</code></pre>
+<p>Renders as: Press <kbd>Ctrl</kbd> + <kbd>C</kbd> to copy. Water is H<sub>2</sub>O.</p>
+<p>
+  Prefer semantic elements to classes and inline <code>style</code>: the theme styles the
+  elements themselves, and that is what keeps every page looking like the same site. To
+  change the look site-wide, override a
+  <a href="/authoring/rich-elements.html#theme-tokens">theme token</a> instead.
+</p>
+
+<h2>MDX Rendering</h2>
+<p>
+  There is no templating language: what a page needs beyond HTML comes from its own
+  <code>&lt;head&gt;</code>. A page's <code>&lt;link&gt;</code>,
+  <code>&lt;style&gt;</code> and <code>&lt;script&gt;</code> are kept and added to the
+  layout's head, after the theme:
+</p>
+<pre><code>&lt;title&gt;Version&lt;/title&gt;
+&lt;script type="module"&gt;
+  document.querySelector("#version").textContent = "2.0.0"
+&lt;/script&gt;
+
+&lt;h1&gt;Version&lt;/h1&gt;
+&lt;p&gt;The current version is &lt;strong id="version"&gt;&lt;/strong&gt;.&lt;/p&gt;</code></pre>
+<p>
+  This is an escape hatch for advanced use cases. For markup shared between pages, use a
+  <a href="#included-documents">project component</a>.
+</p>
+
+<h2>LaTeX Expressions</h2>
+<htmlpress-callout label="Coming soon">
+  <p>
+    LaTeX math rendered at build time. Until then, MathML is plain HTML that browsers draw
+    natively.
+  </p>
+</htmlpress-callout>
+<pre><code>&lt;math&gt;&lt;mi&gt;E&lt;/mi&gt;&lt;mo&gt;=&lt;/mo&gt;&lt;mi&gt;m&lt;/mi&gt;&lt;msup&gt;&lt;mi&gt;c&lt;/mi&gt;&lt;mn&gt;2&lt;/mn&gt;&lt;/msup&gt;&lt;/math&gt;</code></pre>
+<p>
+  Renders as:
+  <math>
+    <mi>E</mi>
+    <mo>=</mo>
+    <mi>m</mi>
+    <msup><mi>c</mi><mn>2</mn></msup>
+  </math>
+</p>
+
+<h2>Mermaid Diagrams</h2>
+<p>
+  A <code>&lt;pre&gt;</code> inside <code>&lt;htmlpress-mermaid&gt;</code> holds
+  <a href="https://mermaid.js.org">Mermaid</a> source, drawn in the current theme and
+  redrawn when the theme changes. Escape <code>&lt;</code> and <code>&amp;</code> in the
+  source. The library loads from jsDelivr only on a page that has a diagram; offline, the
+  source shows instead.
+</p>
+<pre><code>&lt;htmlpress-mermaid&gt;
+  &lt;pre&gt;flowchart LR
+  pages[HTML pages] --&amp;gt; build[htmlpress build] --&amp;gt; site[Static site]&lt;/pre&gt;
+&lt;/htmlpress-mermaid&gt;</code></pre>
+<p>Renders as:</p>
+<htmlpress-mermaid>
+  <pre>
+flowchart LR
+  pages[HTML pages] --&gt; build[htmlpress build] --&gt; site[Static site]</pre>
+</htmlpress-mermaid>
+<pre><code>&lt;htmlpress-mermaid&gt;
+  &lt;pre&gt;pie title Languages
+  "Rust" : 45
+  "TypeScript" : 30
+  "Python" : 15
+  "Other" : 10&lt;/pre&gt;
+&lt;/htmlpress-mermaid&gt;</code></pre>
+<p>Renders as:</p>
+<htmlpress-mermaid>
+  <pre>
+pie title Languages
+  "Rust" : 45
+  "TypeScript" : 30
+  "Python" : 15
+  "Other" : 10</pre>
+</htmlpress-mermaid>
+
+<h2>Included Documents</h2>
+<p>
+  A project component shares markup between pages. A file at
+  <code>.htmlpress/components/&lt;tag&gt;.html</code> replaces every
+  <code>&lt;tag&gt;</code> in every page at build time:
+</p>
+<htmlpress-file-tree>
+  <ul>
+    <li>
+      .htmlpress
+      <ul>
+        <li>
+          components
+          <ul>
+            <li>site-disclaimer.html</li>
+            <li>site-disclaimer.css</li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li>guide.html</li>
+  </ul>
+</htmlpress-file-tree>
+<pre><code>&lt;!-- .htmlpress/components/site-disclaimer.html --&gt;
+&lt;aside class="site-disclaimer"&gt;&lt;p&gt;Provided as-is, without warranty.&lt;/p&gt;&lt;/aside&gt;
+
+&lt;!-- guide.html --&gt;
+&lt;site-disclaimer&gt;&lt;/site-disclaimer&gt;</code></pre>
+<ul>
+  <li>
+    Its <code>.css</code> and <code>.js</code> load only on pages where the tag appears;
+    since the tag itself is gone after the build, its CSS scopes to a class on the pasted
+    markup.
+  </li>
+  <li>
+    The <code>htmlpress-</code> prefix is reserved, and a component file that replaces
+    nothing fails the build.
+  </li>
+</ul>
+<p>
+  See <a href="/customization/overriding-escaping.html">Overriding and Escaping</a> for
+  every file under <code>.htmlpress/</code>.
+</p>
+<htmlpress-callout label="Coming soon">
+  <p>Including another file's content, or a code file as a code block, by its path.</p>
+</htmlpress-callout>

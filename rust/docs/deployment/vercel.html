@@ -1,0 +1,96 @@
+<title>Vercel</title>
+<meta
+  name="description"
+  content="Deploy via Vercel's git integration or the CLI, with preview URLs per PR."
+/>
+<meta name="order" content="54" />
+
+<h1>Vercel</h1>
+<p>
+  Vercel won't recognise an htmlpress project or guess its build directory. A small
+  <code>vercel.json</code> is all it takes.
+</p>
+
+<h2>Build the site</h2>
+<pre><code>htmlpress build</code></pre>
+<p>Output lands in <code>.htmlpress/build/</code>.</p>
+
+<h2>Configure <code>vercel.json</code></h2>
+<p>
+  Drop this at your project root so Vercel uses the right command and serves the right
+  directory:
+</p>
+<pre><code>{
+  "framework": null,
+  "buildCommand": "npx gethtmlpress build",
+  "outputDirectory": ".htmlpress/build"
+}</code></pre>
+<p>
+  That's the whole config: Vercel handles install, build, and static serving from there,
+  and answers unknown paths with the build's <code>404.html</code>. Vercel ignores
+  <code>_headers</code>; set response headers in <code>vercel.json</code> instead.
+</p>
+
+<h2>Deploy with the git integration</h2>
+<p>
+  The recommended path: import your repo at
+  <a href="https://vercel.com/new">vercel.com/new</a>. Vercel reads
+  <code>vercel.json</code> and runs the same build you'd run locally. Every push to
+  <code>main</code> ships to production; every other branch and PR gets a unique preview
+  URL.
+</p>
+
+<h2>Deploy with the CLI</h2>
+<p>For one-shot or scripted deploys:</p>
+<pre><code>vercel deploy --prod</code></pre>
+<p>
+  The first run prompts for <code>vercel login</code> and links the directory to a Vercel
+  project. Vercel runs the <code>buildCommand</code> itself.
+</p>
+
+<h2>Deploy with GitHub Actions</h2>
+<p>
+  Vercel's git integration is usually enough on its own, but you can gate deploys on CI
+  tests:
+</p>
+<pre><code>name: deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npx gethtmlpress build --json
+      - run: npx vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}</code></pre>
+<p>
+  The first <code>run</code> fails the job before deploying when a page doesn't build.
+  You'll need <code>VERCEL_TOKEN</code>, <code>VERCEL_ORG_ID</code>, and
+  <code>VERCEL_PROJECT_ID</code> as secrets (the latter two live in
+  <code>.vercel/project.json</code> after the first local <code>vercel link</code>).
+</p>
+
+<h2>Custom domain</h2>
+<p>
+  In the project dashboard, <strong>Settings → Domains → Add</strong>. Vercel walks
+  through DNS records and provisions a certificate automatically. Set the same domain as
+  <code>site</code> in <code>htmlpress.yaml</code>.
+</p>
+
+<h2>See also</h2>
+<ul>
+  <li>
+    <a href="/customization/site-metadata.html">Site Metadata</a>: <code>site</code>
+    populates the sitemap URLs.
+  </li>
+  <li><a href="/deployment/">Deployment</a>: back to the host index.</li>
+</ul>
