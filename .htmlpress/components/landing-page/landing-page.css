@@ -7,19 +7,22 @@
     --landing-violet: oklch(0.55 0.22 293);
     display: block;
   }
+  /* As wide as the docs pages' sidebar and toggle, so the header links line up with theirs */
   :scope htmlpress-header htmlpress-brand {
     display: block;
     flex-shrink: 0;
   }
-  :scope htmlpress-header {
-    padding-inline: max(var(--landing-gutter), calc((100% - var(--landing-width)) / 2));
+  @media (width > 56rem) {
+    :scope htmlpress-header htmlpress-brand {
+      width: calc(var(--htmlpress-nav-width) + 3rem);
+    }
   }
   main {
     display: flex;
     flex-direction: column;
     overflow-x: clip;
   }
-  svg[aria-hidden] {
+  main svg[aria-hidden] {
     width: 1.25rem;
     height: 1.25rem;
     flex-shrink: 0;
