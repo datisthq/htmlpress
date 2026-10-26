@@ -44,7 +44,8 @@
   a:first-child:hover {
     background: color-mix(in oklab, var(--htmlpress-accent) 80%, transparent);
   }
-  svg[aria-hidden] {
+  /* Outranks the landing page's 1.25rem `main svg[aria-hidden]` */
+  :scope a > svg[aria-hidden] {
     width: 1rem;
     height: 1rem;
   }
