@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Translations</title>
+    <meta
+      name="description"
+      content="Publish a site in several languages, with a language picker, translated UI strings and fallbacks for pages not translated yet."
+    />
+    <meta name="order" content="48" />
+    <meta name="icon" content="languages" />
+  </head>
+  <body>
+    <h1>Translations</h1>
+    <p>
+      A site can be published in several languages. The first language is the default and
+      keeps its URLs; every other one is served under its own prefix, such as
+      <code>/es/</code>, with its own navigation, search, <code>llms.txt</code> and UI
+      strings. The header gets a language picker, and a page not translated yet stays in
+      the navigation, marked with the language it is written in.
+    </p>
+
+    <h2>Configure the languages</h2>
+    <pre data-title="htmlpress.yaml"><code class="language-yaml">languages:
+  - code: en
+    label: English
+  - code: es
+    label: Español
+  - code: zh
+    label: 简体中文</code></pre>
+    <p>Each language accepts:</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Field</th>
+          <th>Default</th>
+          <th>Purpose</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>code</code></td>
+          <td>none, required</td>
+          <td>
+            The URL prefix and the file name suffix: lowercase letters, digits and
+            <code>-</code>, starting with a letter.
+          </td>
+        </tr>
+        <tr>
+          <td><code>label</code></td>
+          <td>none, required</td>
+          <td>The name shown in the language picker.</td>
+        </tr>
+        <tr>
+          <td><code>locale</code></td>
+          <td>the <code>code</code></td>
+          <td>
+            The tag for <code>&lt;html lang&gt;</code>, hreflang and dates, such as
+            <code>pt-BR</code>.
+          </td>
+        </tr>
+        <tr>
+          <td><code>dir</code></td>
+          <td><code>rtl</code> for Arabic, Hebrew, Persian, Urdu and a few more</td>
+          <td>
+            <code>ltr</code> or <code>rtl</code>, written to
+            <code>&lt;html dir&gt;</code>.
+          </td>
+        </tr>
+        <tr>
+          <td><code>flag</code></td>
+          <td>the locale's region, else the language's usual country</td>
+          <td>
+            A two-letter country code for the picker's flag, such as <code>br</code>; one
+            without a bundled flag shows none.
+          </td>
+        </tr>
+        <tr>
+          <td><code>messages</code></td>
+          <td>none</td>
+          <td>UI strings replacing the built-in ones; see below.</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      Without <code>languages</code> the site is a single English one, and nothing below
+      applies. A code listed twice, an unknown message key, or a section whose prefix sits
+      under another language's prefix (<code>/es/…</code>) fails the build.
+    </p>
+
+    <h2>Translate a page</h2>
+    <p>
+      A translation is a file beside its original, named with the language's code before
+      <code>.html</code>. It is served under the language's prefix and paired with the
+      original by URL:
+    </p>
+    <htmlpress-file-tree>
+      <ul>
+        <li>index.html — <code>/</code></li>
+        <li>index.es.html — <code>/es/</code></li>
+        <li>
+          guides
+          <ul>
+            <li>install.html — <code>/guides/install.html</code></li>
+            <li>install.es.html — <code>/es/guides/install.html</code></li>
+          </ul>
+        </li>
+      </ul>
+    </htmlpress-file-tree>
+    <p>
+      A suffix that names no configured language stays part of the name, so
+      <code>vite.config.html</code> is still an English page. To keep translations in a
+      folder of their own, or to name a file freely, set the language in its head instead;
+      a file already under the language's folder is not prefixed twice:
+    </p>
+    <pre
+      data-title="es/guias/instalar.html"
+    ><code class="language-html">&lt;meta name="language" content="es" /&gt;
+&lt;meta name="path" content="/guides/install.html" /&gt;</code></pre>
+    <p>
+      A translation pairs with its original only when both share a URL below the language
+      prefix, so give a renamed file the same <code>path</code> as its original. A
+      language the config does not list fails the build.
+    </p>
+
+    <h2>Translate the config</h2>
+    <p>
+      The site's <code>title</code>, <code>description</code> and <code>banner</code>, a
+      link's <code>title</code>, and a section's <code>title</code>,
+      <code>siteTitle</code> and <code>siteDescription</code> take one text for every
+      language, or a map by language code. A language missing from the map gets the
+      default language's text:
+    </p>
+    <pre data-title="htmlpress.yaml"><code class="language-yaml">title:
+  en: Acme Docs
+  es: Documentación de Acme
+sections:
+  - title: { en: Guide, es: Guía, zh: 指南 }
+    prefix: /
+  - title: Blog
+    type: blog
+    prefix: /blog/</code></pre>
+    <p>
+      Every section and every link with a <code>prefix</code> is mirrored under each
+      language's prefix: the Spanish blog lives at <code>/es/blog/</code>, with its own
+      index, tag pages and RSS feed listing the Spanish posts, then the default ones not
+      translated yet. A changelog section builds its pages in every language, keeping the
+      release notes as written.
+    </p>
+
+    <h2>Pages not translated yet</h2>
+    <p>
+      A language lists every default-language page it has no translation of, so its
+      navigation keeps the same shape. Such an entry links to the original and carries the
+      default language's code as a badge, with "Not translated yet" as its tooltip. The
+      untranslated page is built once, in its own language; search and
+      <code>llms.txt</code> list only a language's own pages.
+    </p>
+    <p>
+      The language picker links each language to this page's version in it, else to that
+      language's home. A language without a home page of its own,
+      <code>index.es.html</code>, gets a redirect from <code>/es/</code> to its first
+      page.
+    </p>
+
+    <h2>UI strings</h2>
+    <p>
+      Htmlpress' own strings, such as "On this page", "Previous" and "Edit this page", and
+      the dates, are bundled in English, German, Spanish, French, Japanese, Russian and
+      Chinese, picked by the locale's language. Any of them can be replaced per language:
+    </p>
+    <pre data-title="htmlpress.yaml"><code class="language-yaml">languages:
+  - code: en
+    label: English
+    messages:
+      page.edit: Edit on GitHub
+  - code: pt
+    label: Português
+    locale: pt-BR
+    messages:
+      toc.title: Nesta página
+      nav.previous: Anterior
+      nav.next: Próximo</code></pre>
+    <p>
+      A language htmlpress does not bundle falls back to English for the strings it does
+      not set. The keys are the ones in
+      <a href="https://github.com/datisthq/htmlpress/blob/main/rust/src/messages/en.yaml"
+        ><code>messages/en.yaml</code></a
+      >; <code>{name}</code> placeholders such as <code>{date}</code> are filled in.
+      <code>date.format</code> and <code>date.months</code> shape every date shown to
+      readers.
+    </p>
+
+    <h2>What a translated page gets</h2>
+    <ul>
+      <li>
+        <code>&lt;html lang&gt;</code> and, for right-to-left languages,
+        <code>&lt;html dir="rtl"&gt;</code>.
+      </li>
+      <li>
+        With <code>site</code> set, an hreflang alternate for every language that has the
+        page, plus <code>x-default</code> pointing at the default language's version, and
+        an <code>og:locale</code>.
+      </li>
+      <li>
+        Its language's search index, <code>_htmlpress/search.&lt;code&gt;.json</code>, and
+        a Markdown copy and <code>llms.txt</code> under the language's prefix.
+      </li>
+      <li>
+        The <code>&lt;htmlpress-language&gt;</code> picker, which a layout escape places
+        like any other element; it is removed on a single-language site.
+      </li>
+    </ul>
+
+    <h2>See also</h2>
+    <ul>
+      <li>
+        <a href="/customization/configuration-file.html">Configuration</a>: every key of
+        <code>htmlpress.yaml</code>.
+      </li>
+      <li>
+        <a href="/customization/article-sections.html">Article Sections</a>: how prefixes
+        and section matching work.
+      </li>
+      <li>
+        <a href="/authoring/frontmatter.html">Frontmatter</a>: the page's own metadata,
+        <code>&lt;meta name="language"&gt;</code> included.
+      </li>
+    </ul>
+  </body>
+</html>

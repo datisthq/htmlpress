@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <title>Secciones de artículos</title>
+    <meta
+      name="description"
+      content="Divide un sitio en secciones, cada una con su propia pestaña y navegación."
+    />
+    <meta name="order" content="43" />
+    <meta name="icon" content="layout-panel-left" />
+  </head>
+  <body>
+    <h1>Secciones de artículos</h1>
+    <p>
+      Una sección es una parte del sitio, como una guía o una referencia de API, con su
+      propio prefijo de URL, su propia pestaña y su propia navegación: mientras una de sus
+      páginas está abierta, la barra lateral y los enlaces de anterior y siguiente solo
+      muestran las páginas de esa sección. Htmlpress incluye estos tipos de sección:
+    </p>
+    <ul>
+      <li>
+        <strong>Article</strong>: el predeterminado. Las páginas bajo un prefijo,
+        agrupadas en la barra lateral por carpeta.
+      </li>
+      <li><strong>Custom</strong>: solo una pestaña que lleva a una URL.</li>
+      <li>
+        <strong>Blog</strong>: entradas con fecha, de la más reciente a la más antigua,
+        con páginas de etiquetas y un feed RSS.
+      </li>
+      <li>
+        <strong>Changelog</strong>: una página por versión de un registro de cambios en
+        Markdown.
+      </li>
+    </ul>
+
+    <h2>Uso básico</h2>
+    <pre><code class="language-yaml">site: https://example.com
+sections:
+  - title: Guide
+    prefix: /
+  - title: API
+    prefix: /api/
+    siteTitle: API Reference
+  - title: GitHub
+    type: custom
+    url: https://github.com/datisthq/htmlpress</code></pre>
+    <p>
+      Cuando se omite <code>sections</code>, todas las páginas se renderizan en una única
+      navegación, lo que conviene a los sitios pequeños.
+    </p>
+
+    <h2>Campos comunes</h2>
+    <p>Toda sección acepta:</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Campo</th>
+          <th>Predeterminado</th>
+          <th>Propósito</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>title</code></td>
+          <td>ninguno, obligatorio</td>
+          <td>
+            El nombre de la pestaña y el grupo de la sección en <code>llms.txt</code>.
+          </td>
+        </tr>
+        <tr>
+          <td><code>type</code></td>
+          <td><code>article</code></td>
+          <td>
+            <code>article</code> posee páginas; <code>custom</code> es solo una pestaña
+            hacia su <code>url</code>.
+          </td>
+        </tr>
+        <tr>
+          <td><code>prefix</code></td>
+          <td>ninguno, obligatorio para <code>article</code></td>
+          <td>
+            La ruta de carpeta que comparten sus páginas, que empieza y termina con
+            <code>/</code> (<code>/</code>, <code>/api/</code>). La pestaña lleva a la
+            página del prefijo o, si no existe, a la primera página de la sección.
+          </td>
+        </tr>
+        <tr>
+          <td><code>url</code></td>
+          <td>ninguno, obligatorio para <code>custom</code></td>
+          <td>Adónde lleva una pestaña <code>custom</code>.</td>
+        </tr>
+        <tr>
+          <td><code>position</code></td>
+          <td><code>header</code></td>
+          <td>
+            <code>header</code> para una pestaña junto a los enlaces de la cabecera,
+            <code>sidebar</code> para una entrada encima de las páginas de la barra
+            lateral.
+          </td>
+        </tr>
+        <tr>
+          <td><code>icon</code></td>
+          <td>ninguno</td>
+          <td>
+            Un <a href="/authoring/rich-elements.html#icons">icono integrado</a> antes del
+            título, como <code>book-open</code>.
+          </td>
+        </tr>
+        <tr>
+          <td><code>siteTitle</code></td>
+          <td>el <code>title</code> del sitio</td>
+          <td>
+            El título de la marca mientras una de las páginas de la sección está abierta.
+          </td>
+        </tr>
+        <tr>
+          <td><code>siteLink</code></td>
+          <td><code>/</code></td>
+          <td>
+            Adónde enlaza la marca mientras una de las páginas de la sección está abierta.
+          </td>
+        </tr>
+        <tr>
+          <td><code>siteDescription</code></td>
+          <td>la <code>description</code> del sitio</td>
+          <td>
+            La descripción para las páginas de la sección que no tienen una propia, y la
+            que aparece bajo la marca.
+          </td>
+        </tr>
+        <tr>
+          <td><code>source</code></td>
+          <td>ninguno, obligatorio para <code>changelog</code></td>
+          <td>
+            El registro de cambios en Markdown que se divide, relativo al proyecto; debe
+            quedar dentro del proyecto y no ser un archivo oculto.
+          </td>
+        </tr>
+        <tr>
+          <td><code>version</code></td>
+          <td><code>false</code></td>
+          <td>
+            Para un <code>changelog</code>: muestra la última versión junto al título.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      Cualquier otro campo es un error, y también lo es una sección
+      <code>article</code> sin <code>prefix</code>, un prefijo que no empieza y termina
+      con <code>/</code>, o una sección <code>custom</code> sin <code>url</code>. En un
+      teléfono, todas las secciones, de cabecera o de barra lateral, se listan en la barra
+      lateral.
+    </p>
+
+    <h2>Secciones de artículos</h2>
+    <p>
+      Documentación simple, y el valor predeterminado: puedes omitir <code>type</code> por
+      completo.
+    </p>
+    <pre><code class="language-yaml">- title: Guide
+  prefix: /guide/</code></pre>
+    <p>
+      Dentro de una sección, la barra lateral anida sus páginas por carpeta, a cualquier
+      profundidad. Las páginas de la raíz aparecen sin agrupar, y cada carpeta obtiene su
+      propio grupo plegable dentro del de su carpeta padre, con el título de su
+      <code>index.html</code> o, si no lo tiene, el nombre de la carpeta:
+    </p>
+    <htmlpress-file-tree>
+      <ul>
+        <li>introduction.html</li>
+        <li>
+          guides
+          <ul>
+            <li>index.html</li>
+            <li>install.html</li>
+            <li>deploy.html</li>
+          </ul>
+        </li>
+        <li>
+          reference
+          <ul>
+            <li>index.html</li>
+            <li>cli.html</li>
+            <li>
+              api
+              <ul>
+                <li>index.html</li>
+                <li>auth.html</li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </htmlpress-file-tree>
+    <p>
+      <code>guides/index.html</code> se sirve en <code>/guides/</code>, la página propia
+      del grupo, y además da nombre a la carpeta en las migas de pan. Sin
+      <code>sections</code>, todo el sitio se agrupa de esta forma.
+    </p>
+    <p>
+      Una sección <code>custom</code> no posee páginas. Su pestaña se marca como actual
+      cuando su <code>url</code> es interna y apunta a la página abierta o a una carpeta
+      por encima de ella (<code>/</code> solo en la página de inicio); una URL externa
+      nunca lo hace.
+    </p>
+    <pre><code class="language-yaml">- title: Blog
+  type: custom
+  url: https://blog.example.com</code></pre>
+
+    <h2>Secciones de blog</h2>
+    <p>
+      Las páginas de una sección <code>blog</code> son entradas: fechadas con
+      <code>&lt;meta name="date"&gt;</code>, firmadas con
+      <code>&lt;meta name="author"&gt;</code> y etiquetadas con
+      <code>&lt;meta name="keywords"&gt;</code>. La barra lateral y los enlaces de
+      anterior y siguiente las listan de la más reciente a la más antigua, y la
+      compilación añade:
+    </p>
+    <ul>
+      <li>
+        un índice en el prefijo que lista todas las entradas, salvo que la sección tenga
+        su propio <code>index.html</code>;
+      </li>
+      <li>una página por etiqueta en <code>tags/&lt;tag&gt;/</code> bajo el prefijo;</li>
+      <li>
+        un feed RSS en <code>rss.xml</code> bajo el prefijo, enlazado desde el head de
+        cada página, cuando se define <code>site</code>, ya que un feed usa enlaces
+        absolutos.
+      </li>
+    </ul>
+    <pre><code class="language-yaml">- title: Blog
+  type: blog
+  prefix: /blog/</code></pre>
+
+    <h2>Secciones de registro de cambios</h2>
+    <p>
+      Una sección <code>changelog</code> divide su <code>source</code> en cada encabezado
+      <code>##</code> en una página por versión en <code>&lt;version&gt;/</code> bajo el
+      prefijo, de la más reciente a la más antigua tal como las lista el archivo, además
+      de un índice que las enumera. Un encabezado de release-please,
+      <code>## [0.2.0](…) (2026-10-01)</code>, aporta la versión y su fecha; los
+      encabezados <code>###</code> de la versión se convierten en sus secciones. Con
+      <code>version: true</code>, la pestaña muestra la última versión.
+    </p>
+    <pre><code class="language-yaml">- title: Changelog
+  type: changelog
+  prefix: /changelog/
+  source: CHANGELOG.md
+  version: true</code></pre>
+
+    <h2>Orden y correspondencia</h2>
+    <p>
+      Las URL de las páginas se asignan a las secciones por el prefijo más largo. Dada
+      <code>/api/v2/auth.html</code> y secciones con los prefijos <code>/</code> y
+      <code>/api/</code>, la página se coloca en <code>/api/</code>. Como un prefijo es
+      una ruta de carpeta, <code>/guide/</code> nunca se queda con
+      <code>/guides.html</code>. Las páginas que no pertenecen a ninguna sección forman
+      una parte más por su cuenta, con su propia navegación.
+    </p>
+    <p>
+      <code>llms.txt</code> también agrupa sus enlaces por sección, en el orden de la
+      configuración, con las páginas que no pertenecen a ninguna sección al final bajo
+      "Other"; sin <code>sections</code>, por carpeta de primer nivel.
+    </p>
+    <p>
+      Dentro de una navegación, una página pertenece al grupo de su carpeta, y el grupo de
+      una carpeta al de su carpeta padre: <code>guides/cli/run.html</code> queda en el
+      grupo <code>cli</code> dentro de "Guides". Las páginas se ordenan por
+      <code>&lt;meta name="order"&gt;</code> entre sus hermanas: el
+      <code>index.html</code> raíz siempre va primero, los órdenes de 0 o más siguen en
+      orden ascendente, después las páginas sin orden por ruta, y luego los órdenes
+      negativos, con <code>-1</code> al final. Los grupos conservan el orden de su primera
+      página, así que da un orden al <code>index.html</code> de una carpeta para colocar
+      todo el grupo. El paginador recorre la barra lateral de arriba abajo, con el índice
+      de cada grupo antes de sus páginas.
+    </p>
+    <p>
+      Un <code>404.html</code> en la raíz se excluye de la barra lateral; es la página que
+      muestra un hosting para una URL inexistente, y un proyecto sin ella obtiene un
+      "Página no encontrada" integrado.
+    </p>
+
+    <h2>Ver también</h2>
+    <ul>
+      <li>
+        <a href="/es/customization/external-links.html">Enlaces externos</a>: añade
+        enlaces junto a las pestañas de tus secciones.
+      </li>
+      <li>
+        <a href="/authoring/frontmatter.html">Frontmatter</a>: el
+        <code>&lt;title&gt;</code> y el <code>&lt;meta name="order"&gt;</code> que
+        determinan el contenido de las secciones.
+      </li>
+    </ul>
+  </body>
+</html>

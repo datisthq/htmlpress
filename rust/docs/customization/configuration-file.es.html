@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <title>Archivo de configuración</title>
+    <meta
+      name="description"
+      content="Dónde vive la configuración de htmlpress, qué controla y un recorrido por las opciones de primer nivel."
+    />
+    <meta name="order" content="41" />
+    <meta name="icon" content="layers" />
+  </head>
+  <body>
+    <h1>Archivo de configuración</h1>
+    <htmlpress-callout
+      ><p>
+        El archivo de configuración es opcional. Por defecto, htmlpress toma todos los
+        archivos <code>.html</code> de la carpeta que le indiques.
+      </p></htmlpress-callout
+    >
+    <p>
+      Htmlpress se configura con un único archivo en la raíz de tu proyecto:
+      <strong><code>htmlpress.yaml</code></strong
+      >. Colócalo junto a tus páginas y htmlpress lo detecta automáticamente: sin flags ni
+      variables de entorno. Sus claves siguen la configuración de
+      <a href="https://livemark.dev">Livemark</a>.
+    </p>
+
+    <h2>Configuración mínima</h2>
+    <p>
+      Todas las claves son opcionales, así que un proyecto no necesita ninguna
+      configuración. La más pequeña que resulta útil le da nombre al sitio:
+    </p>
+    <pre><code class="language-yaml">title: My docs</code></pre>
+    <p>
+      Un <code>htmlpress.yaml</code> vacío equivale a no tenerlo. Sin él, cada archivo
+      <code>.html</code> del proyecto (por defecto <code>include: "**/*.html"</code>) se
+      convierte en una página, renderizada con el layout y el tema integrados: barra
+      lateral, tabla de contenidos, modo oscuro, todo por defecto. Cualquier otro archivo
+      se copia tal cual a la salida, en la misma ruta. Las carpetas ocultas como
+      <code>.git/</code> y <code>.htmlpress/</code>, y <code>node_modules/</code>, se
+      omiten.
+    </p>
+
+    <h2>Qué puedes configurar</h2>
+    <p>Cada clave tiene un valor predeterminado razonable. El conjunto completo:</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Clave</th>
+          <th>Predeterminado</th>
+          <th>Uso</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>include</code></td>
+          <td><code>**/*.html</code></td>
+          <td>
+            un glob o una lista: los archivos <code>.html</code> que se convierten en
+            páginas
+          </td>
+        </tr>
+        <tr>
+          <td><code>exclude</code></td>
+          <td>ninguno</td>
+          <td>
+            un glob o una lista: archivos que quedan totalmente fuera de la compilación,
+            sean páginas o no
+          </td>
+        </tr>
+        <tr>
+          <td><code>title</code></td>
+          <td>el nombre de la carpeta</td>
+          <td>la cabecera y el título de cada pestaña</td>
+        </tr>
+        <tr>
+          <td><code>description</code></td>
+          <td>ninguno</td>
+          <td>para las páginas que no tienen una propia</td>
+        </tr>
+        <tr>
+          <td><code>site</code></td>
+          <td>ninguno</td>
+          <td>
+            la URL pública, para los enlaces canónicos y sociales y
+            <code>sitemap.xml</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>base</code></td>
+          <td>ninguno</td>
+          <td>
+            la subruta bajo la que se sirve el sitio, como <code>/repo/</code> en GitHub
+            Pages; consulta <a href="#base-path">Ruta base</a>
+          </td>
+        </tr>
+        <tr>
+          <td><code>logo</code></td>
+          <td>ninguno</td>
+          <td>la URL de una imagen, mostrada antes del título del sitio</td>
+        </tr>
+        <tr>
+          <td><code>favicon</code></td>
+          <td>el logo</td>
+          <td>la URL del icono del sitio</td>
+        </tr>
+        <tr>
+          <td><code>banner</code></td>
+          <td>ninguno</td>
+          <td>HTML para una barra de anuncios sobre la cabecera</td>
+        </tr>
+        <tr>
+          <td><code>head</code></td>
+          <td>ninguno</td>
+          <td>
+            <code>meta</code>, <code>links</code> y <code>scripts</code> añadidos al head
+            de cada página; consulta
+            <a href="/es/customization/site-metadata.html">Metadatos del sitio</a>
+          </td>
+        </tr>
+        <tr>
+          <td><code>links</code></td>
+          <td>ninguno</td>
+          <td>
+            enlaces en la cabecera o en la barra lateral; consulta
+            <a href="/es/customization/external-links.html">Enlaces externos</a>
+          </td>
+        </tr>
+        <tr>
+          <td><code>sections</code></td>
+          <td>ninguno</td>
+          <td>
+            partes del sitio con una navegación propia; consulta
+            <a href="/es/customization/article-sections.html">Secciones de artículos</a>
+          </td>
+        </tr>
+        <tr>
+          <td><code>edit</code></td>
+          <td>ninguno</td>
+          <td>
+            un enlace "Editar esta página": esta URL seguida de la ruta de la página
+          </td>
+        </tr>
+        <tr>
+          <td><code>contentSignals</code></td>
+          <td>todas <code>true</code></td>
+          <td>
+            <code>search</code>, <code>aiInput</code> y <code>aiTrain</code>: cómo pueden
+            usar el contenido los sistemas automatizados, escrito en
+            <code>robots.txt</code>; consulta
+            <a href="/es/customization/ai-agents.html">Agentes de IA</a>
+          </td>
+        </tr>
+        <tr>
+          <td><code>codeThemeLight</code>, <code>codeThemeDark</code></td>
+          <td><code>catppuccin-latte</code>, <code>catppuccin-mocha</code></td>
+          <td>
+            Los temas de los bloques de código; consulta
+            <a href="/es/customization/syntax-themes.html">Temas de sintaxis</a>.
+          </td>
+        </tr>
+        <tr>
+          <td><code>patches</code></td>
+          <td>ninguno</td>
+          <td>
+            Metadatos de página definidos desde la configuración, y archivos
+            <code>.md</code> publicados como páginas; consulta
+            <a href="/es/customization/article-patches.html">Parches de artículos</a>.
+          </td>
+        </tr>
+        <tr>
+          <td><code>skills</code></td>
+          <td>ninguno</td>
+          <td>
+            un glob o una lista de archivos <code>SKILL.md</code>, relativos al proyecto,
+            para publicar como
+            <a href="/es/customization/ai-agents.html">skills de agente</a>
+          </td>
+        </tr>
+        <tr>
+          <td><code>languages</code></td>
+          <td>uno, inglés</td>
+          <td>
+            los idiomas en los que se publica el sitio, el predeterminado primero;
+            consulta
+            <a href="/es/customization/translations.html">Traducciones</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      Con <code>languages</code>, los textos que ve un lector (<code>title</code>,
+      <code>description</code>, <code>banner</code> y los títulos de enlaces y secciones)
+      también aceptan un mapa por código de idioma, como
+      <code>title: { en: Docs, es: Guía }</code>.
+    </p>
+    <p>
+      El esquema completo está en
+      <a href="https://github.com/datisthq/htmlpress/blob/main/rust/src/models/config.rs"
+        ><code>rust/src/models/config.rs</code></a
+      >. Una clave desconocida es un error, así que una errata nunca pasa en silencio.
+    </p>
+
+    <h3>Include y exclude</h3>
+    <p>
+      <code>include</code> reemplaza el valor predeterminado, así que lista todas las
+      carpetas que quieras. Las carpetas de cada glob anteriores a su primer comodín son
+      su base: solo se leen los archivos bajo una base, y se sirven sin ella, de modo que
+      <code>docs/**/*.html</code> compila <code>docs/guide.html</code> en
+      <code>/guide.html</code>. Los demás archivos bajo una base, incluidos los
+      <code>.html</code> que <code>include</code> deja fuera, se copian tal cual.
+    </p>
+    <p>
+      Los globs son relativos al proyecto y no pueden salir de él (<code>..</code> o una
+      ruta absoluta es un error): <code>*</code> se queda dentro de una carpeta,
+      <code>**</code> atraviesa carpetas, y un patrón de <code>include</code> o
+      <code>exclude</code> que no coincide con ningún archivo muestra una advertencia.
+    </p>
+
+    <h3 id="base-path">Ruta base</h3>
+    <p>
+      Con <code>base</code> definido, cada URL relativa a la raíz de la compilación (en
+      <code>href</code>, <code>src</code>, <code>srcset</code>, <code>poster</code> y
+      <code>action</code>, tanto en las páginas como en el layout y en el HTML de la
+      configuración) la recibe como prefijo: escribe <code>/guide.html</code> y el sitio
+      enlaza a <code>/repo/guide.html</code>. Las URL relativas y absolutas no se tocan, y
+      tampoco las <code>url()</code> del CSS propio de una página. <code>start</code> y
+      <code>preview</code> también sirven el sitio bajo la base, y redirigen
+      <code>/</code> allí; reinicia <code>start</code> tras cambiar <code>base</code>.
+    </p>
+
+    <h2>Ejemplo completo</h2>
+    <p>La mayoría de los sitios reales acaban pareciéndose a esto:</p>
+    <pre><code class="language-yaml">site: https://htmlpress.dev
+title: Htmlpress
+description: Turn a folder of HTML pages into a site.
+logo: /logo.svg
+banner: 'Version 1 is out: &lt;a href="/changelog.html"&gt;read more&lt;/a&gt;'
+include: docs/**/*.html
+exclude: docs/**/_*
+links:
+  - title: GitHub
+    url: https://github.com/datisthq/htmlpress
+  - title: Chat
+    url: https://discord.gg/example
+    position: sidebar
+head:
+  scripts:
+    - src: https://stats.example.com/script.js
+      defer: ""
+contentSignals:
+  aiTrain: false
+skills: .skills/*/SKILL.md
+edit: https://github.com/datisthq/htmlpress/edit/main/docs/</code></pre>
+
+    <h2>Adónde ir después</h2>
+    <ul>
+      <li>
+        <a href="/es/customization/site-metadata.html">Metadatos del sitio</a>: título,
+        descripción, favicon, logo.
+      </li>
+      <li>
+        <a href="/es/customization/article-sections.html">Secciones de artículos</a>:
+        divide el sitio en secciones con su propia navegación.
+      </li>
+      <li>
+        <a href="/es/customization/external-links.html">Enlaces externos</a>: enlaces de
+        la cabecera y de la barra lateral.
+      </li>
+      <li>
+        <a href="/es/customization/syntax-themes.html">Temas de sintaxis</a>: el aspecto
+        de los bloques de código.
+      </li>
+      <li>
+        <a href="/es/customization/article-patches.html">Parches de artículos</a>:
+        sobrescribe los metadatos de una página desde la configuración.
+      </li>
+      <li>
+        <a href="/es/customization/overriding-escaping.html">Sobrescritura/Escape</a>:
+        reemplaza cualquier layout, hoja de estilos o componente integrado.
+      </li>
+      <li>
+        <a href="/es/customization/custom-routes.html">Rutas personalizadas</a>: páginas
+        con su propio layout.
+      </li>
+    </ul>
+  </body>
+</html>

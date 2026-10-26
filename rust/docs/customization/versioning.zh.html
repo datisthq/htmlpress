@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="zh">
+  <head>
+    <title>版本管理</title>
+    <meta name="description" content="借助分区或独立部署，并排发布多个版本的文档。" />
+    <meta name="order" content="49" />
+    <meta name="icon" content="git-branch" />
+  </head>
+  <body>
+    <h1>版本管理</h1>
+    <p>
+      Htmlpress
+      没有专门的版本管理功能：它现有的构建模块已经能覆盖两种常见形式。根据版本之间的差异程度来选择：
+    </p>
+    <ul>
+      <li>
+        <strong>一个站点，每个版本一个分区</strong
+        >：少数几个版本，其文档位于同一个分支上。
+      </li>
+      <li>
+        <strong>每个版本一次部署</strong>：长期维护的主版本，各自在自己的分支上维护。
+      </li>
+    </ul>
+    <p>
+      大多数项目只需保留最新文档和上一个主版本。如果旧版本只需要发布说明，一个
+      <a href="/zh/customization/article-sections.html">变更日志分区</a>
+      就足够了。
+    </p>
+
+    <h2>每个版本一个分区</h2>
+    <p>
+      把每个旧版本的页面放在单独的文件夹中。当前文档保留在
+      <code>/</code>，每个旧版本成为一个分区：
+    </p>
+    <htmlpress-file-tree>
+      <ul>
+        <li>getting-started.html</li>
+        <li>
+          v1
+          <ul>
+            <li>index.html</li>
+            <li>getting-started.html</li>
+          </ul>
+        </li>
+      </ul>
+    </htmlpress-file-tree>
+    <pre data-title="htmlpress.yaml"><code class="language-yaml">title: Acme
+sections:
+  - title: Docs
+    prefix: /
+  - title: v1
+    prefix: /v1/
+    icon: archive
+    siteTitle: Acme v1</code></pre>
+    <p>
+      最长前缀匹配会把每个 <code>/v1/…</code> 页面路由到
+      <code>v1</code> 分区，因此它拥有自己的侧边栏，而站点其余部分保留当前文档。<code
+        >siteTitle</code
+      >
+      会在该分区内重新设置 logo 旁的品牌标题，让读者始终知道自己正在看哪个版本。设置
+      <code>position: sidebar</code> 可以让版本标签页不出现在页眉中。
+    </p>
+    <p>要在旧页面上提醒读者，可以在每个页面开头放一个标注框：</p>
+    <pre><code class="language-html">&lt;htmlpress-callout type="warning"&gt;
+  &lt;p&gt;You are reading the docs for v1. &lt;a href="/getting-started.html"&gt;See the latest version&lt;/a&gt;.&lt;/p&gt;
+&lt;/htmlpress-callout&gt;</code></pre>
+    <p>需要注意：</p>
+    <ul>
+      <li>搜索会索引整个站点，因此结果中包含所有版本的页面。</li>
+      <li>为每个版本复制一个文件夹会产生重复内容；请冻结旧文件夹，仅在必要时修复。</li>
+    </ul>
+
+    <h2>每个版本一次部署</h2>
+    <p>
+      当每个主版本都位于自己的分支上（<code>main</code>、<code>v1</code>……）时，把每个分支构建为独立站点，并通过各自的地址提供：子域名（<code>v1.docs.example.com</code>），或借助
+      <a href="/deployment/github-pages.html#configure-base-for-project-sites"
+        ><code>base</code></a
+      >
+      使用子路径（<code>docs.example.com/v1/</code>）。
+    </p>
+    <pre
+      data-title="htmlpress.yaml（v1 分支）"
+    ><code class="language-yaml">site: https://docs.example.com
+base: /v1/
+title: Acme v1
+banner: You are reading the v1 docs · &lt;a href="https://docs.example.com/"&gt;Go to the latest →&lt;/a&gt;</code></pre>
+    <p>
+      <code>htmlpress start</code> 和
+      <code>preview</code>
+      在相同的基础路径下提供站点，因此分支的预览效果与部署后完全一致。可以用一个
+      <code>custom</code> 分区或一个页眉<a href="/zh/customization/external-links.html"
+        >链接</a
+      >把各个部署相互连接起来，充当版本切换器：
+    </p>
+    <pre data-title="htmlpress.yaml（main 分支）"><code class="language-yaml">sections:
+  - title: Docs
+    prefix: /
+  - title: v1
+    type: custom
+    url: https://docs.example.com/v1/
+    icon: archive</code></pre>
+    <p>
+      每个部署都有自己的搜索索引、站点地图和
+      <code>llms.txt</code
+      >，因此各版本绝不会混在一起。代价是每个维护中的分支都需要一次构建和一个 CI
+      任务；各托管平台的配置请参见
+      <a href="/deployment/">Deployment</a>。大多数托管平台开箱即支持把分支部署到各自的
+      URL。
+    </p>
+
+    <h2>另请参阅</h2>
+    <ul>
+      <li>
+        <a href="/zh/customization/article-sections.html">文章分区</a
+        >：分区类型、前缀和匹配。
+      </li>
+      <li>
+        <a href="/zh/customization/site-metadata.html">站点元数据</a>：上文用到的
+        <code>banner</code>、<code>title</code> 和 <code>site</code> 字段。
+      </li>
+    </ul>
+  </body>
+</html>

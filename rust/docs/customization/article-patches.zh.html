@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="zh">
+  <head>
+    <title>文章补丁</title>
+    <meta name="description" content="通过配置覆盖页面的元数据，而无需改动文件本身。" />
+    <meta name="order" content="44" />
+    <meta name="icon" content="pencil-ruler" />
+  </head>
+  <body>
+    <h1>文章补丁</h1>
+    <p>
+      有时一个文件既是站点内容，又会在别处被读取：比如 GitHub 渲染的
+      <code>README.md</code>，或其他项目共享的 HTML。补丁通过
+      <code>htmlpress.yaml</code> 设置它的页面元数据，让文件保持原样，就像 Livemark
+      的补丁设置文章的 frontmatter 一样。
+    </p>
+
+    <h2>基本用法</h2>
+    <pre><code class="language-yaml">patches:
+  - file: README.md
+    article:
+      title: Introduction
+      description: Set up your first project.
+      path: /introduction/
+      order: 1
+  - file: guides/shared.html
+    article:
+      sidebar: false</code></pre>
+    <p>
+      打过补丁的 <code>.md</code> 文件会成为页面：它的 Markdown（支持 GitHub
+      的表格、任务列表、删除线和脚注）被渲染为 HTML，并在其旁边构建为一个
+      <code>.html</code> 页面，此例中移动到了 <code>/introduction/</code>。打补丁的
+      <code>.html</code> 文件本身必须已经是页面。
+    </p>
+
+    <h2>字段</h2>
+    <p>
+      <code>file</code> 是相对于项目的路径；<code>article</code> 接受页面
+      <a href="/authoring/frontmatter.html">head</a> 可设置的任何字段：
+      <code>title</code
+      >、<code>label</code>、<code>description</code>、<code>icon</code>、
+      <code>order</code>、<code>path</code>、<code>sidebar</code>、<code>toc</code>、
+      <code>image</code>、<code>author</code>（单个或列表）、<code>date</code>、
+      <code>tags</code>、<code>sourceUrl</code> 和
+      <code>sourceAction</code>。其他任何字段都会报错；文件不存在、位于项目之外（通过
+      <code>..</code> 或符号链接），或是点文件、<code>node_modules</code> 或
+      <code>.htmlpress</code> 中的文件，同样会报错：补丁指定的任何文件都会被发布，因此像
+      <code>.env</code> 这样的机密文件绝不能被发布。
+    </p>
+
+    <h2>合并语义</h2>
+    <p>
+      补丁的字段叠加在页面自身的 head
+      之上；补丁未设置的字段保持原值。被移动文件中的相对链接不会被重写，所以 README 中的
+      <code>docs/guide.md</code> 链接仍指向原来的位置。
+    </p>
+
+    <h2>不能打补丁的内容</h2>
+    <p>内容本身：页面的正文始终是文件的正文。</p>
+
+    <h2>另请参阅</h2>
+    <ul>
+      <li>
+        <a href="/authoring/frontmatter.html">Frontmatter</a>：页面自身设置的 head 标签。
+      </li>
+      <li>
+        <a href="/zh/customization/configuration-file.html">配置文件</a
+        >：决定哪些文件成为页面的 <code>include</code> glob。
+      </li>
+    </ul>
+  </body>
+</html>

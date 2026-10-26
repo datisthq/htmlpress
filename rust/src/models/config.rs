@@ -2,6 +2,7 @@ use std::collections::BTreeMap;
 
 use serde::{Deserialize, Serialize};
 
+use crate::models::language::{Language, Localized};
 use crate::models::page::SourceAction;
 
 /// The project's `htmlpress.yaml`, shaped like Livemark's config. Every key is
@@ -19,11 +20,13 @@ pub struct Config {
     /// An image's URL shown before the site title in the brand.
     pub logo: Option<String>,
     /// The site title in the header and after each page title; defaults to the folder name.
-    pub title: Option<String>,
+    pub title: Option<Localized>,
     /// The site description, used for pages without one of their own.
-    pub description: Option<String>,
+    pub description: Option<Localized>,
     /// HTML for an announcement bar above the header.
-    pub banner: Option<String>,
+    pub banner: Option<Localized>,
+    /// The languages the site is published in, the default first; one English without.
+    pub languages: Vec<Language>,
     /// Links in the header or the sidebar, such as the project's repository.
     pub links: Vec<Link>,
     /// Parts of the site with a navigation of their own, each owning the pages under its
@@ -100,6 +103,26 @@ impl Config {
         let site = self.site.as_deref()?.trim_end_matches('/');
         Some(format!("{site}{}", self.read_base()))
     }
+
+    /// A copy with every [`Localized`] text in one language, else the default one.
+    pub(crate) fn localize(&self, code: &str, default: &str) -> Self {
+        let localize = |text: &Option<Localized>| {
+            text.as_ref().map(|text| text.localize(code, default))
+        };
+        let mut config = self.clone();
+        config.title = localize(&self.title);
+        config.description = localize(&self.description);
+        config.banner = localize(&self.banner);
+        for link in &mut config.links {
+            link.title = link.title.localize(code, default);
+        }
+        for section in &mut config.sections {
+            section.title = section.title.localize(code, default);
+            section.site_title = localize(&section.site_title);
+            section.site_description = localize(&section.site_description);
+        }
+        config
+    }
 }
 
 /// One `patches` entry: a page's metadata set from the config, as Livemark's patches set
@@ -140,7 +163,7 @@ pub struct PatchArticle {
 #[serde(deny_unknown_fields)]
 pub struct Link {
     pub url: String,
-    pub title: String,
+    pub title: Localized,
     /// A built-in Lucide icon's name, shown before the title.
     pub icon: Option<String>,
     #[serde(default)]
@@ -155,7 +178,7 @@ pub struct Link {
 #[derive(Debug, Clone, Default, PartialEq, Deserialize, Serialize)]
 #[serde(deny_unknown_fields, rename_all = "camelCase")]
 pub struct Section {
-    pub title: String,
+    pub title: Localized,
     /// A built-in Lucide icon's name, shown before the title.
     pub icon: Option<String>,
     #[serde(default, rename = "type")]
@@ -173,9 +196,9 @@ pub struct Section {
     #[serde(default)]
     pub position: Position,
     /// Replaces the site title in the brand while one of its pages is open.
-    pub site_title: Option<String>,
+    pub site_title: Option<Localized>,
     /// Replaces the site description for its pages without one of their own.
-    pub site_description: Option<String>,
+    pub site_description: Option<Localized>,
     /// Where the brand links while one of its pages is open, instead of `/`.
     pub site_link: Option<String>,
 }

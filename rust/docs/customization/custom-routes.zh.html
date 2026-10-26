@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="zh">
+  <head>
+    <title>自定义路由</title>
+    <meta
+      name="description"
+      content="添加拥有独立外观框架的页面：任何 .html 文件都是一个路由，.htmlpress/layouts/ 中的布局为它提供外观。"
+    />
+    <meta name="order" content="47" />
+    <meta name="icon" content="route" />
+  </head>
+  <body>
+    <h1>自定义路由</h1>
+    <p>
+      在 htmlpress 中，每个
+      <code>.html</code>
+      文件本身就是一个路由：页面会写入与读取时相同的路径，无需注册，也无需修改配置。自定义路由增加的是独立的外观框架：位于
+      <code>.htmlpress/layouts/</code> 中的专属布局，由页面通过
+      <code>&lt;meta name="layout"&gt;</code> 选择。
+    </p>
+
+    <h2>最小示例</h2>
+    <pre><code class="language-html">&lt;!-- about.html --&gt;
+&lt;title&gt;About&lt;/title&gt;
+&lt;meta name="layout" content="landing"&gt;
+
+&lt;h1&gt;About&lt;/h1&gt;
+&lt;p&gt;Anything you'd write in a normal HTML page, here.&lt;/p&gt;
+
+&lt;!-- .htmlpress/layouts/landing.html --&gt;
+&lt;body&gt;
+  &lt;htmlpress-header role="banner"&gt;
+    &lt;htmlpress-brand&gt;&lt;/htmlpress-brand&gt;
+    &lt;htmlpress-theme-toggle&gt;&lt;/htmlpress-theme-toggle&gt;
+  &lt;/htmlpress-header&gt;
+  &lt;main&gt;&lt;htmlpress-content&gt;&lt;/htmlpress-content&gt;&lt;/main&gt;
+&lt;/body&gt;</code></pre>
+    <p>
+      保存后访问 <code>/about.html</code>。如果没有这个
+      meta，页面会使用站点的布局，即与其他所有页面相同的外观框架：公告栏、页眉、侧边栏、目录和翻页器。
+    </p>
+
+    <h2>选择外观框架</h2>
+    <p>
+      布局是像 <code>layout.html</code> 一样的普通
+      HTML，并且从<strong>空白</strong>开始：在你添加之前，页面周围不会绘制任何东西。按页面需要组合任意多个布局元素：
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th>在布局中放入</th>
+          <th>得到</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>&lt;htmlpress-content&gt;</code></td>
+          <td>页面的内容</td>
+        </tr>
+        <tr>
+          <td><code>&lt;htmlpress-brand&gt;</code></td>
+          <td>站点标题（设置了 <code>logo</code> 时位于其后），链接到首页</td>
+        </tr>
+        <tr>
+          <td><code>&lt;htmlpress-banner&gt;</code></td>
+          <td><code>htmlpress.yaml</code> 中的 <code>banner</code></td>
+        </tr>
+        <tr>
+          <td><code>&lt;htmlpress-links&gt;</code></td>
+          <td>页眉中的 <code>links</code></td>
+        </tr>
+        <tr>
+          <td><code>&lt;htmlpress-nav&gt;</code></td>
+          <td>所有页面，按顶层文件夹分组，然后是侧边栏中的 <code>links</code></td>
+        </tr>
+        <tr>
+          <td><code>&lt;htmlpress-breadcrumbs&gt;</code></td>
+          <td>首页、页面上层的每个文件夹，然后是页面本身</td>
+        </tr>
+        <tr>
+          <td><code>&lt;htmlpress-toc&gt;</code></td>
+          <td>页面的 <code>&lt;h2&gt;</code> 和 <code>&lt;h3&gt;</code></td>
+        </tr>
+        <tr>
+          <td><code>&lt;htmlpress-pager&gt;</code></td>
+          <td>上一页和下一页</td>
+        </tr>
+        <tr>
+          <td><code>&lt;htmlpress-edit&gt;</code></td>
+          <td>来自 <code>edit</code> 的"编辑此页"链接</td>
+        </tr>
+        <tr>
+          <td><code>&lt;htmlpress-toolbar&gt;</code></td>
+          <td>页面的 Markdown 副本，可查看、复制或在聊天中打开</td>
+        </tr>
+        <tr>
+          <td><code>&lt;htmlpress-footer&gt;</code></td>
+          <td>"Created with Htmlpress" 署名</td>
+        </tr>
+        <tr>
+          <td><code>&lt;htmlpress-language&gt;</code></td>
+          <td>
+            语言选择器，用于启用了<a href="/zh/customization/translations.html">翻译</a
+            >的站点
+          </td>
+        </tr>
+        <tr>
+          <td><code>&lt;htmlpress-skip&gt;</code></td>
+          <td>指向 <code>#content</code> 的"跳到内容"链接，使用页面的语言</td>
+        </tr>
+        <tr>
+          <td>只有 <code>&lt;htmlpress-content&gt;</code></td>
+          <td>一个完全由你掌控的空白页面</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      包裹它们的框架同样是元素，而不是类：
+      <code>&lt;htmlpress-shell&gt;</code>、<code>&lt;htmlpress-sidebar&gt;</code>、
+      <code>&lt;htmlpress-main&gt;</code>、<code>&lt;htmlpress-header&gt;</code>、
+      <code>&lt;htmlpress-page&gt;</code> 和 <code>&lt;htmlpress-aside&gt;</code>；参见
+      <a href="/authoring/rich-elements.html#layout">Layout</a>。
+    </p>
+    <p>
+      Htmlpress 对每个布局都以相同方式填充其
+      <code>&lt;head&gt;</code>，因此主题、站点元数据和页面自身的 head
+      标签总是存在。落地页通常只需要页眉，就像上面的示例那样。本站的
+      <a href="https://github.com/datisthq/htmlpress/tree/main/.htmlpress">首页</a>
+      就是这样构建的。
+    </p>
+
+    <h2>与站点其余部分的配合</h2>
+    <ul>
+      <li>
+        <strong>路径即 URL。</strong> 文件路径与 URL 路径一一对应：
+        <code>guide/quickstart.html</code> 就是 <code>/guide/quickstart.html</code>，而
+        <code>index.html</code> 在其所在文件夹处提供，<code>guide/index.html</code> 对应
+        <code>/guide/</code>。页面之间的相对链接仍然有效。
+      </li>
+      <li>
+        <strong>根路径 <code>/</code>。</strong> 根目录下的
+        <code>index.html</code>
+        是首页；为它设置专属布局，即可用一个主视觉区替换文档外观框架。
+      </li>
+      <li>
+        <strong>导航中仍会列出它。</strong>
+        拥有专属布局的页面和其他页面一样：它会出现在侧边栏、<code>llms.txt</code>
+        和站点地图中。
+      </li>
+      <li>
+        <strong>布局名称。</strong>
+        名称由小写字母、数字和连字符组成。页面指定了不存在的布局会导致构建失败。
+      </li>
+      <li>
+        <strong>未找到。</strong> 根目录下的 <code>404.html</code> 是托管服务在 URL
+        缺失时显示的页面；它不会出现在导航中，没有该文件的项目会获得一个内置的 "Page not
+        found" 页面。
+      </li>
+    </ul>
+
+    <h2>引入 htmlpress 基础组件</h2>
+    <p>
+      布局和页面使用的都是 htmlpress 自身所用的组件：任何
+      <code>htmlpress-*</code> 组件，无论是内置的，还是来自
+      <code>.htmlpress/components/</code>
+      的自定义组件，在两者中的渲染方式都相同，且只在使用处链接其样式和脚本。可以用布局自己的组件为其设置样式，就像本站首页使用其
+      <code>htmlpress-landing-*</code> 组件那样，也可以使用
+      <code>--htmlpress-*</code> 设计令牌。
+    </p>
+    <pre><code class="language-html">&lt;!-- .htmlpress/layouts/landing.html --&gt;
+&lt;body&gt;
+  &lt;htmlpress-landing-hero&gt;&lt;/htmlpress-landing-hero&gt;
+  &lt;main&gt;&lt;htmlpress-content&gt;&lt;/htmlpress-content&gt;&lt;/main&gt;
+  &lt;htmlpress-footer&gt;&lt;/htmlpress-footer&gt;
+&lt;/body&gt;</code></pre>
+
+    <h2>静态资源</h2>
+    <p>
+      项目中所有不是页面的文件都会按原样复制到输出目录的相同路径下。把
+      <code>robots.txt</code>、自定义的 <code>favicon.svg</code> 或
+      <code>og-image.png</code>
+      放在页面旁边即可；与生成文件同名的项目文件（<code>robots.txt</code>、<code>sitemap.xml</code>、<code>llms.txt</code>）会优先于生成的文件。
+    </p>
+
+    <h2>另请参阅</h2>
+    <ul>
+      <li>
+        <a href="/zh/customization/overriding-escaping.html">覆盖/弹出</a
+        >：替换站点的布局或组件，而不是新增一个。
+      </li>
+      <li>
+        <a href="/zh/customization/site-metadata.html">站点元数据</a
+        >：同样显示在自定义路由上的站点标题和 favicon。
+      </li>
+    </ul>
+  </body>
+</html>

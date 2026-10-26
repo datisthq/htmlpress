@@ -13,19 +13,7 @@ const SKILLS_INDEX: &str = ".well-known/agent-skills/index.json";
 /// The files that describe the site to agents, by output path: each page as Markdown,
 /// `llms.txt`, the published skills with their index, and `_headers` linking them.
 pub(crate) fn describe_site(site: &Site) -> crate::Result<Vec<(String, Vec<u8>)>> {
-    let pages: Vec<&Page> = (site.pages.iter())
-        .filter(|page| page.path != NOT_FOUND_PAGE)
-        .collect();
-    let mut files = vec![];
-    for page in &pages {
-        let markdown = convert_page(page)?;
-        files.push((create_markdown_path(&page.path), markdown.into_bytes()));
-    }
-    let llms = create_llms(site, &pages);
-    if !pages.iter().any(|page| page.path == "index.html") {
-        files.push(("index.md".to_owned(), llms.clone().into_bytes()));
-    }
-    files.push(("llms.txt".to_owned(), llms.into_bytes()));
+    let mut files = describe_language(site, "/")?;
     for skill in &site.skills {
         let path = format!(".well-known/agent-skills/{}/SKILL.md", skill.name);
         files.push((path, skill.source.clone()));
@@ -40,10 +28,34 @@ pub(crate) fn describe_site(site: &Site) -> crate::Result<Vec<(String, Vec<u8>)>
     Ok(files)
 }
 
+/// One language's pages as Markdown and its `llms.txt`, under its prefix: `/` for the
+/// default language, `/<code>/` for the others.
+pub(crate) fn describe_language(
+    site: &Site,
+    prefix: &str,
+) -> crate::Result<Vec<(String, Vec<u8>)>> {
+    let pages: Vec<&Page> = (site.pages.iter())
+        .filter(|page| page.path != NOT_FOUND_PAGE && !page.untranslated)
+        .collect();
+    let mut files = vec![];
+    for page in &pages {
+        let markdown = convert_page(page)?;
+        files.push((create_markdown_path(&page.path), markdown.into_bytes()));
+    }
+    let folder = prefix.trim_start_matches('/');
+    let llms = create_llms(site, &pages, folder);
+    let home = format!("{folder}index.html");
+    if !pages.iter().any(|page| page.path == home) {
+        files.push((format!("{folder}index.md"), llms.clone().into_bytes()));
+    }
+    files.push((format!("{folder}llms.txt"), llms.into_bytes()));
+    Ok(files)
+}
+
 // Grouped as the navigation groups them: root pages first, then each top folder under
 // its index page's title.
-fn create_llms(site: &Site, pages: &[&Page]) -> String {
-    let groups = group_pages(site, pages);
+fn create_llms(site: &Site, pages: &[&Page], folder: &str) -> String {
+    let groups = group_pages(site, pages, folder);
     let mut lines = vec![format!("# {}", site.title)];
     if let Some(description) = &site.config.description {
         lines.extend([String::new(), format!("> {description}")]);
@@ -66,17 +78,25 @@ fn create_llms(site: &Site, pages: &[&Page]) -> String {
 // By section, in the config's order with "Other" last, when the site has sections; else
 // as the navigation groups them: root pages first, then each top folder under its index
 // page's title
-fn group_pages<'a>(site: &'a Site, pages: &[&'a Page]) -> Vec<(&'a str, Vec<&'a Page>)> {
+fn group_pages<'a>(
+    site: &'a Site,
+    pages: &[&'a Page],
+    folder: &str,
+) -> Vec<(&'a str, Vec<&'a Page>)> {
     let sections = &site.config.sections;
     let mut groups: Vec<(usize, &str, Vec<&Page>)> = vec![];
     for page in pages {
-        let (rank, title) = match (sections.is_empty(), page.path.split_once('/')) {
+        let relative = page.path.strip_prefix(folder).unwrap_or(&page.path);
+        let (rank, title) = match (sections.is_empty(), relative.split_once('/')) {
             (false, _) => match find_section(sections, &page.url) {
-                Some(index) => (index, sections[index].title.as_str()),
+                Some(index) => (index, sections[index].title.text()),
                 None => (sections.len(), "Other"),
             },
             (true, Some((folder, _))) => {
-                let index = format!("{folder}/index.html");
+                let index = format!(
+                    "{}{folder}/index.html",
+                    page.path.strip_suffix(relative).unwrap_or_default()
+                );
                 let title = (site.pages.iter())
                     .find(|page| page.path == index)
                     .map_or(folder, |page| page.title.as_str());

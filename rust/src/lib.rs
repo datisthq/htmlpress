@@ -30,6 +30,13 @@ mod actions {
     pub(crate) mod icon {
         pub(crate) mod render;
     }
+    pub(crate) mod language {
+        pub(crate) mod detect;
+        pub(crate) mod resolve;
+    }
+    pub(crate) mod nav {
+        pub(crate) mod build;
+    }
     pub(crate) mod package {
         pub(crate) mod convert;
     }
@@ -60,6 +67,7 @@ mod actions {
         pub(crate) mod clear;
         pub(crate) mod describe;
         pub(crate) mod index;
+        pub(crate) mod localize;
         pub(crate) mod preview;
         pub(crate) mod scan;
         pub(crate) mod serve;
@@ -77,10 +85,13 @@ mod models {
     pub(crate) mod build;
     pub(crate) mod config;
     pub(crate) mod error;
+    pub(crate) mod language;
+    pub(crate) mod nav;
     pub(crate) mod page;
     pub(crate) mod site;
     pub(crate) mod skill;
 }
+mod flags;
 mod icons;
 mod language_icons;
 mod program;
@@ -103,6 +114,7 @@ pub use models::config::{
     SectionKind,
 };
 pub use models::error::Error;
+pub use models::language::{Direction, Language, Localized, SiteLanguage};
 pub use models::page::{Heading, Page, SourceAction};
 pub use models::site::Site;
 pub use models::skill::Skill;

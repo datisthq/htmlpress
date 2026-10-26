@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <title>Traducciones</title>
+    <meta
+      name="description"
+      content="Publica un sitio en varios idiomas, con un selector de idioma, textos de interfaz traducidos y alternativas para las páginas aún sin traducir."
+    />
+    <meta name="order" content="48" />
+    <meta name="icon" content="languages" />
+  </head>
+  <body>
+    <h1>Traducciones</h1>
+    <p>
+      Un sitio se puede publicar en varios idiomas. El primer idioma es el predeterminado
+      y conserva sus URL; cada uno de los demás se sirve bajo su propio prefijo, como
+      <code>/es/</code>, con su propia navegación, búsqueda, <code>llms.txt</code> y
+      textos de interfaz. La cabecera recibe un selector de idioma, y una página aún sin
+      traducir se queda en la navegación, marcada con el idioma en el que está escrita.
+    </p>
+
+    <h2>Configurar los idiomas</h2>
+    <pre data-title="htmlpress.yaml"><code class="language-yaml">languages:
+  - code: en
+    label: English
+  - code: es
+    label: Español
+  - code: zh
+    label: 简体中文</code></pre>
+    <p>Cada idioma acepta:</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Campo</th>
+          <th>Predeterminado</th>
+          <th>Propósito</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>code</code></td>
+          <td>ninguno, obligatorio</td>
+          <td>
+            El prefijo de URL y el sufijo del nombre de archivo: letras minúsculas,
+            dígitos y <code>-</code>, empezando por una letra.
+          </td>
+        </tr>
+        <tr>
+          <td><code>label</code></td>
+          <td>ninguno, obligatorio</td>
+          <td>El nombre que se muestra en el selector de idioma.</td>
+        </tr>
+        <tr>
+          <td><code>locale</code></td>
+          <td>el <code>code</code></td>
+          <td>
+            La etiqueta para <code>&lt;html lang&gt;</code>, hreflang y las fechas, como
+            <code>pt-BR</code>.
+          </td>
+        </tr>
+        <tr>
+          <td><code>dir</code></td>
+          <td><code>rtl</code> para árabe, hebreo, persa, urdu y algunos más</td>
+          <td>
+            <code>ltr</code> o <code>rtl</code>, escrito en <code>&lt;html dir&gt;</code>.
+          </td>
+        </tr>
+        <tr>
+          <td><code>flag</code></td>
+          <td>la región del locale o, si no, el país habitual del idioma</td>
+          <td>
+            Un código de país de dos letras para la bandera del selector, como
+            <code>br</code>; uno sin bandera incluida no muestra ninguna.
+          </td>
+        </tr>
+        <tr>
+          <td><code>messages</code></td>
+          <td>ninguno</td>
+          <td>Textos de interfaz que reemplazan a los integrados; ver más abajo.</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      Sin <code>languages</code>, el sitio está solo en inglés y nada de lo que sigue se
+      aplica. Un código listado dos veces, una clave de mensaje desconocida, o una sección
+      cuyo prefijo queda bajo el prefijo de otro idioma (<code>/es/…</code>) hace fallar
+      la compilación.
+    </p>
+
+    <h2>Traducir una página</h2>
+    <p>
+      Una traducción es un archivo junto a su original, nombrado con el código del idioma
+      antes de <code>.html</code>. Se sirve bajo el prefijo del idioma y se empareja con
+      el original por URL:
+    </p>
+    <htmlpress-file-tree>
+      <ul>
+        <li>index.html — <code>/</code></li>
+        <li>index.es.html — <code>/es/</code></li>
+        <li>
+          guides
+          <ul>
+            <li>install.html — <code>/guides/install.html</code></li>
+            <li>install.es.html — <code>/es/guides/install.html</code></li>
+          </ul>
+        </li>
+      </ul>
+    </htmlpress-file-tree>
+    <p>
+      Un sufijo que no nombra ningún idioma configurado sigue formando parte del nombre,
+      así que <code>vite.config.html</code> sigue siendo una página en inglés. Para
+      guardar las traducciones en una carpeta propia, o para nombrar un archivo
+      libremente, define el idioma en su head; un archivo que ya está bajo la carpeta del
+      idioma no recibe el prefijo dos veces:
+    </p>
+    <pre
+      data-title="es/guias/instalar.html"
+    ><code class="language-html">&lt;meta name="language" content="es" /&gt;
+&lt;meta name="path" content="/guides/install.html" /&gt;</code></pre>
+    <p>
+      Una traducción solo se empareja con su original cuando ambos comparten una URL bajo
+      el prefijo del idioma, así que da a un archivo renombrado el mismo
+      <code>path</code> que su original. Un idioma que la configuración no lista hace
+      fallar la compilación.
+    </p>
+
+    <h2>Traducir la configuración</h2>
+    <p>
+      El <code>title</code>, la <code>description</code> y el <code>banner</code> del
+      sitio, el <code>title</code> de un enlace, y el <code>title</code>, el
+      <code>siteTitle</code> y el <code>siteDescription</code> de una sección aceptan un
+      texto para todos los idiomas o un mapa por código de idioma. Un idioma que falta en
+      el mapa recibe el texto del idioma predeterminado:
+    </p>
+    <pre data-title="htmlpress.yaml"><code class="language-yaml">title:
+  en: Acme Docs
+  es: Documentación de Acme
+sections:
+  - title: { en: Guide, es: Guía, zh: 指南 }
+    prefix: /
+  - title: Blog
+    type: blog
+    prefix: /blog/</code></pre>
+    <p>
+      Cada sección y cada enlace con un <code>prefix</code> se replica bajo el prefijo de
+      cada idioma: el blog en español vive en <code>/es/blog/</code>, con su propio
+      índice, páginas de etiquetas y feed RSS que listan las entradas en español y,
+      después, las predeterminadas aún sin traducir. Una sección de changelog compila sus
+      páginas en todos los idiomas, conservando las notas de versión tal como se
+      escribieron.
+    </p>
+
+    <h2>Páginas aún sin traducir</h2>
+    <p>
+      Un idioma lista cada página del idioma predeterminado de la que no tiene traducción,
+      para que su navegación mantenga la misma forma. Esa entrada enlaza al original y
+      lleva como insignia el código del idioma predeterminado, con "Aún sin traducir" como
+      texto emergente. La página sin traducir se compila una sola vez, en su propio
+      idioma; la búsqueda y <code>llms.txt</code> solo listan las páginas propias de cada
+      idioma.
+    </p>
+    <p>
+      El selector de idioma enlaza cada idioma a la versión de esta página en él o, si no
+      existe, a la página de inicio de ese idioma. Un idioma sin página de inicio propia,
+      <code>index.es.html</code>, recibe una redirección de <code>/es/</code> a su primera
+      página.
+    </p>
+
+    <h2>Textos de la interfaz</h2>
+    <p>
+      Los textos propios de htmlpress, como "En esta página", "Anterior" y "Editar esta
+      página", y las fechas, vienen incluidos en inglés, alemán, español, francés,
+      japonés, ruso y chino, y se eligen según el idioma del locale. Cualquiera de ellos
+      se puede reemplazar por idioma:
+    </p>
+    <pre data-title="htmlpress.yaml"><code class="language-yaml">languages:
+  - code: en
+    label: English
+    messages:
+      page.edit: Edit on GitHub
+  - code: pt
+    label: Português
+    locale: pt-BR
+    messages:
+      toc.title: Nesta página
+      nav.previous: Anterior
+      nav.next: Próximo</code></pre>
+    <p>
+      Un idioma que htmlpress no incluye recurre al inglés para los textos que no define.
+      Las claves son las de
+      <a href="https://github.com/datisthq/htmlpress/blob/main/rust/src/messages/en.yaml"
+        ><code>messages/en.yaml</code></a
+      >; los marcadores <code>{name}</code>, como <code>{date}</code>, se rellenan.
+      <code>date.format</code> y <code>date.months</code> dan forma a cada fecha que se
+      muestra a los lectores.
+    </p>
+
+    <h2>Qué recibe una página traducida</h2>
+    <ul>
+      <li>
+        <code>&lt;html lang&gt;</code> y, para los idiomas que se escriben de derecha a
+        izquierda, <code>&lt;html dir="rtl"&gt;</code>.
+      </li>
+      <li>
+        Con <code>site</code> definido, un alternate hreflang por cada idioma que tiene la
+        página, además de <code>x-default</code> apuntando a la versión del idioma
+        predeterminado, y un <code>og:locale</code>.
+      </li>
+      <li>
+        El índice de búsqueda de su idioma,
+        <code>_htmlpress/search.&lt;code&gt;.json</code>, y una copia en Markdown y un
+        <code>llms.txt</code> bajo el prefijo del idioma.
+      </li>
+      <li>
+        El selector <code>&lt;htmlpress-language&gt;</code>, que un escape del layout
+        coloca como cualquier otro elemento; se elimina en un sitio de un solo idioma.
+      </li>
+    </ul>
+
+    <h2>Ver también</h2>
+    <ul>
+      <li>
+        <a href="/es/customization/configuration-file.html">Configuración</a>: todas las
+        claves de <code>htmlpress.yaml</code>.
+      </li>
+      <li>
+        <a href="/es/customization/article-sections.html">Secciones de artículos</a>: cómo
+        funcionan los prefijos y la correspondencia de secciones.
+      </li>
+      <li>
+        <a href="/authoring/frontmatter.html">Frontmatter</a>: los metadatos propios de la
+        página, incluido <code>&lt;meta name="language"&gt;</code>.
+      </li>
+    </ul>
+  </body>
+</html>

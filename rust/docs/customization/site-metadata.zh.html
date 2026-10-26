@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="zh">
+  <head>
+    <title>站点元数据</title>
+    <meta
+      name="description"
+      content="设置站点标题、描述、URL、logo、favicon 和公告栏。"
+    />
+    <meta name="order" content="42" />
+    <meta name="icon" content="globe" />
+  </head>
+  <body>
+    <h1>站点元数据</h1>
+    <p>
+      <code>htmlpress.yaml</code>
+      中的几个顶层键用于向浏览器、搜索引擎和社交卡片描述你的站点。
+    </p>
+
+    <h2>字段</h2>
+    <pre><code class="language-yaml">site: https://example.com
+title: My Docs
+description: Everything you need to build things.
+logo: /logo.svg
+favicon: /favicon.ico
+banner: 'v2 is out · &lt;a href="/blog/v2.html"&gt;Read the release notes&lt;/a&gt;'
+head:
+  meta:
+    - name: twitter:site
+      content: "@me"</code></pre>
+    <table>
+      <thead>
+        <tr>
+          <th>键</th>
+          <th>默认值</th>
+          <th>出现的位置</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>site</code></td>
+          <td>无</td>
+          <td>
+            规范源地址，用于站点地图、
+            <code>&lt;link rel="canonical"&gt;</code>、<code>og:url</code> 以及绝对形式的
+            <code>og:image</code> URL
+          </td>
+        </tr>
+        <tr>
+          <td><code>title</code></td>
+          <td>文件夹名</td>
+          <td>
+            每个浏览器标签页的标题（位于页面自身标题之后，首页则单独使用）、
+            <code>og:site_name</code>、页眉中的站点标题
+          </td>
+        </tr>
+        <tr>
+          <td><code>description</code></td>
+          <td>无</td>
+          <td>
+            没有自身描述的页面所用的 <code>&lt;meta name="description"&gt;</code> 和
+            <code>og:description</code>，以及品牌标题下方的那行文字
+          </td>
+        </tr>
+        <tr>
+          <td><code>logo</code></td>
+          <td>无</td>
+          <td>显示在页眉站点标题之前的图片（也是 favicon 的默认值）</td>
+        </tr>
+        <tr>
+          <td><code>favicon</code></td>
+          <td>logo</td>
+          <td>浏览器标签页图标</td>
+        </tr>
+        <tr>
+          <td><code>banner</code></td>
+          <td>无</td>
+          <td>每个页面页眉上方的公告栏</td>
+        </tr>
+        <tr>
+          <td><code>head</code></td>
+          <td>无</td>
+          <td>
+            添加到每个页面 <code>&lt;head&gt;</code> 中的额外 <code>meta</code>、<code
+              >links</code
+            >
+            和 <code>scripts</code>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>站点地图与 <code>site</code></h2>
+    <p>
+      如果设置了 <code>site</code>，每次构建都会在输出根目录写入一个包含所有页面的
+      <code>sitemap.xml</code>，以 <code>site</code>（及 <code>base</code>）作为每个 URL
+      的绝对源地址，并由 <code>robots.txt</code> 指向它。没有
+      <code>site</code> 时，会跳过站点地图：它只能列出绝对 URL。名为
+      <code>sitemap.xml</code> 或 <code>robots.txt</code> 的项目文件会优先于生成的文件。
+    </p>
+
+    <h2>Logo 与 favicon</h2>
+    <ul>
+      <li>
+        <code>logo</code> 和 <code>favicon</code> 接受任何 URL
+        或根相对路径（<code>/logo.svg</code>）。项目中的任何文件都会复制到输出目录的相同路径下，因此根目录下的
+        <code>logo.svg</code> 可以通过 <code>/logo.svg</code> 访问。
+      </li>
+      <li>
+        如果省略 <code>favicon</code>，htmlpress 会回退到
+        <code>logo</code>；两者都没有时，不会写入图标链接。
+      </li>
+      <li>
+        logo 是 <code>&lt;htmlpress-brand&gt;</code> 中位于站点标题及其
+        <code>description</code> 之前的 <code>&lt;img&gt;</code>，该元素链接到首页。
+      </li>
+    </ul>
+    <htmlpress-callout
+      ><p>
+        请保持 <code>logo</code> 文件体积较小（SVG 最理想）。每个页面都会在页眉中加载它。
+      </p></htmlpress-callout
+    >
+
+    <h2>公告栏</h2>
+    <p>
+      <code>banner</code> 会在每个页面的页眉上方显示一个全宽横栏。它的值是
+      HTML，会按原样写入
+      <code>&lt;htmlpress-banner&gt;</code>，因此链接或任何行内标记都不需要自定义组件：
+    </p>
+    <pre><code class="language-yaml">banner: 'Htmlpress is in technical preview · &lt;a href="https://github.com/datisthq/htmlpress/discussions"&gt;Share feedback&lt;/a&gt;'</code></pre>
+    <ul>
+      <li>根相对链接会加上你的 <code>base</code> 前缀。</li>
+      <li>
+        如需不同的标记或样式，可以弹出
+        <code>components/banner/banner.css</code>，或用
+        <code>components/banner/banner.html</code> 替换该元素（<a
+          href="/zh/customization/overriding-escaping.html"
+          >覆盖/弹出</a
+        >）。
+      </li>
+    </ul>
+
+    <h2>页面级标签</h2>
+    <p>
+      每个页面都会用自己的
+      <code>&lt;title&gt;</code>（后接 <code>· site title</code>）、
+      <code>description</code>、<code>og:title</code> 和
+      <code>og:description</code> 覆盖站点默认值； <code>og:type</code> 为
+      <code>website</code>。设置了 <code>site</code> 时，页面还会获得
+      <code>og:url</code> 和一个 <code>&lt;link rel="canonical"&gt;</code>。页面的
+      <code>&lt;meta name="image"&gt;</code> 会成为它的
+      <code>og:image</code>，若为根相对路径则借助 <code>site</code> 转为绝对路径，并把
+      <code>twitter:card</code> 从 <code>summary</code> 切换为
+      <code>summary_large_image</code>。
+    </p>
+
+    <h2>额外的 head 标签</h2>
+    <p>
+      <code>head</code>
+      会在默认标签和主题之后，向每个页面添加标签：由属性映射组成的列表。脚本的
+      <code>children</code> 是它的内联源码；与默认项具有相同 <code>name</code> 或
+      <code>property</code> 的 <code>meta</code> 条目会替换该默认项：
+    </p>
+    <pre><code class="language-yaml">head:
+  meta:
+    - name: twitter:card
+      content: summary_large_image
+    - name: google-site-verification
+      content: abc123
+  links:
+    - rel: me
+      href: https://mastodon.social/@me
+  scripts:
+    - src: https://example.com/analytics.js
+      defer: ""
+    - children: console.log("hello")</code></pre>
+    <p>
+      页面自身 <code>&lt;head&gt;</code> 中的 <code>&lt;link&gt;</code>、<code
+        >&lt;style&gt;</code
+      >
+      或 <code>&lt;script&gt;</code> 排在这些标签之后，且只作用于该页面。
+    </p>
+
+    <h2>另请参阅</h2>
+    <ul>
+      <li>
+        <a href="/zh/customization/external-links.html">外部链接</a
+        >：位于标题旁边的页眉和侧边栏链接。
+      </li>
+      <li>
+        <a href="/zh/customization/article-sections.html">文章分区</a
+        >：组织站点本身的内容结构。
+      </li>
+    </ul>
+  </body>
+</html>

@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <title>Parches de artículos</title>
+    <meta
+      name="description"
+      content="Sobrescribe los metadatos de una página desde tu configuración, sin tocar el archivo."
+    />
+    <meta name="order" content="44" />
+    <meta name="icon" content="pencil-ruler" />
+  </head>
+  <body>
+    <h1>Parches de artículos</h1>
+    <p>
+      A veces un archivo sirve a la vez como contenido del sitio y como archivo que se lee
+      en otro lugar: un <code>README.md</code> que GitHub renderiza, o HTML que comparte
+      otro proyecto. Un parche define los metadatos de su página desde
+      <code>htmlpress.yaml</code>, de modo que el archivo queda tal cual, igual que los
+      parches de Livemark definen el frontmatter de un artículo.
+    </p>
+
+    <h2>Uso básico</h2>
+    <pre><code class="language-yaml">patches:
+  - file: README.md
+    article:
+      title: Introduction
+      description: Set up your first project.
+      path: /introduction/
+      order: 1
+  - file: guides/shared.html
+    article:
+      sidebar: false</code></pre>
+    <p>
+      Un archivo <code>.md</code> con parche se convierte en una página: su Markdown (con
+      las tablas, listas de tareas, tachado y notas al pie de GitHub) se renderiza a HTML
+      y se compila a su lado como una página <code>.html</code>, aquí movida a
+      <code>/introduction/</code>. Un archivo <code>.html</code> con parche ya debe ser
+      una página.
+    </p>
+
+    <h2>Campos</h2>
+    <p>
+      <code>file</code> es la ruta relativa al proyecto; <code>article</code> acepta
+      cualquiera de los campos que define el
+      <a href="/authoring/frontmatter.html">head</a> de una página: <code>title</code>,
+      <code>label</code>, <code>description</code>, <code>icon</code>, <code>order</code>,
+      <code>path</code>, <code>sidebar</code>, <code>toc</code>, <code>image</code>,
+      <code>author</code> (uno o una lista), <code>date</code>, <code>tags</code>,
+      <code>sourceUrl</code> y <code>sourceAction</code>. Cualquier otro campo es un
+      error, y también lo es un archivo que no existe, uno fuera del proyecto (mediante
+      <code>..</code> o un enlace simbólico), o un archivo oculto, de
+      <code>node_modules</code> o de <code>.htmlpress</code>: todo lo que nombra un parche
+      se publica, así que secretos como <code>.env</code> nunca pueden publicarse.
+    </p>
+
+    <h2>Semántica de la fusión</h2>
+    <p>
+      Los campos de un parche se aplican sobre el head propio de la página; lo que un
+      parche omite conserva su valor normal. Los enlaces relativos dentro de un archivo
+      movido no se reescriben, así que el enlace <code>docs/guide.md</code> de un README
+      sigue apuntando adonde apuntaba.
+    </p>
+
+    <h2>Qué no puedes parchear</h2>
+    <p>El contenido: el cuerpo de una página es siempre el cuerpo del archivo.</p>
+
+    <h2>Ver también</h2>
+    <ul>
+      <li>
+        <a href="/authoring/frontmatter.html">Frontmatter</a>: las etiquetas del head que
+        una página define por sí misma.
+      </li>
+      <li>
+        <a href="/es/customization/configuration-file.html">Archivo de configuración</a>:
+        el glob <code>include</code> que decide qué archivos son páginas.
+      </li>
+    </ul>
+  </body>
+</html>

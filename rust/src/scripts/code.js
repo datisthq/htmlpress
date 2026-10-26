@@ -1,5 +1,8 @@
 // Every code block gets a copy button and every h2/h3 with an id a link to itself.
 
+const MESSAGES = readMessages()
+const COPY = MESSAGES["code.copy"] ?? "Copy"
+
 function addCopyButtons() {
   for (const pre of document.querySelectorAll("htmlpress-page > main pre")) {
     if (pre.parentElement?.classList.contains("htmlpress-code")) continue
@@ -9,14 +12,14 @@ function addCopyButtons() {
     pre.replaceWith(box)
     const button = document.createElement("button")
     button.type = "button"
-    button.textContent = "Copy"
+    button.textContent = COPY
     button.addEventListener("click", async () => {
       // Line numbers are part of the text but not of the code
       const code = pre.cloneNode(true)
       code.querySelectorAll(".giallo-ln").forEach(number => number.remove())
       await navigator.clipboard.writeText(code.textContent ?? "")
-      button.textContent = "Copied"
-      setTimeout(() => (button.textContent = "Copy"), 2000)
+      button.textContent = MESSAGES["code.copied"] ?? "Copied"
+      setTimeout(() => (button.textContent = COPY), 2000)
     })
     box.append(pre, button)
   }
@@ -30,7 +33,7 @@ function addHeadingAnchors() {
     const anchor = document.createElement("a")
     anchor.className = "htmlpress-anchor"
     anchor.href = `#${heading.id}`
-    anchor.setAttribute("aria-label", "Link to this section")
+    anchor.setAttribute("aria-label", MESSAGES["code.link"] ?? "Link to this section")
     anchor.textContent = "#"
     heading.append(anchor)
   }
@@ -46,7 +49,7 @@ const expandable = new ResizeObserver(entries => {
     const button = document.createElement("button")
     button.type = "button"
     button.className = "htmlpress-expand"
-    button.textContent = "Expand"
+    button.textContent = MESSAGES["code.expand"] ?? "Expand"
     button.addEventListener("click", () => {
       pre.dataset.expanded = ""
       button.remove()
@@ -66,3 +69,12 @@ function addExpandButtons() {
 addCopyButtons()
 addExpandButtons()
 addHeadingAnchors()
+
+// The page's UI strings; English when a layout leaves them out
+function readMessages() {
+  try {
+    return JSON.parse(document.getElementById("htmlpress-messages")?.textContent ?? "{}")
+  } catch {
+    return {}
+  }
+}

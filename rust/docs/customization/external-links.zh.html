@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="zh">
+  <head>
+    <title>外部链接</title>
+    <meta name="description" content="在页眉或侧边栏中添加外部 URL。" />
+    <meta name="order" content="45" />
+    <meta name="icon" content="external-link" />
+  </head>
+  <body>
+    <h1>外部链接</h1>
+    <p>
+      <code>links</code> 列表把 URL 添加到页眉或侧边栏中。每个条目都渲染为一个普通链接。
+    </p>
+
+    <h2>基本用法</h2>
+    <pre><code class="language-yaml">include: docs/**/*.html
+links:
+  - title: GitHub
+    url: https://github.com/acme/docs</code></pre>
+
+    <h2>字段</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>字段</th>
+          <th>默认值</th>
+          <th>用途</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>url</code></td>
+          <td>无，必填</td>
+          <td>链接的 URL，可以是绝对 URL 或根相对 URL。</td>
+        </tr>
+        <tr>
+          <td><code>title</code></td>
+          <td>无，必填</td>
+          <td>显示的文字。</td>
+        </tr>
+        <tr>
+          <td><code>position</code></td>
+          <td><code>header</code></td>
+          <td>链接渲染的位置：<code>header</code> 或 <code>sidebar</code>。</td>
+        </tr>
+        <tr>
+          <td><code>prefix</code></td>
+          <td>无</td>
+          <td>仅在该文件夹下的页面中显示此链接，例如 <code>/api/</code>。</td>
+        </tr>
+        <tr>
+          <td><code>icon</code></td>
+          <td>无</td>
+          <td>
+            标题前的<a href="/authoring/rich-elements.html#icons">内置图标</a>，例如
+            <code>github</code>；未知的名称会报错。
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      其他任何字段都会报错。根相对的 <code>url</code> 会像构建中的其他 URL 一样加上
+      <code>base</code> 前缀。
+    </p>
+
+    <h2>页眉链接</h2>
+    <p>
+      默认情况下，链接渲染在页眉的
+      <code>&lt;htmlpress-links&gt;</code> 中，位于站点标题和主题切换按钮之间。
+    </p>
+    <pre><code class="language-yaml">links:
+  - title: GitHub
+    url: https://github.com/acme/docs
+  - title: Docs
+    url: /introduction.html</code></pre>
+
+    <h2>侧边栏链接</h2>
+    <p>
+      设置 <code>position: sidebar</code> 可将链接渲染在左侧边栏中，位于
+      <code>&lt;htmlpress-nav&gt;</code> 末尾、页面列表下方。
+    </p>
+    <pre><code class="language-yaml">links:
+  - title: Chat
+    url: https://discord.gg/example
+    position: sidebar</code></pre>
+    <p>
+      对于每个页面的"编辑此页"链接，请使用 <code>edit</code> 而不是普通链接：它的 URL
+      后面会接上每个页面的源文件路径，链接渲染在页面旁的
+      <code>&lt;htmlpress-edit&gt;</code> 中。
+    </p>
+    <pre><code class="language-yaml">edit: https://github.com/acme/docs/edit/main/</code></pre>
+
+    <h2>将链接限定在某个分区</h2>
+    <p>
+      <code>prefix</code> 让链接只显示在 URL
+      以其开头的页面上，可用于诸如"报告问题"这类分区专属的快捷链接。与分区的前缀一样，它以
+      <code>/</code> 开头和结尾。
+    </p>
+    <pre><code class="language-yaml">links:
+  - title: Report an API issue
+    url: https://github.com/acme/api/issues
+    prefix: /api/</code></pre>
+
+    <h2>另请参阅</h2>
+    <ul>
+      <li>
+        <a href="/zh/customization/article-sections.html">文章分区</a
+        >：限定范围的链接所针对的文件夹。
+      </li>
+      <li>
+        <a href="/zh/customization/site-metadata.html">站点元数据</a
+        >：位于页眉链接旁边的品牌标题和 logo。
+      </li>
+    </ul>
+  </body>
+</html>

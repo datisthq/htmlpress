@@ -110,3 +110,91 @@ fn clears_the_build_as_json() -> TestResult {
     assert!(!root.path().join(".htmlpress/build").exists());
     Ok(())
 }
+
+#[test]
+fn builds_every_language_with_its_picker_and_fallbacks() -> TestResult {
+    let root = tempfile::tempdir()?;
+    write_page(
+        root.path(),
+        "htmlpress.yaml",
+        concat!(
+            "site: https://docs.example.com\n",
+            "title: { en: Docs, es: Documentos }\n",
+            "languages:\n",
+            "  - { code: en, label: English }\n",
+            "  - { code: es, label: Español }\n",
+            "  - { code: zh, label: 简体中文 }\n",
+            "sections:\n",
+            "  - { title: { en: Blog, es: Bitácora }, type: blog, prefix: /blog/ }\n",
+        ),
+    )?;
+    write_page(root.path(), "index.html", "<h1>Home</h1>")?;
+    write_page(root.path(), "index.es.html", "<h1>Inicio</h1>")?;
+    write_page(
+        root.path(),
+        "guide.html",
+        "<title>Guide</title><h2>Setup</h2>",
+    )?;
+    write_page(
+        root.path(),
+        "guide.es.html",
+        "<title>Guía</title><h2>Instalación</h2>",
+    )?;
+    write_page(root.path(), "install.html", "<title>Install</title>")?;
+    write_page(
+        root.path(),
+        "zh/start.html",
+        r#"<meta name="language" content="zh"><title>开始</title>"#,
+    )?;
+    write_page(
+        root.path(),
+        "blog/hello.es.html",
+        r#"<meta name="date" content="2026-03-01"><title>Hola</title>"#,
+    )?;
+    let path = root.path().to_string_lossy().into_owned();
+    let (code, _) = run_cli(&["build", &path])?;
+    assert_eq!(code, 0);
+    let build = root.path().join(".htmlpress/build");
+    let read = |path: &str| std::fs::read_to_string(build.join(path));
+
+    let guide = read("es/guide.html")?;
+    assert!(guide.contains(r#"<html lang="es">"#));
+    assert!(guide.contains("<title>Guía · Documentos</title>"));
+    assert!(guide.contains(r#"<link rel="alternate" hreflang="en" href="https://docs.example.com/guide.html">"#));
+    assert!(guide.contains(r#"<link rel="alternate" hreflang="x-default" href="https://docs.example.com/guide.html">"#));
+    assert!(guide.contains(r#"<a href="/guide.html" hreflang="en" lang="en">"#));
+    assert!(guide.contains(r#"<a href="/zh/" hreflang="zh" lang="zh">"#));
+    assert!(guide.contains(r#"<a href="/install.html" hreflang="en" title="Aún sin traducir" data-untranslated>Install<small>en</small></a>"#));
+    assert!(!guide.contains(r#"href="/zh/start.html""#));
+    assert!(read("es/install.html").is_err());
+    assert!(read("guide.html")?.contains("<title>Guide · Docs</title>"));
+
+    assert!(
+        read("zh/index.html")?
+            .contains(r#"<meta http-equiv="refresh" content="0; url=/zh/start.html">"#)
+    );
+    assert!(read("zh/start.html")?.contains(r#"<html lang="zh">"#));
+    assert!(read("_htmlpress/search.es.json")?.contains("Instalación"));
+    assert!(!read("_htmlpress/search.json")?.contains("Instalación"));
+    assert!(read("es/llms.txt")?.contains("# Documentos"));
+    assert!(read("es/guide.md").is_ok());
+
+    let blog = read("es/blog/index.html")?;
+    assert!(blog.contains("<h1>Bitácora</h1>"));
+    assert!(blog.contains("1 de marzo de 2026"));
+    assert!(read("es/blog/rss.xml")?.contains("<title>Hola</title>"));
+    assert!(read("blog/index.html")?.contains("No posts yet."));
+    write_page(
+        root.path(),
+        "blog/news.html",
+        r#"<meta name="date" content="2026-04-01"><title>News</title>"#,
+    )?;
+    let (code, _) = run_cli(&["build", &path])?;
+    assert_eq!(code, 0);
+    assert!(read("es/blog/index.html")?.contains(r#"<a href="/blog/news.html">"#));
+    assert!(
+        read("es/blog/rss.xml")?
+            .contains("<link>https://docs.example.com/blog/news.html</link>")
+    );
+    Ok(())
+}

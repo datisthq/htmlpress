@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <title>Metadatos del sitio</title>
+    <meta
+      name="description"
+      content="Define el título, la descripción, la URL, el logo, el favicon y el banner del sitio."
+    />
+    <meta name="order" content="42" />
+    <meta name="icon" content="globe" />
+  </head>
+  <body>
+    <h1>Metadatos del sitio</h1>
+    <p>
+      Unas pocas claves de primer nivel en <code>htmlpress.yaml</code> describen tu sitio
+      a los navegadores, a los motores de búsqueda y a las tarjetas sociales.
+    </p>
+
+    <h2>Campos</h2>
+    <pre><code class="language-yaml">site: https://example.com
+title: My Docs
+description: Everything you need to build things.
+logo: /logo.svg
+favicon: /favicon.ico
+banner: 'v2 is out · &lt;a href="/blog/v2.html"&gt;Read the release notes&lt;/a&gt;'
+head:
+  meta:
+    - name: twitter:site
+      content: "@me"</code></pre>
+    <table>
+      <thead>
+        <tr>
+          <th>Clave</th>
+          <th>Predeterminado</th>
+          <th>Dónde aparece</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>site</code></td>
+          <td>ninguno</td>
+          <td>
+            Origen canónico que usan el sitemap,
+            <code>&lt;link rel="canonical"&gt;</code>, <code>og:url</code> y las URL
+            absolutas de <code>og:image</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>title</code></td>
+          <td>el nombre de la carpeta</td>
+          <td>
+            El título de cada pestaña (tras el propio de la página; solo en la página de
+            inicio), <code>og:site_name</code> y el título del sitio en la cabecera
+          </td>
+        </tr>
+        <tr>
+          <td><code>description</code></td>
+          <td>ninguno</td>
+          <td>
+            <code>&lt;meta name="description"&gt;</code> y
+            <code>og:description</code> para las páginas que no tienen una propia, y la
+            línea bajo el título de la marca
+          </td>
+        </tr>
+        <tr>
+          <td><code>logo</code></td>
+          <td>ninguno</td>
+          <td>
+            Imagen mostrada antes del título del sitio en la cabecera (y favicon por
+            defecto)
+          </td>
+        </tr>
+        <tr>
+          <td><code>favicon</code></td>
+          <td>el logo</td>
+          <td>Icono de la pestaña del navegador</td>
+        </tr>
+        <tr>
+          <td><code>banner</code></td>
+          <td>ninguno</td>
+          <td>Barra de anuncios sobre la cabecera en cada página</td>
+        </tr>
+        <tr>
+          <td><code>head</code></td>
+          <td>ninguno</td>
+          <td>
+            <code>meta</code>, <code>links</code> y <code>scripts</code> adicionales en el
+            <code>&lt;head&gt;</code> de cada página
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>Sitemap y <code>site</code></h2>
+    <p>
+      Si se define <code>site</code>, cada compilación escribe un
+      <code>sitemap.xml</code> con todas las páginas en la raíz de la salida, usando
+      <code>site</code> (y <code>base</code>) como origen absoluto de cada URL, y
+      <code>robots.txt</code> apunta a él. Sin <code>site</code>, el sitemap se omite:
+      solo lista URL absolutas. Un archivo del proyecto llamado <code>sitemap.xml</code> o
+      <code>robots.txt</code>
+      tiene prioridad sobre el generado.
+    </p>
+
+    <h2>Logo y favicon</h2>
+    <ul>
+      <li>
+        <code>logo</code> y <code>favicon</code> aceptan cualquier URL o ruta relativa a
+        la raíz (<code>/logo.svg</code>). Cualquier archivo del proyecto se copia a la
+        salida en la misma ruta, así que <code>logo.svg</code> en la raíz funciona como
+        <code>/logo.svg</code>.
+      </li>
+      <li>
+        Si se omite <code>favicon</code>, htmlpress recurre a <code>logo</code>; sin
+        ninguno de los dos, no se escribe ningún enlace de icono.
+      </li>
+      <li>
+        El logo es un <code>&lt;img&gt;</code> antes del título del sitio y su
+        <code>description</code> en <code>&lt;htmlpress-brand&gt;</code>, que enlaza al
+        inicio.
+      </li>
+    </ul>
+    <htmlpress-callout
+      ><p>
+        Mantén pequeño el archivo del <code>logo</code> (un SVG es ideal). Cada página lo
+        carga en la cabecera.
+      </p></htmlpress-callout
+    >
+
+    <h2>Banner</h2>
+    <p>
+      <code>banner</code> muestra una barra a todo el ancho sobre la cabecera en cada
+      página. El valor es HTML, escrito tal cual en <code>&lt;htmlpress-banner&gt;</code>,
+      así que un enlace o cualquier marcado inline no necesita un componente propio:
+    </p>
+    <pre><code class="language-yaml">banner: 'Htmlpress is in technical preview · &lt;a href="https://github.com/datisthq/htmlpress/discussions"&gt;Share feedback&lt;/a&gt;'</code></pre>
+    <ul>
+      <li>Los enlaces relativos a la raíz reciben tu prefijo <code>base</code>.</li>
+      <li>
+        Para un marcado o un estilo distinto, escapa
+        <code>components/banner/banner.css</code>, o reemplaza el elemento con
+        <code>components/banner/banner.html</code> (<a
+          href="/es/customization/overriding-escaping.html"
+          >Sobrescritura/Escape</a
+        >).
+      </li>
+    </ul>
+
+    <h2>Etiquetas por página</h2>
+    <p>
+      Cada página sobrescribe los valores predeterminados del sitio con su propio
+      <code>&lt;title&gt;</code> (seguido de <code>· site title</code>),
+      <code>description</code>, <code>og:title</code> y <code>og:description</code>;
+      <code>og:type</code> es <code>website</code>. Con <code>site</code> definido,
+      también recibe <code>og:url</code> y un <code>&lt;link rel="canonical"&gt;</code>.
+      El <code>&lt;meta name="image"&gt;</code> de una página se convierte en su
+      <code>og:image</code>, que se hace absoluta con <code>site</code> cuando es relativa
+      a la raíz, y cambia <code>twitter:card</code> de <code>summary</code> a
+      <code>summary_large_image</code>.
+    </p>
+
+    <h2>Etiquetas adicionales en el head</h2>
+    <p>
+      <code>head</code> añade etiquetas a cada página, después de las predeterminadas y
+      del tema: listas de mapas de atributos. El <code>children</code> de un script es su
+      código inline, y una entrada <code>meta</code> con el mismo <code>name</code> o
+      <code>property</code> que una predeterminada la reemplaza:
+    </p>
+    <pre><code class="language-yaml">head:
+  meta:
+    - name: twitter:card
+      content: summary_large_image
+    - name: google-site-verification
+      content: abc123
+  links:
+    - rel: me
+      href: https://mastodon.social/@me
+  scripts:
+    - src: https://example.com/analytics.js
+      defer: ""
+    - children: console.log("hello")</code></pre>
+    <p>
+      Los <code>&lt;link&gt;</code>, <code>&lt;style&gt;</code> o
+      <code>&lt;script&gt;</code> propios de una página en su
+      <code>&lt;head&gt;</code> van después de estos, solo para esa página.
+    </p>
+
+    <h2>Ver también</h2>
+    <ul>
+      <li>
+        <a href="/es/customization/external-links.html">Enlaces externos</a>: enlaces de
+        la cabecera y de la barra lateral que se sitúan junto al título.
+      </li>
+      <li>
+        <a href="/es/customization/article-sections.html">Secciones de artículos</a>:
+        estructurar el contenido del propio sitio.
+      </li>
+    </ul>
+  </body>
+</html>

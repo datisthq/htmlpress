@@ -1,7 +1,11 @@
 use std::collections::BTreeMap;
 use std::path::PathBuf;
 
+use std::sync::LazyLock;
+
+use crate::actions::language::resolve::resolve_english;
 use crate::models::config::Config;
+use crate::models::language::SiteLanguage;
 use crate::models::page::Page;
 use crate::models::skill::Skill;
 
@@ -21,4 +25,21 @@ pub struct Site {
     pub assets: BTreeMap<String, String>,
     /// The `SKILL.md` files the config's `skills` globs match, published for agents.
     pub skills: Vec<Skill>,
+    /// The languages the site is published in, the default first.
+    pub languages: Vec<SiteLanguage>,
+    /// For each page key, the URL of its version in each language that has one.
+    pub translations: BTreeMap<String, BTreeMap<String, String>>,
+}
+
+static ENGLISH: LazyLock<SiteLanguage> =
+    LazyLock::new(|| resolve_english(&Config::default(), "Htmlpress"));
+
+impl Site {
+    /// The language with this code, else the default one.
+    pub fn read_language(&self, code: &str) -> &SiteLanguage {
+        (self.languages.iter())
+            .find(|language| language.code == code)
+            .or(self.languages.first())
+            .unwrap_or(&ENGLISH)
+    }
 }

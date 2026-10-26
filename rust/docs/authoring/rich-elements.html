@@ -515,7 +515,20 @@ title: Htmlpress</code></pre>
   </dd>
   <dt><code>&lt;htmlpress-footer&gt;</code></dt>
   <dd>A "Created with Htmlpress" credit.</dd>
+  <dt><code>&lt;htmlpress-language&gt;</code></dt>
+  <dd>
+    The language picker, linking to this page in each language; only on a site with
+    <a href="/customization/translations.html">translations</a>.
+  </dd>
+  <dt><code>&lt;htmlpress-skip&gt;</code></dt>
+  <dd>The "Skip to content" link, shown only on focus.</dd>
 </dl>
+<p>
+  Every string these elements and their scripts show comes in the page's language. The
+  scripts read theirs from a
+  <code>&lt;script type="application/json" id="htmlpress-messages"&gt;</code> htmlpress
+  writes into the head, and fall back to English without it.
+</p>
 <p>
   An element with nothing to show is removed.
   <code>&lt;htmlpress-nav-toggle&gt;</code> (the sidebar as a drawer on a phone; wider, it
@@ -544,8 +557,6 @@ title: Htmlpress</code></pre>
   <dd>The <code>&lt;main&gt;</code> it holds beside the aside.</dd>
   <dt><code>&lt;htmlpress-aside&gt;</code></dt>
   <dd>The column beside the content, hidden when empty or narrow.</dd>
-  <dt><code>&lt;htmlpress-skip&gt;</code></dt>
-  <dd>The skip link it holds, shown only on focus.</dd>
 </dl>
 <p>
   A

@@ -10,10 +10,10 @@ fn create_site() -> crate::Result<Site> {
         root: PathBuf::from("."),
         config: Config {
             site: Some("https://example.com/".to_owned()),
-            description: Some("Docs for agents.".to_owned()),
+            description: Some("Docs for agents.".into()),
             ..Config::default()
         },
-        title: "Docs".to_owned(),
+        title: "Docs".into(),
         pages: vec![
             read_page("index.html", "<h1>Home</h1>")?,
             read_page(
@@ -26,6 +26,8 @@ fn create_site() -> crate::Result<Site> {
         files: std::collections::BTreeMap::new(),
         assets: Default::default(),
         skills: vec![],
+        languages: vec![],
+        translations: std::collections::BTreeMap::new(),
     })
 }
 
@@ -62,7 +64,7 @@ fn publishes_skills_with_an_index() -> crate::Result<()> {
     let mut site = create_site()?;
     site.skills = vec![Skill {
         name: "docs-pages".to_owned(),
-        description: "Write pages.".to_owned(),
+        description: "Write pages.".into(),
         path: PathBuf::from("skills/docs-pages/SKILL.md"),
         source: b"abc".to_vec(),
     }];
@@ -94,7 +96,7 @@ fn publishes_skills_with_an_index() -> crate::Result<()> {
 fn groups_llms_by_section() -> crate::Result<()> {
     let mut site = create_site()?;
     site.config.sections = vec![crate::models::config::Section {
-        title: "Guides".to_owned(),
+        title: "Guides".into(),
         prefix: Some("/guides/".to_owned()),
         ..Default::default()
     }];

@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="zh">
+  <head>
+    <title>翻译</title>
+    <meta
+      name="description"
+      content="以多种语言发布站点，带有语言选择器、已翻译的界面文字，以及为尚未翻译的页面提供的回退。"
+    />
+    <meta name="order" content="48" />
+    <meta name="icon" content="languages" />
+  </head>
+  <body>
+    <h1>翻译</h1>
+    <p>
+      站点可以用多种语言发布。第一种语言是默认语言，保留原有
+      URL；其他每种语言都在自己的前缀下提供，例如
+      <code>/es/</code>，并拥有自己的导航、搜索、<code>llms.txt</code>
+      和界面文字。页眉会出现语言选择器，尚未翻译的页面仍保留在导航中，并标注其所用的语言。
+    </p>
+
+    <h2>配置语言</h2>
+    <pre data-title="htmlpress.yaml"><code class="language-yaml">languages:
+  - code: en
+    label: English
+  - code: es
+    label: Español
+  - code: zh
+    label: 简体中文</code></pre>
+    <p>每种语言接受：</p>
+    <table>
+      <thead>
+        <tr>
+          <th>字段</th>
+          <th>默认值</th>
+          <th>用途</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>code</code></td>
+          <td>无，必填</td>
+          <td>
+            URL 前缀和文件名后缀：由小写字母、数字和
+            <code>-</code> 组成，以字母开头。
+          </td>
+        </tr>
+        <tr>
+          <td><code>label</code></td>
+          <td>无，必填</td>
+          <td>语言选择器中显示的名称。</td>
+        </tr>
+        <tr>
+          <td><code>locale</code></td>
+          <td><code>code</code> 的值</td>
+          <td>
+            用于 <code>&lt;html lang&gt;</code>、hreflang 和日期的标签，例如
+            <code>pt-BR</code>。
+          </td>
+        </tr>
+        <tr>
+          <td><code>dir</code></td>
+          <td>阿拉伯语、希伯来语、波斯语、乌尔都语等少数语言为 <code>rtl</code></td>
+          <td>
+            <code>ltr</code> 或 <code>rtl</code>，写入 <code>&lt;html dir&gt;</code>。
+          </td>
+        </tr>
+        <tr>
+          <td><code>flag</code></td>
+          <td>locale 中的地区，否则为该语言通常对应的国家</td>
+          <td>
+            选择器中旗帜所用的两字母国家代码，例如
+            <code>br</code>；没有内置旗帜的代码不显示旗帜。
+          </td>
+        </tr>
+        <tr>
+          <td><code>messages</code></td>
+          <td>无</td>
+          <td>替换内置文字的界面文字；见下文。</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      没有
+      <code>languages</code>
+      时，站点只有英语一种语言，下文内容均不适用。重复列出的代码、未知的消息键，或前缀位于另一种语言前缀之下（<code>/es/…</code>）的分区，都会导致构建失败。
+    </p>
+
+    <h2>翻译页面</h2>
+    <p>
+      译文是位于原文旁边的文件，在
+      <code>.html</code> 之前加上语言代码命名。它在该语言的前缀下提供，并按 URL
+      与原文配对：
+    </p>
+    <htmlpress-file-tree>
+      <ul>
+        <li>index.html — <code>/</code></li>
+        <li>index.es.html — <code>/es/</code></li>
+        <li>
+          guides
+          <ul>
+            <li>install.html — <code>/guides/install.html</code></li>
+            <li>install.es.html — <code>/es/guides/install.html</code></li>
+          </ul>
+        </li>
+      </ul>
+    </htmlpress-file-tree>
+    <p>
+      不对应任何已配置语言的后缀仍是文件名的一部分，因此
+      <code>vite.config.html</code>
+      依然是英语页面。若要把译文放在单独的文件夹中，或自由命名文件，可以改为在其 head
+      中设置语言；已经位于该语言文件夹下的文件不会被重复加前缀：
+    </p>
+    <pre
+      data-title="es/guias/instalar.html"
+    ><code class="language-html">&lt;meta name="language" content="es" /&gt;
+&lt;meta name="path" content="/guides/install.html" /&gt;</code></pre>
+    <p>
+      只有当译文与原文在语言前缀之下共享同一个 URL
+      时，两者才会配对，所以要给重命名的文件设置与原文相同的
+      <code>path</code>。配置中未列出的语言会导致构建失败。
+    </p>
+
+    <h2>翻译配置</h2>
+    <p>
+      站点的 <code>title</code>、<code>description</code> 和 <code>banner</code>，链接的
+      <code>title</code>，以及分区的 <code>title</code>、 <code>siteTitle</code> 和
+      <code>siteDescription</code
+      >，既可以接受一个适用于所有语言的文本，也可以接受按语言代码组织的映射。映射中缺少的语言使用默认语言的文本：
+    </p>
+    <pre data-title="htmlpress.yaml"><code class="language-yaml">title:
+  en: Acme Docs
+  es: Documentación de Acme
+sections:
+  - title: { en: Guide, es: Guía, zh: 指南 }
+    prefix: /
+  - title: Blog
+    type: blog
+    prefix: /blog/</code></pre>
+    <p>
+      每个分区以及每个带有
+      <code>prefix</code> 的链接都会在每种语言的前缀下镜像一份：西班牙语博客位于
+      <code>/es/blog/</code>，拥有自己的索引、标签页面和 RSS
+      订阅源，先列出西班牙语文章，再列出尚未翻译的默认语言文章。变更日志分区会在每种语言中构建其页面，发布说明保持原文。
+    </p>
+
+    <h2>尚未翻译的页面</h2>
+    <p>
+      每种语言都会列出所有尚无译文的默认语言页面，使其导航保持相同的结构。这类条目链接到原文，并以徽章形式显示默认语言的代码，悬停提示为"尚未翻译"。未翻译的页面只以其原有语言构建一次；搜索和
+      <code>llms.txt</code> 只列出该语言自己的页面。
+    </p>
+    <p>
+      语言选择器把每种语言链接到当前页面在该语言中的版本，否则链接到该语言的首页。没有自己首页（<code>index.es.html</code>）的语言，会获得一个从
+      <code>/es/</code> 到其第一个页面的重定向。
+    </p>
+
+    <h2>界面文字</h2>
+    <p>
+      Htmlpress 自身的文字，例如 "On this page"、"Previous" 和 "Edit this
+      page"，以及日期，内置了英语、德语、西班牙语、法语、日语、俄语和中文版本，按 locale
+      的语言选择。其中任何一项都可以按语言替换：
+    </p>
+    <pre data-title="htmlpress.yaml"><code class="language-yaml">languages:
+  - code: en
+    label: English
+    messages:
+      page.edit: Edit on GitHub
+  - code: pt
+    label: Português
+    locale: pt-BR
+    messages:
+      toc.title: Nesta página
+      nav.previous: Anterior
+      nav.next: Próximo</code></pre>
+    <p>
+      对于 htmlpress 未内置的语言，未设置的文字会回退到英语。可用的键见
+      <a href="https://github.com/datisthq/htmlpress/blob/main/rust/src/messages/en.yaml"
+        ><code>messages/en.yaml</code></a
+      >；<code>{date}</code> 这类 <code>{name}</code> 占位符会被填充。
+      <code>date.format</code> 和
+      <code>date.months</code> 决定了向读者显示的每个日期的格式。
+    </p>
+
+    <h2>翻译页面会获得什么</h2>
+    <ul>
+      <li>
+        <code>&lt;html lang&gt;</code>，以及对于从右到左书写的语言，
+        <code>&lt;html dir="rtl"&gt;</code>。
+      </li>
+      <li>
+        设置了 <code>site</code> 时，为每种拥有该页面的语言生成 hreflang
+        备用链接，另加指向默认语言版本的 <code>x-default</code>，以及一个
+        <code>og:locale</code>。
+      </li>
+      <li>
+        该语言的搜索索引
+        <code>_htmlpress/search.&lt;code&gt;.json</code>，以及位于该语言前缀下的 Markdown
+        副本和 <code>llms.txt</code>。
+      </li>
+      <li>
+        <code>&lt;htmlpress-language&gt;</code>
+        选择器，弹出的布局可以像放置其他元素一样放置它；在单语言站点上它会被移除。
+      </li>
+    </ul>
+
+    <h2>另请参阅</h2>
+    <ul>
+      <li>
+        <a href="/zh/customization/configuration-file.html">配置</a>：
+        <code>htmlpress.yaml</code> 的所有键。
+      </li>
+      <li>
+        <a href="/zh/customization/article-sections.html">文章分区</a
+        >：前缀和分区匹配的工作方式。
+      </li>
+      <li>
+        <a href="/authoring/frontmatter.html">Frontmatter</a>：页面自身的元数据，包括
+        <code>&lt;meta name="language"&gt;</code>。
+      </li>
+    </ul>
+  </body>
+</html>

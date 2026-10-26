@@ -26,6 +26,17 @@ pub const NOT_FOUND_PAGE: &str = "404.html";
 /// replaces it with a page of the same name.
 pub const NOT_FOUND: &str = include_str!("404.html");
 
+/// The bundled UI strings, by language code; English holds every key.
+pub const MESSAGES: [(&str, &str); 7] = [
+    ("en", include_str!("messages/en.yaml")),
+    ("de", include_str!("messages/de.yaml")),
+    ("es", include_str!("messages/es.yaml")),
+    ("fr", include_str!("messages/fr.yaml")),
+    ("ja", include_str!("messages/ja.yaml")),
+    ("ru", include_str!("messages/ru.yaml")),
+    ("zh", include_str!("messages/zh.yaml")),
+];
+
 /// The dev server's reload script; never escaped.
 pub const RELOAD: &str = include_str!("reload.js");
 
@@ -65,6 +76,8 @@ pub const ASSETS: &[Asset] = &[
     asset!("components/grid/grid.css"),
     asset!("components/header/header.css"),
     asset!("components/icon/icon.css"),
+    asset!("components/language/language.css"),
+    asset!("components/language/language.js"),
     asset!("components/links/links.css"),
     asset!("components/main/main.css"),
     asset!("components/math/math.css"),

@@ -2,7 +2,7 @@ use super::*;
 
 fn create_section(prefix: &str) -> Section {
     Section {
-        title: prefix.to_owned(),
+        title: prefix.into(),
         prefix: Some(prefix.to_owned()),
         ..Section::default()
     }

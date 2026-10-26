@@ -7,7 +7,7 @@ fn replaces_what_the_patch_sets_and_keeps_the_rest() -> Result<(), String> {
     let page = read_page("README.html", "<h1>Readme</h1><p>Hi.</p><h2>Setup</h2>")
         .map_err(|error| error.to_string())?;
     let article = PatchArticle {
-        title: Some("Introduction".to_owned()),
+        title: Some("Introduction".into()),
         path: Some("/introduction/".to_owned()),
         order: Some(1),
         toc: Some(false),

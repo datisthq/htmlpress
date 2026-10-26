@@ -15,7 +15,7 @@
       A section is a part of the site, such as a guide and an API reference, with its own
       URL prefix, its own tab and its own navigation: while one of its pages is open, the
       sidebar and the previous and next links show only that section's pages. Htmlpress
-      ships two section types:
+      ships four section types:
     </p>
     <ul>
       <li>
@@ -144,9 +144,9 @@ sections:
     <pre><code class="language-yaml">- title: Guide
   prefix: /guide/</code></pre>
     <p>
-      Inside a section, the sidebar groups its pages by top folder. Pages at the root come
-      ungrouped, and each top folder gets its own collapsible group, named by the title of
-      its <code>index.html</code>, else the folder's name:
+      Inside a section, the sidebar nests its pages by folder, at any depth. Pages at the
+      root come ungrouped, and each folder gets its own collapsible group inside its
+      parent's, named by the title of its <code>index.html</code>, else the folder's name:
     </p>
     <htmlpress-file-tree>
       <ul>
@@ -164,6 +164,13 @@ sections:
           <ul>
             <li>index.html</li>
             <li>cli.html</li>
+            <li>
+              api
+              <ul>
+                <li>index.html</li>
+                <li>auth.html</li>
+              </ul>
+            </li>
           </ul>
         </li>
       </ul>
@@ -237,14 +244,14 @@ sections:
       folder.
     </p>
     <p>
-      Within a navigation, a page belongs to the group of its <em>top</em> folder:
-      <code>guides/cli/run.html</code> sits in "Guides" with the rest, there is no
-      nesting. Pages sort by <code>&lt;meta name="order"&gt;</code>, lower first: the root
-      <code>index.html</code> always leads, ordered pages follow, the rest by path. Groups
-      keep the order their first page has, so give a folder's <code>index.html</code> an
-      order to place the whole group. Root pages are placed the same way, so with a root
-      <code>index.html</code> they come first. The pager walks the section's pages in
-      their sorted order, across groups.
+      Within a navigation, a page belongs to the group of its folder, and a folder's group
+      to its parent's: <code>guides/cli/run.html</code> sits in the <code>cli</code> group
+      inside "Guides". Pages sort by <code>&lt;meta name="order"&gt;</code> among their
+      siblings: the root <code>index.html</code> always leads, orders of 0 or more follow
+      ascending, then the unordered pages by path, then negative orders, with
+      <code>-1</code> last. Groups keep the order their first page has, so give a folder's
+      <code>index.html</code> an order to place the whole group. The pager walks the
+      sidebar top to bottom, each group's index before its pages.
     </p>
     <p>
       A <code>404.html</code> at the root is left out of the sidebar; it is the page a

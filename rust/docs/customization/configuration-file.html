@@ -163,8 +163,22 @@
             publish as <a href="/customization/ai-agents.html">agent skills</a>
           </td>
         </tr>
+        <tr>
+          <td><code>languages</code></td>
+          <td>one, English</td>
+          <td>
+            the languages the site is published in, the default first; see
+            <a href="/customization/translations.html">Translations</a>
+          </td>
+        </tr>
       </tbody>
     </table>
+    <p>
+      With <code>languages</code>, the texts a reader sees (<code>title</code>,
+      <code>description</code>, <code>banner</code>, and the titles of links and sections)
+      also take a map by language code, such as
+      <code>title: { en: Docs, es: Guía }</code>.
+    </p>
     <p>
       The full schema lives in
       <a href="https://github.com/datisthq/htmlpress/blob/main/rust/src/models/config.rs"

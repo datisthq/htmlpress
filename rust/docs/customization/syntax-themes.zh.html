@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="zh">
+  <head>
+    <title>语法主题</title>
+    <meta name="description" content="为代码块选择浅色和深色主题。" />
+    <meta name="order" content="46" />
+    <meta name="icon" content="palette" />
+  </head>
+  <body>
+    <h1>语法主题</h1>
+    <p>
+      带有 <code>language-*</code> 类的代码块会在构建时由
+      <a href="https://github.com/getzola/giallo">giallo</a> 进行高亮，它运行 VS Code 的
+      TextMate 语法和主题，输出与 Shiki 相同。每个词法单元都通过 CSS 的
+      <code>light-dark()</code>
+      同时携带两个主题的颜色，因此主题切换按钮也会切换代码颜色，无需脚本，也不会闪烁。
+    </p>
+
+    <h2>配置</h2>
+    <p>默认值与 Livemark 相同：</p>
+    <pre><code class="language-yaml">codeThemeLight: catppuccin-latte
+codeThemeDark: catppuccin-mocha</code></pre>
+    <p>
+      约 60 个内置主题中的任何一个都可以使用；可在
+      <a href="https://textmate-grammars-themes.netlify.app">Shiki playground</a>
+      中查看。未知的名称会导致构建失败。代码块的边框、背景和字体仍来自
+      <code>styles/content.css</code>。
+    </p>
+
+    <h2>常用搭配</h2>
+    <ul>
+      <li><code>catppuccin-latte</code> / <code>catppuccin-mocha</code>（默认）</li>
+      <li><code>github-light</code> / <code>github-dark</code></li>
+      <li><code>one-light</code> / <code>one-dark-pro</code></li>
+      <li><code>solarized-light</code> / <code>solarized-dark</code></li>
+      <li><code>rose-pine-dawn</code> / <code>rose-pine</code></li>
+      <li><code>vitesse-light</code> / <code>vitesse-dark</code></li>
+    </ul>
+
+    <h2>关于无障碍</h2>
+    <p>
+      无论给代码设置什么颜色，发布前都请用对比度工具逐一检查它们与代码块背景的对比度。常规尺寸文字所需的阈值为
+      4.5:1（WCAG AA）。
+    </p>
+
+    <h2>另请参阅</h2>
+    <ul>
+      <li><a href="/authoring/code-blocks.html">Code Blocks</a>：编写方面的说明。</li>
+      <li>
+        <a href="/zh/customization/overriding-escaping.html">覆盖/弹出</a
+        >：替换主题的代码样式或复制按钮脚本。
+      </li>
+    </ul>
+  </body>
+</html>

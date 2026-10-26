@@ -33,6 +33,9 @@
   :scope htmlpress-search ~ htmlpress-theme-toggle {
     margin-left: 0.25rem;
   }
+  :scope :is(htmlpress-search, htmlpress-theme-toggle) ~ htmlpress-language {
+    margin-left: 0.25rem;
+  }
 
   @media (max-width: 56rem) {
     :scope {

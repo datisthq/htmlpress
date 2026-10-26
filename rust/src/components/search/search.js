@@ -2,15 +2,17 @@ const ICON =
   '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.34-4.34"/></svg>'
 const MAX_PAGES = 10
 const MAX_CHUNKS = 3
+const MESSAGES = readMessages()
+const LABEL = MESSAGES["search.label"] ?? "Search"
 
 class HtmlpressSearch extends HTMLElement {
   connectedCallback() {
     if (!this.dataset.index || this.querySelector("button")) return
     const button = document.createElement("button")
     button.type = "button"
-    button.setAttribute("aria-label", "Search")
+    button.setAttribute("aria-label", LABEL)
     button.setAttribute("aria-keyshortcuts", "S")
-    button.innerHTML = `${ICON}<span>Search...</span><kbd>S</kbd>`
+    button.innerHTML = `${ICON}<span>${MESSAGES["search.button"] ?? "Search..."}</span><kbd>S</kbd>`
     button.addEventListener("click", () => this.open())
     document.addEventListener("keydown", event => {
       const modified = event.metaKey || event.ctrlKey || event.altKey
@@ -36,11 +38,11 @@ class HtmlpressSearch extends HTMLElement {
 
   createDialog() {
     const dialog = document.createElement("dialog")
-    dialog.setAttribute("aria-label", "Search")
+    dialog.setAttribute("aria-label", LABEL)
     this.input = document.createElement("input")
     this.input.type = "search"
-    this.input.placeholder = "Search"
-    this.input.setAttribute("aria-label", "Search")
+    this.input.placeholder = LABEL
+    this.input.setAttribute("aria-label", LABEL)
     this.results = document.createElement("div")
     this.results.setAttribute("role", "listbox")
     this.input.addEventListener("input", () => this.search())
@@ -60,7 +62,8 @@ class HtmlpressSearch extends HTMLElement {
     this.results.replaceChildren(...groups.map(group => createGroup(group, terms)))
     if (terms.length && !groups.length) {
       const empty = document.createElement("p")
-      empty.textContent = `No results for “${query.trim()}”`
+      const text = MESSAGES["search.empty"] ?? "No results for “{query}”"
+      empty.textContent = text.replace("{query}", query.trim())
       this.results.append(empty)
     }
     this.select(0)
@@ -192,3 +195,12 @@ function isTyping(target) {
 }
 
 customElements.define("htmlpress-search", HtmlpressSearch)
+
+// The page's UI strings; English when a layout leaves them out
+function readMessages() {
+  try {
+    return JSON.parse(document.getElementById("htmlpress-messages")?.textContent ?? "{}")
+  } catch {
+    return {}
+  }
+}

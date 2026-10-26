@@ -1,7 +1,14 @@
-const PROMPT = "Read {url}, I want to ask questions about it."
+const MESSAGES = readMessages()
+const PROMPT =
+  MESSAGES["page.llmPrompt"] ?? "Read {url}, I want to ask questions about it."
+const COPY = MESSAGES["page.copyMarkdown"] ?? "Copy Markdown"
 const CHATS = [
-  ["Open in ChatGPT", "https://chatgpt.com/", { hints: "search" }],
-  ["Open in Claude", "https://claude.ai/new", {}],
+  [
+    MESSAGES["page.openChatGpt"] ?? "Open in ChatGPT",
+    "https://chatgpt.com/",
+    { hints: "search" },
+  ],
+  [MESSAGES["page.openClaude"] ?? "Open in Claude", "https://claude.ai/new", {}],
 ]
 
 class HtmlpressToolbar extends HTMLElement {
@@ -10,16 +17,16 @@ class HtmlpressToolbar extends HTMLElement {
     if (!link || this.querySelector("button")) return
     const copy = document.createElement("button")
     copy.type = "button"
-    copy.textContent = "Copy Markdown"
+    copy.textContent = COPY
     copy.addEventListener("click", async () => {
       try {
         const response = await fetch(link.href)
         await navigator.clipboard.writeText(await response.text())
-        copy.textContent = "Copied"
+        copy.textContent = MESSAGES["page.copied"] ?? "Copied"
       } catch {
-        copy.textContent = "Copy failed"
+        copy.textContent = MESSAGES["page.copyFailed"] ?? "Copy failed"
       }
-      setTimeout(() => (copy.textContent = "Copy Markdown"), 2000)
+      setTimeout(() => (copy.textContent = COPY), 2000)
     })
     const chats = CHATS.map(([label, base, extra]) => {
       const query = new URLSearchParams({
@@ -38,3 +45,12 @@ class HtmlpressToolbar extends HTMLElement {
 }
 
 customElements.define("htmlpress-toolbar", HtmlpressToolbar)
+
+// The page's UI strings; English when a layout leaves them out
+function readMessages() {
+  try {
+    return JSON.parse(document.getElementById("htmlpress-messages")?.textContent ?? "{}")
+  } catch {
+    return {}
+  }
+}

@@ -4,12 +4,14 @@ use crate::actions::date::format::format_feed_date;
 use crate::actions::page::read::read_page;
 use crate::actions::page::render::render_page;
 use crate::actions::section::generate::list_posts;
-use crate::actions::site::describe::describe_site;
-use crate::actions::site::index::{SEARCH_INDEX, index_site};
+use crate::actions::site::describe::{describe_language, describe_site};
+use crate::actions::site::index::{create_search_path, index_site};
+use crate::actions::site::localize::localize_site;
 use crate::actions::site::scan::scan_site;
 use crate::models::build::{BuildOptions, BuildReport};
 use crate::models::config::SectionKind;
 use crate::models::error::Error;
+use crate::models::language::SiteLanguage;
 use crate::models::page::Page;
 use crate::models::site::Site;
 use crate::settings::{ASSETS_DIR, NOT_FOUND, NOT_FOUND_PAGE, RELOAD, THEME_STYLES};
@@ -22,12 +24,19 @@ pub fn build_site(options: &BuildOptions) -> crate::Result<BuildReport> {
     if options.output.exists() {
         std::fs::remove_dir_all(&options.output).map_err(Error::io(&options.output))?;
     }
-    for page in &site.pages {
-        let html = render_page(&site, page, options.reload)?;
-        write_file(&options.output.join(&page.path), html.as_bytes())?;
+    // Each language renders through its own view: its config, its pages, and the default
+    // pages it lacks listed but not built
+    let views: Vec<Site> = (site.languages.iter())
+        .map(|language| localize_site(&site, &language.code))
+        .collect();
+    for view in &views {
+        for page in view.pages.iter().filter(|page| !page.untranslated) {
+            let html = render_page(view, page, options.reload)?;
+            write_file(&options.output.join(&page.path), html.as_bytes())?;
+        }
     }
     if !site.pages.iter().any(|page| page.path == NOT_FOUND_PAGE) {
-        let page = read_page(NOT_FOUND_PAGE, NOT_FOUND)?;
+        let page = read_page(NOT_FOUND_PAGE, &create_not_found(site.read_language("")))?;
         let mut built_in = site.clone();
         built_in.config.edit = None;
         let html = render_page(&built_in, &page, options.reload)?;
@@ -55,12 +64,28 @@ pub fn build_site(options: &BuildOptions) -> crate::Result<BuildReport> {
     if options.reload {
         write_file(&assets.join("reload.js"), RELOAD.as_bytes())?;
     }
-    write_file(&assets.join(SEARCH_INDEX), index_site(&site)?.as_bytes())?;
     // A project's own file of the same name was copied above and wins; _headers merges it
     let shipped = |name: &str| site.files.contains_key(name);
-    for (path, bytes) in describe_site(&site)? {
-        if path == "_headers" || !shipped(&path) {
-            write_file(&options.output.join(&path), &bytes)?;
+    for (view, language) in views.iter().zip(&site.languages) {
+        let index = index_site(view)?;
+        write_file(&assets.join(create_search_path(language)), index.as_bytes())?;
+        let files = match language.default {
+            true => describe_site(view)?,
+            false => describe_language(view, &language.prefix)?,
+        };
+        for (path, bytes) in files {
+            if path == "_headers" || !shipped(&path) {
+                write_file(&options.output.join(&path), &bytes)?;
+            }
+        }
+        for (path, feed) in create_feeds(view) {
+            if !shipped(&path) {
+                write_file(&options.output.join(&path), feed.as_bytes())?;
+            }
+        }
+        if let Some(redirect) = create_redirect(view, language) {
+            let path = format!("{}index.html", language.prefix.trim_start_matches('/'));
+            write_file(&options.output.join(path), redirect.as_bytes())?;
         }
     }
     if !shipped("robots.txt") {
@@ -68,11 +93,6 @@ pub fn build_site(options: &BuildOptions) -> crate::Result<BuildReport> {
             &options.output.join("robots.txt"),
             create_robots(&site).as_bytes(),
         )?;
-    }
-    for (path, feed) in create_feeds(&site) {
-        if !shipped(&path) {
-            write_file(&options.output.join(&path), feed.as_bytes())?;
-        }
     }
     if let Some(sitemap) = create_sitemap(&site)
         && !shipped("sitemap.xml")
@@ -130,14 +150,19 @@ fn create_feeds(site: &Site) -> Vec<(String, String)> {
             escape(
                 section
                     .site_description
-                    .as_ref()
-                    .or(site.config.description.as_ref())
-                    .map_or("", String::as_str)
+                    .as_deref()
+                    .or(site.config.description.as_deref())
+                    .unwrap_or_default()
             ),
             escape(&link),
         );
         for post in list_posts(prefix, &pages) {
-            let url = escape(&format!("{origin}{}", post.url));
+            let link = if post.untranslated {
+                &post.key
+            } else {
+                &post.url
+            };
+            let url = escape(&format!("{origin}{link}"));
             feed.push_str(&format!(
                 "<item>\n<title>{}</title>\n<link>{url}</link>\n<guid>{url}</guid>\n",
                 escape(&post.title)
@@ -217,6 +242,42 @@ fn create_parent(path: &Path) -> crate::Result<()> {
         Some(parent) => std::fs::create_dir_all(parent).map_err(Error::io(parent)),
         None => Ok(()),
     }
+}
+
+// A language without a home page of its own sends `/<code>/` to its first page
+fn create_redirect(view: &Site, language: &SiteLanguage) -> Option<String> {
+    let home = |page: &Page| page.url == language.prefix && !page.untranslated;
+    if language.default || view.pages.iter().any(home) {
+        return None;
+    }
+    // A page the project wrote before one a section generated, such as a blog's index
+    let own = (view.pages.iter())
+        .filter(|page| !page.untranslated && page.path != NOT_FOUND_PAGE);
+    let first =
+        (own.clone().find(|page| !page.source.is_empty())).or(own.clone().next())?;
+    let url = format!("{}{}", view.config.read_base(), first.url);
+    let url = url.replace('&', "&amp;").replace('"', "&quot;");
+    Some(format!(
+        "<!doctype html>\n<html lang=\"{}\">\n<meta charset=\"utf-8\">\n\
+         <meta http-equiv=\"refresh\" content=\"0; url={url}\">\n\
+         <link rel=\"canonical\" href=\"{url}\">\n<a href=\"{url}\">{url}</a>\n</html>\n",
+        language.locale
+    ))
+}
+
+// The built-in page, in the default language: a host serves one 404 for every URL
+fn create_not_found(language: &SiteLanguage) -> String {
+    ["error.title", "error.notFound", "error.home"].iter().fold(
+        NOT_FOUND.to_owned(),
+        |html, key| {
+            let text = language.read_message(key);
+            let text = text
+                .replace('&', "&amp;")
+                .replace('<', "&lt;")
+                .replace('>', "&gt;");
+            html.replace(&format!("{{{key}}}"), &text)
+        },
+    )
 }
 
 #[cfg(test)]

@@ -9,7 +9,7 @@ fn create_site() -> crate::Result<Site> {
     Ok(Site {
         root: PathBuf::from("."),
         config: Config::default(),
-        title: "Docs <&>".to_owned(),
+        title: "Docs <&>".into(),
         pages: vec![
             read_page("index.html", "<h1>Home</h1>")?,
             read_page(
@@ -25,6 +25,8 @@ fn create_site() -> crate::Result<Site> {
             .map(|asset| (asset.path.to_owned(), asset.content.to_owned()))
             .collect(),
         skills: vec![],
+        languages: vec![],
+        translations: std::collections::BTreeMap::new(),
     })
 }
 
@@ -60,7 +62,7 @@ fn labels_the_navigation_and_its_links() -> crate::Result<()> {
     let html = render_page(&site, &site.pages[0], false)?;
     assert!(html.contains(r#"<nav aria-label="Pages"><p data-label>Articles</p><ul>"#));
     site.config.links = vec![Link {
-        title: "Chat".to_owned(),
+        title: "Chat".into(),
         url: "https://chat.x".to_owned(),
         position: Position::Sidebar,
         ..Link::default()
@@ -123,7 +125,7 @@ fn adds_the_links_and_the_edit_link_from_the_config() -> crate::Result<()> {
     let html = render_page(&site, &site.pages[1], false)?;
     assert!(!html.contains("<htmlpress-links") && !html.contains("<htmlpress-edit"));
     site.config.links = vec![Link {
-        title: "GitHub".to_owned(),
+        title: "GitHub".into(),
         url: "https://github.com/x".to_owned(),
         position: Position::Header,
         icon: None,
@@ -292,7 +294,7 @@ fn fills_the_logo_banner_and_footer() -> crate::Result<()> {
     assert!(!html.contains("<htmlpress-banner") && !html.contains("rel=\"icon\""));
     assert!(html.contains(r#"<a href="https://htmlpress.dev">Htmlpress</a>"#));
     site.config.logo = Some("/logo.svg".to_owned());
-    site.config.banner = Some("<a href=\"/new\">New</a>".to_owned());
+    site.config.banner = Some("<a href=\"/new\">New</a>".into());
     let html = render_page(&site, &site.pages[0], false)?;
     assert!(html.contains(r#"<a href="/"><img src="/logo.svg" alt="">Docs"#));
     assert!(html.contains(r#"<link rel="icon" href="/logo.svg">"#));
@@ -305,7 +307,7 @@ fn fills_the_logo_banner_and_footer() -> crate::Result<()> {
 #[test]
 fn puts_the_description_under_the_brand_title() -> crate::Result<()> {
     let mut site = create_site()?;
-    site.config.description = Some("Notes <&>".to_owned());
+    site.config.description = Some("Notes <&>".into());
     let html = render_page(&site, &site.pages[0], false)?;
     assert!(html.contains(
         r#"<a href="/"><span>Docs &lt;&amp;&gt;<small>Notes &lt;&amp;&gt;</small></span></a>"#
@@ -318,14 +320,14 @@ fn puts_each_link_in_its_position() -> crate::Result<()> {
     let mut site = create_site()?;
     site.config.links = vec![
         Link {
-            title: "GitHub".to_owned(),
+            title: "GitHub".into(),
             url: "https://github.com/x".to_owned(),
             position: Position::Header,
             icon: None,
             prefix: None,
         },
         Link {
-            title: "Chat".to_owned(),
+            title: "Chat".into(),
             url: "https://chat.x".to_owned(),
             position: Position::Sidebar,
             icon: None,
@@ -373,19 +375,19 @@ fn create_sectioned_site() -> crate::Result<Site> {
     let mut site = create_site()?;
     site.config.sections = vec![
         Section {
-            title: "Docs".to_owned(),
+            title: "Docs".into(),
             prefix: Some("/".to_owned()),
             ..Section::default()
         },
         Section {
-            title: "API".to_owned(),
+            title: "API".into(),
             prefix: Some("/api/".to_owned()),
-            site_title: Some("API Reference".to_owned()),
+            site_title: Some("API Reference".into()),
             site_link: Some("/api/".to_owned()),
             ..Section::default()
         },
         Section {
-            title: "GitHub".to_owned(),
+            title: "GitHub".into(),
             kind: SectionKind::Custom,
             url: Some("https://github.com/x".to_owned()),
             position: Position::Sidebar,
@@ -425,7 +427,7 @@ fn puts_icons_before_link_and_section_titles() -> crate::Result<()> {
     let mut site = create_sectioned_site()?;
     site.config.sections[1].icon = Some("code".to_owned());
     site.config.links = vec![Link {
-        title: "Chat".to_owned(),
+        title: "Chat".into(),
         url: "https://chat.x".to_owned(),
         position: Position::Header,
         icon: Some("message-circle".to_owned()),
@@ -441,7 +443,7 @@ fn puts_icons_before_link_and_section_titles() -> crate::Result<()> {
 fn shows_a_prefixed_link_only_under_its_folder() -> crate::Result<()> {
     let mut site = create_site()?;
     site.config.links = vec![Link {
-        title: "Report".to_owned(),
+        title: "Report".into(),
         url: "https://issues.x".to_owned(),
         prefix: Some("/api/".to_owned()),
         ..Link::default()
@@ -518,6 +520,60 @@ fn lists_a_folder_with_only_its_index_as_one_page() -> crate::Result<()> {
     assert!(!html.contains(r#"<summary><a href="/start/">"#));
     assert!(html.contains(r#"<li><a href="/start/">Start</a></li>"#));
     assert!(html.contains(r#"<summary><a href="/api/">API</a></summary>"#));
+    Ok(())
+}
+
+#[test]
+fn nests_folders_inside_folders_and_pages_them_in_order() -> crate::Result<()> {
+    let mut site = create_site()?;
+    site.pages
+        .push(read_page("api/auth/index.html", "<title>Auth</title>")?);
+    site.pages
+        .push(read_page("api/auth/login.html", "<title>Login</title>")?);
+    site.pages.push(read_page(
+        "api/auth/oauth/token.html",
+        "<title>Token</title>",
+    )?);
+    site.pages
+        .push(read_page("zed.html", "<title>Zed</title>")?);
+    let html = render_page(&site, &site.pages[0], false)?;
+    assert!(html.contains(concat!(
+        r#"<li><details open><summary><a href="/api/auth/">Auth</a></summary><ul>"#,
+        r#"<li><a href="/api/auth/login.html">Login</a></li>"#,
+        r#"<li><details open><summary>oauth</summary><ul>"#,
+        r#"<li><a href="/api/auth/oauth/token.html">Token</a></li></ul></details></li>"#,
+    )));
+    let token = render_page(&site, &site.pages[6], false)?;
+    assert!(token.contains(r#"<a rel="next" href="/zed.html">"#));
+    Ok(())
+}
+
+#[test]
+fn writes_the_ui_in_the_pages_language() -> crate::Result<()> {
+    let mut site = create_site()?;
+    let config: Config = serde_saphyr::from_str(
+        "languages:\n  - { code: fa, label: فارسی, messages: { toc.title: فهرست } }\n  - { code: es, label: Español }\n",
+    )
+    .map_err(|error| Error::Page {
+        path: "htmlpress.yaml".into(),
+        message: error.to_string(),
+    })?;
+    site.languages =
+        crate::actions::language::resolve::resolve_languages(&config, "Docs");
+    site.pages[1].language = "es".to_owned();
+    site.pages[1].date = Some("2026-10-01".to_owned());
+    let html = render_page(&site, &site.pages[1], false)?;
+    assert!(html.contains(r#"<html lang="es">"#));
+    assert!(html.contains(r##"<a href="#content">Saltar al contenido</a>"##));
+    assert!(html.contains("<p>En esta página</p>"));
+    assert!(html.contains(
+        r#"Publicado el <time datetime="2026-10-01">1 de octubre de 2026</time>"#
+    ));
+    assert!(html.contains(r#"<a rel="prev" href="/"><small>Anterior</small>Home</a>"#));
+    assert!(html.contains(r#""search.label":"Buscar""#));
+    let home = render_page(&site, &site.pages[0], false)?;
+    assert!(home.contains(r#"<html lang="fa" dir="rtl">"#));
+    assert!(home.contains("<p>Created with"));
     Ok(())
 }
 

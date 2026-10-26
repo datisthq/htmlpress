@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Versioning</title>
+    <meta
+      name="description"
+      content="Publish docs for several releases side by side with sections or separate deploys."
+    />
+    <meta name="order" content="49" />
+    <meta name="icon" content="git-branch" />
+  </head>
+  <body>
+    <h1>Versioning</h1>
+    <p>
+      Htmlpress has no dedicated versioning feature: the building blocks it already has
+      cover the two common shapes. Pick by how far apart your versions are:
+    </p>
+    <ul>
+      <li>
+        <strong>One site, a section per version</strong>: a few versions whose docs live
+        on one branch.
+      </li>
+      <li>
+        <strong>One deploy per version</strong>: long-lived majors maintained on their own
+        branches.
+      </li>
+    </ul>
+    <p>
+      Most projects only need to keep the latest docs plus the previous major. If old
+      releases only need their notes, a
+      <a href="/customization/article-sections.html#changelog-sections"
+        >changelog section</a
+      >
+      is enough.
+    </p>
+
+    <h2>A section per version</h2>
+    <p>
+      Keep each older version's pages in a folder of its own. The current docs stay at
+      <code>/</code>, and each older version becomes a section:
+    </p>
+    <htmlpress-file-tree>
+      <ul>
+        <li>getting-started.html</li>
+        <li>
+          v1
+          <ul>
+            <li>index.html</li>
+            <li>getting-started.html</li>
+          </ul>
+        </li>
+      </ul>
+    </htmlpress-file-tree>
+    <pre data-title="htmlpress.yaml"><code class="language-yaml">title: Acme
+sections:
+  - title: Docs
+    prefix: /
+  - title: v1
+    prefix: /v1/
+    icon: archive
+    siteTitle: Acme v1</code></pre>
+    <p>
+      Longest-prefix matching routes every <code>/v1/…</code> page into the
+      <code>v1</code> section, so it gets its own sidebar while the rest of the site keeps
+      the current docs. <code>siteTitle</code> relabels the brand next to the logo inside
+      that section, so a reader always sees which version they are on. Set
+      <code>position: sidebar</code> to keep version tabs out of the header.
+    </p>
+    <p>To warn readers on old pages, start each with a callout:</p>
+    <pre><code class="language-html">&lt;htmlpress-callout type="warning"&gt;
+  &lt;p&gt;You are reading the docs for v1. &lt;a href="/getting-started.html"&gt;See the latest version&lt;/a&gt;.&lt;/p&gt;
+&lt;/htmlpress-callout&gt;</code></pre>
+    <p>Things to know:</p>
+    <ul>
+      <li>Search indexes the whole site, so results include every version's pages.</li>
+      <li>
+        Copying a folder per version duplicates content; freeze the old folder and only
+        fix it when necessary.
+      </li>
+    </ul>
+
+    <h2>One deploy per version</h2>
+    <p>
+      When each major lives on its own branch (<code>main</code>, <code>v1</code>, …),
+      build each branch as its own site and serve it from its own address: a subdomain
+      (<code>v1.docs.example.com</code>) or a sub-path (<code>docs.example.com/v1/</code>)
+      with
+      <a href="/deployment/github-pages.html#configure-base-for-project-sites"
+        ><code>base</code></a
+      >.
+    </p>
+    <pre
+      data-title="htmlpress.yaml (v1 branch)"
+    ><code class="language-yaml">site: https://docs.example.com
+base: /v1/
+title: Acme v1
+banner: You are reading the v1 docs · &lt;a href="https://docs.example.com/"&gt;Go to the latest →&lt;/a&gt;</code></pre>
+    <p>
+      <code>htmlpress start</code> and <code>preview</code> serve under the same base, so
+      the branch previews exactly as it deploys. Link the deploys to each other with a
+      <code>custom</code> section or a header
+      <a href="/customization/external-links.html">link</a>, which acts as a version
+      switcher:
+    </p>
+    <pre data-title="htmlpress.yaml (main branch)"><code class="language-yaml">sections:
+  - title: Docs
+    prefix: /
+  - title: v1
+    type: custom
+    url: https://docs.example.com/v1/
+    icon: archive</code></pre>
+    <p>
+      Each deploy has its own search index, sitemap and <code>llms.txt</code>, so versions
+      never mix. The cost is one build and one CI job per maintained branch; see
+      <a href="/deployment/">Deployment</a> for host setups. Most hosts deploy branches to
+      their own URLs out of the box.
+    </p>
+
+    <h2>See also</h2>
+    <ul>
+      <li>
+        <a href="/customization/article-sections.html">Article Sections</a>: section
+        types, prefixes and matching.
+      </li>
+      <li>
+        <a href="/customization/site-metadata.html">Site Metadata</a>: the
+        <code>banner</code>, <code>title</code> and <code>site</code> fields used above.
+      </li>
+    </ul>
+  </body>
+</html>

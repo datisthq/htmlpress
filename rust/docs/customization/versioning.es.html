@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <title>Versionado</title>
+    <meta
+      name="description"
+      content="Publica documentación para varias versiones en paralelo con secciones o despliegues separados."
+    />
+    <meta name="order" content="49" />
+    <meta name="icon" content="git-branch" />
+  </head>
+  <body>
+    <h1>Versionado</h1>
+    <p>
+      Htmlpress no tiene una función dedicada al versionado: las piezas que ya ofrece
+      cubren los dos casos habituales. Elige según lo distintas que sean tus versiones:
+    </p>
+    <ul>
+      <li>
+        <strong>Un sitio, una sección por versión</strong>: unas pocas versiones cuya
+        documentación vive en una sola rama.
+      </li>
+      <li>
+        <strong>Un despliegue por versión</strong>: versiones mayores de larga duración
+        mantenidas en sus propias ramas.
+      </li>
+    </ul>
+    <p>
+      La mayoría de los proyectos solo necesitan mantener la documentación más reciente y
+      la de la versión mayor anterior. Si las versiones antiguas solo necesitan sus notas,
+      basta con una
+      <a href="/es/customization/article-sections.html#secciones-de-registro-de-cambios"
+        >sección de registro de cambios</a
+      >.
+    </p>
+
+    <h2>Una sección por versión</h2>
+    <p>
+      Guarda las páginas de cada versión anterior en una carpeta propia. La documentación
+      actual se queda en <code>/</code>, y cada versión anterior se convierte en una
+      sección:
+    </p>
+    <htmlpress-file-tree>
+      <ul>
+        <li>getting-started.html</li>
+        <li>
+          v1
+          <ul>
+            <li>index.html</li>
+            <li>getting-started.html</li>
+          </ul>
+        </li>
+      </ul>
+    </htmlpress-file-tree>
+    <pre data-title="htmlpress.yaml"><code class="language-yaml">title: Acme
+sections:
+  - title: Docs
+    prefix: /
+  - title: v1
+    prefix: /v1/
+    icon: archive
+    siteTitle: Acme v1</code></pre>
+    <p>
+      La correspondencia por el prefijo más largo lleva cada página <code>/v1/…</code> a
+      la sección <code>v1</code>, así que obtiene su propia barra lateral mientras el
+      resto del sitio mantiene la documentación actual. <code>siteTitle</code> cambia el
+      texto de la marca junto al logo dentro de esa sección, para que el lector siempre
+      vea en qué versión está. Define <code>position: sidebar</code> para sacar las
+      pestañas de versión de la cabecera.
+    </p>
+    <p>
+      Para avisar a los lectores en las páginas antiguas, empieza cada una con un callout:
+    </p>
+    <pre><code class="language-html">&lt;htmlpress-callout type="warning"&gt;
+  &lt;p&gt;You are reading the docs for v1. &lt;a href="/getting-started.html"&gt;See the latest version&lt;/a&gt;.&lt;/p&gt;
+&lt;/htmlpress-callout&gt;</code></pre>
+    <p>Conviene saber:</p>
+    <ul>
+      <li>
+        La búsqueda indexa todo el sitio, así que los resultados incluyen las páginas de
+        todas las versiones.
+      </li>
+      <li>
+        Copiar una carpeta por versión duplica contenido; congela la carpeta antigua y
+        corrígela solo cuando sea necesario.
+      </li>
+    </ul>
+
+    <h2>Un despliegue por versión</h2>
+    <p>
+      Cuando cada versión mayor vive en su propia rama (<code>main</code>,
+      <code>v1</code>, …), compila cada rama como un sitio propio y sírvela desde su
+      propia dirección: un subdominio (<code>v1.docs.example.com</code>) o una subruta
+      (<code>docs.example.com/v1/</code>) con
+      <a href="/deployment/github-pages.html#configure-base-for-project-sites"
+        ><code>base</code></a
+      >.
+    </p>
+    <pre
+      data-title="htmlpress.yaml (rama v1)"
+    ><code class="language-yaml">site: https://docs.example.com
+base: /v1/
+title: Acme v1
+banner: You are reading the v1 docs · &lt;a href="https://docs.example.com/"&gt;Go to the latest →&lt;/a&gt;</code></pre>
+    <p>
+      <code>htmlpress start</code> y <code>preview</code> sirven bajo la misma base, así
+      que la rama se previsualiza exactamente como se despliega. Enlaza los despliegues
+      entre sí con una sección <code>custom</code> o un
+      <a href="/es/customization/external-links.html">enlace</a> de la cabecera, que actúa
+      como selector de versión:
+    </p>
+    <pre data-title="htmlpress.yaml (rama main)"><code class="language-yaml">sections:
+  - title: Docs
+    prefix: /
+  - title: v1
+    type: custom
+    url: https://docs.example.com/v1/
+    icon: archive</code></pre>
+    <p>
+      Cada despliegue tiene su propio índice de búsqueda, sitemap y
+      <code>llms.txt</code>, así que las versiones nunca se mezclan. El coste es una
+      compilación y un job de CI por cada rama mantenida; consulta
+      <a href="/deployment/">Deployment</a> para la configuración de cada hosting. La
+      mayoría de los hostings despliegan las ramas en sus propias URL de serie.
+    </p>
+
+    <h2>Ver también</h2>
+    <ul>
+      <li>
+        <a href="/es/customization/article-sections.html">Secciones de artículos</a>:
+        tipos de sección, prefijos y correspondencia.
+      </li>
+      <li>
+        <a href="/es/customization/site-metadata.html">Metadatos del sitio</a>: los campos
+        <code>banner</code>, <code>title</code> y <code>site</code> usados arriba.
+      </li>
+    </ul>
+  </body>
+</html>

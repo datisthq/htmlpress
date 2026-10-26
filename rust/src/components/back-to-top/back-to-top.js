@@ -4,7 +4,7 @@ class HtmlpressBackToTop extends HTMLElement {
   connectedCallback() {
     const link = document.createElement("a")
     link.href = "#"
-    link.setAttribute("aria-label", "Back to top")
+    link.setAttribute("aria-label", readMessages()["nav.backToTop"] ?? "Back to top")
     link.setAttribute("aria-keyshortcuts", "B")
     link.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true">${ICON}</svg>`
     this.replaceChildren(link)
@@ -30,3 +30,12 @@ function isTyping(target) {
 }
 
 customElements.define("htmlpress-back-to-top", HtmlpressBackToTop)
+
+// The page's UI strings; English when a layout leaves them out
+function readMessages() {
+  try {
+    return JSON.parse(document.getElementById("htmlpress-messages")?.textContent ?? "{}")
+  } catch {
+    return {}
+  }
+}

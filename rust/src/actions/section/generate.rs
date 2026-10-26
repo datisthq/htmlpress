@@ -3,10 +3,12 @@ use std::path::Path;
 
 use crate::actions::changelog::split::split_changelog;
 use crate::actions::date::format::format_date;
+use crate::actions::language::detect::create_key;
 use crate::actions::page::read::read_page;
 use crate::actions::path::contain::read_contained;
-use crate::models::config::{Config, Section, SectionKind};
+use crate::models::config::{Section, SectionKind};
 use crate::models::error::Error;
+use crate::models::language::SiteLanguage;
 use crate::models::page::Page;
 use crate::settings::CONFIG_FILE;
 
@@ -15,17 +17,17 @@ use crate::settings::CONFIG_FILE;
 /// the generated one, and no generated page replaces a page the project has.
 pub(crate) fn generate_pages(
     root: &Path,
-    config: &Config,
+    language: &SiteLanguage,
     pages: &[Page],
 ) -> crate::Result<Vec<Page>> {
     let mut generated = vec![];
-    for section in &config.sections {
+    for section in &language.config.sections {
         let Some(prefix) = section.prefix.as_deref() else {
             continue;
         };
         let created = match section.kind {
-            SectionKind::Blog => create_blog(section, prefix, pages)?,
-            SectionKind::Changelog => create_changelog(root, section, prefix)?,
+            SectionKind::Blog => create_blog(section, prefix, pages, language)?,
+            SectionKind::Changelog => create_changelog(root, section, prefix, language)?,
             SectionKind::Article | SectionKind::Custom => vec![],
         };
         let taken = |page: &Page| {
@@ -57,9 +59,20 @@ fn create_blog(
     section: &Section,
     prefix: &str,
     pages: &[Page],
+    language: &SiteLanguage,
 ) -> crate::Result<Vec<Page>> {
     let all: Vec<&Page> = pages.iter().collect();
-    let posts = list_posts(prefix, &all);
+    let mut posts = list_posts(prefix, &all);
+    // Another language's blog lists the default posts it has no translation of, as its
+    // navigation does, so it never reads "No posts yet" beside a list of posts
+    if !language.default {
+        let original = list_posts(&create_key(prefix, language), &all);
+        let missing: Vec<&Page> = (original.into_iter())
+            .filter(|post| !posts.iter().any(|other| other.key == post.key))
+            .collect();
+        posts.extend(missing);
+        posts.sort_by(|a, b| b.date.cmp(&a.date).then_with(|| a.url.cmp(&b.url)));
+    }
     let mut tags: Vec<&str> = posts
         .iter()
         .flat_map(|post| post.tags.iter().map(String::as_str))
@@ -69,9 +82,10 @@ fn create_blog(
     let folder = prefix.trim_start_matches('/');
     let title = escape_html(&section.title);
     let mut index = format!("<title>{title}</title>\n<h1>{title}</h1>\n");
-    index.push_str(&create_post_list(&posts));
+    index.push_str(&create_post_list(&posts, language));
     if !tags.is_empty() {
-        index.push_str("<h2>Tags</h2>\n<p>");
+        let heading = escape_html(language.read_message("nav.tags"));
+        let _ = write!(index, "<h2>{heading}</h2>\n<p>");
         for tag in &tags {
             let _ = write!(
                 index,
@@ -89,10 +103,10 @@ fn create_blog(
             .copied()
             .filter(|post| post.tags.iter().any(|other| other == tag))
             .collect();
-        let name = escape_html(tag);
+        let title = escape_html(&language.format_message("blog.tagged", &[("tag", tag)]));
         let html = format!(
-            "<title>Tagged “{name}”</title>\n<h1>Tagged “{name}”</h1>\n{}",
-            create_post_list(&tagged)
+            "<title>{title}</title>\n<h1>{title}</h1>\n{}",
+            create_post_list(&tagged, language)
         );
         let path = format!(
             "{}index.html",
@@ -103,15 +117,18 @@ fn create_blog(
     Ok(created)
 }
 
-fn create_post_list(posts: &[&Page]) -> String {
+fn create_post_list(posts: &[&Page], language: &SiteLanguage) -> String {
     if posts.is_empty() {
-        return "<p>No posts yet.</p>\n".to_owned();
+        return format!(
+            "<p>{}</p>\n",
+            escape_html(language.read_message("blog.empty"))
+        );
     }
     let mut html = String::from("<htmlpress-grid cols=\"2\">\n");
     for post in posts {
         let mut byline: Vec<String> = vec![];
         if let Some(date) = &post.date {
-            byline.push(format_date(date));
+            byline.push(format_date(date, language));
         }
         if !post.authors.is_empty() {
             byline.push(post.authors.join(", "));
@@ -142,6 +159,7 @@ fn create_changelog(
     root: &Path,
     section: &Section,
     prefix: &str,
+    language: &SiteLanguage,
 ) -> crate::Result<Vec<Page>> {
     let source = section.source.as_deref().unwrap_or_default();
     let markdown =
@@ -170,7 +188,9 @@ fn create_changelog(
             &html,
             source,
         )?);
-        let when = date.map_or(String::new(), |date| format!(" · {}", format_date(date)));
+        let when = date.map_or(String::new(), |date| {
+            format!(" · {}", format_date(date, language))
+        });
         let _ = writeln!(
             index,
             "<li><a href=\"{}\">{version}</a>{when}</li>",

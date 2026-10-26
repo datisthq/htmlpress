@@ -12,7 +12,7 @@ fn splits_each_page_at_its_headings() -> crate::Result<()> {
             base: Some("/repo/".to_owned()),
             ..Config::default()
         },
-        title: "Docs".to_owned(),
+        title: "Docs".into(),
         pages: vec![
             read_page(
                 "guide.html",
@@ -25,6 +25,8 @@ fn splits_each_page_at_its_headings() -> crate::Result<()> {
         files: Default::default(),
         assets: Default::default(),
         skills: vec![],
+        languages: vec![],
+        translations: std::collections::BTreeMap::new(),
     };
     let index: serde_json::Value = serde_json::from_str(&index_site(&site)?)
         .map_err(|error| Error::Usage(error.to_string()))?;

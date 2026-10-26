@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <title>Agentes de IA</title>
+    <meta
+      name="description"
+      content="Sirve Markdown, llms.txt, señales de contenido y skills de agente a los agentes de IA."
+    />
+    <meta name="order" content="51" />
+    <meta name="icon" content="bot" />
+  </head>
+  <body>
+    <h1>Agentes de IA</h1>
+    <p>
+      Cada compilación publica tu sitio en los formatos que mejor leen los agentes de IA,
+      junto al HTML que reciben los navegadores. No necesitas configurar nada para ello.
+      Las dos claves de abajo solo lo ajustan.
+    </p>
+
+    <h2>Qué genera la compilación</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Archivo</th>
+          <th>Propósito</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>&lt;page&gt;.md</code></td>
+          <td>
+            Una copia en Markdown de cada página junto a su HTML:
+            <code>guides/build.html</code> obtiene <code>guides/build.md</code>, con su
+            título, descripción y contenido, y cada componente reducido a Markdown simple
+            (un callout a una cita, las pestañas a encabezados en negrita)
+          </td>
+        </tr>
+        <tr>
+          <td><code>/llms.txt</code></td>
+          <td>
+            Un índice <a href="https://llmstxt.org/">llms.txt</a>: el título y la
+            descripción del sitio y, después, la copia en Markdown de cada página con su
+            descripción, agrupadas como las agrupa la navegación
+          </td>
+        </tr>
+        <tr>
+          <td><code>/index.md</code></td>
+          <td>
+            La copia de la página de inicio, o una copia de <code>llms.txt</code> cuando
+            el proyecto no tiene <code>index.html</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>/robots.txt</code></td>
+          <td>
+            Una línea <code>Content-Signal</code> que indica cómo pueden usar tu contenido
+            los sistemas automatizados
+          </td>
+        </tr>
+        <tr>
+          <td><code>/_headers</code></td>
+          <td>
+            Para Cloudflare y Netlify: una cabecera <code>Link</code> en la página de
+            inicio que apunta a <code>llms.txt</code>, <code>index.md</code> y al índice
+            de skills
+          </td>
+        </tr>
+        <tr>
+          <td><code>/.well-known/agent-skills/index.json</code></td>
+          <td>
+            Un índice de descubrimiento de
+            <a href="https://agentskills.io/">Agent Skills</a>, cuando se define
+            <code>skills</code>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      Cada página lleva además
+      <code>&lt;link rel="alternate" type="text/markdown"&gt;</code> apuntando a su copia,
+      y la barra de herramientas de la página enlaza la copia y, con su script, la copia
+      al portapapeles o abre la página en ChatGPT o Claude.
+    </p>
+    <p>
+      Un archivo del proyecto con el mismo nombre reemplaza al generado.
+      <code>_headers</code> es la única excepción: tus reglas se conservan y la regla
+      <code>Link</code> generada se añade después de ellas.
+      <code>htmlpress start</code> ejecuta la misma compilación, así que también sirve
+      estos archivos.
+    </p>
+
+    <h2>Señales de contenido</h2>
+    <p>
+      <code>contentSignals</code> controla la línea de
+      <a href="https://contentsignals.org/">Content Signals</a> en
+      <code>robots.txt</code>. Las tres señales valen <code>true</code> por defecto:
+    </p>
+    <pre><code class="language-yaml">contentSignals:
+  search: true # build a search index and show links to your pages
+  aiInput: true # feed pages to a model answering a question in real time
+  aiTrain: false # train or fine-tune models on your content</code></pre>
+    <p>
+      La línea que produce queda en el grupo <code>User-agent: *</code>:
+      <code>Content-Signal: search=yes, ai-input=yes, ai-train=no</code>.
+    </p>
+
+    <h2>Skills de agente</h2>
+    <p>
+      Si tu proyecto incluye
+      <a href="https://agentskills.io/specification">Agent Skills</a>, apunta
+      <code>skills</code> a sus archivos <code>SKILL.md</code>, con un glob o una lista,
+      relativos al proyecto:
+    </p>
+    <pre><code class="language-yaml">skills: .skills/*/SKILL.md</code></pre>
+    <p>
+      Cada skill encontrada se publica en
+      <code>/.well-known/agent-skills/&lt;name&gt;/SKILL.md</code> y se lista en
+      <code>index.json</code> con un resumen <code>sha256</code>. Su frontmatter necesita
+      un <code>name</code>
+      (letras minúsculas, dígitos y guiones simples, como máximo 64 caracteres) y una
+      <code>description</code> (como máximo 1024), y la compilación falla si falta alguno
+      o si dos skills comparten nombre. Este sitio publica la skill propia de htmlpress en
+      <a href="/.well-known/agent-skills/index.json">/.well-known/agent-skills/</a>.
+    </p>
+
+    <h2>Markdown bajo petición</h2>
+    <p>
+      Los agentes piden Markdown enviando <code>Accept: text/markdown</code> a la URL de
+      la página. Un hosting estático no puede responder a eso por sí solo, pero una
+      reescritura en tu CDN puede servir la copia <code>.md</code> de la página para esas
+      peticiones y dejar el HTML para todos los demás. Cada página tiene una copia, así
+      que la reescritura nunca apunta a un archivo inexistente. Para una regla lista para
+      usar, consulta <a href="/deployment/cloudflare.html">Cloudflare</a>.
+    </p>
+
+    <h2>Ver también</h2>
+    <ul>
+      <li>
+        <a href="/agent-skills.html">Agent Skills</a>: instala la skill propia de
+        htmlpress en tu agente de programación.
+      </li>
+      <li>
+        <a href="/es/customization/configuration-file.html">Archivo de configuración</a>:
+        todas las claves de primer nivel.
+      </li>
+      <li>
+        <a href="/es/customization/custom-routes.html">Rutas personalizadas</a>: archivos
+        estáticos copiados junto a tus páginas.
+      </li>
+    </ul>
+  </body>
+</html>

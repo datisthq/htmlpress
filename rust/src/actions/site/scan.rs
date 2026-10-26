@@ -3,6 +3,8 @@ use std::path::Path;
 
 use crate::actions::config::load::load_config;
 use crate::actions::git::read::read_dates;
+use crate::actions::language::detect::{create_key, detect_language};
+use crate::actions::language::resolve::resolve_languages;
 use crate::actions::markdown::render::render_markdown;
 use crate::actions::page::include::resolve_includes;
 use crate::actions::page::patch::patch_page;
@@ -16,12 +18,17 @@ use crate::models::config::Config;
 use crate::models::error::Error;
 use crate::models::page::Page;
 use crate::models::site::Site;
-use crate::settings::{ASSETS, CONFIG_FILE, PROJECT_DIR};
+use crate::settings::{ASSETS, CONFIG_FILE, NOT_FOUND_PAGE, PROJECT_DIR};
 
 /// Read a project: its config, its pages and the other files under its include bases.
 /// Dot-folders and dot-files (`.htmlpress/`, `.git/`) and `node_modules/` are skipped.
 pub fn scan_site(root: &Path) -> crate::Result<Site> {
-    let config = load_config(root)?;
+    let languages = resolve_languages(&load_config(root)?, &read_folder_name(root));
+    let Some(language) = languages.first() else {
+        return Err(Error::Usage("no language to build".to_owned()));
+    };
+    // The default language's copy, so every text the build reads is already localized
+    let config = language.config.clone();
     let mut paths = vec![];
     // A symlinked base would read, and publish, files from outside the project
     let canonical = root.canonicalize().map_err(Error::io(root))?;
@@ -62,6 +69,10 @@ pub fn scan_site(root: &Path) -> crate::Result<Site> {
     }
     let files = selection.files;
     apply_patches(root, &config, &mut pages)?;
+    let suffixes = !config.languages.is_empty();
+    for page in &mut pages {
+        detect_language(page, &languages, suffixes).map_err(Error::page(&page.source))?;
+    }
     check_urls(&pages)?;
     // Before the generated pages join: a changelog's versions share its source file, whose
     // last change says nothing about when one version was written
@@ -69,14 +80,16 @@ pub fn scan_site(root: &Path) -> crate::Result<Site> {
     for page in &mut pages {
         page.updated = dates.get(&page.source).cloned();
     }
-    let generated = generate_pages(root, &config, &pages)?;
+    let mut generated = vec![];
+    for language in &languages {
+        for mut page in generate_pages(root, language, &pages)? {
+            page.key = create_key(&page.url, language);
+            page.language = language.code.clone();
+            generated.push(page);
+        }
+    }
     pages.extend(generated);
-    pages.sort_by(|a, b| {
-        let rank =
-            |page: &crate::Page| (page.url != "/", page.order.is_none(), page.order);
-        // By URL, not path, so a folder's index (`/api/`) leads its pages (`/api/auth.html`)
-        rank(a).cmp(&rank(b)).then_with(|| a.url.cmp(&b.url))
-    });
+    sort_pages(&mut pages);
 
     let assets = read_assets(root)?;
     for page in &pages {
@@ -88,10 +101,8 @@ pub fn scan_site(root: &Path) -> crate::Result<Site> {
             )));
         }
     }
-    let title = config
-        .title
-        .clone()
-        .unwrap_or_else(|| read_folder_name(root));
+    let title = language.title.clone();
+    let translations = list_translations(&pages);
     let skills = load_skills(root, &config.skills)?;
     Ok(Site {
         root: root.to_owned(),
@@ -101,6 +112,8 @@ pub fn scan_site(root: &Path) -> crate::Result<Site> {
         files,
         assets,
         skills,
+        translations,
+        languages,
     })
 }
 
@@ -147,6 +160,32 @@ fn read_patched_file(root: &Path, bases: &[String], file: &str) -> Result<Page, 
         source: file.to_owned(),
         ..page
     })
+}
+
+fn list_translations(pages: &[Page]) -> BTreeMap<String, BTreeMap<String, String>> {
+    let mut translations: BTreeMap<String, BTreeMap<String, String>> = BTreeMap::new();
+    for page in pages.iter().filter(|page| page.path != NOT_FOUND_PAGE) {
+        (translations.entry(page.key.clone()).or_default())
+            .insert(page.language.clone(), page.url.clone());
+    }
+    translations
+}
+
+/// Sort pages into navigation order: each language's home first, then, as in Livemark,
+/// ordered pages ascending, the rest, then negative orders with -1 last.
+pub(crate) fn sort_pages(pages: &mut [Page]) {
+    pages.sort_by(|a, b| {
+        let rank = |page: &Page| {
+            let group = match page.order {
+                Some(order) if order < 0 => 2,
+                Some(_) => 0,
+                None => 1,
+            };
+            (page.key != "/" && page.url != "/", group, page.order)
+        };
+        // By URL, not path, so a folder's index (`/api/`) leads its pages (`/api/auth.html`)
+        rank(a).cmp(&rank(b)).then_with(|| a.url.cmp(&b.url))
+    });
 }
 
 // Two pages on one URL would overwrite each other's output without a word

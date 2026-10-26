@@ -10,6 +10,15 @@ pub struct Page {
     pub source: String,
     /// The root-relative URL it is served at: `/`, `/guides/`, `/guides/build.html`.
     pub url: String,
+    /// The URL it shares with its translations: its own without the language's prefix.
+    pub key: String,
+    /// `<meta name="language">`, else the `.<code>.html` suffix: the code of the language it
+    /// is written in; the default language's when empty.
+    pub language: String,
+    /// A default-language page listed in another language's navigation for want of a
+    /// translation; it links to `key`, and is built only in its own language.
+    #[serde(skip)]
+    pub untranslated: bool,
     /// `<title>`, else the first `<h1>`, else the file name.
     pub title: String,
     /// `<meta name="label">`: a shorter title for the navigation.

@@ -27,7 +27,7 @@ fn reads_the_links_and_the_edit_url() -> crate::Result<()> {
     let config = load_config(root.path())?;
     assert_eq!(config.edit.as_deref(), Some("https://example.com/edit/"));
     assert_eq!(config.links.len(), 2);
-    assert_eq!(config.links[0].title, "GitHub");
+    assert_eq!(config.links[0].title, "GitHub".into());
     assert_eq!(config.links[0].url, "https://github.com");
     assert_eq!(config.links[0].position, Position::Header);
     assert_eq!(config.links[1].position, Position::Sidebar);
@@ -169,5 +169,34 @@ fn rejects_an_unknown_code_theme() -> crate::Result<()> {
         load_config(root.path()),
         Err(Error::Config { .. })
     ));
+    Ok(())
+}
+
+#[test]
+fn reads_languages_and_rejects_bad_ones() -> crate::Result<()> {
+    let root = tempfile::tempdir().map_err(Error::io("tempdir"))?;
+    let write = |text: &str| {
+        std::fs::write(root.path().join(CONFIG_FILE), text).map_err(Error::io("write"))
+    };
+    write(
+        "title: { en: Docs, es: Documentos }\nlanguages:\n  - { code: en, label: English }\n  - { code: es, label: Español, flag: es }\n",
+    )?;
+    let config = load_config(root.path())?;
+    assert_eq!(config.languages.len(), 2);
+    let bad = [
+        "  - { code: EN, label: English }\n",
+        "  - { code: en, label: English }\n  - { code: en, label: Again }\n",
+        "  - { code: en, label: \" \" }\n",
+        "  - { code: en, label: English, flag: gbr }\n",
+        "  - { code: en, label: English, messages: { nope: x } }\n",
+        "  - { code: en, label: English }\n  - { code: es, label: Español }\nsections:\n  - { title: S, prefix: /es/x/ }\n",
+    ];
+    for text in bad {
+        write(&format!("languages:\n{text}"))?;
+        assert!(
+            matches!(load_config(root.path()), Err(Error::Config { .. })),
+            "{text}"
+        );
+    }
     Ok(())
 }

@@ -4,12 +4,22 @@ use lol_html::{RewriteStrSettings, element, rewrite_str, text};
 
 use crate::actions::section::find::find_section;
 use crate::models::error::Error;
+use crate::models::language::SiteLanguage;
 use crate::models::page::Page;
 use crate::models::site::Site;
 use crate::settings::NOT_FOUND_PAGE;
 
 /// Where the build writes the search index, under the assets folder.
 pub(crate) const SEARCH_INDEX: &str = "search.json";
+
+/// Where a language's search index is written under `_htmlpress/`: `search.json` for the
+/// default language, `search.<code>.json` for the others.
+pub(crate) fn create_search_path(language: &SiteLanguage) -> String {
+    match language.default {
+        true => SEARCH_INDEX.to_owned(),
+        false => format!("search.{}.json", language.code),
+    }
+}
 
 // A chunk this long already shows what it is about; the rest only grows the download
 const MAX_TEXT: usize = 1500;
@@ -19,7 +29,8 @@ const MAX_TEXT: usize = 1500;
 pub(crate) fn index_site(site: &Site) -> crate::Result<String> {
     let base = site.config.read_base();
     let mut pages = vec![];
-    for page in site.pages.iter().filter(|page| page.path != NOT_FOUND_PAGE) {
+    let pages_in = |page: &&Page| page.path != NOT_FOUND_PAGE && !page.untranslated;
+    for page in site.pages.iter().filter(pages_in) {
         let section = find_section(&site.config.sections, &page.url)
             .and_then(|index| site.config.sections.get(index))
             .map(|section| section.title.clone());

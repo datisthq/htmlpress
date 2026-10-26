@@ -52,7 +52,8 @@ run from source: `cargo run --manifest-path rust/Cargo.toml -- build docs`.
    sorts them by `include` (pages, `**/*.html` when unset) and `exclude` (dropped); other
    files under a base, `.html` outside `include` too, are copied. Every path is served
    without its base, so `Page.path` is the output path and `Page.source` the file's. Pages sort `index.html`
-   first, then by `<meta name="order">`, then by path.
+   first, then by `<meta name="order">` (negatives last), then by path; `nav/build` nests
+   them by folder for the sidebar and the pager.
    `scan_site` resolves `<htmlpress-include>` (`page/include`, through `path/contain`) in a
    page's source before `read_page`, which has no filesystem access, so included content
    reaches the TOC, search and the Markdown copies like the page's own.
@@ -103,6 +104,19 @@ run from source: `cargo run --manifest-path rust/Cargo.toml -- build docs`.
    `<pre>` into plain HTML, since htmd fences only `<pre><code>`), `llms.txt`, the skills
    `load_skills` matched, and `_headers`; a shipped file of the same name wins, except
    `_headers`, which is extended
+
+## Languages
+
+`scan_site` resolves `languages` first (`language/resolve`): each `SiteLanguage` holds its
+prefix, its UI strings (`src/messages/<code>.yaml`, English holding every key, a unit test
+checking the others match) and a copy of the config with every `Localized` text, section
+prefix and link prefix in that language; `Site.config` is the default language's copy.
+`language/detect` moves each page under its language's prefix and sets `Page.key`, the URL
+translations share, which the sort, `Site.translations`, the picker and hreflang use.
+`build_site` renders each language through `site/localize`: that language's config, its own
+pages, and the default pages it lacks, marked `untranslated`, listed at the language's URL but
+linked at their key and never built there. Scripts read their strings from the
+`#htmlpress-messages` JSON in the head (`SCRIPT_MESSAGES`), each with its English fallback.
 
 ## Reading files a page or the config names
 

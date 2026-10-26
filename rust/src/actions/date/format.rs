@@ -1,3 +1,5 @@
+use crate::models::language::SiteLanguage;
+
 const MONTHS: [&str; 12] = [
     "January",
     "February",
@@ -14,15 +16,21 @@ const MONTHS: [&str; 12] = [
 ];
 const WEEKDAYS: [&str; 7] = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
-/// A `YYYY-MM-DD` date as readers see it, `October 1, 2026`; the input as is when it is
-/// not one.
-pub(crate) fn format_date(date: &str) -> String {
-    match read_parts(date) {
-        Some((year, month, day)) => {
-            format!("{} {day}, {year}", MONTHS[(month - 1) as usize])
-        }
-        None => date.to_owned(),
-    }
+/// A `YYYY-MM-DD` date as readers of a language see it, `October 1, 2026` in English; the
+/// input as is when it is not one.
+pub(crate) fn format_date(date: &str, language: &SiteLanguage) -> String {
+    let Some((year, month, day)) = read_parts(date) else {
+        return date.to_owned();
+    };
+    let months = language.read_message("date.months");
+    let name = (months.split(',').nth((month - 1) as usize)).map_or("", str::trim);
+    let (year, day) = (year.to_string(), day.to_string());
+    let values = [
+        ("year", year.as_str()),
+        ("month", name),
+        ("day", day.as_str()),
+    ];
+    language.format_message("date.format", &values)
 }
 
 /// A `YYYY-MM-DD` date as RSS wants it, `Thu, 01 Oct 2026 00:00:00 +0000`.

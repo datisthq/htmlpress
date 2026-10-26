@@ -23,14 +23,15 @@ navigation and a theme, so a page carries content only: no `<nav>`, no site head
 - `<title>` names the page in the navigation and the tab; without it the first `<h1>`, then the
   file name. Give every page one `<title>` and one `<h1>`.
 - `<meta name="order" content="N">` (an integer) sorts the navigation, lower first.
-  `index.html` always comes first; unordered pages follow by path.
+  `index.html` always comes first; unordered pages follow by path, then negative orders
+  (`-1` pins a page last).
 - Other `<head>` tags (`<link>`, `<style>`, `<script>`) are kept and added after the theme.
 - `<h2>` and `<h3>` outside components make the page's table of contents; one without an
   `id` gets a slug of its text. Give a heading an `id` only when a link needs it fixed.
 - A heading takes `data-toc="false"` (shown, not in the TOC) or `data-toc="only"` (in the TOC,
   not shown); `<htmlpress-toc level="2">` in a page renders its TOC inline, and an image
   with `data-theme="light"` or `"dark"` shows in that theme only.
-- The navigation groups pages by top folder (`guides/…`), named by `guides/index.html`, whose title links to it.
+- The navigation nests pages by folder at any depth (`guides/cli/…` inside `guides/…`), each group named by its `index.html`, whose title links to it.
 - Pages are written to the same path, so link between them with relative hrefs
   (`guides/build.html`). Images and other files are copied as-is.
 
@@ -106,8 +107,20 @@ Put block content (`<p>`, `<h3>`, `<pre>`) inside a component, not bare text.
   under a glob's base, its folders before the first wildcard, are read, and they are served
   without it, so `docs/**/*.html` serves `docs/guide.html` at `/guide.html`; other files
   there are copied as-is), `exclude` (globs left out of the build), `skills` (globs of
-  `SKILL.md` files to publish for agents) and `edit` (URL prefix for an "Edit this page" link). An unknown key is an
-  error.
+  `SKILL.md` files to publish for agents), `edit` (URL prefix for an "Edit this page" link) and
+  `languages` (each `code` and `label`, optional `locale`, `dir`, `flag` and `messages`
+  replacing UI strings; the first is the default, the others are served under `/<code>/`).
+  With `languages`, `title`, `description`, `banner` and link and section titles also take a
+  map by language code (`title: { en: Docs, es: Documentos }`). An unknown key is an error.
+- A translation is `page.<code>.html` beside `page.html`, or a file with
+  `<meta name="language" content="<code>">`; it pairs with the original by URL below the
+  language prefix, so a renamed one needs the same `<meta name="path">`. Untranslated pages
+  stay listed in every language with a badge and link to the original.
+- Versioned docs have no dedicated option. For a few versions on one branch, put each older
+  version's pages in a folder with a section of its own (`title: v1`, `prefix: /v1/`,
+  `siteTitle: Acme v1`); search stays site-wide, so results mix versions. For majors on their
+  own branches, deploy each branch as its own site (`base`, a `banner` linking to the latest)
+  and link them with a `custom` section.
 - `<meta name="image" content="/cover.png">` in a page is its social preview image;
   `<meta name="date" content="YYYY-MM-DD">`, `<meta name="author">` (repeatable) and
   `<meta name="keywords" content="a, b">` date, sign and tag it (a blog post's metadata).
@@ -127,7 +140,9 @@ content="/start/">` (another URL), `<meta name="sidebar" content="false">` (buil
   - `layout.html` is plain HTML: htmlpress fills its `<head>` and replaces
     `<htmlpress-content>`, `<htmlpress-brand>`, `<htmlpress-banner>`, `<htmlpress-nav>`,
     `<htmlpress-links>`, `<htmlpress-breadcrumbs>`, `<htmlpress-toc>`, `<htmlpress-pager>`,
-    `<htmlpress-edit>`, `<htmlpress-toolbar>` and `<htmlpress-footer>` at build time.
+    `<htmlpress-edit>`, `<htmlpress-toolbar>`, `<htmlpress-footer>`, `<htmlpress-language>`
+    (the language picker) and `<htmlpress-skip>` at build time, every string in the page's
+    language.
   - `layouts/<name>.html` is another layout, used by a page with
     `<meta name="layout" content="<name>">` (a landing page without the sidebar); a
     missing one fails the build.

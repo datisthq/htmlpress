@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <title>Temas de sintaxis</title>
+    <meta
+      name="description"
+      content="Elige temas claro y oscuro para los bloques de código."
+    />
+    <meta name="order" content="46" />
+    <meta name="icon" content="palette" />
+  </head>
+  <body>
+    <h1>Temas de sintaxis</h1>
+    <p>
+      Los bloques de código con una clase <code>language-*</code> se resaltan al compilar
+      con <a href="https://github.com/getzola/giallo">giallo</a>, que ejecuta las
+      gramáticas y los temas TextMate de VS Code y produce la misma salida que Shiki. Cada
+      token lleva los colores de ambos temas mediante <code>light-dark()</code> de CSS,
+      así que el selector de tema también cambia el código, sin scripts ni parpadeos.
+    </p>
+
+    <h2>Configuración</h2>
+    <p>Los valores predeterminados son los de Livemark:</p>
+    <pre><code class="language-yaml">codeThemeLight: catppuccin-latte
+codeThemeDark: catppuccin-mocha</code></pre>
+    <p>
+      Funciona cualquiera de los ~60 temas integrados; puedes verlos en el
+      <a href="https://textmate-grammars-themes.netlify.app">playground de Shiki</a>. Un
+      nombre desconocido hace fallar la compilación. El marco, el fondo y la fuente del
+      bloque siguen viniendo de <code>styles/content.css</code>.
+    </p>
+
+    <h2>Combinaciones populares</h2>
+    <ul>
+      <li>
+        <code>catppuccin-latte</code> / <code>catppuccin-mocha</code> (la predeterminada)
+      </li>
+      <li><code>github-light</code> / <code>github-dark</code></li>
+      <li><code>one-light</code> / <code>one-dark-pro</code></li>
+      <li><code>solarized-light</code> / <code>solarized-dark</code></li>
+      <li><code>rose-pine-dawn</code> / <code>rose-pine</code></li>
+      <li><code>vitesse-light</code> / <code>vitesse-dark</code></li>
+    </ul>
+
+    <h2>Una nota sobre accesibilidad</h2>
+    <p>
+      Sean cuales sean los colores que des al código, comprueba cada uno contra el fondo
+      del bloque de código con una herramienta de contraste antes de publicar. El umbral
+      necesario para texto de tamaño normal es 4.5:1 (WCAG AA).
+    </p>
+
+    <h2>Ver también</h2>
+    <ul>
+      <li>
+        <a href="/authoring/code-blocks.html">Code Blocks</a>: la parte de redacción.
+      </li>
+      <li>
+        <a href="/es/customization/overriding-escaping.html">Sobrescritura/Escape</a>:
+        reemplaza los estilos de código del tema o el script del botón de copiar.
+      </li>
+    </ul>
+  </body>
+</html>

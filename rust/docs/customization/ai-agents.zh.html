@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="zh">
+  <head>
+    <title>AI 智能体</title>
+    <meta
+      name="description"
+      content="向 AI 智能体提供 Markdown、llms.txt、内容信号和智能体技能。"
+    />
+    <meta name="order" content="51" />
+    <meta name="icon" content="bot" />
+  </head>
+  <body>
+    <h1>AI 智能体</h1>
+    <p>
+      每次构建都会在浏览器所用的 HTML 之外，以 AI
+      智能体最易读取的形式发布你的站点。这无需任何配置，下面的两个键只用于调整它。
+    </p>
+
+    <h2>构建产出的内容</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>文件</th>
+          <th>用途</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>&lt;page&gt;.md</code></td>
+          <td>
+            每个页面旁都有一份 Markdown 副本：<code>guides/build.html</code> 对应
+            <code>guides/build.md</code>，包含标题、描述和内容，每个组件都简化为纯
+            Markdown（标注框变为引用，标签页变为粗体标题）
+          </td>
+        </tr>
+        <tr>
+          <td><code>/llms.txt</code></td>
+          <td>
+            一个
+            <a href="https://llmstxt.org/">llms.txt</a>
+            索引：先是站点标题和描述，然后是每个页面的 Markdown
+            副本及其描述，按导航的分组方式分组
+          </td>
+        </tr>
+        <tr>
+          <td><code>/index.md</code></td>
+          <td>
+            首页的副本；若项目没有 <code>index.html</code>，则为
+            <code>llms.txt</code> 的副本
+          </td>
+        </tr>
+        <tr>
+          <td><code>/robots.txt</code></td>
+          <td>一行 <code>Content-Signal</code>，声明自动化系统可以如何使用你的内容</td>
+        </tr>
+        <tr>
+          <td><code>/_headers</code></td>
+          <td>
+            用于 Cloudflare 和 Netlify：首页上的 <code>Link</code> 响应头，指向
+            <code>llms.txt</code>、<code>index.md</code> 和技能索引
+          </td>
+        </tr>
+        <tr>
+          <td><code>/.well-known/agent-skills/index.json</code></td>
+          <td>
+            一个 <a href="https://agentskills.io/">Agent Skills</a> 发现索引，在设置了
+            <code>skills</code> 时生成
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      每个页面还带有指向其副本的
+      <code>&lt;link rel="alternate" type="text/markdown"&gt;</code
+      >，旁边的页面工具栏会链接到该副本，并借助其脚本复制副本，或在 ChatGPT 或 Claude
+      中打开页面。
+    </p>
+    <p>
+      项目中的同名文件会替换生成的文件。<code>_headers</code>
+      是唯一的例外：你的规则会被保留，生成的 <code>Link</code> 规则追加在其后。<code
+        >htmlpress start</code
+      >
+      运行同样的构建，因此也会提供这些文件。
+    </p>
+
+    <h2>内容信号</h2>
+    <p>
+      <code>contentSignals</code> 控制 <code>robots.txt</code> 中的
+      <a href="https://contentsignals.org/">Content Signals</a> 行。三个信号默认都是
+      <code>true</code>：
+    </p>
+    <pre><code class="language-yaml">contentSignals:
+  search: true # build a search index and show links to your pages
+  aiInput: true # feed pages to a model answering a question in real time
+  aiTrain: false # train or fine-tune models on your content</code></pre>
+    <p>
+      它生成的行位于 <code>User-agent: *</code> 组中：
+      <code>Content-Signal: search=yes, ai-input=yes, ai-train=no</code>。
+    </p>
+
+    <h2>智能体技能</h2>
+    <p>
+      如果你的项目附带
+      <a href="https://agentskills.io/specification">Agent Skills</a>，请将
+      <code>skills</code> 指向它们的 <code>SKILL.md</code> 文件，可以是一个 glob
+      或一个列表，路径相对于项目：
+    </p>
+    <pre><code class="language-yaml">skills: .skills/*/SKILL.md</code></pre>
+    <p>
+      每个匹配的技能都会发布在
+      <code>/.well-known/agent-skills/&lt;name&gt;/SKILL.md</code>，并连同
+      <code>sha256</code> 摘要列在 <code>index.json</code> 中。其 frontmatter 需要一个
+      <code>name</code>（小写字母、数字和单个连字符，最多 64 个字符）和一个
+      <code>description</code>（最多 1024
+      个字符）；若缺少任一字段，或两个技能同名，构建将失败。本站在
+      <a href="/.well-known/agent-skills/index.json">/.well-known/agent-skills/</a> 发布了
+      htmlpress 自己的技能。
+    </p>
+
+    <h2>按需提供 Markdown</h2>
+    <p>
+      智能体通过向页面 URL 发送 <code>Accept: text/markdown</code> 来请求
+      Markdown。静态托管本身无法响应这种请求，但 CDN 上的重写规则可以为这些请求提供页面的
+      <code>.md</code> 副本，而其他人仍获得
+      HTML。每个页面都有副本，所以重写永远不会指向缺失的文件。现成的规则请参见
+      <a href="/deployment/cloudflare.html">Cloudflare</a>。
+    </p>
+
+    <h2>另请参阅</h2>
+    <ul>
+      <li>
+        <a href="/agent-skills.html">Agent Skills</a>：将 htmlpress
+        自己的技能安装到你的编程智能体中。
+      </li>
+      <li>
+        <a href="/zh/customization/configuration-file.html">配置文件</a>：所有顶层键。
+      </li>
+      <li>
+        <a href="/zh/customization/custom-routes.html">自定义路由</a
+        >：与页面一同复制的静态文件。
+      </li>
+    </ul>
+  </body>
+</html>

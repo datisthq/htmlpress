@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <title>Enlaces externos</title>
+    <meta
+      name="description"
+      content="Añade URL externas a la cabecera o a la barra lateral."
+    />
+    <meta name="order" content="45" />
+    <meta name="icon" content="external-link" />
+  </head>
+  <body>
+    <h1>Enlaces externos</h1>
+    <p>
+      La lista <code>links</code> añade URL a la cabecera o a la barra lateral. Cada
+      entrada se renderiza como un enlace simple.
+    </p>
+
+    <h2>Uso básico</h2>
+    <pre><code class="language-yaml">include: docs/**/*.html
+links:
+  - title: GitHub
+    url: https://github.com/acme/docs</code></pre>
+
+    <h2>Campos</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Campo</th>
+          <th>Predeterminado</th>
+          <th>Uso</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>url</code></td>
+          <td>ninguno, obligatorio</td>
+          <td>La URL del enlace, absoluta o relativa a la raíz.</td>
+        </tr>
+        <tr>
+          <td><code>title</code></td>
+          <td>ninguno, obligatorio</td>
+          <td>Texto visible.</td>
+        </tr>
+        <tr>
+          <td><code>position</code></td>
+          <td><code>header</code></td>
+          <td>
+            Dónde se renderiza el enlace: <code>header</code> o <code>sidebar</code>.
+          </td>
+        </tr>
+        <tr>
+          <td><code>prefix</code></td>
+          <td>ninguno</td>
+          <td>
+            Muestra el enlace solo en las páginas bajo esta carpeta, como
+            <code>/api/</code>.
+          </td>
+        </tr>
+        <tr>
+          <td><code>icon</code></td>
+          <td>ninguno</td>
+          <td>
+            Un <a href="/authoring/rich-elements.html#icons">icono integrado</a> antes del
+            título, como <code>github</code>; un nombre desconocido es un error.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      Cualquier otro campo es un error. Una <code>url</code> relativa a la raíz recibe el
+      prefijo <code>base</code> como cualquier otra URL de la compilación.
+    </p>
+
+    <h2>Enlaces de la cabecera</h2>
+    <p>
+      Por defecto, los enlaces se renderizan en <code>&lt;htmlpress-links&gt;</code> en la
+      cabecera, entre el título del sitio y el selector de tema.
+    </p>
+    <pre><code class="language-yaml">links:
+  - title: GitHub
+    url: https://github.com/acme/docs
+  - title: Docs
+    url: /introduction.html</code></pre>
+
+    <h2>Enlaces de la barra lateral</h2>
+    <p>
+      Define <code>position: sidebar</code> para renderizarlos dentro de la barra lateral
+      izquierda, al final de <code>&lt;htmlpress-nav&gt;</code>, debajo de las páginas.
+    </p>
+    <pre><code class="language-yaml">links:
+  - title: Chat
+    url: https://discord.gg/example
+    position: sidebar</code></pre>
+    <p>
+      Para un enlace "Editar esta página" en cada página, usa <code>edit</code> en lugar
+      de un enlace: a su URL le sigue la ruta de origen de cada página, y el enlace se
+      renderiza en <code>&lt;htmlpress-edit&gt;</code> junto a la página.
+    </p>
+    <pre><code class="language-yaml">edit: https://github.com/acme/docs/edit/main/</code></pre>
+
+    <h2>Limitar un enlace a una sección</h2>
+    <p>
+      Un <code>prefix</code> muestra un enlace solo en las páginas cuya URL empieza por
+      él, para un atajo por sección como "Informar de un problema". Igual que el prefijo
+      de una sección, empieza y termina con <code>/</code>.
+    </p>
+    <pre><code class="language-yaml">links:
+  - title: Report an API issue
+    url: https://github.com/acme/api/issues
+    prefix: /api/</code></pre>
+
+    <h2>Ver también</h2>
+    <ul>
+      <li>
+        <a href="/es/customization/article-sections.html">Secciones de artículos</a>: las
+        carpetas a las que apuntaría un enlace limitado.
+      </li>
+      <li>
+        <a href="/es/customization/site-metadata.html">Metadatos del sitio</a>: el título
+        de la marca y el logo que se sitúan junto a los enlaces de la cabecera.
+      </li>
+    </ul>
+  </body>
+</html>

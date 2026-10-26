@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="zh">
+  <head>
+    <title>文章分区</title>
+    <meta
+      name="description"
+      content="将站点划分为多个分区，每个分区有自己的标签页和导航。"
+    />
+    <meta name="order" content="43" />
+    <meta name="icon" content="layout-panel-left" />
+  </head>
+  <body>
+    <h1>文章分区</h1>
+    <p>
+      分区是站点的一部分，例如指南和 API 参考，它有自己的 URL
+      前缀、自己的标签页和自己的导航：当打开其中某个页面时，侧边栏以及上一页、下一页链接只显示该分区的页面。Htmlpress
+      提供以下几种分区类型：
+    </p>
+    <ul>
+      <li>
+        <strong>Article</strong>：默认类型。某个前缀下的页面，在侧边栏中按文件夹分组。
+      </li>
+      <li><strong>Custom</strong>：只是一个指向某个 URL 的标签页。</li>
+      <li>
+        <strong>Blog</strong>：带日期的文章，最新的在前，带有标签页面和 RSS 订阅源。
+      </li>
+      <li><strong>Changelog</strong>：Markdown 变更日志中每个版本一页。</li>
+    </ul>
+
+    <h2>基本用法</h2>
+    <pre><code class="language-yaml">site: https://example.com
+sections:
+  - title: Guide
+    prefix: /
+  - title: API
+    prefix: /api/
+    siteTitle: API Reference
+  - title: GitHub
+    type: custom
+    url: https://github.com/datisthq/htmlpress</code></pre>
+    <p>省略 <code>sections</code> 时，所有页面渲染在同一个导航中，适合小型站点。</p>
+
+    <h2>通用字段</h2>
+    <p>每个分区都接受：</p>
+    <table>
+      <thead>
+        <tr>
+          <th>字段</th>
+          <th>默认值</th>
+          <th>用途</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>title</code></td>
+          <td>无，必填</td>
+          <td>标签页的名称，也是该分区在 <code>llms.txt</code> 中的分组名。</td>
+        </tr>
+        <tr>
+          <td><code>type</code></td>
+          <td><code>article</code></td>
+          <td>
+            <code>article</code> 拥有页面；<code>custom</code> 只是一个指向其
+            <code>url</code> 的标签页。
+          </td>
+        </tr>
+        <tr>
+          <td><code>prefix</code></td>
+          <td>无，<code>article</code> 必填</td>
+          <td>
+            其页面共享的文件夹路径，以
+            <code>/</code>
+            开头和结尾（<code>/</code>、<code>/api/</code>）。标签页指向位于该前缀的页面，否则指向该分区的第一个页面。
+          </td>
+        </tr>
+        <tr>
+          <td><code>url</code></td>
+          <td>无，<code>custom</code> 必填</td>
+          <td><code>custom</code> 标签页指向的地址。</td>
+        </tr>
+        <tr>
+          <td><code>position</code></td>
+          <td><code>header</code></td>
+          <td>
+            <code>header</code> 表示位于页眉链接旁的标签页，
+            <code>sidebar</code> 表示位于侧边栏页面上方的条目。
+          </td>
+        </tr>
+        <tr>
+          <td><code>icon</code></td>
+          <td>无</td>
+          <td>
+            标题前的<a href="/authoring/rich-elements.html#icons">内置图标</a>，例如
+            <code>book-open</code>。
+          </td>
+        </tr>
+        <tr>
+          <td><code>siteTitle</code></td>
+          <td>站点的 <code>title</code></td>
+          <td>打开该分区的页面时品牌区显示的标题。</td>
+        </tr>
+        <tr>
+          <td><code>siteLink</code></td>
+          <td><code>/</code></td>
+          <td>打开该分区的页面时品牌区链接的地址。</td>
+        </tr>
+        <tr>
+          <td><code>siteDescription</code></td>
+          <td>站点的 <code>description</code></td>
+          <td>该分区中没有自身描述的页面所用的描述，也显示在品牌区下方。</td>
+        </tr>
+        <tr>
+          <td><code>source</code></td>
+          <td>无，<code>changelog</code> 必填</td>
+          <td>
+            要拆分的 Markdown 变更日志，路径相对于项目；它必须位于项目内，且不能是点文件。
+          </td>
+        </tr>
+        <tr>
+          <td><code>version</code></td>
+          <td><code>false</code></td>
+          <td>用于 <code>changelog</code>：在标题旁显示最新版本。</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      其他任何字段都会报错；没有 <code>prefix</code> 的 <code>article</code> 分区、不以
+      <code>/</code> 开头和结尾的前缀，或没有 <code>url</code> 的
+      <code>custom</code>
+      分区，同样会报错。在手机上，所有分区，无论位于页眉还是侧边栏，都会列在侧边栏中。
+    </p>
+
+    <h2>Article 分区</h2>
+    <p>普通文档，也是默认类型：你可以完全省略 <code>type</code>。</p>
+    <pre><code class="language-yaml">- title: Guide
+  prefix: /guide/</code></pre>
+    <p>
+      在分区内部，侧边栏按文件夹嵌套其页面，深度不限。根目录下的页面不分组，每个文件夹在其父文件夹的分组内拥有自己的可折叠分组，名称取自其
+      <code>index.html</code> 的标题，否则取文件夹名：
+    </p>
+    <htmlpress-file-tree>
+      <ul>
+        <li>introduction.html</li>
+        <li>
+          guides
+          <ul>
+            <li>index.html</li>
+            <li>install.html</li>
+            <li>deploy.html</li>
+          </ul>
+        </li>
+        <li>
+          reference
+          <ul>
+            <li>index.html</li>
+            <li>cli.html</li>
+            <li>
+              api
+              <ul>
+                <li>index.html</li>
+                <li>auth.html</li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </htmlpress-file-tree>
+    <p>
+      <code>guides/index.html</code> 在
+      <code>/guides/</code> 提供，是该分组自己的页面，同时在面包屑中为该文件夹命名。没有
+      <code>sections</code> 时，整个站点都按这种方式分组。
+    </p>
+    <p>
+      <code>custom</code> 分区不拥有页面。当其
+      <code>url</code> 为内部地址，且指向当前打开的页面或其上层文件夹时（<code>/</code>
+      仅在首页时），它的标签页会被标记为当前；外部 URL 永远不会。
+    </p>
+    <pre><code class="language-yaml">- title: Blog
+  type: custom
+  url: https://blog.example.com</code></pre>
+
+    <h2>Blog 分区</h2>
+    <p>
+      <code>blog</code> 分区的页面是文章：日期由
+      <code>&lt;meta name="date"&gt;</code> 指定，作者由
+      <code>&lt;meta name="author"&gt;</code> 指定，标签由
+      <code>&lt;meta name="keywords"&gt;</code>
+      指定。侧边栏以及上一页、下一页链接按最新在前的顺序列出它们，构建还会添加：
+    </p>
+    <ul>
+      <li>
+        位于前缀处、列出所有文章的索引，除非该分区有自己的
+        <code>index.html</code>；
+      </li>
+      <li>前缀下 <code>tags/&lt;tag&gt;/</code> 处的每个标签一页；</li>
+      <li>
+        前缀下 <code>rss.xml</code> 处的 RSS 订阅源，从每个页面的 head 中链接，在设置了
+        <code>site</code> 时生成，因为订阅源使用绝对链接。
+      </li>
+    </ul>
+    <pre><code class="language-yaml">- title: Blog
+  type: blog
+  prefix: /blog/</code></pre>
+
+    <h2>Changelog 分区</h2>
+    <p>
+      <code>changelog</code> 分区在每个 <code>##</code> 标题处拆分其
+      <code>source</code>，在前缀下的
+      <code>&lt;version&gt;/</code>
+      处为每个版本生成一页，按文件中的顺序最新在前，另加一个列出所有版本的索引。release-please
+      风格的标题 <code>## [0.2.0](…) (2026-10-01)</code> 给出版本号及其日期；该版本的
+      <code>###</code> 标题成为其小节。设置
+      <code>version: true</code> 时，标签页会显示最新版本。
+    </p>
+    <pre><code class="language-yaml">- title: Changelog
+  type: changelog
+  prefix: /changelog/
+  source: CHANGELOG.md
+  version: true</code></pre>
+
+    <h2>排序与匹配</h2>
+    <p>
+      页面 URL 按最长前缀优先的规则匹配到分区。给定
+      <code>/api/v2/auth.html</code> 以及前缀为 <code>/</code> 和
+      <code>/api/</code> 的分区，该页面会被放入
+      <code>/api/</code>。由于前缀是文件夹路径，<code>/guide/</code> 永远不会匹配
+      <code>/guides.html</code>。不属于任何分区的页面组成另一个独立部分，拥有自己的导航。
+    </p>
+    <p>
+      <code>llms.txt</code>
+      也按分区对链接分组，顺序与配置一致，不属于任何分区的页面放在最后的 "Other" 下；没有
+      <code>sections</code> 时，按顶层文件夹分组。
+    </p>
+    <p>
+      在一个导航中，页面属于其所在文件夹的分组，文件夹的分组属于其父文件夹的分组：<code
+        >guides/cli/run.html</code
+      >
+      位于 "Guides" 内的 <code>cli</code> 分组中。页面在同级之间按
+      <code>&lt;meta name="order"&gt;</code> 排序：根目录的
+      <code>index.html</code> 始终排在最前，随后是按升序排列的 0 及以上的
+      order，然后是按路径排序的无 order 页面，最后是负 order，<code>-1</code>
+      排在最末。分组保持其第一个页面的顺序，因此给文件夹的 <code>index.html</code> 设置
+      order 即可放置整个分组。翻页器从上到下遍历侧边栏，每个分组的索引页排在其页面之前。
+    </p>
+    <p>
+      根目录下的 <code>404.html</code> 不会出现在侧边栏中；它是托管服务在 URL
+      缺失时显示的页面，没有该文件的项目会获得一个内置的 "Page not found" 页面。
+    </p>
+
+    <h2>另请参阅</h2>
+    <ul>
+      <li>
+        <a href="/zh/customization/external-links.html">外部链接</a
+        >：在分区标签页旁添加链接。
+      </li>
+      <li>
+        <a href="/authoring/frontmatter.html">Frontmatter</a>：驱动分区内容的
+        <code>&lt;title&gt;</code> 和 <code>&lt;meta name="order"&gt;</code>。
+      </li>
+    </ul>
+  </body>
+</html>

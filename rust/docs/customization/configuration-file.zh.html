@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="zh">
+  <head>
+    <title>配置文件</title>
+    <meta
+      name="description"
+      content="htmlpress 配置文件的位置、它控制的内容，以及顶层选项一览。"
+    />
+    <meta name="order" content="41" />
+    <meta name="icon" content="layers" />
+  </head>
+  <body>
+    <h1>配置文件</h1>
+    <htmlpress-callout
+      ><p>
+        配置文件是可选的。默认情况下，htmlpress 会读取你指定的文件夹中的所有
+        <code>.html</code> 文件。
+      </p></htmlpress-callout
+    >
+    <p>
+      Htmlpress 通过项目根目录下的单个文件进行配置：
+      <strong><code>htmlpress.yaml</code></strong
+      >。把它放在页面旁边，htmlpress
+      就会自动读取：无需命令行参数，也无需环境变量。它的键沿用
+      <a href="https://livemark.dev">Livemark</a> 的配置。
+    </p>
+
+    <h2>最小配置</h2>
+    <p>每个键都是可选的，所以项目完全可以没有配置。最小的有用配置只是为站点命名：</p>
+    <pre><code class="language-yaml">title: My docs</code></pre>
+    <p>
+      空的 <code>htmlpress.yaml</code> 等同于没有配置。没有配置时，项目下的每个
+      <code>.html</code> 文件（默认
+      <code>include: "**/*.html"</code
+      >）都会成为页面，使用内置的布局和主题渲染：侧边栏、目录、深色模式，全部采用默认值。其他文件都会按原样复制到输出目录的相同路径下。像
+      <code>.git/</code> 和 <code>.htmlpress/</code> 这样的点文件夹，以及
+      <code>node_modules/</code>，都会被跳过。
+    </p>
+
+    <h2>可配置的内容</h2>
+    <p>每个键都有合理的默认值。完整列表如下：</p>
+    <table>
+      <thead>
+        <tr>
+          <th>键</th>
+          <th>默认值</th>
+          <th>用途</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>include</code></td>
+          <td><code>**/*.html</code></td>
+          <td>一个 glob 或一个列表：成为页面的 <code>.html</code> 文件</td>
+        </tr>
+        <tr>
+          <td><code>exclude</code></td>
+          <td>无</td>
+          <td>一个 glob 或一个列表：完全排除在构建之外的文件，无论是否为页面</td>
+        </tr>
+        <tr>
+          <td><code>title</code></td>
+          <td>文件夹名</td>
+          <td>页眉以及每个浏览器标签页的标题</td>
+        </tr>
+        <tr>
+          <td><code>description</code></td>
+          <td>无</td>
+          <td>用于没有自身描述的页面</td>
+        </tr>
+        <tr>
+          <td><code>site</code></td>
+          <td>无</td>
+          <td>公开 URL，用于规范链接、社交链接和 <code>sitemap.xml</code></td>
+        </tr>
+        <tr>
+          <td><code>base</code></td>
+          <td>无</td>
+          <td>
+            站点所在的子路径，例如 GitHub Pages 上的 <code>/repo/</code>；参见
+            <a href="#base-path">基础路径</a>
+          </td>
+        </tr>
+        <tr>
+          <td><code>logo</code></td>
+          <td>无</td>
+          <td>图片的 URL，显示在站点标题之前</td>
+        </tr>
+        <tr>
+          <td><code>favicon</code></td>
+          <td>logo</td>
+          <td>站点图标的 URL</td>
+        </tr>
+        <tr>
+          <td><code>banner</code></td>
+          <td>无</td>
+          <td>页眉上方公告栏的 HTML</td>
+        </tr>
+        <tr>
+          <td><code>head</code></td>
+          <td>无</td>
+          <td>
+            添加到每个页面 head 中的 <code>meta</code>、<code>links</code> 和
+            <code>scripts</code>；参见
+            <a href="/zh/customization/site-metadata.html">站点元数据</a>
+          </td>
+        </tr>
+        <tr>
+          <td><code>links</code></td>
+          <td>无</td>
+          <td>
+            页眉或侧边栏中的链接；参见
+            <a href="/zh/customization/external-links.html">外部链接</a>
+          </td>
+        </tr>
+        <tr>
+          <td><code>sections</code></td>
+          <td>无</td>
+          <td>
+            拥有独立导航的站点部分；参见
+            <a href="/zh/customization/article-sections.html">文章分区</a>
+          </td>
+        </tr>
+        <tr>
+          <td><code>edit</code></td>
+          <td>无</td>
+          <td>"编辑此页"链接：该 URL 后接页面路径</td>
+        </tr>
+        <tr>
+          <td><code>contentSignals</code></td>
+          <td>全部为 <code>true</code></td>
+          <td>
+            <code>search</code>、<code>aiInput</code> 和
+            <code>aiTrain</code>：自动化系统可以如何使用内容，写入
+            <code>robots.txt</code>；参见
+            <a href="/zh/customization/ai-agents.html">AI 智能体</a>
+          </td>
+        </tr>
+        <tr>
+          <td><code>codeThemeLight</code>, <code>codeThemeDark</code></td>
+          <td><code>catppuccin-latte</code>, <code>catppuccin-mocha</code></td>
+          <td>
+            代码块主题；参见
+            <a href="/zh/customization/syntax-themes.html">语法主题</a>。
+          </td>
+        </tr>
+        <tr>
+          <td><code>patches</code></td>
+          <td>无</td>
+          <td>
+            通过配置设置的页面元数据，以及作为页面发布的 <code>.md</code> 文件；参见
+            <a href="/zh/customization/article-patches.html">文章补丁</a>。
+          </td>
+        </tr>
+        <tr>
+          <td><code>skills</code></td>
+          <td>无</td>
+          <td>
+            一个 glob 或一个 <code>SKILL.md</code> 文件列表，路径相对于项目，作为<a
+              href="/zh/customization/ai-agents.html"
+              >智能体技能</a
+            >发布
+          </td>
+        </tr>
+        <tr>
+          <td><code>languages</code></td>
+          <td>一种，英语</td>
+          <td>
+            站点发布的语言，默认语言在前；参见
+            <a href="/zh/customization/translations.html">翻译</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      设置了 <code>languages</code> 后，读者看到的文本（<code>title</code>、
+      <code>description</code
+      >、<code>banner</code>，以及链接和分区的标题）也可以接受按语言代码组织的映射，例如
+      <code>title: { en: Docs, es: Guía }</code>。
+    </p>
+    <p>
+      完整的 schema 位于
+      <a href="https://github.com/datisthq/htmlpress/blob/main/rust/src/models/config.rs"
+        ><code>rust/src/models/config.rs</code></a
+      >。未知的键会报错，因此拼写错误绝不会被悄悄忽略。
+    </p>
+
+    <h3>包含与排除</h3>
+    <p>
+      <code>include</code> 会替换默认值，所以要列出你需要的每个文件夹。每个 glob
+      中第一个通配符之前的文件夹是它的基础目录：只读取基础目录下的文件，并在提供时去掉该基础目录，因此
+      <code>docs/**/*.html</code> 会把 <code>docs/guide.html</code> 构建为
+      <code>/guide.html</code>。基础目录下的其他文件，包括被 <code>include</code> 排除的
+      <code>.html</code> 文件，都按原样复制。
+    </p>
+    <p>
+      glob 相对于项目，且不能离开项目（<code>..</code> 或绝对路径会报错）：<code>*</code>
+      只在一个文件夹内匹配， <code>**</code> 可跨越文件夹；没有匹配到任何文件的
+      <code>include</code> 或 <code>exclude</code> 模式会打印警告。
+    </p>
+
+    <h3 id="base-path">基础路径</h3>
+    <p>
+      设置 <code>base</code> 后，构建中的每个根相对 URL（位于
+      <code>href</code>、<code>src</code>、<code>srcset</code>、<code>poster</code> 和
+      <code>action</code> 中，无论在页面、布局还是配置的 HTML 中）都会加上它作为前缀：写
+      <code>/guide.html</code>，站点就会链接到 <code>/repo/guide.html</code>。相对 URL
+      和绝对 URL 保持不变，页面自身 CSS 中的 <code>url()</code> 也不受影响。<code
+        >start</code
+      >
+      和 <code>preview</code> 同样在基础路径下提供站点，并把
+      <code>/</code> 重定向到那里；修改 <code>base</code> 后需重启 <code>start</code>。
+    </p>
+
+    <h2>完整示例</h2>
+    <p>大多数实际站点最终看起来都类似这样：</p>
+    <pre><code class="language-yaml">site: https://htmlpress.dev
+title: Htmlpress
+description: Turn a folder of HTML pages into a site.
+logo: /logo.svg
+banner: 'Version 1 is out: &lt;a href="/changelog.html"&gt;read more&lt;/a&gt;'
+include: docs/**/*.html
+exclude: docs/**/_*
+links:
+  - title: GitHub
+    url: https://github.com/datisthq/htmlpress
+  - title: Chat
+    url: https://discord.gg/example
+    position: sidebar
+head:
+  scripts:
+    - src: https://stats.example.com/script.js
+      defer: ""
+contentSignals:
+  aiTrain: false
+skills: .skills/*/SKILL.md
+edit: https://github.com/datisthq/htmlpress/edit/main/docs/</code></pre>
+
+    <h2>下一步</h2>
+    <ul>
+      <li>
+        <a href="/zh/customization/site-metadata.html">站点元数据</a
+        >：标题、描述、favicon、logo。
+      </li>
+      <li>
+        <a href="/zh/customization/article-sections.html">文章分区</a
+        >：将站点划分为拥有独立导航的分区。
+      </li>
+      <li>
+        <a href="/zh/customization/external-links.html">外部链接</a>：页眉和侧边栏链接。
+      </li>
+      <li><a href="/zh/customization/syntax-themes.html">语法主题</a>：代码块的外观。</li>
+      <li>
+        <a href="/zh/customization/article-patches.html">文章补丁</a
+        >：通过配置覆盖页面元数据。
+      </li>
+      <li>
+        <a href="/zh/customization/overriding-escaping.html">覆盖/弹出</a
+        >：替换任何内置的布局、样式表或组件。
+      </li>
+      <li>
+        <a href="/zh/customization/custom-routes.html">自定义路由</a
+        >：拥有独立布局的页面。
+      </li>
+    </ul>
+  </body>
+</html>

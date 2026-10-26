@@ -155,12 +155,17 @@
 <h3>Ordering rules</h3>
 <ul>
   <li>The root <code>index.html</code> always leads.</li>
-  <li>
-    Pages with an <code>order</code> come next, ascending; a negative order sorts before a
-    positive one.
-  </li>
+  <li>Pages with an <code>order</code> of 0 or more come next, ascending.</li>
   <li>Pages without one follow, by path.</li>
+  <li>
+    Pages with a negative <code>order</code> come last, so <code>-1</code> pins a page to
+    the very end and <code>-2</code> sits just before it.
+  </li>
 </ul>
+<p>
+  The order places a page among its siblings: pages nest under their folder's
+  <code>index.html</code>, and a folder sits where its first page would.
+</p>
 <p>
   An <code>order</code> that is not an integer fails the build. A <code>404.html</code> at
   the root is the page a host shows for a missing URL; it is left out of the navigation,
@@ -178,6 +183,12 @@
   independent of its file path: a path ending in <code>/</code> is built to that folder's
   <code>index.html</code>, one ending in <code>.html</code> to that file. Two pages on one
   URL fail the build.
+</p>
+<p>
+  On a site with <code>languages</code>, a file named <code>guide.es.html</code>, or one
+  with <code>&lt;meta name="language" content="es"&gt;</code>, is the Spanish translation
+  of <code>guide.html</code>, served at <code>/es/guide.html</code>; see
+  <a href="/customization/translations.html">Translations</a>.
 </p>
 
 <h2>Overriding without editing</h2>

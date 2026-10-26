@@ -46,6 +46,9 @@ pub fn read_page(path: &str, html: &str) -> crate::Result<Page> {
         url: create_url(&output),
         path: output,
         source: path.to_owned(),
+        key: String::new(),
+        language: facts.language,
+        untranslated: false,
         title,
         label: facts.label,
         icon: facts.icon,
@@ -84,6 +87,7 @@ struct Facts {
     image: Option<String>,
     order: Option<i64>,
     layout: Option<String>,
+    language: String,
     has_head: bool,
     /// Each heading, and whether it belongs in the table of contents.
     headings: Vec<(Heading, bool)>,
@@ -206,6 +210,10 @@ fn read_facts(html: &str) -> Result<Facts, String> {
         }))
         .append_element_content_handler(element!("meta[name='path']", |el| {
             facts.borrow_mut().route = read_content_attribute(el);
+            Ok(())
+        }))
+        .append_element_content_handler(element!("meta[name='language']", |el| {
+            facts.borrow_mut().language = read_content_attribute(el).unwrap_or_default();
             Ok(())
         }))
         .append_element_content_handler(element!("meta[name='sidebar']", |el| {
@@ -417,6 +425,7 @@ const OWNED_BY_LAYOUT: &[&str] = &[
     "meta[name='label']",
     "meta[name='icon']",
     "meta[name='path']",
+    "meta[name='language']",
     "meta[name='sidebar']",
     "meta[name='toc']",
     "meta[name='source-url']",

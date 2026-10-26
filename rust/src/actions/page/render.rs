@@ -9,14 +9,18 @@ use crate::actions::code::highlight::highlight_code;
 use crate::actions::code::title::add_titles;
 use crate::actions::date::format::format_date;
 use crate::actions::icon::render::render_icon;
+use crate::actions::nav::build::build_nav;
 use crate::actions::page::convert::create_markdown_path;
 use crate::actions::page::prefix::prefix_urls;
 use crate::actions::section::find::{find_section, is_custom_current};
 use crate::actions::section::generate::list_posts;
-use crate::actions::site::index::SEARCH_INDEX;
+use crate::actions::site::index::create_search_path;
+use crate::flags::FLAGS;
 use crate::models::asset::{create_component_path, read_component_path};
 use crate::models::config::{Link, Position, Section, SectionKind};
 use crate::models::error::Error;
+use crate::models::language::{Direction, SiteLanguage};
+use crate::models::nav::NavNode;
 use crate::models::page::Page;
 use crate::models::page::SourceAction;
 use crate::models::site::Site;
@@ -47,8 +51,10 @@ pub(crate) fn render_page(
             (extension == "html").then_some((tag, html.as_str()))
         })
         .collect();
-    let content = add_byline(&page.content, create_byline(page)).map_err(fail)?;
-    let content = fill_inline_tocs(&content, page).map_err(fail)?;
+    let language = site.read_language(&page.language);
+    let content =
+        add_byline(&page.content, create_byline(page, language)).map_err(fail)?;
+    let content = fill_inline_tocs(&content, page, language).map_err(fail)?;
     let (light, dark) = site.config.read_code_themes();
     let content = highlight_code(&content, light, dark).map_err(fail)?;
     let content = add_titles(&content).map_err(fail)?;
@@ -58,13 +64,19 @@ pub(crate) fn render_page(
     let nav = create_nav(site, page);
     let replaced = |tag: &str| fragments.iter().any(|(name, _)| *name == tag);
 
-    let mut settings = RewriteStrSettings::new().append_element_content_handler(
-        element!("head", |el| {
+    let mut settings = RewriteStrSettings::new()
+        .append_element_content_handler(element!("html", |el| {
+            el.set_attribute("lang", &language.locale)?;
+            if language.dir == Direction::Rtl {
+                el.set_attribute("dir", "rtl")?;
+            }
+            Ok(())
+        }))
+        .append_element_content_handler(element!("head", |el| {
             el.prepend(&head, ContentType::Html);
             el.append(&page.head, ContentType::Html);
             Ok(())
-        }),
-    );
+        }));
     for (tag, html) in &fragments {
         settings = settings.append_element_content_handler(element!(tag, |el| {
             el.set_inner_content(html, ContentType::Html);
@@ -87,10 +99,21 @@ pub(crate) fn render_page(
                 Ok(())
             }));
     }
+    if !replaced("htmlpress-skip") {
+        settings =
+            settings.append_element_content_handler(element!("htmlpress-skip", |el| {
+                let text = escape_html(language.read_message("nav.skip"));
+                el.set_inner_content(
+                    &format!("<a href=\"#content\">{text}</a>"),
+                    ContentType::Html,
+                );
+                Ok(())
+            }));
+    }
     if !replaced("htmlpress-banner") {
         settings =
             settings.append_element_content_handler(element!("htmlpress-banner", |el| {
-                fill_element(el, site.config.banner.clone());
+                fill_element(el, site.config.banner.as_deref().map(str::to_owned));
                 Ok(())
             }));
     }
@@ -106,7 +129,7 @@ pub(crate) fn render_page(
     if !replaced("htmlpress-footer") {
         settings =
             settings.append_element_content_handler(element!("htmlpress-footer", |el| {
-                el.set_inner_content(FOOTER, ContentType::Html);
+                el.set_inner_content(&create_footer(language), ContentType::Html);
                 Ok(())
             }));
     }
@@ -134,22 +157,32 @@ pub(crate) fn render_page(
     if !replaced("htmlpress-toc") {
         settings =
             settings.append_element_content_handler(element!("htmlpress-toc", |el| {
-                fill_element(el, create_toc(page));
+                fill_element(el, create_toc(page, language));
                 Ok(())
             }));
     }
     if !replaced("htmlpress-search") {
         settings =
             settings.append_element_content_handler(element!("htmlpress-search", |el| {
-                el.set_attribute("data-index", &format!("/{ASSETS_DIR}/{SEARCH_INDEX}"))?;
+                let index = create_search_path(site.read_language(&page.language));
+                el.set_attribute("data-index", &format!("/{ASSETS_DIR}/{index}"))?;
                 Ok(())
             }));
+    }
+    if !replaced("htmlpress-language") {
+        settings = settings.append_element_content_handler(element!(
+            "htmlpress-language",
+            |el| {
+                fill_element(el, create_language_picker(site, page));
+                Ok(())
+            }
+        ));
     }
     if !replaced("htmlpress-toolbar") {
         settings = settings.append_element_content_handler(element!(
             "htmlpress-toolbar",
             |el| {
-                fill_element(el, create_toolbar(page));
+                fill_element(el, create_toolbar(page, language));
                 Ok(())
             }
         ));
@@ -255,6 +288,7 @@ fn create_head(
         let url = escape_html(&format!("{origin}{}", page.url));
         let _ = writeln!(head, "<link rel=\"canonical\" href=\"{url}\">");
     }
+    head.push_str(&create_alternates(site, page));
     if page.path != NOT_FOUND_PAGE {
         let href = escape_html(&create_markdown_path(&page.path));
         let _ = writeln!(
@@ -288,6 +322,7 @@ fn create_head(
          if (localStorage.getItem(\"htmlpress-nav\") === \"collapsed\") \
          document.documentElement.dataset.navCollapsed = \"\" } catch {}</script>\n",
     );
+    head.push_str(&create_messages(site.read_language(&page.language)));
     let _ = writeln!(
         head,
         "<link rel=\"stylesheet\" href=\"/{ASSETS_DIR}/theme.css\">"
@@ -348,20 +383,24 @@ fn create_metas(site: &Site, page: &Page) -> Vec<(&'static str, &'static str, St
         "width=device-width, initial-scale=1".to_owned(),
     )];
     let section = read_section(site, page);
-    let description = (page.description.as_ref())
-        .or(section.and_then(|section| section.site_description.as_ref()))
-        .or(site.config.description.as_ref());
+    let description = (page.description.as_deref())
+        .or(section.and_then(|section| section.site_description.as_deref()))
+        .or(site.config.description.as_deref());
     if let Some(description) = description {
-        metas.push(("name", "description", description.clone()));
+        metas.push(("name", "description", description.to_owned()));
     }
     metas.push(("property", "og:type", "website".to_owned()));
     metas.push(("property", "og:site_name", site.title.clone()));
     metas.push(("property", "og:title", page.title.clone()));
     if let Some(description) = description {
-        metas.push(("property", "og:description", description.clone()));
+        metas.push(("property", "og:description", description.to_owned()));
     }
     if let Some(origin) = origin {
         metas.push(("property", "og:url", format!("{origin}{}", page.url)));
+    }
+    if site.languages.len() > 1 {
+        let locale = &site.read_language(&page.language).locale;
+        metas.push(("property", "og:locale", locale.replace('-', "_")));
     }
     let image = page
         .image
@@ -385,6 +424,105 @@ fn create_attributes(tag: &std::collections::BTreeMap<String, String>) -> String
     let mut html = String::new();
     for (name, value) in tag.iter().filter(|(name, _)| *name != "children") {
         let _ = write!(html, " {}=\"{}\"", escape_html(name), escape_html(value));
+    }
+    html
+}
+
+// The strings the components' scripts write, which they read from here and fall back to
+// English without, so an escaped script keeps working
+const SCRIPT_MESSAGES: [&str; 16] = [
+    "code.copied",
+    "code.copy",
+    "code.expand",
+    "code.link",
+    "nav.backToTop",
+    "nav.toggleSidebar",
+    "page.copied",
+    "page.copyFailed",
+    "page.copyMarkdown",
+    "page.llmPrompt",
+    "page.openChatGpt",
+    "page.openClaude",
+    "search.button",
+    "search.empty",
+    "search.label",
+    "theme.toggle",
+];
+
+fn create_messages(language: &SiteLanguage) -> String {
+    let messages: std::collections::BTreeMap<&str, &str> = (SCRIPT_MESSAGES.iter())
+        .map(|key| (*key, language.read_message(key)))
+        .collect();
+    let json = serde_json::to_string(&messages).unwrap_or_default();
+    // A message holding `</script>` would end the script early
+    let json = json.replace("</", "<\\/");
+    format!(
+        "<script type=\"application/json\" id=\"htmlpress-messages\">{json}</script>\n"
+    )
+}
+
+// Each language links to this page's version in it, else to its home
+fn create_language_picker(site: &Site, page: &Page) -> Option<String> {
+    if site.languages.len() < 2 {
+        return None;
+    }
+    let current = site.read_language(&page.language);
+    let versions = site.translations.get(&page.key);
+    let label = escape_html(current.read_message("language.choose"));
+    let icon = create_icon(Some("languages"));
+    let mut html = format!(
+        "<details><summary aria-label=\"{label}\" title=\"{label}\">{icon}</summary><ul>"
+    );
+    for language in &site.languages {
+        let url = (versions.and_then(|versions| versions.get(&language.code)))
+            .unwrap_or(&language.prefix);
+        let flag = (language.flag.as_deref())
+            .and_then(|flag| FLAGS.binary_search_by_key(&flag, |(code, _)| code).ok())
+            .and_then(|index| FLAGS.get(index))
+            .map_or("", |(_, svg)| *svg);
+        let selected = match language.code == current.code {
+            true => " aria-current=\"true\"",
+            false => "",
+        };
+        let _ = write!(
+            html,
+            "<li><a href=\"{}\" hreflang=\"{}\" lang=\"{}\"{selected}>{flag}{}</a></li>",
+            escape_html(url),
+            escape_html(&language.locale),
+            escape_html(&language.locale),
+            escape_html(&language.label),
+        );
+    }
+    html.push_str("</ul></details>");
+    Some(html)
+}
+
+// Crawlers read hreflang as absolute URLs, so it needs `site`; one version has none
+fn create_alternates(site: &Site, page: &Page) -> String {
+    let (Some(origin), Some(versions)) =
+        (site.config.read_origin(), site.translations.get(&page.key))
+    else {
+        return String::new();
+    };
+    if versions.len() < 2 {
+        return String::new();
+    }
+    let mut html = String::new();
+    for language in &site.languages {
+        if let Some(url) = versions.get(&language.code) {
+            let href = escape_html(&format!("{origin}{url}"));
+            let locale = escape_html(&language.locale);
+            let _ = writeln!(
+                html,
+                "<link rel=\"alternate\" hreflang=\"{locale}\" href=\"{href}\">"
+            );
+            if language.default {
+                let _ = writeln!(
+                    html,
+                    "<link rel=\"alternate\" hreflang=\"x-default\" href=\"{href}\">"
+                );
+            }
+        }
     }
     html
 }
@@ -423,15 +561,25 @@ fn read_section<'a>(site: &'a Site, page: &Page) -> Option<&'a Section> {
 
 // Every folder above the page, named and linked by its index page when it has one.
 fn create_breadcrumbs(site: &Site, page: &Page) -> Option<String> {
-    let folders: Vec<&str> = page.path.split('/').collect();
+    // A language's prefix is its home, not a folder to list
+    let home = site
+        .read_language(&page.language)
+        .prefix
+        .trim_start_matches('/');
+    let path = page.path.strip_prefix(home).unwrap_or(&page.path);
+    let folders: Vec<&str> = path.split('/').collect();
     let mut folders = folders.split_last()?.1.to_vec();
-    if page.path.ends_with("/index.html") {
+    if path.ends_with("/index.html") {
         folders.pop();
     }
-    if folders.is_empty() && page.url == "/" {
+    if folders.is_empty() && path == "index.html" {
         return None;
     }
-    let mut html = String::from("<nav aria-label=\"Breadcrumbs\"><ol>");
+    let label = escape_html(
+        site.read_language(&page.language)
+            .read_message("nav.breadcrumbs"),
+    );
+    let mut html = format!("<nav aria-label=\"{label}\"><ol>");
     let (title, _, link) = read_brand(site, page);
     let _ = write!(
         html,
@@ -441,12 +589,12 @@ fn create_breadcrumbs(site: &Site, page: &Page) -> Option<String> {
     );
     for depth in 1..=folders.len() {
         let folder = folders[..depth].join("/");
-        let index = format!("{folder}/index.html");
+        let index = format!("{home}{folder}/index.html");
         let name = folders[depth - 1];
         let crumb = match site.pages.iter().find(|item| item.path == index) {
             Some(item) => format!(
                 "<a href=\"{}\">{}</a>",
-                escape_html(&item.url),
+                escape_html(read_href(item)),
                 escape_html(&item.title)
             ),
             None => escape_html(name),
@@ -458,85 +606,35 @@ fn create_breadcrumbs(site: &Site, page: &Page) -> Option<String> {
     Some(html)
 }
 
-// Pages group by their top folder, titled by that folder's index page, else its name;
-// groups keep the order their first page has in the navigation.
-// Folders count from the open section's prefix: inside `/api/` the whole sidebar is that
-// folder already, so its pages are not wrapped in one more group of the same name
+// Pages nest under their folders at any depth (`nav/build`), counted from the open
+// section's prefix: inside `/api/` the whole sidebar is that folder already, so its pages
+// are not wrapped in one more group of the same name
 fn create_nav(site: &Site, page: &Page) -> String {
-    let prefix = (read_section(site, page))
-        .and_then(|section| section.prefix.as_deref())
-        .map_or("", |prefix| prefix.trim_start_matches('/'));
-    let mut groups: Vec<(Option<&str>, Vec<&Page>)> = vec![];
-    // A blog's posts and a changelog's versions are one list, each version being a folder
-    let flat = (read_section(site, page)).is_some_and(|section| {
-        matches!(section.kind, SectionKind::Blog | SectionKind::Changelog)
-    });
-    for item in list_pages(site, page) {
-        let relative = item.path.strip_prefix(prefix).unwrap_or(&item.path);
-        let folder = match flat {
-            true => None,
-            false => relative.split_once('/').map(|(folder, _)| folder),
-        };
-        // Loose pages join only the group right before them, so a page ordered after a
-        // folder stays after it instead of rising into the first group
-        let group = match folder {
-            Some(_) => groups.iter_mut().find(|(key, _)| *key == folder),
-            None => groups.last_mut().filter(|(key, _)| key.is_none()),
-        };
-        match group {
-            Some((_, items)) => items.push(item),
-            None => groups.push((folder, vec![item])),
-        }
-    }
-    let mut html = String::from("<nav aria-label=\"Pages\">");
+    let label = escape_html(site.read_language(&page.language).read_message("nav.pages"));
+    let mut html = format!("<nav aria-label=\"{label}\">");
     html.push_str(&create_section_list(site, page));
-    if !groups.is_empty() {
-        let label = match read_section(site, page).map(|section| &section.kind) {
-            Some(SectionKind::Blog) => "Posts",
-            Some(SectionKind::Changelog) => "Releases",
-            _ => "Articles",
+    let nav = read_nav(site, page);
+    if !nav.is_empty() {
+        let key = match read_section(site, page).map(|section| &section.kind) {
+            Some(SectionKind::Blog) => "nav.posts",
+            Some(SectionKind::Changelog) => "nav.releases",
+            _ => "nav.articles",
         };
+        let label = escape_html(site.read_language(&page.language).read_message(key));
         let _ = write!(html, "<p data-label>{label}</p>");
     }
-    for (folder, items) in groups {
-        let index_only = |folder: &str| {
-            let index = format!("{prefix}{folder}/index.html");
-            items.len() == 1 && items[0].path == index
-        };
-        let list = create_list(&items, page, folder.is_none_or(index_only));
-        match folder {
-            // A folder holding nothing but its index reads as one page, not a group of one
-            Some(folder) if index_only(folder) => html.push_str(&list),
-            // A listed index is the group's own link, as in Livemark: its title leads to
-            // the page and only the chevron beside it toggles, as a link in a summary
-            // does not toggle its details
-            Some(folder) => {
-                let path = format!("{prefix}{folder}/index.html");
-                let index = site.pages.iter().find(|item| item.path == path);
-                let title = escape_html(index.map_or(folder, |item| item.title.as_str()));
-                let icon = create_icon(index.and_then(|item| item.icon.as_deref()));
-                let label = match items.iter().find(|item| item.path == path) {
-                    Some(item) => {
-                        let url = escape_html(&item.url);
-                        let current = match item.path == page.path {
-                            true => " aria-current=\"page\"",
-                            false => "",
-                        };
-                        format!("<a href=\"{url}\"{current}>{icon}{title}</a>")
-                    }
-                    None => format!("{icon}{title}"),
-                };
-                let items: Vec<&Page> =
-                    items.into_iter().filter(|item| item.path != path).collect();
-                let list = create_list(&items, page, false);
-                let _ = write!(
-                    html,
-                    "<details open><summary>{label}</summary>{list}</details>"
-                );
+    let mut leaves = vec![];
+    for node in nav {
+        match node.children.is_empty() {
+            true => leaves.push(node),
+            false => {
+                html.push_str(&create_list(site, &leaves, page, true));
+                leaves.clear();
+                html.push_str(&create_group(site, &node, page, true));
             }
-            None => html.push_str(&list),
         }
     }
+    html.push_str(&create_list(site, &leaves, page, true));
     let links: Vec<&Link> = (site.config.links.iter())
         .filter(|link| link.position == Position::Sidebar)
         .filter(|link| {
@@ -544,7 +642,9 @@ fn create_nav(site: &Site, page: &Page) -> String {
         })
         .collect();
     if !links.is_empty() {
-        html.push_str("<p data-label>Links</p><ul data-links>");
+        let label =
+            escape_html(site.read_language(&page.language).read_message("nav.links"));
+        let _ = write!(html, "<p data-label>{label}</p><ul data-links>");
         for link in links {
             let url = escape_html(&link.url);
             let title = escape_html(&link.title);
@@ -582,29 +682,100 @@ fn list_pages<'a>(site: &'a Site, page: &Page) -> Vec<&'a Page> {
     }
 }
 
+fn read_nav<'a>(site: &'a Site, page: &Page) -> Vec<NavNode<'a>> {
+    let section = read_section(site, page);
+    let prefix = section.and_then(|section| section.prefix.as_deref());
+    // A blog's posts and a changelog's versions are one list, each version being a folder
+    let flat = section.is_some_and(|section| {
+        matches!(section.kind, SectionKind::Blog | SectionKind::Changelog)
+    });
+    // Without a section, a language's pages still start below its prefix, not inside it
+    let language = &site.read_language(&page.language).prefix;
+    build_nav(&list_pages(site, page), prefix.unwrap_or(language), flat)
+}
+
 // Only top-level entries take their page's icon, as in Livemark: a folder's own pages
 // sit under its summary, which carries the index page's icon instead
-fn create_list(items: &[&Page], page: &Page, icons: bool) -> String {
+fn create_list(site: &Site, nodes: &[NavNode], page: &Page, top: bool) -> String {
+    if nodes.is_empty() {
+        return String::new();
+    }
     let mut html = String::from("<ul>");
-    for item in items {
-        let current = match item.path == page.path {
-            true => " aria-current=\"page\"",
-            false => "",
-        };
-        let url = escape_html(&item.url);
-        let title = escape_html(item.label.as_ref().unwrap_or(&item.title));
-        let icon = create_icon(item.icon.as_deref().filter(|_| icons));
-        let _ = write!(
-            html,
-            "<li><a href=\"{url}\"{current}>{icon}{title}</a></li>"
-        );
+    for node in nodes {
+        match (node.page, node.children.is_empty()) {
+            (Some(item), true) => {
+                let _ = write!(html, "<li>{}</li>", create_entry(site, item, page, top));
+            }
+            _ => {
+                let _ =
+                    write!(html, "<li>{}</li>", create_group(site, node, page, false));
+            }
+        }
     }
     html.push_str("</ul>");
     html
 }
 
-const FOOTER: &str = "<p>Created with <span aria-label=\"love\">❤</span> and \
-     <a href=\"https://htmlpress.dev\">Htmlpress</a></p>";
+// A listed index is the group's own link, as in Livemark: its title leads to the page
+// and only the chevron beside it toggles, as a link in a summary does not toggle its
+// details. A folder without one is titled by its index page anyway, else its name
+fn create_group(site: &Site, node: &NavNode, page: &Page, top: bool) -> String {
+    let path = node.folder.as_deref().unwrap_or_default();
+    let label = match node.page {
+        Some(item) => create_entry(site, item, page, top),
+        None => {
+            let index = site.pages.iter().find(|item| item.path == path);
+            let name = (path.trim_end_matches("/index.html").rsplit('/').next())
+                .unwrap_or_default();
+            let title = escape_html(index.map_or(name, |item| item.title.as_str()));
+            let icon =
+                create_icon(index.and_then(|item| item.icon.as_deref()).filter(|_| top));
+            format!("{icon}{title}")
+        }
+    };
+    let list = create_list(site, &node.children, page, false);
+    format!("<details open><summary>{label}</summary>{list}</details>")
+}
+
+fn create_entry(site: &Site, item: &Page, page: &Page, icon: bool) -> String {
+    let current = match item.path == page.path {
+        true => " aria-current=\"page\"",
+        false => "",
+    };
+    let url = escape_html(read_href(item));
+    let title = escape_html(item.label.as_ref().unwrap_or(&item.title));
+    let icon = create_icon(item.icon.as_deref().filter(|_| icon));
+    if !item.untranslated {
+        return format!("<a href=\"{url}\"{current}>{icon}{title}</a>");
+    }
+    let (language, default) =
+        (site.read_language(&page.language), site.read_language(""));
+    let hint = escape_html(language.read_message("language.untranslated"));
+    let (locale, code) = (escape_html(&default.locale), escape_html(&default.code));
+    format!(
+        "<a href=\"{url}\" hreflang=\"{locale}\" title=\"{hint}\" data-untranslated>\
+         {icon}{title}<small>{code}</small></a>"
+    )
+}
+
+// An untranslated page is listed under the open language's prefix but lives at its key
+fn read_href(item: &Page) -> &str {
+    match item.untranslated {
+        true => &item.key,
+        false => &item.url,
+    }
+}
+
+fn create_footer(language: &SiteLanguage) -> String {
+    let text = escape_html(language.read_message("footer.createdWith"));
+    let text = text
+        .replace("{heart}", "<span aria-label=\"love\">❤</span>")
+        .replace(
+            "{htmlpress}",
+            "<a href=\"https://htmlpress.dev\">Htmlpress</a>",
+        );
+    format!("<p>{text}</p>")
+}
 
 fn create_links(site: &Site, page: &Page) -> Option<String> {
     let links: Vec<&Link> = (site.config.links.iter())
@@ -620,7 +791,8 @@ fn create_links(site: &Site, page: &Page) -> Option<String> {
     if links.is_empty() && sections.is_empty() {
         return None;
     }
-    let mut html = String::from("<nav aria-label=\"Links\">");
+    let label = escape_html(site.read_language(&page.language).read_message("nav.links"));
+    let mut html = format!("<nav aria-label=\"{label}\">");
     html.push_str(&sections.concat());
     for link in links {
         let url = escape_html(&link.url);
@@ -668,10 +840,8 @@ fn create_section_link(site: &Site, page: &Page, index: usize) -> String {
             let first = (site.pages.iter())
                 .filter(|item| item.path != NOT_FOUND_PAGE)
                 .find(|item| find_section(sections, &item.url) == Some(index));
-            let href = match site.pages.iter().any(|item| item.url == prefix) {
-                true => prefix,
-                false => first.map_or(prefix, |item| item.url.clone()),
-            };
+            let home = site.pages.iter().find(|item| item.url == prefix);
+            let href = (home.or(first)).map_or(prefix, |item| read_href(item).to_owned());
             (href, find_section(sections, &page.url) == Some(index))
         }
     };
@@ -703,7 +873,7 @@ fn read_latest(site: &Site, index: usize) -> Option<&str> {
 }
 
 fn create_pager(site: &Site, page: &Page) -> Option<String> {
-    let pages = list_pages(site, page);
+    let pages = NavNode::flatten(&read_nav(site, page));
     let index = pages.iter().position(|item| item.path == page.path)?;
     let prev = index
         .checked_sub(1)
@@ -712,10 +882,13 @@ fn create_pager(site: &Site, page: &Page) -> Option<String> {
     if prev.is_none() && next.is_none() {
         return None;
     }
-    let mut html = String::from("<nav aria-label=\"Previous and next\">");
-    for (rel, label, item) in [("prev", "Previous", prev), ("next", "Next", next)] {
+    let language = site.read_language(&page.language);
+    let label = escape_html(language.read_message("nav.pager"));
+    let mut html = format!("<nav aria-label=\"{label}\">");
+    for (rel, key, item) in [("prev", "nav.previous", prev), ("next", "nav.next", next)] {
+        let label = escape_html(language.read_message(key));
         if let Some(item) = item {
-            let url = escape_html(&item.url);
+            let url = escape_html(read_href(item));
             let title = escape_html(&item.title);
             let _ = write!(
                 html,
@@ -728,7 +901,7 @@ fn create_pager(site: &Site, page: &Page) -> Option<String> {
 }
 
 // Authors, published and updated dates, as one line under the page's title
-fn create_byline(page: &Page) -> Option<String> {
+fn create_byline(page: &Page, language: &SiteLanguage) -> Option<String> {
     let mut parts = vec![];
     if !page.authors.is_empty() {
         let icon = create_icon(Some("user"));
@@ -739,19 +912,21 @@ fn create_byline(page: &Page) -> Option<String> {
     }
     if let Some(date) = &page.date {
         let (icon, date) = (create_icon(Some("calendar")), escape_html(date));
-        let shown = escape_html(&format_date(&date));
-        parts.push(format!(
-            "<span>{icon}Published <time datetime=\"{date}\">{shown}</time></span>"
-        ));
+        let shown = escape_html(&format_date(&date, language));
+        let time = format!("<time datetime=\"{date}\">{shown}</time>");
+        let text = escape_html(language.read_message("page.published"));
+        let text = text.replace("{date}", &time);
+        parts.push(format!("<span>{icon}{text}</span>"));
     }
     if let Some(date) = &page.updated
         && page.date.as_ref() != Some(date)
     {
         let (icon, date) = (create_icon(Some("history")), escape_html(date));
-        let shown = escape_html(&format_date(&date));
-        parts.push(format!(
-            "<span>{icon}Updated <time datetime=\"{date}\">{shown}</time></span>"
-        ));
+        let shown = escape_html(&format_date(&date, language));
+        let time = format!("<time datetime=\"{date}\">{shown}</time>");
+        let text = escape_html(language.read_message("page.updated"));
+        let text = text.replace("{date}", &time);
+        parts.push(format!("<span>{icon}{text}</span>"));
     }
     match parts.is_empty() {
         true => None,
@@ -764,7 +939,11 @@ fn create_byline(page: &Page) -> Option<String> {
 
 // A page's own <htmlpress-toc> goes in unparsed, so the layout's handler never fills it;
 // it is filled here, `level="2"` keeping only the <h2>s
-fn fill_inline_tocs(content: &str, page: &Page) -> Result<String, String> {
+fn fill_inline_tocs(
+    content: &str,
+    page: &Page,
+    language: &SiteLanguage,
+) -> Result<String, String> {
     if !content.contains("<htmlpress-toc") {
         return Ok(content.to_owned());
     }
@@ -782,7 +961,7 @@ fn fill_inline_tocs(content: &str, page: &Page) -> Result<String, String> {
                     .into());
                 }
             };
-            match create_toc_up_to(page, level) {
+            match create_toc_up_to(page, level, language) {
                 Some(html) => {
                     el.set_attribute("data-inline", "")?;
                     el.set_inner_content(&html, ContentType::Html);
@@ -815,11 +994,11 @@ fn add_byline(content: &str, byline: Option<String>) -> Result<String, String> {
     }
 }
 
-fn create_toc(page: &Page) -> Option<String> {
-    create_toc_up_to(page, 3)
+fn create_toc(page: &Page, language: &SiteLanguage) -> Option<String> {
+    create_toc_up_to(page, 3, language)
 }
 
-fn create_toc_up_to(page: &Page, level: u8) -> Option<String> {
+fn create_toc_up_to(page: &Page, level: u8, language: &SiteLanguage) -> Option<String> {
     let headings: Vec<_> = page
         .toc
         .iter()
@@ -828,7 +1007,8 @@ fn create_toc_up_to(page: &Page, level: u8) -> Option<String> {
     if headings.is_empty() {
         return None;
     }
-    let mut html = String::from("<p>On this page</p><ul>");
+    let title = escape_html(language.read_message("toc.title"));
+    let mut html = format!("<p>{title}</p><ul>");
     for heading in headings {
         let id = escape_html(&heading.id);
         let title = escape_html(&heading.title);
@@ -843,20 +1023,21 @@ fn create_toc_up_to(page: &Page, level: u8) -> Option<String> {
 }
 
 // A link that works without the script, which adds copying and opening in a chat
-fn create_toolbar(page: &Page) -> Option<String> {
+fn create_toolbar(page: &Page, language: &SiteLanguage) -> Option<String> {
     if page.path == NOT_FOUND_PAGE {
         return None;
     }
     let href = escape_html(&create_markdown_path(&page.path));
     Some(format!(
-        "<a href=\"/{href}\" type=\"text/markdown\">View as Markdown</a>"
+        "<a href=\"/{href}\" type=\"text/markdown\">{}</a>",
+        escape_html(language.read_message("page.markdown"))
     ))
 }
 
 fn create_edit(site: &Site, page: &Page) -> Option<String> {
     let label = match page.source_action {
-        SourceAction::Edit => "Edit this page",
-        SourceAction::View => "View source",
+        SourceAction::Edit => "page.edit",
+        SourceAction::View => "page.view",
     };
     // A page's own source link wins; a page a section built itself has no source to edit
     let url = match &page.source_url {
@@ -864,6 +1045,7 @@ fn create_edit(site: &Site, page: &Page) -> Option<String> {
         None if page.source.is_empty() => return None,
         None => format!("{}{}", site.config.edit.as_ref()?, page.source),
     };
+    let label = escape_html(site.read_language(&page.language).read_message(label));
     Some(format!("<a href=\"{}\">{label}</a>", escape_html(&url)))
 }
 

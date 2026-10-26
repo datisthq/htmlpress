@@ -5,7 +5,7 @@ const MOON =
 
 class HtmlpressThemeToggle extends HTMLElement {
   connectedCallback() {
-    const button = createButton("Toggle dark mode")
+    const button = createButton(readMessages()["theme.toggle"] ?? "Toggle dark mode")
     button.setAttribute("aria-keyshortcuts", "T")
     const flip = () => {
       const root = document.documentElement
@@ -52,3 +52,12 @@ function isTyping(target) {
 }
 
 customElements.define("htmlpress-theme-toggle", HtmlpressThemeToggle)
+
+// The page's UI strings; English when a layout leaves them out
+function readMessages() {
+  try {
+    return JSON.parse(document.getElementById("htmlpress-messages")?.textContent ?? "{}")
+  } catch {
+    return {}
+  }
+}

@@ -2,6 +2,7 @@ use std::path::Path;
 
 use crate::actions::code::highlight::has_theme;
 use crate::actions::icon::render::{list_icons, render_icon};
+use crate::actions::language::resolve::parse_messages;
 use crate::models::config::{Config, SectionKind};
 use crate::models::error::Error;
 use crate::settings::CONFIG_FILE;
@@ -52,14 +53,21 @@ pub fn load_config(root: &Path) -> crate::Result<Config> {
     if let Some(message) = check_sections(&config) {
         return Err(Error::Config { path, message });
     }
+    if let Some(message) = check_languages(&config) {
+        return Err(Error::Config { path, message });
+    }
     Ok(config)
 }
 
 fn check_icons(config: &Config) -> Option<String> {
-    let links = config.links.iter().map(|link| (&link.title, &link.icon));
+    let links = config
+        .links
+        .iter()
+        .map(|link| (link.title.text(), &link.icon));
     let sections =
-        (config.sections.iter()).map(|section| (&section.title, &section.icon));
-    let patches = (config.patches.iter()).map(|patch| (&patch.file, &patch.article.icon));
+        (config.sections.iter()).map(|section| (section.title.text(), &section.icon));
+    let patches =
+        (config.patches.iter()).map(|patch| (patch.file.as_str(), &patch.article.icon));
     for (title, icon) in links.chain(sections).chain(patches) {
         if let Some(icon) = icon
             && render_icon(icon).is_none()
@@ -116,6 +124,63 @@ fn check_sections(config: &Config) -> Option<String> {
         if section.kind == SectionKind::Changelog && section.source.is_none() {
             return Some(format!(
                 "section \"{title}\" of type changelog needs a source"
+            ));
+        }
+    }
+    None
+}
+
+// A code is a URL segment and a file name suffix, so it must be plain and unique; a
+// section under another language's prefix would be served as that language's page
+fn check_languages(config: &Config) -> Option<String> {
+    let english = parse_messages("en");
+    for (index, language) in config.languages.iter().enumerate() {
+        let code = &language.code;
+        let plain = code.starts_with(|char: char| char.is_ascii_lowercase())
+            && (code.chars()).all(|char| {
+                char.is_ascii_lowercase() || char.is_ascii_digit() || char == '-'
+            });
+        if !plain {
+            return Some(format!(
+                "language \"{code}\": a code is lowercase letters, digits and \"-\", starting with a letter"
+            ));
+        }
+        if config.languages[..index]
+            .iter()
+            .any(|other| other.code == *code)
+        {
+            return Some(format!("language \"{code}\" is listed twice"));
+        }
+        if language.label.trim().is_empty() {
+            return Some(format!("language \"{code}\" needs a label"));
+        }
+        if let Some(flag) = &language.flag
+            && !(flag.len() == 2 && flag.chars().all(|char| char.is_ascii_lowercase()))
+        {
+            return Some(format!(
+                "language \"{code}\": flag must be a two-letter country code, got \"{flag}\""
+            ));
+        }
+        if let Some(key) = language
+            .messages
+            .keys()
+            .find(|key| !english.contains_key(*key))
+        {
+            return Some(format!("language \"{code}\": no message \"{key}\""));
+        }
+        let prefix = format!("/{code}/");
+        let routed = (config.sections.iter())
+            .filter(|section| section.kind != SectionKind::Custom)
+            .find(|section| {
+                (section.prefix.as_deref())
+                    .is_some_and(|other| other.starts_with(&prefix))
+            });
+        if index > 0
+            && let Some(section) = routed
+        {
+            return Some(format!(
+                "section \"{}\": prefix collides with language \"{code}\"",
+                section.title
             ));
         }
     }

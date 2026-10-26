@@ -27,6 +27,22 @@ fn orders_pages_index_first_then_by_order_then_path() -> crate::Result<()> {
 }
 
 #[test]
+fn puts_negative_orders_last_with_minus_one_at_the_end() -> crate::Result<()> {
+    let root = tempfile::tempdir().map_err(Error::io("tempdir"))?;
+    let root = root.path();
+    let order =
+        |order: i64| format!(r#"<head><meta name="order" content="{order}"></head>"#);
+    write_file(root, "last.html", &format!("{}<h1>Last</h1>", order(-1)))?;
+    write_file(root, "late.html", &format!("{}<h1>Late</h1>", order(-2)))?;
+    write_file(root, "a.html", "<h1>A</h1>")?;
+    write_file(root, "first.html", &format!("{}<h1>First</h1>", order(0)))?;
+    let site = scan_site(root)?;
+    let titles: Vec<&str> = site.pages.iter().map(|page| page.title.as_str()).collect();
+    assert_eq!(titles, ["First", "A", "Late", "Last"]);
+    Ok(())
+}
+
+#[test]
 fn skips_dot_folders_and_the_config_and_keeps_other_files() -> crate::Result<()> {
     let root = tempfile::tempdir().map_err(Error::io("tempdir"))?;
     let root = root.path();

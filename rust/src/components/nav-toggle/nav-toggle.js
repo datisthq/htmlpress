@@ -5,7 +5,8 @@ const PHONE = matchMedia("(max-width: 56rem)")
 // away, and that choice is kept across pages
 class HtmlpressNavToggle extends HTMLElement {
   connectedCallback() {
-    const button = createButton("Toggle sidebar", ICON)
+    const label = readMessages()["nav.toggleSidebar"] ?? "Toggle sidebar"
+    const button = createButton(label, ICON)
     button.setAttribute("aria-controls", "htmlpress-sidebar")
     button.setAttribute("aria-keyshortcuts", "L")
     const root = document.documentElement
@@ -71,3 +72,12 @@ function isTyping(target) {
 }
 
 customElements.define("htmlpress-nav-toggle", HtmlpressNavToggle)
+
+// The page's UI strings; English when a layout leaves them out
+function readMessages() {
+  try {
+    return JSON.parse(document.getElementById("htmlpress-messages")?.textContent ?? "{}")
+  } catch {
+    return {}
+  }
+}
