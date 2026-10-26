@@ -1,5 +1,6 @@
 site: https://htmlpress.dev
 title: Htmlpress
+logo: /logo.svg
 description: "Turn a folder of HTML pages into a site: one layout, one theme, live reload, made for agents."
 links:
   - title: GitHub
