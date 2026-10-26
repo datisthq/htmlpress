@@ -1,4 +1,16 @@
 @scope (htmlpress-banner) {
+  /* The site's stone banner, set here so the built-in tokens stay unescaped */
+  :scope {
+    --htmlpress-banner: oklch(0.923 0.003 48.717);
+  }
+  :root[data-theme="dark"] :scope {
+    --htmlpress-banner: oklch(0.268 0.007 34.298);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) :scope {
+      --htmlpress-banner: oklch(0.268 0.007 34.298);
+    }
+  }
   :scope {
     display: block;
     background: var(--htmlpress-banner);
