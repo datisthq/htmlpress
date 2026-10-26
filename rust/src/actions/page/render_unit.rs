@@ -367,7 +367,8 @@ fn links_the_markdown_from_the_head_and_the_toolbar() -> crate::Result<()> {
             r#"<link rel="alternate" type="text/markdown" href="/api/cli.md">"#
         )
     );
-    assert!(html.contains(r#"<htmlpress-toolbar><a href="/api/cli.md" type="text/markdown">View as Markdown</a></htmlpress-toolbar>"#));
+    assert!(html.contains(r#"<htmlpress-toolbar><p>Actions</p><a href="/api/cli.md" type="text/markdown"><svg"#));
+    assert!(html.contains("</svg>View as Markdown</a></htmlpress-toolbar>"));
     Ok(())
 }
 
@@ -469,12 +470,8 @@ fn puts_the_byline_under_the_title() -> crate::Result<()> {
     let title = html.find("<h1>Post</h1>").unwrap_or(usize::MAX);
     let byline = html.find("<htmlpress-byline>").unwrap_or(0);
     assert!(title < byline, "{html}");
-    assert!(
-        html.contains("Published <time datetime=\"2026-10-01\">October 1, 2026</time>")
-    );
-    assert!(
-        html.contains("Updated <time datetime=\"2026-10-20\">October 20, 2026</time>")
-    );
+    assert!(html.contains("Published <time datetime=\"2026-10-01\">Oct 1, 2026</time>"));
+    assert!(html.contains("Updated <time datetime=\"2026-10-20\">Oct 20, 2026</time>"));
     assert!(html.contains("components/byline/byline.css"));
     let home = render_page(&site, &site.pages[0], false)?;
     assert!(!home.contains("<htmlpress-byline>"));
@@ -495,7 +492,8 @@ fn uses_labels_icons_and_hides_pages_from_the_navigation() -> crate::Result<()> 
     assert!(html.contains("</svg>Short</a>"));
     assert!(!html.contains(r#"href="/api/cli.html""#));
     let cli = render_page(&site, &site.pages[3], false)?;
-    assert!(cli.contains(r#"<a href="https://x.dev/cli">View source</a>"#));
+    assert!(cli.contains(r#"<p>Actions</p><a href="https://x.dev/cli"><svg"#));
+    assert!(cli.contains("</svg>View on GitHub</a>"));
     Ok(())
 }
 
@@ -565,10 +563,10 @@ fn writes_the_ui_in_the_pages_language() -> crate::Result<()> {
     let html = render_page(&site, &site.pages[1], false)?;
     assert!(html.contains(r#"<html lang="es">"#));
     assert!(html.contains(r##"<a href="#content">Saltar al contenido</a>"##));
-    assert!(html.contains("<p>En esta página</p>"));
-    assert!(html.contains(
-        r#"Publicado el <time datetime="2026-10-01">1 de octubre de 2026</time>"#
-    ));
+    assert!(html.contains("<p>Contenido</p>"));
+    assert!(
+        html.contains(r#"Publicado el <time datetime="2026-10-01">1 oct 2026</time>"#)
+    );
     assert!(html.contains(r#"<a rel="prev" href="/"><small>Anterior</small>Home</a>"#));
     assert!(html.contains(r#""search.label":"Buscar""#));
     site.pages[1].content = r#"<htmlpress-callout type="warning"><p>!</p></htmlpress-callout><htmlpress-callout label="Ojo"></htmlpress-callout>"#.to_owned();
@@ -626,7 +624,7 @@ fn fills_an_inline_toc_written_in_the_page() -> crate::Result<()> {
         "<title>Guide</title><htmlpress-toc level=\"2\"></htmlpress-toc><h2>One</h2><h3>Sub</h3>",
     )?;
     let html = render_page(&site, &site.pages[1], false)?;
-    assert!(html.contains(r##"<htmlpress-toc level="2" data-inline=""><p>On this page</p><ul><li><a href="#one" data-level="2">One</a></li></ul></htmlpress-toc>"##), "{html}");
+    assert!(html.contains(r##"<htmlpress-toc level="2" data-inline=""><p>Contents</p><ul><li><a href="#one" data-level="2">One</a></li></ul></htmlpress-toc>"##), "{html}");
     site.pages[1] = read_page(
         "guide.html",
         "<title>Guide</title><htmlpress-toc></htmlpress-toc><p>No headings.</p>",

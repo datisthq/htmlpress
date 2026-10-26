@@ -7,7 +7,7 @@
     max-height: calc(100dvh - 5rem);
     overflow-y: auto;
     font-size: 0.875rem;
-    line-height: 1.43;
+    line-height: 1.25rem;
     scrollbar-width: none;
   }
   :scope:not(:has(> *)) {

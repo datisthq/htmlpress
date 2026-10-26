@@ -33,7 +33,8 @@ Most looks are a token. Override it in `.htmlpress/styles/tokens.css`, or in one
 ```
 
 `--htmlpress-accent`, `-accent-text`, `-font`, `-mono`, `-bg`, `-surface`, `-text`, `-muted`,
-`-border`, `-shadow`, `-radius`, `-width`, `-nav-width`, `-banner`, `-banner-text`, and the
+`-prose`, `-prose-strong`, `-prose-marker`, `-border`, `-shadow`, `-radius`, `-width`,
+`-nav-width`, `-banner`, `-banner-text`, and the
 callout colours `-info`, `-success`, `-warning`, `-danger`.
 
 ## Escaping

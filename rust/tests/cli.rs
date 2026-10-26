@@ -181,7 +181,7 @@ fn builds_every_language_with_its_picker_and_fallbacks() -> TestResult {
 
     let blog = read("es/blog/index.html")?;
     assert!(blog.contains("<h1>Bitácora</h1>"));
-    assert!(blog.contains("1 de marzo de 2026"));
+    assert!(blog.contains("1 mar 2026"));
     assert!(read("es/blog/rss.xml")?.contains("<title>Hola</title>"));
     assert!(read("blog/index.html")?.contains("No posts yet."));
     write_page(

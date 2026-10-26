@@ -10,7 +10,8 @@
     width: 100%;
     min-width: 0;
     max-width: var(--htmlpress-width);
-    color: color-mix(in oklab, var(--htmlpress-text) 82%, var(--htmlpress-bg));
+    color: var(--htmlpress-prose);
+    line-height: 1.75;
     overflow-wrap: break-word;
   }
   :scope > main > :first-child {

@@ -23,6 +23,7 @@
   li,
   li + li {
     margin: 0;
+    padding: 0;
   }
   li::before {
     content: "";

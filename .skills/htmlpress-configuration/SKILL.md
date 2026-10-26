@@ -55,7 +55,7 @@ head:
   `docs/**/*.html` serves `docs/guide.html` at `/guide.html`. Other files there are copied as-is.
 - `exclude` — globs left out of the build: partials for includes, drafts.
 - `codeThemeLight`, `codeThemeDark` — the code block themes, by Shiki theme name.
-- `edit` — a URL prefix for an "Edit this page" link.
+- `edit` — a URL prefix for an "Edit on GitHub" link.
 
 ## Sections
 

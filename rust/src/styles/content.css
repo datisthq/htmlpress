@@ -1,44 +1,49 @@
+/* Medium, not the sizes' usual bold: Livemark's headings are links, which prose sets at 500 */
 h1,
 h2,
 h3,
 h4 {
-  color: var(--htmlpress-text);
-  line-height: 1.3;
-  letter-spacing: -0.015em;
+  color: var(--htmlpress-prose-strong);
+  font-weight: 500;
 }
 h1 {
-  margin: 0 0 1.5rem;
+  margin: 0 0 2rem;
   font-size: 2.25rem;
-  font-weight: 800;
-  line-height: 1.12;
-  letter-spacing: -0.025em;
+  line-height: 1.1111;
 }
 h2 {
-  margin: 3rem 0 1.25rem;
+  margin: 3rem 0 1.5rem;
   font-size: 1.5rem;
-  font-weight: 700;
+  line-height: 1.3333;
 }
 h3 {
   margin: 2rem 0 0.75rem;
   font-size: 1.25rem;
-  font-weight: 600;
+  line-height: 1.6;
 }
 h4 {
   margin: 1.5rem 0 0.5rem;
   font-size: 1rem;
-  font-weight: 600;
+  line-height: 1.5;
 }
 .htmlpress-anchor {
+  display: inline-block;
+  width: 0.6em;
+  height: 0.6em;
   margin-left: 0.4em;
-  color: var(--htmlpress-muted);
-  font-weight: 400;
-  text-decoration: none;
+  overflow: hidden;
+  background: currentColor;
+  color: inherit;
+  text-indent: 1em;
+  vertical-align: middle;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'/%3E%3Cpath d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'/%3E%3C/svg%3E")
+    center / contain no-repeat;
   opacity: 0;
   transition: opacity 0.15s;
 }
 :hover > .htmlpress-anchor,
 .htmlpress-anchor:focus {
-  opacity: 0.6;
+  opacity: 0.5;
 }
 
 p,
@@ -52,24 +57,34 @@ blockquote,
 details {
   margin: 0 0 1.25em;
 }
-li + li {
-  margin-top: 0.375em;
+/* Under :where(main), so a component's own scoped lists and links still win */
+:where(main) :is(ul, ol) {
+  padding-left: 1.625em;
 }
-li::marker {
+:where(main) li {
+  margin: 0.5em 0;
+  padding-left: 0.375em;
+}
+:where(main li) > :is(ul, ol) {
+  margin: 0.75em 0;
+}
+:where(main ul) > li::marker {
+  color: var(--htmlpress-prose-marker);
+}
+:where(main ol) > li::marker {
   color: var(--htmlpress-muted);
 }
 
 a {
   color: var(--htmlpress-accent);
-  text-decoration-color: color-mix(in oklab, currentColor 40%, transparent);
-  text-underline-offset: 0.2em;
 }
-a:hover {
-  text-decoration-color: currentColor;
+:where(main) a {
+  color: var(--htmlpress-prose-strong);
+  font-weight: 500;
 }
 
 strong {
-  color: var(--htmlpress-text);
+  color: var(--htmlpress-prose-strong);
   font-weight: 600;
 }
 
@@ -82,9 +97,14 @@ pre {
   padding: 0.125rem 0.375rem;
   border: 1px solid var(--htmlpress-border);
   border-radius: 0.5rem;
-  background: var(--htmlpress-surface);
-  color: var(--htmlpress-text);
-  font-size: 0.875em;
+  background: color-mix(in oklab, var(--htmlpress-surface) 70%, transparent);
+  color: var(--htmlpress-prose-strong);
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.25rem;
+}
+a > code {
+  color: inherit;
 }
 pre {
   overflow-x: auto;
@@ -98,11 +118,15 @@ pre {
   line-height: 1.7;
 }
 kbd {
-  padding: 0.1em 0.4em;
-  border: 1px solid var(--htmlpress-border);
-  border-bottom-width: 2px;
-  border-radius: 0.375rem;
-  font-size: 0.85em;
+  padding: 0.1875em 0.375em;
+  border-radius: 0.3125rem;
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--htmlpress-prose-strong) 10%, transparent),
+    0 3px 0 color-mix(in oklab, var(--htmlpress-prose-strong) 10%, transparent);
+  color: var(--htmlpress-prose-strong);
+  font-family: inherit;
+  font-size: 0.875em;
+  font-weight: 500;
 }
 
 .htmlpress-code {
@@ -132,10 +156,33 @@ kbd {
 }
 
 blockquote {
-  margin-inline: 0;
-  padding-left: 1rem;
-  border-left: 3px solid var(--htmlpress-border);
-  color: var(--htmlpress-muted);
+  margin: 1.6em 0;
+  padding-left: 1em;
+  border-left: 0.25rem solid var(--htmlpress-border);
+  color: var(--htmlpress-prose-strong);
+  font-style: italic;
+  font-weight: 500;
+  quotes: "\201C" "\201D" "\2018" "\2019";
+}
+blockquote > p:first-of-type::before {
+  content: open-quote;
+}
+blockquote > p:last-of-type::after {
+  content: close-quote;
+}
+
+sub,
+sup {
+  position: relative;
+  font-size: 75%;
+  line-height: 0;
+  vertical-align: baseline;
+}
+sup {
+  top: -0.5em;
+}
+sub {
+  bottom: -0.25em;
 }
 
 table {
@@ -174,9 +221,10 @@ figure {
   margin-inline: 0;
 }
 figcaption {
-  margin-top: 0.5rem;
+  margin-top: 0.8571em;
   color: var(--htmlpress-muted);
-  font-size: 0.875rem;
+  font-size: 0.875em;
+  line-height: 1.4286;
 }
 
 details {
@@ -199,7 +247,7 @@ details > :last-child {
 }
 
 hr {
-  margin: 2.5rem 0;
+  margin: 3em 0;
   border: 0;
   border-top: 1px solid var(--htmlpress-border);
 }

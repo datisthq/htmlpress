@@ -21,7 +21,7 @@ fn makes_one_english_language_without_languages() {
         (language.locale.as_str(), language.title.as_str()),
         ("en", "Docs")
     );
-    assert_eq!(language.read_message("toc.title"), "On this page");
+    assert_eq!(language.read_message("toc.title"), "Contents");
 }
 
 #[test]

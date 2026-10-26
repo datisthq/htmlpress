@@ -21,7 +21,7 @@ body {
   margin: 0;
   background: var(--htmlpress-bg);
   color: var(--htmlpress-text);
-  font: 1rem/1.75 var(--htmlpress-font);
+  font: 1rem/1.5 var(--htmlpress-font);
 }
 
 /* The drawer's backdrop; it lives on body, outside every element's scope */

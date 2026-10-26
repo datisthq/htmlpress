@@ -6,7 +6,7 @@ use crate::models::language::Language;
 #[test]
 fn formats_dates_for_readers_in_their_language() {
     let english = resolve_english(&Config::default(), "Docs");
-    assert_eq!(format_date("2026-10-01", &english), "October 1, 2026");
+    assert_eq!(format_date("2026-10-01", &english), "Oct 1, 2026");
     assert_eq!(format_date("soon", &english), "soon");
     let language = |code: &str| Language {
         code: code.to_owned(),
@@ -21,7 +21,7 @@ fn formats_dates_for_readers_in_their_language() {
     let dates: Vec<String> = (languages.iter())
         .map(|language| format_date("2026-03-01", language))
         .collect();
-    assert_eq!(dates, ["1. März 2026", "2026年3月1日", "1 марта 2026 г."]);
+    assert_eq!(dates, ["1. März 2026", "2026年3月1日", "1 мар. 2026 г."]);
 }
 
 #[test]

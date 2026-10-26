@@ -1,14 +1,18 @@
 :root {
   color-scheme: light;
   --htmlpress-font:
-    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
-    sans-serif;
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans",
+    Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+    "Noto Color Emoji";
   --htmlpress-mono:
     ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
     "Courier New", monospace;
   --htmlpress-bg: oklch(1 0 0);
   --htmlpress-surface: oklch(0.985 0 0);
   --htmlpress-text: oklch(0.145 0 0);
+  --htmlpress-prose: oklch(0.373 0.034 259.733);
+  --htmlpress-prose-strong: oklch(0.21 0.034 264.665);
+  --htmlpress-prose-marker: oklch(0.872 0.01 258.338);
   --htmlpress-muted: oklch(0.5 0 0);
   --htmlpress-border: oklch(0.922 0 0);
   --htmlpress-accent: oklch(0.546 0.245 262.881);
@@ -33,6 +37,9 @@
     --htmlpress-bg: oklch(0.145 0 0);
     --htmlpress-surface: oklch(0.205 0 0);
     --htmlpress-text: oklch(0.985 0 0);
+    --htmlpress-prose: oklch(0.872 0.01 258.338);
+    --htmlpress-prose-strong: oklch(1 0 0);
+    --htmlpress-prose-marker: oklch(0.446 0.03 256.802);
     --htmlpress-muted: oklch(0.708 0 0);
     --htmlpress-border: oklch(0.269 0 0);
     --htmlpress-accent: oklch(0.623 0.214 259.815);
@@ -51,6 +58,9 @@
   --htmlpress-bg: oklch(0.145 0 0);
   --htmlpress-surface: oklch(0.205 0 0);
   --htmlpress-text: oklch(0.985 0 0);
+  --htmlpress-prose: oklch(0.872 0.01 258.338);
+  --htmlpress-prose-strong: oklch(1 0 0);
+  --htmlpress-prose-marker: oklch(0.446 0.03 256.802);
   --htmlpress-muted: oklch(0.708 0 0);
   --htmlpress-border: oklch(0.269 0 0);
   --htmlpress-accent: oklch(0.623 0.214 259.815);

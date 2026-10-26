@@ -16,7 +16,7 @@ const MONTHS: [&str; 12] = [
 ];
 const WEEKDAYS: [&str; 7] = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
-/// A `YYYY-MM-DD` date as readers of a language see it, `October 1, 2026` in English; the
+/// A `YYYY-MM-DD` date as readers of a language see it, `Oct 1, 2026` in English; the
 /// input as is when it is not one.
 pub(crate) fn format_date(date: &str, language: &SiteLanguage) -> String {
     let Some((year, month, day)) = read_parts(date) else {

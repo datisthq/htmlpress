@@ -442,14 +442,16 @@ title: Htmlpress</code></pre>
   set under <code>prefers-color-scheme</code> or the header's theme toggle:
   <code>--htmlpress-accent</code>, <code>--htmlpress-accent-text</code>,
   <code>--htmlpress-banner</code>, <code>--htmlpress-banner-text</code>,
-  <code>--htmlpress-bg</code>, <code>--htmlpress-surface</code>,
-  <code>--htmlpress-text</code>, <code>--htmlpress-muted</code>,
-  <code>--htmlpress-border</code>, <code>--htmlpress-info</code>,
-  <code>--htmlpress-success</code>, <code>--htmlpress-warning</code>,
-  <code>--htmlpress-danger</code>, <code>--htmlpress-font</code>,
-  <code>--htmlpress-mono</code>, <code>--htmlpress-radius</code>,
-  <code>--htmlpress-shadow</code>, <code>--htmlpress-width</code> and
-  <code>--htmlpress-nav-width</code>. Override them from a page's own stylesheet:
+  <code>--htmlpress-prose</code>, <code>--htmlpress-prose-strong</code>,
+  <code>--htmlpress-prose-marker</code>, <code>--htmlpress-bg</code>,
+  <code>--htmlpress-surface</code>, <code>--htmlpress-text</code>,
+  <code>--htmlpress-muted</code>, <code>--htmlpress-border</code>,
+  <code>--htmlpress-info</code>, <code>--htmlpress-success</code>,
+  <code>--htmlpress-warning</code>, <code>--htmlpress-danger</code>,
+  <code>--htmlpress-font</code>, <code>--htmlpress-mono</code>,
+  <code>--htmlpress-radius</code>, <code>--htmlpress-shadow</code>,
+  <code>--htmlpress-width</code> and <code>--htmlpress-nav-width</code>. Override them
+  from a page's own stylesheet:
 </p>
 <pre><code>:root {
   --htmlpress-accent: oklch(0.6 0.18 30);
@@ -500,7 +502,10 @@ title: Htmlpress</code></pre>
   <dt><code>&lt;htmlpress-pager&gt;</code></dt>
   <dd>The previous and next pages in navigation order.</dd>
   <dt><code>&lt;htmlpress-edit&gt;</code></dt>
-  <dd>An "Edit this page" link from <code>edit</code> in <code>htmlpress.yaml</code>.</dd>
+  <dd>
+    An "Edit on GitHub" link from <code>edit</code> in <code>htmlpress.yaml</code>, on its
+    own; the default layout has it inside <code>&lt;htmlpress-toolbar&gt;</code>.
+  </dd>
   <dt><code>&lt;htmlpress-search&gt;</code></dt>
   <dd>
     Search over every page, with the script: a header button, also opened by
@@ -510,7 +515,8 @@ title: Htmlpress</code></pre>
   </dd>
   <dt><code>&lt;htmlpress-toolbar&gt;</code></dt>
   <dd>
-    A link to the page's Markdown copy; the script adds "Copy Markdown", "Open in ChatGPT"
+    The page's actions under an "Actions" title: the source link, then a link to the
+    page's Markdown copy, which the script swaps for "Copy Markdown", "Open in ChatGPT"
     and "Open in Claude".
   </dd>
   <dt><code>&lt;htmlpress-footer&gt;</code></dt>

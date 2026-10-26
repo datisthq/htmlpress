@@ -41,7 +41,7 @@ fn builds_a_blog_index_and_tag_pages() -> crate::Result<()> {
         index.find("/blog/new.html") < index.find("/blog/old.html"),
         "{index}"
     );
-    assert!(index.contains("October 1, 2026 · Ann"));
+    assert!(index.contains("Oct 1, 2026 · Ann"));
     assert!(
         generated[2].content.contains("/blog/new.html")
             && !generated[2].content.contains("old")
@@ -89,7 +89,7 @@ fn builds_a_page_per_changelog_version() -> crate::Result<()> {
     assert!(
         generated[0]
             .content
-            .contains("<a href=\"/changelog/0-2-0/\">0.2.0</a> · October 1, 2026")
+            .contains("<a href=\"/changelog/0-2-0/\">0.2.0</a> · Oct 1, 2026")
     );
     Ok(())
 }

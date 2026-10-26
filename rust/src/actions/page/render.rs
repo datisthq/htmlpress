@@ -183,7 +183,7 @@ pub(crate) fn render_page(
         settings = settings.append_element_content_handler(element!(
             "htmlpress-toolbar",
             |el| {
-                fill_element(el, create_toolbar(page, language));
+                fill_element(el, create_toolbar(site, page, language));
                 Ok(())
             }
         ));
@@ -1050,22 +1050,26 @@ fn create_toc_up_to(page: &Page, level: u8, language: &SiteLanguage) -> Option<S
     Some(html)
 }
 
-// A link that works without the script, which adds copying and opening in a chat
-fn create_toolbar(page: &Page, language: &SiteLanguage) -> Option<String> {
+// The page's actions, as in Livemark: its source link, then a Markdown link that works
+// without the script, which swaps it for copying and opening in a chat
+fn create_toolbar(site: &Site, page: &Page, language: &SiteLanguage) -> Option<String> {
     if page.path == NOT_FOUND_PAGE {
         return None;
     }
+    let title = escape_html(language.read_message("toc.actions"));
+    let edit = create_edit(site, page).unwrap_or_default();
     let href = escape_html(&create_markdown_path(&page.path));
     Some(format!(
-        "<a href=\"/{href}\" type=\"text/markdown\">{}</a>",
+        "<p>{title}</p>{edit}<a href=\"/{href}\" type=\"text/markdown\">{}{}</a>",
+        create_icon(Some("file-text")),
         escape_html(language.read_message("page.markdown"))
     ))
 }
 
 fn create_edit(site: &Site, page: &Page) -> Option<String> {
-    let label = match page.source_action {
-        SourceAction::Edit => "page.edit",
-        SourceAction::View => "page.view",
+    let (label, icon) = match page.source_action {
+        SourceAction::Edit => ("page.edit", "pencil"),
+        SourceAction::View => ("page.view", "eye"),
     };
     // A page's own source link wins; a page a section built itself has no source to edit
     let url = match &page.source_url {
@@ -1074,7 +1078,11 @@ fn create_edit(site: &Site, page: &Page) -> Option<String> {
         None => format!("{}{}", site.config.edit.as_ref()?, page.source),
     };
     let label = escape_html(site.read_language(&page.language).read_message(label));
-    Some(format!("<a href=\"{}\">{label}</a>", escape_html(&url)))
+    let icon = create_icon(Some(icon));
+    Some(format!(
+        "<a href=\"{}\">{icon}{label}</a>",
+        escape_html(&url)
+    ))
 }
 
 // Names were checked when the config loaded, so an unknown one cannot reach here
