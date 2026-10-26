@@ -41,23 +41,67 @@
     width: 1rem;
     height: 1rem;
   }
-  ul[data-sections] {
-    padding-bottom: 0.75rem;
-    border-bottom: 1px solid var(--htmlpress-border);
-  }
-  /* Header sections have their tabs above, until a phone leaves no room for them */
-  ul[data-sections] > [data-position="header"] {
+  /* The section picker: shown on a phone, and wider only when a section sits in the
+     sidebar; a header section is listed only where the header has no room for it */
+  [data-sections]:not(:has([data-position="sidebar"])) {
     display: none;
   }
-  ul[data-sections]:not(:has(> [data-position="sidebar"])) {
+  [data-sections] [data-position="header"] {
     display: none;
   }
-  /* Repeats the hiding selector: a bare ul[data-sections] loses to its :not(:has()) */
+  [data-sections] + [data-label] {
+    margin-top: 1.25rem;
+  }
+  [data-sections] details {
+    position: relative;
+    margin-top: 0.25rem;
+  }
+  [data-sections] details > summary {
+    height: 2.25rem;
+    padding: 0 0.75rem;
+    border: 1px solid var(--htmlpress-border);
+    border-radius: 999px;
+    color: var(--htmlpress-text);
+    font-weight: 400;
+  }
+  [data-sections] details > summary > span {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  [data-sections] details > summary::after {
+    position: static;
+    width: 1rem;
+    height: 1rem;
+    color: var(--htmlpress-muted);
+    mask-size: 1rem;
+    rotate: 0deg;
+  }
+  [data-sections] details[open] > summary::after {
+    rotate: 180deg;
+  }
+  [data-sections] details > ul {
+    position: absolute;
+    top: calc(100% + 0.25rem);
+    right: 0;
+    left: 0;
+    z-index: 10;
+    margin: 0;
+    padding: 0.25rem;
+    border: 1px solid var(--htmlpress-border);
+    border-radius: 0.75rem;
+    background: var(--htmlpress-bg);
+    box-shadow:
+      0 4px 6px -1px oklch(0 0 0 / 0.1),
+      0 2px 4px -2px oklch(0 0 0 / 0.1);
+    translate: none;
+  }
   @media (max-width: 56rem) {
-    ul[data-sections],
-    ul[data-sections]:not(:has(> [data-position="sidebar"])),
-    ul[data-sections] > [data-position="header"] {
-      display: flex;
+    [data-sections]:not(:has([data-position="sidebar"])),
+    [data-sections] [data-position="header"] {
+      display: block;
     }
   }
   a {

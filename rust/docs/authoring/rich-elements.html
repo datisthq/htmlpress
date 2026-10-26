@@ -195,11 +195,16 @@ title: Htmlpress</code></pre>
 <p>
   Cards in <code>&lt;htmlpress-grid&gt;</code> fill responsive columns;
   <code>cols</code> fixes their number from 2 to 4, and narrow screens fall back to one. A
-  link in a card's heading makes the whole card clickable.
+  link in a card's heading makes the whole card clickable, and an
+  <code>&lt;htmlpress-icon&gt;</code> before its text shows in the accent colour.
 </p>
 <pre><code class="language-html">&lt;htmlpress-grid cols="2"&gt;
   &lt;htmlpress-card&gt;
-    &lt;h3&gt;&lt;a href="/introduction.html"&gt;Getting Started&lt;/a&gt;&lt;/h3&gt;
+    &lt;h3&gt;
+      &lt;a href="/introduction.html"
+        &gt;&lt;htmlpress-icon name="rocket"&gt;&lt;/htmlpress-icon&gt;Getting Started&lt;/a
+      &gt;
+    &lt;/h3&gt;
     &lt;p&gt;Learn how to set up your first project.&lt;/p&gt;
   &lt;/htmlpress-card&gt;
   &lt;htmlpress-card&gt;&lt;h3&gt;Plain HTML&lt;/h3&gt;&lt;p&gt;…&lt;/p&gt;&lt;/htmlpress-card&gt;
@@ -207,19 +212,31 @@ title: Htmlpress</code></pre>
 <p>Renders as:</p>
 <htmlpress-grid cols="2">
   <htmlpress-card>
-    <h3><a href="/introduction.html">Getting Started</a></h3>
+    <h3>
+      <a href="/introduction.html"
+        ><htmlpress-icon name="rocket"></htmlpress-icon>Getting Started</a
+      >
+    </h3>
     <p>Learn how to set up your first project.</p>
   </htmlpress-card>
   <htmlpress-card>
-    <h3><a href="/customization/configuration-file.html">Configuration</a></h3>
+    <h3>
+      <a href="/customization/configuration-file.html"
+        ><htmlpress-icon name="layers"></htmlpress-icon>Configuration</a
+      >
+    </h3>
     <p>Configure your htmlpress project.</p>
   </htmlpress-card>
   <htmlpress-card>
-    <h3><a href="https://github.com/datisthq/htmlpress">GitHub</a></h3>
+    <h3>
+      <a href="https://github.com/datisthq/htmlpress"
+        ><htmlpress-icon name="github"></htmlpress-icon>GitHub</a
+      >
+    </h3>
     <p>View the source code on GitHub.</p>
   </htmlpress-card>
   <htmlpress-card>
-    <h3>Plain HTML</h3>
+    <h3><htmlpress-icon name="file-code"></htmlpress-icon>Plain HTML</h3>
     <p>A card without a link is not clickable.</p>
   </htmlpress-card>
 </htmlpress-grid>
@@ -230,7 +247,7 @@ title: Htmlpress</code></pre>
   An inline label. <code>type</code> is <code>info</code>, <code>success</code>,
   <code>warning</code>, <code>danger</code> or <code>neutral</code> for a tone, or
   <code>outline</code>, <code>ghost</code> or <code>link</code> for a plainer style;
-  without it, the accent.
+  without it, solid in the accent.
 </p>
 <pre><code class="language-html">&lt;htmlpress-badge&gt;New&lt;/htmlpress-badge&gt;
 &lt;htmlpress-badge type="success"&gt;Stable&lt;/htmlpress-badge&gt;</code></pre>
@@ -554,9 +571,11 @@ title: Htmlpress</code></pre>
   An element with nothing to show is removed.
   <code>&lt;htmlpress-nav-toggle&gt;</code> (the sidebar as a drawer on a phone; wider, it
   folds the sidebar away and remembers that),
-  <code>&lt;htmlpress-theme-toggle&gt;</code> (cycling light, dark and the system's
-  choice) and <code>&lt;htmlpress-back-to-top&gt;</code> are built by the script in the
-  browser. Their keys match Livemark's: <kbd>L</kbd> toggles the sidebar,
+  <code>&lt;htmlpress-toc-bar&gt;</code> (narrower than the table of contents' column, a
+  bar under the header naming the heading in view, which opens a sheet of the page's
+  contents and actions), <code>&lt;htmlpress-theme-toggle&gt;</code> (cycling light, dark
+  and the system's choice) and <code>&lt;htmlpress-back-to-top&gt;</code> are built by the
+  script in the browser. Their keys match Livemark's: <kbd>L</kbd> toggles the sidebar,
   <kbd>T</kbd> flips light and dark and <kbd>B</kbd> goes back to the top, while
   <kbd>J</kbd> and <kbd>K</kbd> scroll any page down and up. None fires while typing in a
   field.

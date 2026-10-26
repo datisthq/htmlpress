@@ -41,7 +41,10 @@ fn builds_a_blog_index_and_tag_pages() -> crate::Result<()> {
         index.find("/blog/new.html") < index.find("/blog/old.html"),
         "{index}"
     );
-    assert!(index.contains("Oct 1, 2026 · Ann"));
+    assert!(index.contains("<p><span>Oct 1, 2026</span><span>Ann</span></p>"));
+    assert!(
+        index.contains("<article><h2") && index.contains(r#"<a href="/blog/new.html">"#)
+    );
     assert!(
         generated[2].content.contains("/blog/new.html")
             && !generated[2].content.contains("old")

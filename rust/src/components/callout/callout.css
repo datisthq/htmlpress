@@ -1,26 +1,41 @@
-/* Icons from Lucide (ISC), used as masks so they take the current color */
+/* Icons from Lucide (ISC), used as masks so they take the current color; the tints are
+   Livemark's, one light-dark() pair per type */
 @scope (htmlpress-callout) {
   :scope {
     --tone: var(--htmlpress-info);
+    --edge: color-mix(in oklab, var(--tone) 30%, transparent);
     --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M12 16v-4M12 8h.01'/%3E%3C/svg%3E");
     --label: "Info";
+    --fill: light-dark(oklch(0.97 0.014 254.604 / 0.5), oklch(0.282 0.091 267.935 / 0.3));
+    --ink: light-dark(oklch(0.379 0.146 265.522), oklch(0.882 0.059 254.128));
     display: grid;
     grid-template-columns: 1rem minmax(0, 1fr);
     align-items: center;
     column-gap: 0.5rem;
-    margin: 0 0 1.25em;
+    margin: 1rem 0;
     padding: 0.75rem 1rem;
-    border: 1px solid color-mix(in oklab, var(--tone) 35%, transparent);
+    border: 1px solid var(--edge);
     border-radius: var(--htmlpress-radius);
-    background: color-mix(in oklab, var(--tone) 7%, var(--htmlpress-bg));
-    color: color-mix(in oklab, var(--tone) 45%, var(--htmlpress-text));
+    background: var(--fill);
+    color: var(--ink);
     font-size: 0.875rem;
-    line-height: 1.6;
+    line-height: 1.25rem;
   }
   :scope:is([type="success"], [type="tip"]) {
     --tone: var(--htmlpress-success);
     --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5M9 18h6M10 22h4'/%3E%3C/svg%3E");
     --label: "Success";
+    --fill: light-dark(
+      oklch(0.967 0.067 122.328 / 0.5),
+      oklch(0.274 0.072 132.109 / 0.5)
+    );
+    --ink: light-dark(oklch(0.532 0.157 131.589), oklch(0.841 0.238 128.85));
+  }
+  :scope[type="tip"] {
+    --label: "Tip";
+  }
+  :scope[type="note"] {
+    --label: "Note";
   }
   :scope[type="note"] {
     --label: "Note";
@@ -32,11 +47,15 @@
     --tone: var(--htmlpress-warning);
     --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3M12 9v4M12 17h.01'/%3E%3C/svg%3E");
     --label: "Warning";
+    --fill: light-dark(oklch(0.973 0.071 103.193 / 0.5), oklch(0.286 0.066 53.813 / 0.5));
+    --ink: light-dark(oklch(0.476 0.114 61.907), oklch(0.852 0.199 91.936));
   }
   :scope[type="danger"] {
     --tone: var(--htmlpress-danger);
     --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5'/%3E%3C/svg%3E");
     --label: "Danger";
+    --fill: light-dark(oklch(0.936 0.032 17.717 / 0.5), oklch(0.258 0.092 26.042 / 0.5));
+    --ink: light-dark(oklch(0.505 0.213 27.518), oklch(0.704 0.191 22.216));
   }
   :scope::before {
     content: "";
@@ -57,13 +76,16 @@
   :scope > * {
     grid-column: 1 / -1;
   }
+  p {
+    margin: 0.25rem 0;
+  }
   :scope > :first-child {
-    margin-top: 0.375rem;
+    margin-top: 0.5rem;
   }
   :scope > :last-child {
     margin-bottom: 0;
   }
-  code {
+  :is(a, strong, code) {
     color: inherit;
   }
 }

@@ -113,6 +113,8 @@ pub const ASSETS: &[Asset] = &[
     asset!("components/theme-toggle/theme-toggle.js"),
     asset!("components/toc/toc.css"),
     asset!("components/toc/toc.js"),
+    asset!("components/toc-bar/toc-bar.css"),
+    asset!("components/toc-bar/toc-bar.js"),
     asset!("components/toolbar/toolbar.css"),
     asset!("components/toolbar/toolbar.js"),
     asset!("components/youtube/youtube.css"),

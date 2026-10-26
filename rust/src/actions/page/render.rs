@@ -519,12 +519,15 @@ fn create_nav_toggle(language: &SiteLanguage) -> String {
 
 // The strings the components' scripts write, which they read from here and fall back to
 // English without, so an escaped script keeps working
-const SCRIPT_MESSAGES: [&str; 24] = [
+const SCRIPT_MESSAGES: [&str; 29] = [
     "code.copied",
     "code.copy",
     "code.expand",
     "code.link",
+    "code.wrapOff",
+    "code.wrapOn",
     "nav.backToTop",
+    "nav.close",
     "nav.toggleSidebar",
     "page.copied",
     "page.copyFailed",
@@ -544,6 +547,8 @@ const SCRIPT_MESSAGES: [&str; 24] = [
     "search.placeholder",
     "search.select",
     "theme.toggle",
+    "toc.actions",
+    "toc.title",
 ];
 
 fn create_messages(language: &SiteLanguage) -> String {
@@ -991,12 +996,30 @@ fn create_links(site: &Site, page: &Page) -> Option<String> {
 
 // Every section, so the sidebar can switch between them on a phone, where the header
 // has no room for its tabs; each item carries its position for the layout to choose
+// Livemark's section picker: the open section in a pill that drops down the others
 fn create_section_list(site: &Site, page: &Page) -> String {
-    if site.config.sections.is_empty() {
+    let sections = &site.config.sections;
+    if sections.is_empty() {
         return String::new();
     }
-    let mut html = String::from("<ul data-sections>");
-    for (index, section) in site.config.sections.iter().enumerate() {
+    let current = find_section(sections, &page.url).unwrap_or_default();
+    let (icon, title) =
+        sections
+            .get(current)
+            .map_or((String::new(), String::new()), |section| {
+                (
+                    create_icon(section.icon.as_deref()),
+                    escape_html(&section.title),
+                )
+            });
+    let label = escape_html(
+        site.read_language(&page.language)
+            .read_message("nav.sections"),
+    );
+    let mut html = format!(
+        "<div data-sections><p data-label>{label}</p><details><summary>{icon}<span>{title}</span></summary><ul>"
+    );
+    for (index, section) in sections.iter().enumerate() {
         let position = match section.position {
             Position::Header => "header",
             Position::Sidebar => "sidebar",
@@ -1004,7 +1027,7 @@ fn create_section_list(site: &Site, page: &Page) -> String {
         let link = create_section_link(site, page, index);
         let _ = write!(html, "<li data-position=\"{position}\">{link}</li>");
     }
-    html.push_str("</ul>");
+    html.push_str("</ul></details></div>");
     html
 }
 
@@ -1179,9 +1202,9 @@ fn label_callouts(content: &str, language: &SiteLanguage) -> Result<String, Stri
         "htmlpress-callout:not([label])",
         |el| {
             let key = match el.get_attribute("type").as_deref().map(str::trim) {
-                Some("success") => "callout.success",
                 Some("note") => "callout.note",
                 Some("tip") => "callout.tip",
+                Some("success") => "callout.success",
                 Some("warning") => "callout.warning",
                 Some("danger") => "callout.danger",
                 _ => "callout.info",

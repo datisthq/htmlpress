@@ -32,6 +32,13 @@ html {
   scrollbar-gutter: stable;
 }
 
+/* A heading jumped to clears the phone's contents bar too, not just the header */
+@media (max-width: 80rem) {
+  html:has(htmlpress-toc-bar > button) {
+    scroll-padding-top: 7.5rem;
+  }
+}
+
 button:not([disabled]),
 [role="button"]:not([disabled]) {
   cursor: pointer;

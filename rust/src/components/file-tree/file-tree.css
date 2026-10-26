@@ -4,11 +4,12 @@
     --file: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z'/%3E%3Cpath d='M14 2v4a2 2 0 0 0 2 2h4'/%3E%3C/svg%3E");
     --folder: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z'/%3E%3C/svg%3E");
     display: block;
-    margin: 0 0 1.25em;
+    margin: 1rem 0;
     padding: 1rem;
     border: 1px solid var(--htmlpress-border);
+    background: var(--htmlpress-bg);
     border-radius: var(--htmlpress-radius);
-    font: 0.875rem/1.9 var(--htmlpress-mono);
+    font: 0.875rem/1.25rem var(--htmlpress-mono);
   }
   ul {
     margin: 0;
@@ -16,14 +17,20 @@
     list-style: none;
   }
   ul ul {
-    margin-left: 0.5rem;
-    padding-left: 1rem;
+    margin-left: 1rem;
+    padding-left: 0.5rem;
     border-left: 1px solid var(--htmlpress-border);
   }
   li,
   li + li {
     margin: 0;
-    padding: 0;
+    padding: 0.125rem 0;
+  }
+  li:has(> ul) {
+    font-weight: 600;
+  }
+  li:has(> ul) li:not(:has(> ul)) {
+    font-weight: 400;
   }
   li::before {
     content: "";

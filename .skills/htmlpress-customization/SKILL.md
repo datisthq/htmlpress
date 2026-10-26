@@ -36,7 +36,7 @@ Most looks are a token. Override it in `.htmlpress/styles/tokens.css`, or in one
 `-prose`, `-prose-strong`, `-prose-marker`, `-border`, `-shadow`, `-radius`, `-width`,
 `-nav-width`, `-banner`, `-banner-text`, `-highlight`, `-highlight-text` (search matches on
 the page a result opened), and the
-callout colours `-info`, `-success`, `-warning`, `-danger`.
+callout and badge tones `-info`, `-success`, `-warning`, `-danger`.
 
 ## Escaping
 
@@ -66,8 +66,8 @@ upgrade it misses the new defaults: escape only what you change.
 `<htmlpress-breadcrumbs>`, `<htmlpress-toc>`, `<htmlpress-pager>`, `<htmlpress-edit>`,
 `<htmlpress-toolbar>`, `<htmlpress-footer>`, `<htmlpress-language>` (the language picker) and
 `<htmlpress-skip>` at build time, every string in the page's language. The interactive ones,
-`<htmlpress-nav-toggle>`, `<htmlpress-search>`, `<htmlpress-theme-toggle>` and
-`<htmlpress-back-to-top>`, run in the browser; the first three get their button at build time,
+`<htmlpress-nav-toggle>`, `<htmlpress-search>`, `<htmlpress-theme-toggle>`, `<htmlpress-toc-bar>`
+(the phone's contents bar and sheet) and `<htmlpress-back-to-top>`, run in the browser; the first three get their button at build time,
 so the header is whole on its first frame. A head script sets `data-scripted` on `<html>`:
 without it those buttons stay hidden, so style anything that needs scripts under
 `:root[data-scripted]`. An element with nothing to show is removed.

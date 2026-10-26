@@ -1,32 +1,49 @@
+/* Livemark's badges: solid in the accent by default, a tint of their tone otherwise */
 @scope (htmlpress-badge) {
   :scope {
-    --tone: var(--htmlpress-accent);
-    display: inline-block;
-    padding: 0 0.5rem;
-    border: 1px solid color-mix(in oklab, var(--tone) 30%, transparent);
-    border-radius: 999px;
-    background: color-mix(in oklab, var(--tone) 10%, var(--htmlpress-bg));
-    color: color-mix(in oklab, var(--tone) 70%, var(--htmlpress-text));
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    height: 1.25rem;
+    padding: 0.125rem 0.5rem;
+    overflow: hidden;
+    border: 1px solid transparent;
+    border-radius: 2rem;
+    background: var(--htmlpress-accent);
+    color: var(--htmlpress-accent-text);
     font-size: 0.75rem;
     font-weight: 500;
-    line-height: 1.6;
-    vertical-align: 0.1em;
+    line-height: 1rem;
+    vertical-align: middle;
     white-space: nowrap;
+  }
+  :scope[type] {
+    background: light-dark(
+      color-mix(in oklab, var(--tone) 10%, transparent),
+      color-mix(in oklab, var(--tone) 20%, transparent)
+    );
   }
   :scope[type="info"] {
     --tone: var(--htmlpress-info);
+    color: light-dark(oklch(0.379 0.146 265.522), oklch(0.882 0.059 254.128));
   }
   :scope[type="success"] {
     --tone: var(--htmlpress-success);
+    color: light-dark(oklch(0.532 0.157 131.589), oklch(0.841 0.238 128.85));
   }
   :scope[type="warning"] {
     --tone: var(--htmlpress-warning);
+    color: light-dark(oklch(0.476 0.114 61.907), oklch(0.852 0.199 91.936));
   }
   :scope[type="danger"] {
     --tone: var(--htmlpress-danger);
+    color: var(--htmlpress-danger);
   }
   :scope[type="neutral"] {
-    --tone: var(--htmlpress-muted);
+    border-color: var(--htmlpress-border);
+    background: none;
+    color: var(--htmlpress-text);
   }
   :scope[type="outline"] {
     border-color: var(--htmlpress-border);

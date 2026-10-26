@@ -53,8 +53,7 @@ dl,
 table,
 figure,
 pre,
-blockquote,
-details {
+blockquote {
   margin: 0 0 1.25em;
 }
 /* Under :where(main), so a component's own scoped lists and links still win */
@@ -106,16 +105,20 @@ pre {
 a > code {
   color: inherit;
 }
+/* Livemark's code block: 13px on a 14px line rhythm, in a lightly shadowed card */
 pre {
+  margin: 1rem 0;
   overflow-x: auto;
-  padding: 1rem 1.25rem;
+  padding: 0.875rem 1rem;
   border: 1px solid var(--htmlpress-border);
   border-radius: var(--htmlpress-radius);
   background: var(--htmlpress-surface);
-  box-shadow: var(--htmlpress-shadow);
+  box-shadow:
+    0 1px 3px 0 oklch(0 0 0 / 0.1),
+    0 1px 2px -1px oklch(0 0 0 / 0.1);
   color: var(--htmlpress-text);
   font-size: 0.8125rem;
-  line-height: 1.7;
+  line-height: 1.4286;
 }
 kbd {
   padding: 0.1875em 0.375em;
@@ -131,52 +134,43 @@ kbd {
 
 .htmlpress-code {
   position: relative;
-  margin: 0 0 1.25em;
+  margin: 1rem 0;
 }
 .htmlpress-code > pre {
   margin: 0;
 }
-.htmlpress-code > span {
+.htmlpress-code-actions {
   position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
+  top: calc(0.5rem + 1px);
+  right: calc(0.5rem + 1px);
+  z-index: 1;
   display: flex;
-  gap: 0.25rem;
-  opacity: 0;
-  transition: opacity 0.15s;
+  border-radius: 0.5rem;
+  backdrop-filter: blur(16px);
 }
-.htmlpress-code > span > button {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.25rem 0.625rem;
-  border: 1px solid var(--htmlpress-border);
+.htmlpress-code-actions > button {
+  display: grid;
+  place-items: center;
+  padding: 0.375rem;
+  border: 0;
   border-radius: 999px;
-  background: var(--htmlpress-bg);
+  background: none;
   color: var(--htmlpress-muted);
-  font: 500 0.75rem var(--htmlpress-font);
   cursor: pointer;
+  transition: color 0.15s;
 }
-.htmlpress-code > span > button[aria-pressed="true"] {
-  color: var(--htmlpress-accent);
+.htmlpress-code-actions > button:hover,
+.htmlpress-code-actions > button[aria-pressed="true"] {
+  color: var(--htmlpress-text);
 }
-.htmlpress-code > span svg {
+.htmlpress-code-actions svg {
   width: 0.875rem;
-  height: 1.125em;
+  height: 0.875rem;
   fill: none;
   stroke: currentColor;
   stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
-}
-.htmlpress-code:hover > span,
-.htmlpress-code > span:focus-within {
-  opacity: 1;
-}
-/* A touch screen has no hover to reveal them */
-@media (hover: none) {
-  .htmlpress-code > span {
-    opacity: 1;
-  }
 }
 pre[data-wrap],
 pre[data-wrap] code {
@@ -214,30 +208,43 @@ sub {
   bottom: -0.25em;
 }
 
+/* Livemark's table: full width, rows ruled, nothing wrapped; a phone scrolls it sideways */
 table {
-  display: block;
-  overflow-x: auto;
+  width: 100%;
   border-collapse: collapse;
   font-size: 0.875rem;
-  line-height: 1.5;
+  line-height: 1.25rem;
+}
+tr {
+  border-bottom: 1px solid var(--htmlpress-border);
+  transition: background 0.15s;
+}
+tbody tr:last-child {
+  border-bottom: 0;
+}
+tr:hover {
+  background: color-mix(in oklab, var(--htmlpress-surface) 50%, transparent);
 }
 th,
 td {
-  padding: 0.5rem;
-  border-bottom: 1px solid var(--htmlpress-border);
+  vertical-align: middle;
   text-align: left;
-  vertical-align: top;
+  white-space: nowrap;
 }
 th {
+  height: 2.5rem;
+  padding: 0 0.5rem;
   color: var(--htmlpress-text);
   font-weight: 500;
-  white-space: nowrap;
 }
-tbody tr:hover {
-  background: color-mix(in oklab, var(--htmlpress-surface) 60%, transparent);
+td {
+  padding: 0.5rem;
 }
-td > code {
-  white-space: nowrap;
+@media (max-width: 48rem) {
+  table {
+    display: block;
+    overflow-x: auto;
+  }
 }
 
 img,
@@ -256,22 +263,81 @@ figcaption {
   line-height: 1.4286;
 }
 
-details {
+/* A blog's index, as Livemark lists it: posts one under another, ruled apart */
+.htmlpress-posts > article + article {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--htmlpress-border);
+}
+.htmlpress-posts h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
+.htmlpress-posts h2 > a {
+  color: var(--htmlpress-text);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.htmlpress-posts h2 > a:hover {
+  color: var(--htmlpress-accent);
+}
+.htmlpress-posts p {
+  margin: 0.5rem 0 0;
+  color: var(--htmlpress-muted);
+  line-height: 1.5rem;
+}
+.htmlpress-posts h2 + p:has(> span) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 0.75rem;
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+/* Livemark's expandable: a white card whose summary leads with a turning chevron */
+:where(main) details {
+  margin: 1rem 0;
   padding: 0.75rem 1rem;
   border: 1px solid var(--htmlpress-border);
   border-radius: var(--htmlpress-radius);
-  box-shadow: var(--htmlpress-shadow);
-}
-summary {
-  color: var(--htmlpress-text);
+  background: var(--htmlpress-bg);
   font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
+  line-height: 1.25rem;
 }
-details[open] > summary {
+:where(main) summary {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+}
+:where(main) summary::-webkit-details-marker {
+  display: none;
+}
+:where(main) summary::before {
+  content: "";
+  flex-shrink: 0;
+  width: 1rem;
+  height: 1rem;
+  background: currentColor;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9 18 6-6-6-6'/%3E%3C/svg%3E")
+    center / contain no-repeat;
+  transition: rotate 0.15s;
+}
+:where(main) details[open] > summary::before {
+  rotate: 90deg;
+}
+:where(main) details[open] > summary {
   margin-bottom: 0.75rem;
 }
-details > :last-child {
+:where(main) details > p {
+  margin: 0.25rem 0;
+}
+:where(main) details > :last-child {
   margin-bottom: 0;
 }
 
@@ -387,18 +453,30 @@ pre code mark {
 }
 
 /* A titled block: the caption is its title bar, joined to the block's frame */
+/* The caption is Livemark's 38px title bar, and a titled block's actions sit in it */
 .htmlpress-code-figure {
-  margin: 0 0 1.25em;
+  position: relative;
+  margin: 1rem 0;
+}
+.htmlpress-code-figure .htmlpress-code {
+  position: static;
+}
+.htmlpress-code-figure .htmlpress-code-actions {
+  top: calc(0.375rem + 1px);
+  backdrop-filter: none;
 }
 .htmlpress-code-figure > figcaption {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 2.4375rem;
   margin: 0;
-  padding: 0.5rem 1.25rem;
+  padding: 0 4.5rem 0 1rem;
   border: 1px solid var(--htmlpress-border);
-  border-bottom: 0;
   border-radius: var(--htmlpress-radius) var(--htmlpress-radius) 0 0;
   background: var(--htmlpress-surface);
   color: var(--htmlpress-muted);
-  font: 500 0.75rem var(--htmlpress-mono);
+  font: 500 0.75rem/1rem var(--htmlpress-font);
   text-align: left;
 }
 .htmlpress-code-figure pre,
@@ -406,20 +484,20 @@ pre code mark {
   margin: 0;
 }
 .htmlpress-code-figure pre {
+  border-top: 0;
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
 .htmlpress-code-figure > figcaption svg {
+  flex-shrink: 0;
   width: 0.875rem;
   height: 0.875rem;
-  margin-right: 0.5rem;
-  vertical-align: -0.125rem;
 }
 
 /* A block of N lines shows that many; without the script it scrolls, with it the rest
    waits behind an Expand bar */
 pre[data-collapse] {
-  max-height: calc(var(--htmlpress-code-lines) * 1lh + 2rem);
+  max-height: calc(var(--htmlpress-code-lines) * 1lh + 1.75rem);
   overflow-y: auto;
 }
 pre[data-collapse][data-collapsible] {

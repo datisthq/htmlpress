@@ -2,11 +2,13 @@
 
 const MESSAGES = readMessages()
 const COPY = MESSAGES["code.copy"] ?? "Copy"
-const WRAP_ON = MESSAGES["code.wrapOn"] ?? "Enable wrap"
-const WRAP_OFF = MESSAGES["code.wrapOff"] ?? "Disable wrap"
-const WRAP =
-  '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M3 12h15a3 3 0 1 1 0 6h-4"/><path d="m16 16-2 2 2 2M3 18h7"/></svg>'
+const ICONS = {
+  copy: '<rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>',
+  check: '<path d="M20 6 9 17l-5-5"/>',
+  wrap: '<path d="m16 16-3 3 3 3"/><path d="M3 12h14.5a1 1 0 0 1 0 7H13"/><path d="M3 19h6"/><path d="M3 5h18"/>',
+}
 
+// Livemark's two always-visible actions: wrap the lines, copy the code
 function addCopyButtons() {
   for (const pre of document.querySelectorAll("htmlpress-page > main pre")) {
     if (pre.parentElement?.classList.contains("htmlpress-code")) continue
@@ -14,39 +16,47 @@ function addCopyButtons() {
     const box = document.createElement("div")
     box.className = "htmlpress-code"
     pre.replaceWith(box)
-    const button = document.createElement("button")
-    button.type = "button"
-    button.textContent = COPY
-    button.addEventListener("click", async () => {
+    const actions = document.createElement("div")
+    actions.className = "htmlpress-code-actions"
+    const wrap = createButton("wrap", MESSAGES["code.wrapOn"] ?? "Enable wrap")
+    wrap.addEventListener("click", () => {
+      const on = pre.toggleAttribute("data-wrap")
+      wrap.setAttribute("aria-pressed", on)
+      wrap.setAttribute(
+        "aria-label",
+        on
+          ? (MESSAGES["code.wrapOff"] ?? "Disable wrap")
+          : (MESSAGES["code.wrapOn"] ?? "Enable wrap"),
+      )
+    })
+    const copy = createButton("copy", COPY)
+    copy.addEventListener("click", async () => {
       // Line numbers are part of the text but not of the code
       const code = pre.cloneNode(true)
       code.querySelectorAll(".giallo-ln").forEach(number => number.remove())
       await navigator.clipboard.writeText(code.textContent ?? "")
-      button.textContent = MESSAGES["code.copied"] ?? "Copied"
-      setTimeout(() => (button.textContent = COPY), 2000)
+      copy.innerHTML = createIcon("check")
+      copy.setAttribute("aria-label", MESSAGES["code.copied"] ?? "Copied")
+      setTimeout(() => {
+        copy.innerHTML = createIcon("copy")
+        copy.setAttribute("aria-label", COPY)
+      }, 2000)
     })
-    const actions = document.createElement("span")
-    actions.append(createWrapButton(pre), button)
+    actions.append(wrap, copy)
     box.append(pre, actions)
   }
 }
 
-function createWrapButton(pre) {
+function createButton(icon, label) {
   const button = document.createElement("button")
   button.type = "button"
-  button.innerHTML = WRAP
-  const show = () => {
-    const wrapped = pre.dataset.wrap !== undefined
-    button.setAttribute("aria-pressed", String(wrapped))
-    button.setAttribute("aria-label", wrapped ? WRAP_OFF : WRAP_ON)
-    button.title = wrapped ? WRAP_OFF : WRAP_ON
-  }
-  button.addEventListener("click", () => {
-    pre.toggleAttribute("data-wrap")
-    show()
-  })
-  show()
+  button.setAttribute("aria-label", label)
+  button.innerHTML = createIcon(icon)
   return button
+}
+
+function createIcon(name) {
+  return `<svg viewBox="0 0 24 24" aria-hidden="true">${ICONS[name]}</svg>`
 }
 
 function addHeadingAnchors() {

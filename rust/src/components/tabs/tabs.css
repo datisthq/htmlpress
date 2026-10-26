@@ -1,33 +1,42 @@
 @scope (htmlpress-tabs) {
+  /* Livemark's content tabs: a white card whose bar sits flush on top */
   :scope {
     display: block;
-    margin: 0 0 1.25em;
+    margin: 1rem 0;
+    border: 1px solid var(--htmlpress-border);
+    border-radius: var(--htmlpress-radius);
+    background: var(--htmlpress-bg);
   }
   [role="tablist"] {
     display: flex;
-    gap: 0.25rem;
-    margin-bottom: 1rem;
     overflow-x: auto;
     border-bottom: 1px solid var(--htmlpress-border);
     scrollbar-width: none;
   }
   [role="tab"] {
     margin-bottom: -1px;
-    padding: 0.5rem 0.75rem;
+    padding: 0.5rem 1rem;
     border: 0;
     border-bottom: 2px solid transparent;
     background: none;
     color: var(--htmlpress-muted);
-    font: 500 0.875rem var(--htmlpress-font);
+    font: 500 0.875rem/1.25rem var(--htmlpress-font);
     white-space: nowrap;
     cursor: pointer;
+    transition: color 0.15s;
   }
   [role="tab"]:hover {
     color: var(--htmlpress-text);
   }
   [role="tab"][aria-selected="true"] {
     border-bottom-color: var(--htmlpress-accent);
-    color: var(--htmlpress-accent);
+    color: var(--htmlpress-text);
+  }
+  [role="tabpanel"] {
+    padding: 1rem;
+  }
+  :scope > section > :first-child {
+    margin-top: 0;
   }
   :scope > section > :last-child {
     margin-bottom: 0;
@@ -38,13 +47,18 @@
       :has(> section > :not(pre, .htmlpress-code))
     ) {
     overflow: hidden;
-    border: 1px solid var(--htmlpress-border);
-    border-radius: var(--htmlpress-radius);
     background: var(--htmlpress-surface);
-    box-shadow: var(--htmlpress-shadow);
-    [role="tablist"] {
-      margin: 0;
-      padding: 0 0.5rem;
+    box-shadow:
+      0 1px 3px 0 oklch(0 0 0 / 0.1),
+      0 1px 2px -1px oklch(0 0 0 / 0.1);
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    [role="tab"] {
+      font-size: 0.75rem;
+      line-height: 1rem;
+    }
+    [role="tabpanel"] {
+      padding: 0;
     }
     pre {
       margin: 0;
@@ -55,5 +69,30 @@
     .htmlpress-code {
       margin: 0;
     }
+  }
+  /* Package tabs keep Livemark's single copy button, at the end of the tab bar */
+  :scope[sync="package-manager"] {
+    position: relative;
+  }
+  :scope[sync="package-manager"] .htmlpress-code {
+    position: static;
+  }
+  :scope[sync="package-manager"] .htmlpress-code-actions {
+    top: 0.25rem;
+    right: 0.5rem;
+    backdrop-filter: none;
+  }
+  :scope[sync="package-manager"] .htmlpress-code-actions > :first-child {
+    display: none;
+  }
+  :scope[sync="package-manager"] [role="tablist"] {
+    padding-right: 2.5rem;
+  }
+  :scope[sync="package-manager"] [role="tab"] {
+    margin-bottom: 0;
+    padding-inline: 0.75rem;
+  }
+  :scope[sync="package-manager"] [role="tab"][aria-selected="true"] {
+    border-bottom-color: var(--htmlpress-text);
   }
 }

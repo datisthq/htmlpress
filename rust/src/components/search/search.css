@@ -335,13 +335,11 @@
     display: none;
   }
   @media (max-width: 56rem) {
+    /* Livemark's compact search: the same bordered pill, cut down to its icon */
     :scope > button {
-      width: 2.25rem;
-      padding: 0;
-      box-shadow: none;
+      width: auto;
+      padding: 0 0.625rem;
       justify-content: center;
-      border: 0;
-      background: none;
     }
     :scope > button span,
     :scope > button kbd {

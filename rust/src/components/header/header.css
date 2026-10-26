@@ -38,33 +38,29 @@
     margin-left: 0.25rem;
   }
 
+  /* Livemark's phone header: the brand, then search, theme, language and the menu at
+     the far end; the links move into the drawer's sections */
   @media (max-width: 56rem) {
     :scope {
-      gap: 1rem;
-      padding: 0 1rem 0 0.5rem;
+      gap: 0.25rem;
+      padding: 0 0.5rem 0 1rem;
     }
     :scope htmlpress-brand {
       display: block;
       flex: 0 1 auto;
-    }
-    /* No room for the tagline beside the links; the sidebar's brand keeps it */
-    :scope htmlpress-brand small {
-      display: none;
-    }
-    :scope htmlpress-brand {
-      flex-shrink: 0;
-    }
-    :scope htmlpress-brand a {
-      align-items: center;
-    }
-    :scope htmlpress-brand img {
-      margin-bottom: 0;
-    }
-    :root[data-scripted] :scope htmlpress-nav-toggle {
-      margin-right: 0;
+      min-width: 0;
+      margin-right: auto;
     }
     :scope htmlpress-links {
-      flex: 0 1 auto;
+      display: none;
+    }
+    :root[data-scripted] :scope htmlpress-nav-toggle {
+      order: 1;
+      margin-right: 0;
+    }
+    :scope htmlpress-search ~ htmlpress-theme-toggle,
+    :scope :is(htmlpress-search, htmlpress-theme-toggle) ~ htmlpress-language {
+      margin-left: 0;
     }
   }
 }

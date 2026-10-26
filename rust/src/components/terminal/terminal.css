@@ -50,6 +50,7 @@
   kbd {
     padding: 0;
     border: 0;
+    box-shadow: none;
     color: oklch(0.98 0 0);
     font-size: inherit;
     font-weight: 600;

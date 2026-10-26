@@ -2,24 +2,41 @@
   :scope {
     position: relative;
     display: block;
-    padding: 1rem 1rem 1.125rem;
-    border: 1px solid var(--htmlpress-border);
+    padding: 1rem;
     border-radius: var(--htmlpress-radius);
     background: var(--htmlpress-bg);
-    box-shadow: var(--htmlpress-shadow);
-    font-size: 0.9375rem;
-    line-height: 1.6;
+    box-shadow:
+      0 0 0 1px color-mix(in oklab, var(--htmlpress-text) 10%, transparent),
+      0 1px 2px 0 oklch(0 0 0 / 0.05);
+    color: var(--htmlpress-muted);
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    transition: background 0.15s;
   }
   :scope > :is(h2, h3, h4) {
-    margin: 0 0 0.5rem;
-    font-size: 0.9375rem;
-    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0 0 1rem;
+    color: var(--htmlpress-text);
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.3125rem;
     letter-spacing: 0;
   }
   :scope > :is(h2, h3, h4) > a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
     color: inherit;
     font-weight: inherit;
     text-decoration: none;
+  }
+  :scope > :is(h2, h3, h4) htmlpress-icon {
+    flex-shrink: 0;
+    width: 1.25rem;
+    height: 1.25rem;
+    color: var(--htmlpress-accent);
   }
   /* A heading link stretches over the whole card, so the card is one click target */
   :scope > :is(h2, h3, h4) > a::after {
@@ -30,6 +47,9 @@
   }
   :scope:has(> :is(h2, h3, h4) > a):hover {
     background: var(--htmlpress-surface);
+  }
+  p {
+    margin: 0;
   }
   :scope > :first-child {
     margin-top: 0;

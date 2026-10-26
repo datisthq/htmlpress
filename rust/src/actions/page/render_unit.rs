@@ -131,7 +131,7 @@ fn fills_the_toc_and_removes_it_without_headings() -> crate::Result<()> {
     let html = render_page(&site, &site.pages[1], false)?;
     assert!(html.contains(r##"<a href="#setup" data-level="2">Setup</a>"##));
     let home = render_page(&site, &site.pages[0], false)?;
-    assert!(!home.contains("<htmlpress-toc"));
+    assert!(!home.contains("<htmlpress-toc>"));
     Ok(())
 }
 
@@ -425,7 +425,11 @@ fn shows_only_the_open_sections_pages_with_its_brand() -> crate::Result<()> {
     assert!(!cli.contains(r#"<a href="/guide.html""#), "{cli}");
     assert!(cli.contains(r#"<a rel="prev" href="/api/"><small>Previous</small>API</a>"#));
     assert!(!cli.contains(r#"rel="next""#));
-    assert!(!cli.contains("<summary>"), "{cli}");
+    assert!(!cli.contains("<details open>"), "{cli}");
+    assert!(
+        cli.contains("<div data-sections><p data-label>Sections</p><details><summary>")
+    );
+    assert!(cli.contains("<span>API</span></summary>"));
 
     let guide = render_page(&site, &site.pages[1], false)?;
     assert!(guide.contains(r#"<a href="/" data-section aria-current="page">Docs</a>"#));

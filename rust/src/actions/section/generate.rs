@@ -125,8 +125,15 @@ fn create_post_list(posts: &[&Page], language: &SiteLanguage) -> String {
             escape_html(language.read_message("blog.empty"))
         );
     }
-    let mut html = String::from("<htmlpress-grid cols=\"2\">\n");
+    // Livemark's blog index: one post after another, each heading a link to it
+    let mut html = String::from("<section class=\"htmlpress-posts\">\n");
     for post in posts {
+        let _ = write!(
+            html,
+            "<article><h2><a href=\"{}\">{}</a></h2>",
+            escape_html(&post.url),
+            escape_html(&post.title)
+        );
         let mut byline: Vec<String> = vec![];
         if let Some(date) = &post.date {
             byline.push(format_date(date, language));
@@ -134,25 +141,19 @@ fn create_post_list(posts: &[&Page], language: &SiteLanguage) -> String {
         if !post.authors.is_empty() {
             byline.push(post.authors.join(", "));
         }
-        let _ = write!(
-            html,
-            "<htmlpress-card><h3><a href=\"{}\">{}</a></h3>",
-            escape_html(&post.url),
-            escape_html(&post.title)
-        );
         if !byline.is_empty() {
-            let _ = write!(
-                html,
-                "<p><small>{}</small></p>",
-                escape_html(&byline.join(" · "))
-            );
+            html.push_str("<p>");
+            for part in byline {
+                let _ = write!(html, "<span>{}</span>", escape_html(&part));
+            }
+            html.push_str("</p>");
         }
         if let Some(description) = &post.description {
             let _ = write!(html, "<p>{}</p>", escape_html(description));
         }
-        html.push_str("</htmlpress-card>\n");
+        html.push_str("</article>\n");
     }
-    html.push_str("</htmlpress-grid>\n");
+    html.push_str("</section>\n");
     html
 }
 

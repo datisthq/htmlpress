@@ -192,6 +192,8 @@ in light, dark and phone width (**`change-verification`**).
   every `li` margin and padding and give its links a `font-weight`, or it takes prose's
 - Mix colors `in oklab`, never `in oklch`: mixing a hue with the neutral `--htmlpress-bg` in oklch
   swings the hue, and every callout tint comes out pink
+- A component's per-theme colours can be one `light-dark(light, dark)`: the tokens set
+  `color-scheme` for both the media query and the toggle, so it follows either
 - The theme toggle's dark set is written twice (media query and `[data-theme="dark"]`);
   change both
 - `htmlpress-nav-toggle` sets `data-nav-open` (the phone drawer) or, wider,
