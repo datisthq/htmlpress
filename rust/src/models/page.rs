@@ -14,7 +14,8 @@ pub struct Page {
     pub title: String,
     /// `<meta name="label">`: a shorter title for the navigation.
     pub label: Option<String>,
-    /// `<meta name="icon">`: a built-in icon before the page's navigation entry.
+    /// `<meta name="icon">`: a built-in icon before the page's top-level navigation entry,
+    /// or its folder's group for an index page.
     pub icon: Option<String>,
     /// `<meta name="sidebar" content="false">` leaves the page out of the navigation and
     /// the previous and next links; it is still built.

@@ -98,7 +98,8 @@ Put block content (`<p>`, `<h3>`, `<pre>`) inside a component, not bare text.
 - `<meta name="image" content="/cover.png">` in a page is its social preview image;
   `<meta name="date" content="YYYY-MM-DD">`, `<meta name="author">` (repeatable) and
   `<meta name="keywords" content="a, b">` date, sign and tag it (a blog post's metadata).
-- `<meta name="label">` (short nav name), `<meta name="icon">`, `<meta name="path"
+- `<meta name="label">` (short nav name), `<meta name="icon">` (top-level entries and
+  folder index pages only), `<meta name="path"
 content="/start/">` (another URL), `<meta name="sidebar" content="false">` (built, not
   listed), `<meta name="toc" content="false">`, `<meta name="source-url">` and
   `<meta name="source-action" content="view">` (the source link). `patches` in the config

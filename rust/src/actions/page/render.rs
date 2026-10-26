@@ -471,25 +471,22 @@ fn create_nav(site: &Site, page: &Page) -> String {
     let mut html = String::from("<nav aria-label=\"Pages\">");
     html.push_str(&create_section_list(site, page));
     for (folder, items) in groups {
-        let list = create_list(&items, page);
         let index_only = |folder: &str| {
             let index = format!("{prefix}{folder}/index.html");
             items.len() == 1 && items[0].path == index
         };
+        let list = create_list(&items, page, folder.is_none_or(index_only));
         match folder {
             // A folder holding nothing but its index reads as one page, not a group of one
             Some(folder) if index_only(folder) => html.push_str(&list),
             Some(folder) => {
                 let index = format!("{prefix}{folder}/index.html");
-                let title = site
-                    .pages
-                    .iter()
-                    .find(|item| item.path == index)
-                    .map_or(folder, |item| item.title.as_str());
-                let title = escape_html(title);
+                let index = site.pages.iter().find(|item| item.path == index);
+                let title = escape_html(index.map_or(folder, |item| item.title.as_str()));
+                let icon = create_icon(index.and_then(|item| item.icon.as_deref()));
                 let _ = write!(
                     html,
-                    "<details open><summary>{title}</summary>{list}</details>"
+                    "<details open><summary>{icon}{title}</summary>{list}</details>"
                 );
             }
             None => html.push_str(&list),
@@ -540,7 +537,9 @@ fn list_pages<'a>(site: &'a Site, page: &Page) -> Vec<&'a Page> {
     }
 }
 
-fn create_list(items: &[&Page], page: &Page) -> String {
+// Only top-level entries take their page's icon, as in Livemark: a folder's own pages
+// sit under its summary, which carries the index page's icon instead
+fn create_list(items: &[&Page], page: &Page, icons: bool) -> String {
     let mut html = String::from("<ul>");
     for item in items {
         let current = match item.path == page.path {
@@ -549,7 +548,7 @@ fn create_list(items: &[&Page], page: &Page) -> String {
         };
         let url = escape_html(&item.url);
         let title = escape_html(item.label.as_ref().unwrap_or(&item.title));
-        let icon = create_icon(item.icon.as_deref());
+        let icon = create_icon(item.icon.as_deref().filter(|_| icons));
         let _ = write!(
             html,
             "<li><a href=\"{url}\"{current}>{icon}{title}</a></li>"

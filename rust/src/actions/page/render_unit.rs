@@ -445,6 +445,19 @@ fn uses_labels_icons_and_hides_pages_from_the_navigation() -> crate::Result<()> 
 }
 
 #[test]
+fn shows_page_icons_only_at_the_top_level() -> crate::Result<()> {
+    let mut site = create_site()?;
+    site.pages[2].icon = Some("code".to_owned());
+    site.pages[3].icon = Some("rocket".to_owned());
+    let html = render_page(&site, &site.pages[0], false)?;
+    assert!(html.contains("<details open><summary><svg viewBox"));
+    assert!(html.contains("</svg>API</summary>"));
+    assert!(html.contains(r#"<li><a href="/api/">API</a></li>"#));
+    assert!(html.contains(r#"<li><a href="/api/cli.html">CLI</a></li>"#));
+    Ok(())
+}
+
+#[test]
 fn lists_a_folder_with_only_its_index_as_one_page() -> crate::Result<()> {
     let mut site = create_site()?;
     site.pages
