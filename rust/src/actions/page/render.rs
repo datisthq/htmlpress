@@ -907,7 +907,11 @@ fn create_pager(site: &Site, page: &Page) -> Option<String> {
 }
 
 // Authors, published and updated dates, as one line under the page's title
+// A page with its own layout is a custom route, which carries no byline, as in Livemark
 fn create_byline(page: &Page, language: &SiteLanguage) -> Option<String> {
+    if page.layout.is_some() {
+        return None;
+    }
     let mut parts = vec![];
     if !page.authors.is_empty() {
         let icon = create_icon(Some("user"));

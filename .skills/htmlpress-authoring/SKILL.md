@@ -49,7 +49,7 @@ The config keys are in `htmlpress-configuration`; a different look in `htmlpress
 | -------------------------------------------- | ------------------------------------------------------- |
 | `description`                                | the page's summary for search, previews and `llms.txt`  |
 | `image`                                      | its social preview image (`/cover.png`)                 |
-| `date` (`YYYY-MM-DD`), `author` (repeatable) | dates and signs it (a blog post's byline)               |
+| `date` (`YYYY-MM-DD`), `author` (repeatable) | dates and signs it (a byline; none with `layout`)       |
 | `keywords` (`a, b`)                          | tags it (a blog post's tag pages)                       |
 | `label`                                      | a short name in the navigation                          |
 | `icon`                                       | a Lucide icon; top-level entries and folder index pages |

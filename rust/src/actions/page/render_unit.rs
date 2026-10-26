@@ -57,6 +57,22 @@ fn groups_the_navigation_by_folder() -> crate::Result<()> {
 }
 
 #[test]
+fn leaves_the_byline_off_a_page_with_its_own_layout() -> crate::Result<()> {
+    let mut site = create_site()?;
+    site.pages[1].updated = Some("2026-10-20".to_owned());
+    let html = render_page(&site, &site.pages[1], false)?;
+    assert!(html.contains("<htmlpress-byline>"));
+    site.pages[1].layout = Some("landing".to_owned());
+    site.assets.insert(
+        "layouts/landing.html".to_owned(),
+        site.assets["layout.html"].clone(),
+    );
+    let html = render_page(&site, &site.pages[1], false)?;
+    assert!(!html.contains("<htmlpress-byline>"));
+    Ok(())
+}
+
+#[test]
 fn labels_the_navigation_and_its_links() -> crate::Result<()> {
     let mut site = create_site()?;
     let html = render_page(&site, &site.pages[0], false)?;
