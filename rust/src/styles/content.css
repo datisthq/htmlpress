@@ -208,9 +208,10 @@ sub {
   bottom: -0.25em;
 }
 
-/* Livemark's table: full width, rows ruled, nothing wrapped; a phone scrolls it sideways */
+/* Livemark's table: full width, rows ruled, nothing wrapped; too wide, it scrolls sideways */
 table {
-  width: 100%;
+  display: block;
+  overflow-x: auto;
   border-collapse: collapse;
   font-size: 0.875rem;
   line-height: 1.25rem;
@@ -240,11 +241,9 @@ th {
 td {
   padding: 0.5rem;
 }
-@media (max-width: 48rem) {
-  table {
-    display: block;
-    overflow-x: auto;
-  }
+/* A block table's rows shrink to their content; a 100% column stretches them to fill it */
+:is(th, td):last-child {
+  width: 100%;
 }
 
 img,
