@@ -24,6 +24,9 @@ pub struct Config {
     pub banner: Option<String>,
     /// Links in the header or the sidebar, such as the project's repository.
     pub links: Vec<Link>,
+    /// Parts of the site with a navigation of their own, each owning the pages under its
+    /// URL prefix; shown as tabs in the header or a list in the sidebar.
+    pub sections: Vec<Section>,
     /// Tags added to every page's `<head>`.
     pub head: Head,
     /// How automated systems may use the content, written to `robots.txt`.
@@ -87,7 +90,38 @@ pub struct Link {
     pub position: Position,
 }
 
-/// Where a [`Link`] is shown.
+/// One section from the config: `type: article` (the default) owns the pages under
+/// `prefix`; `type: custom` is a link to `url`.
+#[derive(Debug, Clone, Default, PartialEq, Deserialize, Serialize)]
+#[serde(deny_unknown_fields, rename_all = "camelCase")]
+pub struct Section {
+    pub title: String,
+    #[serde(default, rename = "type")]
+    pub kind: SectionKind,
+    /// The URL prefix its pages share, such as `/guides/`; `article` sections only.
+    pub prefix: Option<String>,
+    /// Where a `custom` section leads.
+    pub url: Option<String>,
+    #[serde(default)]
+    pub position: Position,
+    /// Replaces the site title in the brand while one of its pages is open.
+    pub site_title: Option<String>,
+    /// Replaces the site description for its pages without one of their own.
+    pub site_description: Option<String>,
+    /// Where the brand links while one of its pages is open, instead of `/`.
+    pub site_link: Option<String>,
+}
+
+/// What a [`Section`] is.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Deserialize, Serialize)]
+#[serde(rename_all = "lowercase")]
+pub enum SectionKind {
+    #[default]
+    Article,
+    Custom,
+}
+
+/// Where a [`Link`] or a [`Section`] is shown.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Deserialize, Serialize)]
 #[serde(rename_all = "lowercase")]
 pub enum Position {

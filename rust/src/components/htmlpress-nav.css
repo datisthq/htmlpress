@@ -16,6 +16,23 @@
     padding-top: 0.75rem;
     border-top: 1px solid var(--htmlpress-border);
   }
+  ul[data-sections] {
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--htmlpress-border);
+  }
+  /* Header sections have their tabs above, until a phone leaves no room for them */
+  ul[data-sections] > [data-position="header"] {
+    display: none;
+  }
+  ul[data-sections]:not(:has(> [data-position="sidebar"])) {
+    display: none;
+  }
+  @media (max-width: 56rem) {
+    ul[data-sections],
+    ul[data-sections] > [data-position="header"] {
+      display: block;
+    }
+  }
   a {
     display: block;
     padding: 0.375rem 0.75rem;

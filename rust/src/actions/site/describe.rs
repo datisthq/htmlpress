@@ -1,6 +1,7 @@
 use sha2::{Digest, Sha256};
 
 use crate::actions::page::convert::{convert_page, create_markdown_path};
+use crate::actions::section::find::find_section;
 use crate::models::error::Error;
 use crate::models::page::Page;
 use crate::models::site::Site;
@@ -42,26 +43,13 @@ pub(crate) fn describe_site(site: &Site) -> crate::Result<Vec<(String, Vec<u8>)>
 // Grouped as the navigation groups them: root pages first, then each top folder under
 // its index page's title.
 fn create_llms(site: &Site, pages: &[&Page]) -> String {
-    let mut groups: Vec<(Option<&str>, Vec<&Page>)> = vec![];
-    for page in pages {
-        let folder = page.path.split_once('/').map(|(folder, _)| folder);
-        match groups.iter_mut().find(|(key, _)| *key == folder) {
-            Some((_, items)) => items.push(page),
-            None => groups.push((folder, vec![page])),
-        }
-    }
+    let groups = group_pages(site, pages);
     let mut lines = vec![format!("# {}", site.title)];
     if let Some(description) = &site.config.description {
         lines.extend([String::new(), format!("> {description}")]);
     }
     let origin = (site.config.read_origin()).unwrap_or_else(|| site.config.read_base());
-    for (folder, items) in groups {
-        let title = match folder {
-            Some(folder) => (site.pages.iter())
-                .find(|page| page.path == format!("{folder}/index.html"))
-                .map_or(folder, |page| page.title.as_str()),
-            None => "Pages",
-        };
+    for (title, items) in groups {
         lines.extend([String::new(), format!("## {title}"), String::new()]);
         for page in items {
             let url = format!("{origin}/{}", create_markdown_path(&page.path));
@@ -73,6 +61,39 @@ fn create_llms(site: &Site, pages: &[&Page]) -> String {
         }
     }
     format!("{}\n", lines.join("\n"))
+}
+
+// By section, in the config's order with "Other" last, when the site has sections; else
+// as the navigation groups them: root pages first, then each top folder under its index
+// page's title
+fn group_pages<'a>(site: &'a Site, pages: &[&'a Page]) -> Vec<(&'a str, Vec<&'a Page>)> {
+    let sections = &site.config.sections;
+    let mut groups: Vec<(usize, &str, Vec<&Page>)> = vec![];
+    for page in pages {
+        let (rank, title) = match (sections.is_empty(), page.path.split_once('/')) {
+            (false, _) => match find_section(sections, &page.url) {
+                Some(index) => (index, sections[index].title.as_str()),
+                None => (sections.len(), "Other"),
+            },
+            (true, Some((folder, _))) => {
+                let index = format!("{folder}/index.html");
+                let title = (site.pages.iter())
+                    .find(|page| page.path == index)
+                    .map_or(folder, |page| page.title.as_str());
+                (groups.len(), title)
+            }
+            (true, None) => (0, "Pages"),
+        };
+        match groups.iter_mut().find(|(_, name, _)| *name == title) {
+            Some((_, _, items)) => items.push(page),
+            None => groups.push((rank, title, vec![page])),
+        }
+    }
+    groups.sort_by_key(|(rank, _, _)| *rank);
+    groups
+        .into_iter()
+        .map(|(_, title, items)| (title, items))
+        .collect()
 }
 
 fn create_skills_index(site: &Site) -> crate::Result<String> {

@@ -25,6 +25,9 @@ mod actions {
     pub(crate) mod skill {
         pub(crate) mod load;
     }
+    pub(crate) mod section {
+        pub(crate) mod find;
+    }
     pub(crate) mod site {
         pub(crate) mod build;
         pub(crate) mod clear;
@@ -65,7 +68,9 @@ pub use actions::site::serve::serve_site;
 pub use actions::skill::load::load_skills;
 pub use models::asset::{Asset, AssetStatus};
 pub use models::build::{BuildOptions, BuildReport};
-pub use models::config::{Config, ContentSignals, Head, Link, Position};
+pub use models::config::{
+    Config, ContentSignals, Head, Link, Position, Section, SectionKind,
+};
 pub use models::error::Error;
 pub use models::page::{Heading, Page};
 pub use models::site::Site;

@@ -83,3 +83,33 @@ fn reads_the_base_and_rejects_one_without_a_leading_slash() -> crate::Result<()>
     assert_eq!(Config::default().read_base(), "");
     Ok(())
 }
+
+#[test]
+fn reads_sections_and_rejects_incomplete_ones() -> crate::Result<()> {
+    let root = tempfile::tempdir().map_err(Error::io("tempdir"))?;
+    let write = |text: &str| {
+        std::fs::write(root.path().join(CONFIG_FILE), text).map_err(Error::io("write"))
+    };
+    write(
+        "sections:\n  - title: Docs\n    prefix: /\n  - title: Blog\n    type: custom\n    url: https://x.dev/blog\n    position: sidebar\n",
+    )?;
+    let config = load_config(root.path())?;
+    assert_eq!(config.sections.len(), 2);
+    assert_eq!(
+        config.sections[1].kind,
+        crate::models::config::SectionKind::Custom
+    );
+    for text in [
+        "sections:\n  - title: Docs\n",
+        "sections:\n  - title: Docs\n    prefix: /docs\n",
+        "sections:\n  - title: Blog\n    type: custom\n",
+        "sections:\n  - title: Blog\n    type: blog\n    prefix: /blog/\n",
+    ] {
+        write(text)?;
+        assert!(
+            matches!(load_config(root.path()), Err(Error::Config { .. })),
+            "{text}"
+        );
+    }
+    Ok(())
+}

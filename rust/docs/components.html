@@ -305,11 +305,15 @@ flowchart LR
   </dd>
   <dt><code>&lt;htmlpress-nav&gt;</code></dt>
   <dd>
-    Every page, grouped by top folder; a folder's group is named by its index page. The
-    sidebar <code>links</code> close it.
+    The open section's pages (every page without <code>sections</code>), grouped by top
+    folder; a folder's group is named by its index page. The sidebar sections open it and
+    the sidebar <code>links</code> close it.
   </dd>
   <dt><code>&lt;htmlpress-links&gt;</code></dt>
-  <dd>The header <code>links</code> from <code>htmlpress.yaml</code>.</dd>
+  <dd>
+    The header sections, the open one marked, then the header <code>links</code> from
+    <code>htmlpress.yaml</code>.
+  </dd>
   <dt><code>&lt;htmlpress-toc&gt;</code></dt>
   <dd>
     The page's <code>&lt;h2&gt;</code> and <code>&lt;h3&gt;</code>, highlighting the one

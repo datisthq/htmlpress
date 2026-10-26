@@ -160,6 +160,22 @@ fn registers_every_built_in_asset_file() -> crate::Result<()> {
     Ok(())
 }
 
+#[test]
+fn puts_a_folders_index_before_its_pages() -> crate::Result<()> {
+    let root = tempfile::tempdir().map_err(Error::io("tempdir"))?;
+    let root = root.path();
+    for path in ["index.html", "api/auth.html", "api/index.html", "api.html"] {
+        write_file(root, path, "<h1>A</h1>")?;
+    }
+    let site = scan_site(root)?;
+    let paths: Vec<&str> = site.pages.iter().map(|page| page.path.as_str()).collect();
+    assert_eq!(
+        paths,
+        ["index.html", "api.html", "api/index.html", "api/auth.html"]
+    );
+    Ok(())
+}
+
 #[cfg(unix)]
 #[test]
 fn skips_a_base_that_links_outside_the_project() -> crate::Result<()> {

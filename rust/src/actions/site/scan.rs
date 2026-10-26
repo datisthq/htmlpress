@@ -55,7 +55,8 @@ pub fn scan_site(root: &Path) -> crate::Result<Site> {
     pages.sort_by(|a, b| {
         let rank =
             |page: &crate::Page| (page.url != "/", page.order.is_none(), page.order);
-        rank(a).cmp(&rank(b)).then_with(|| a.path.cmp(&b.path))
+        // By URL, not path, so a folder's index (`/api/`) leads its pages (`/api/auth.html`)
+        rank(a).cmp(&rank(b)).then_with(|| a.url.cmp(&b.url))
     });
 
     let assets = read_assets(root)?;

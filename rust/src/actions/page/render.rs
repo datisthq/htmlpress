@@ -7,7 +7,8 @@ use lol_html::{RewriteStrSettings, element, rewrite_str};
 
 use crate::actions::page::convert::create_markdown_path;
 use crate::actions::page::prefix::prefix_urls;
-use crate::models::config::{Link, Position};
+use crate::actions::section::find::{find_section, is_custom_current};
+use crate::models::config::{Link, Position, Section, SectionKind};
 use crate::models::error::Error;
 use crate::models::page::Page;
 use crate::models::site::Site;
@@ -69,7 +70,7 @@ pub(crate) fn render_page(
     if !replaced("htmlpress-brand") {
         settings =
             settings.append_element_content_handler(element!("htmlpress-brand", |el| {
-                el.set_inner_content(&create_brand(site), ContentType::Html);
+                el.set_inner_content(&create_brand(site, page), ContentType::Html);
                 Ok(())
             }));
     }
@@ -106,7 +107,7 @@ pub(crate) fn render_page(
     if !replaced("htmlpress-links") {
         settings =
             settings.append_element_content_handler(element!("htmlpress-links", |el| {
-                fill_element(el, create_links(site));
+                fill_element(el, create_links(site, page));
                 Ok(())
             }));
     }
@@ -306,9 +307,9 @@ fn create_metas(site: &Site, page: &Page) -> Vec<(&'static str, &'static str, St
         "viewport",
         "width=device-width, initial-scale=1".to_owned(),
     )];
-    let description = page
-        .description
-        .as_ref()
+    let section = read_section(site, page);
+    let description = (page.description.as_ref())
+        .or(section.and_then(|section| section.site_description.as_ref()))
         .or(site.config.description.as_ref());
     if let Some(description) = description {
         metas.push(("name", "description", description.clone()));
@@ -348,12 +349,26 @@ fn create_attributes(tag: &std::collections::BTreeMap<String, String>) -> String
     html
 }
 
-fn create_brand(site: &Site) -> String {
-    let title = escape_html(&site.title);
+fn create_brand(site: &Site, page: &Page) -> String {
+    let (title, link) = read_brand(site, page);
     let logo = site.config.logo.as_ref().map_or(String::new(), |logo| {
         format!("<img src=\"{}\" alt=\"\">", escape_html(logo))
     });
-    format!("<a href=\"/\">{logo}{title}</a>")
+    let (title, link) = (escape_html(title), escape_html(link));
+    format!("<a href=\"{link}\">{logo}{title}</a>")
+}
+
+// The open page's section may rename the brand and point it at its own home
+fn read_brand<'a>(site: &'a Site, page: &Page) -> (&'a str, &'a str) {
+    let section = read_section(site, page);
+    let title = section.and_then(|section| section.site_title.as_deref());
+    let link = section.and_then(|section| section.site_link.as_deref());
+    (title.unwrap_or(&site.title), link.unwrap_or("/"))
+}
+
+fn read_section<'a>(site: &'a Site, page: &Page) -> Option<&'a Section> {
+    let sections = &site.config.sections;
+    find_section(sections, &page.url).and_then(|index| sections.get(index))
 }
 
 // Every folder above the page, named and linked by its index page when it has one.
@@ -367,10 +382,12 @@ fn create_breadcrumbs(site: &Site, page: &Page) -> Option<String> {
         return None;
     }
     let mut html = String::from("<nav aria-label=\"Breadcrumbs\"><ol>");
+    let (title, link) = read_brand(site, page);
     let _ = write!(
         html,
-        "<li><a href=\"/\">{}</a></li>",
-        escape_html(&site.title)
+        "<li><a href=\"{}\">{}</a></li>",
+        escape_html(link),
+        escape_html(title)
     );
     for depth in 1..=folders.len() {
         let folder = folders[..depth].join("/");
@@ -393,21 +410,28 @@ fn create_breadcrumbs(site: &Site, page: &Page) -> Option<String> {
 
 // Pages group by their top folder, titled by that folder's index page, else its name;
 // groups keep the order their first page has in the navigation.
+// Folders count from the open section's prefix: inside `/api/` the whole sidebar is that
+// folder already, so its pages are not wrapped in one more group of the same name
 fn create_nav(site: &Site, page: &Page) -> String {
+    let prefix = (read_section(site, page))
+        .and_then(|section| section.prefix.as_deref())
+        .map_or("", |prefix| prefix.trim_start_matches('/'));
     let mut groups: Vec<(Option<&str>, Vec<&Page>)> = vec![];
-    for item in list_pages(site) {
-        let folder = item.path.split_once('/').map(|(folder, _)| folder);
+    for item in list_pages(site, page) {
+        let relative = item.path.strip_prefix(prefix).unwrap_or(&item.path);
+        let folder = relative.split_once('/').map(|(folder, _)| folder);
         match groups.iter_mut().find(|(key, _)| *key == folder) {
             Some((_, items)) => items.push(item),
             None => groups.push((folder, vec![item])),
         }
     }
     let mut html = String::from("<nav aria-label=\"Pages\">");
+    html.push_str(&create_section_list(site, page));
     for (folder, items) in groups {
         let list = create_list(&items, page);
         match folder {
             Some(folder) => {
-                let index = format!("{folder}/index.html");
+                let index = format!("{prefix}{folder}/index.html");
                 let title = site
                     .pages
                     .iter()
@@ -438,9 +462,14 @@ fn create_nav(site: &Site, page: &Page) -> String {
     html
 }
 
-fn list_pages(site: &Site) -> Vec<&Page> {
-    let listed = |page: &&Page| page.path != NOT_FOUND_PAGE;
-    site.pages.iter().filter(listed).collect()
+// Only the pages of the open page's section, so each section reads as a site of its own
+fn list_pages<'a>(site: &'a Site, page: &Page) -> Vec<&'a Page> {
+    let sections = &site.config.sections;
+    let section = find_section(sections, &page.url);
+    (site.pages.iter())
+        .filter(|item| item.path != NOT_FOUND_PAGE)
+        .filter(|item| find_section(sections, &item.url) == section)
+        .collect()
 }
 
 fn create_list(items: &[&Page], page: &Page) -> String {
@@ -461,14 +490,19 @@ fn create_list(items: &[&Page], page: &Page) -> String {
 const FOOTER: &str = "<p>Created with <span aria-label=\"love\">❤</span> and \
      <a href=\"https://htmlpress.dev\">Htmlpress</a></p>";
 
-fn create_links(site: &Site) -> Option<String> {
+fn create_links(site: &Site, page: &Page) -> Option<String> {
     let links: Vec<&Link> = (site.config.links.iter())
         .filter(|link| link.position == Position::Header)
         .collect();
-    if links.is_empty() {
+    let sections: Vec<String> = (site.config.sections.iter().enumerate())
+        .filter(|(_, section)| section.position == Position::Header)
+        .map(|(index, _)| create_section_link(site, page, index))
+        .collect();
+    if links.is_empty() && sections.is_empty() {
         return None;
     }
     let mut html = String::from("<nav aria-label=\"Links\">");
+    html.push_str(&sections.concat());
     for link in links {
         let url = escape_html(&link.url);
         let title = escape_html(&link.title);
@@ -478,8 +512,59 @@ fn create_links(site: &Site) -> Option<String> {
     Some(html)
 }
 
+// Every section, so the sidebar can switch between them on a phone, where the header
+// has no room for its tabs; each item carries its position for the layout to choose
+fn create_section_list(site: &Site, page: &Page) -> String {
+    if site.config.sections.is_empty() {
+        return String::new();
+    }
+    let mut html = String::from("<ul data-sections>");
+    for (index, section) in site.config.sections.iter().enumerate() {
+        let position = match section.position {
+            Position::Header => "header",
+            Position::Sidebar => "sidebar",
+        };
+        let link = create_section_link(site, page, index);
+        let _ = write!(html, "<li data-position=\"{position}\">{link}</li>");
+    }
+    html.push_str("</ul>");
+    html
+}
+
+// A section leads to the page at its prefix, else its first page in navigation order
+fn create_section_link(site: &Site, page: &Page, index: usize) -> String {
+    let sections = &site.config.sections;
+    let Some(section) = sections.get(index) else {
+        return String::new();
+    };
+    let (href, current) = match section.kind {
+        SectionKind::Custom => {
+            let url = section.url.clone().unwrap_or_default();
+            let current = is_custom_current(&url, &page.url);
+            (url, current)
+        }
+        SectionKind::Article => {
+            let prefix = section.prefix.clone().unwrap_or_default();
+            let first = (site.pages.iter())
+                .filter(|item| item.path != NOT_FOUND_PAGE)
+                .find(|item| find_section(sections, &item.url) == Some(index));
+            let href = match site.pages.iter().any(|item| item.url == prefix) {
+                true => prefix,
+                false => first.map_or(prefix, |item| item.url.clone()),
+            };
+            (href, find_section(sections, &page.url) == Some(index))
+        }
+    };
+    let current = match current {
+        true => " aria-current=\"page\"",
+        false => "",
+    };
+    let (href, title) = (escape_html(&href), escape_html(&section.title));
+    format!("<a href=\"{href}\" data-section{current}>{title}</a>")
+}
+
 fn create_pager(site: &Site, page: &Page) -> Option<String> {
-    let pages = list_pages(site);
+    let pages = list_pages(site, page);
     let index = pages.iter().position(|item| item.path == page.path)?;
     let prev = index
         .checked_sub(1)

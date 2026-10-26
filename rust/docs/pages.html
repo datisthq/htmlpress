@@ -87,6 +87,51 @@
   <code>/</code> there.
 </p>
 
+<h2>Sections</h2>
+<p>
+  A site with more than one part, such as a guide and an API reference, splits it into
+  <code>sections</code>. Each owns the pages whose URL starts with its
+  <code>prefix</code> (the longest prefix wins), and while one of its pages is open the
+  sidebar and the previous and next links show only that section's pages:
+</p>
+<pre><code>sections:
+  - title: Guide
+    prefix: /
+  - title: API
+    prefix: /api/
+    siteTitle: API Reference
+  - title: GitHub
+    type: custom
+    url: https://github.com/datisthq/htmlpress</code></pre>
+<dl>
+  <dt><code>title</code>, <code>prefix</code></dt>
+  <dd>
+    The tab's name and the folder path its pages share, starting and ending with
+    <code>/</code>. The tab leads to the page at the prefix, else the section's first
+    page.
+  </dd>
+  <dt><code>type</code></dt>
+  <dd>
+    <code>article</code> (the default) owns pages; <code>custom</code> is just a tab to
+    its <code>url</code>, marked current on its own pages when the URL is internal.
+  </dd>
+  <dt><code>position</code></dt>
+  <dd>
+    <code>header</code> (default) for a tab beside the header links,
+    <code>sidebar</code> for an entry above the sidebar's pages. On a phone every section
+    is listed in the sidebar.
+  </dd>
+  <dt><code>siteTitle</code>, <code>siteLink</code>, <code>siteDescription</code></dt>
+  <dd>
+    While one of the section's pages is open: the brand's title and where it links, and
+    the description for its pages without one of their own.
+  </dd>
+</dl>
+<p>
+  Pages no section owns form one more part of their own. <code>llms.txt</code> groups its
+  links by section too.
+</p>
+
 <h2>Configuration</h2>
 <p>
   An optional <code>htmlpress.yaml</code> at the project root sets the site. Its keys
@@ -163,6 +208,14 @@ edit: https://github.com/datisthq/htmlpress/edit/main/docs/</code></pre>
       <td>
         links, each a <code>title</code>, a <code>url</code> and a <code>position</code>:
         <code>header</code> (default) or <code>sidebar</code>
+      </td>
+    </tr>
+    <tr>
+      <td><code>sections</code></td>
+      <td>none</td>
+      <td>
+        parts of the site with a navigation of their own; see
+        <a href="#sections">Sections</a>
       </td>
     </tr>
     <tr>

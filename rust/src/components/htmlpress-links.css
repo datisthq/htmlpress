@@ -15,7 +15,17 @@
     white-space: nowrap;
     text-decoration: none;
   }
-  a:hover {
+  a:hover,
+  a[aria-current="page"] {
     color: var(--htmlpress-accent);
+  }
+  a[aria-current="page"] {
+    font-weight: 500;
+  }
+  /* On a phone the sidebar drawer lists the sections instead */
+  @media (max-width: 56rem) {
+    a[data-section] {
+      display: none;
+    }
   }
 }

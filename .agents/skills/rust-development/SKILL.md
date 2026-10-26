@@ -64,7 +64,9 @@ run from source: `cargo run --manifest-path rust/Cargo.toml -- build docs`.
    fills `<head>` and
    swaps each layout element (`htmlpress-content`, `htmlpress-nav`, `htmlpress-toc`, `htmlpress-pager`, …) for markup
    built from the site. Inserted markup is never re-parsed, so a page's own `htmlpress-*` tags
-   are left to the browser; an element with nothing to show is removed. With `base`, a last
+   are left to the browser; an element with nothing to show is removed. With `sections`,
+   `find_section` (longest prefix) picks the open page's section, and the nav, pager,
+   brand and breadcrumbs use only its pages and its `site*` overrides. With `base`, a last
    pass (`page/prefix`) prefixes every root-relative URL attribute of the finished page,
    so no URL builder needs to know the base; absolute URLs take it through
    `Config::read_origin`, and the text outputs through `Config::read_base`

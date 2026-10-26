@@ -2,7 +2,7 @@ use std::path::PathBuf;
 
 use super::*;
 use crate::actions::page::read::read_page;
-use crate::models::config::{Config, Link, Position};
+use crate::models::config::{Config, Link, Position, Section, SectionKind};
 use crate::settings::ASSETS;
 
 fn create_site() -> crate::Result<Site> {
@@ -299,5 +299,56 @@ fn links_the_markdown_from_the_head_and_the_toolbar() -> crate::Result<()> {
         )
     );
     assert!(html.contains(r#"<htmlpress-toolbar><a href="/api/cli.md" type="text/markdown">View as Markdown</a></htmlpress-toolbar>"#));
+    Ok(())
+}
+
+fn create_sectioned_site() -> crate::Result<Site> {
+    let mut site = create_site()?;
+    site.config.sections = vec![
+        Section {
+            title: "Docs".to_owned(),
+            prefix: Some("/".to_owned()),
+            ..Section::default()
+        },
+        Section {
+            title: "API".to_owned(),
+            prefix: Some("/api/".to_owned()),
+            site_title: Some("API Reference".to_owned()),
+            site_link: Some("/api/".to_owned()),
+            ..Section::default()
+        },
+        Section {
+            title: "GitHub".to_owned(),
+            kind: SectionKind::Custom,
+            url: Some("https://github.com/x".to_owned()),
+            position: Position::Sidebar,
+            ..Section::default()
+        },
+    ];
+    Ok(site)
+}
+
+#[test]
+fn shows_only_the_open_sections_pages_with_its_brand() -> crate::Result<()> {
+    let site = create_sectioned_site()?;
+    let cli = render_page(&site, &site.pages[3], false)?;
+    assert!(cli.contains(r#"<a href="/api/" data-section aria-current="page">API</a>"#));
+    assert!(cli.contains(r#"<a href="/" data-section>Docs</a>"#));
+    assert!(cli.contains(r#"<htmlpress-brand><a href="/api/">API Reference</a>"#));
+    assert!(!cli.contains(r#"<a href="/guide.html""#), "{cli}");
+    assert!(cli.contains(r#"<a rel="prev" href="/api/"><small>Previous</small>API</a>"#));
+    assert!(!cli.contains(r#"rel="next""#));
+    assert!(!cli.contains("<summary>API</summary>"), "{cli}");
+
+    let guide = render_page(&site, &site.pages[1], false)?;
+    assert!(guide.contains(r#"<a href="/" data-section aria-current="page">Docs</a>"#));
+    assert!(!guide.contains(r#"href="/api/cli.html""#));
+    assert!(guide.contains(
+        r#"<li data-position="sidebar"><a href="https://github.com/x" data-section>GitHub</a></li>"#
+    ));
+    assert!(
+        !guide
+            .contains(r#"<a href="https://github.com/x" data-section>GitHub</a></nav>"#)
+    );
     Ok(())
 }

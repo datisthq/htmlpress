@@ -1,6 +1,6 @@
 use std::path::Path;
 
-use crate::models::config::Config;
+use crate::models::config::{Config, SectionKind};
 use crate::models::error::Error;
 use crate::settings::CONFIG_FILE;
 
@@ -35,7 +35,36 @@ pub fn load_config(root: &Path) -> crate::Result<Config> {
             message: format!("base must start with \"/\", got \"{base}\""),
         });
     }
+    if let Some(message) = check_sections(&config) {
+        return Err(Error::Config { path, message });
+    }
     Ok(config)
+}
+
+// Each kind needs its own key, and a prefix must be a folder path, so matching a page's
+// URL against it never splits a name (`/guide` would take `/guides.html`)
+fn check_sections(config: &Config) -> Option<String> {
+    for section in &config.sections {
+        let title = &section.title;
+        match (section.kind, &section.prefix, &section.url) {
+            (SectionKind::Article, Some(prefix), _) => {
+                if !prefix.starts_with('/') || !prefix.ends_with('/') {
+                    return Some(format!(
+                        "section \"{title}\": prefix must start and end with \"/\", \
+                         got \"{prefix}\""
+                    ));
+                }
+            }
+            (SectionKind::Article, None, _) => {
+                return Some(format!("section \"{title}\" needs a prefix"));
+            }
+            (SectionKind::Custom, _, None) => {
+                return Some(format!("section \"{title}\" of type custom needs a url"));
+            }
+            (SectionKind::Custom, _, Some(_)) => {}
+        }
+    }
+    None
 }
 
 #[cfg(test)]

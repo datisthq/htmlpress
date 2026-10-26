@@ -89,3 +89,20 @@ fn publishes_skills_with_an_index() -> crate::Result<()> {
     );
     Ok(())
 }
+
+#[test]
+fn groups_llms_by_section() -> crate::Result<()> {
+    let mut site = create_site()?;
+    site.config.sections = vec![crate::models::config::Section {
+        title: "Guides".to_owned(),
+        prefix: Some("/guides/".to_owned()),
+        ..Default::default()
+    }];
+    let files = describe_site(&site)?;
+    let llms = read_file(&files, "llms.txt").unwrap_or_default();
+    let guides = llms.find("## Guides").unwrap_or(usize::MAX);
+    let other = llms.find("## Other").unwrap_or(0);
+    assert!(guides < other, "{llms}");
+    assert!(llms.ends_with("## Other\n\n- [Home](https://example.com/index.md)\n"));
+    Ok(())
+}
