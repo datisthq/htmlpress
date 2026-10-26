@@ -4,7 +4,7 @@
     --landing-width: 72rem;
     --landing-gutter: 1.5rem;
     --landing-tint: color-mix(in oklab, var(--htmlpress-accent) 5%, var(--htmlpress-bg));
-    --landing-violet: oklch(0.55 0.22 293);
+    --landing-violet: oklch(0.444 0.011 73.639);
     display: block;
   }
   /* As wide as the docs pages' sidebar and toggle, so the header links line up with theirs */
@@ -36,11 +36,11 @@
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) htmlpress-landing-page {
-    --landing-violet: oklch(0.79 0.1 296);
+    --landing-violet: oklch(0.869 0.005 56.366);
   }
 }
 :root[data-theme="dark"] htmlpress-landing-page {
-  --landing-violet: oklch(0.79 0.1 296);
+  --landing-violet: oklch(0.869 0.005 56.366);
 }
 
 /* One image per theme, as the screenshots are: a media query alone misses the toggle */
