@@ -479,14 +479,31 @@ fn create_nav(site: &Site, page: &Page) -> String {
         match folder {
             // A folder holding nothing but its index reads as one page, not a group of one
             Some(folder) if index_only(folder) => html.push_str(&list),
+            // A listed index is the group's own link, as in Livemark: its title leads to
+            // the page and only the chevron beside it toggles, as a link in a summary
+            // does not toggle its details
             Some(folder) => {
-                let index = format!("{prefix}{folder}/index.html");
-                let index = site.pages.iter().find(|item| item.path == index);
+                let path = format!("{prefix}{folder}/index.html");
+                let index = site.pages.iter().find(|item| item.path == path);
                 let title = escape_html(index.map_or(folder, |item| item.title.as_str()));
                 let icon = create_icon(index.and_then(|item| item.icon.as_deref()));
+                let label = match items.iter().find(|item| item.path == path) {
+                    Some(item) => {
+                        let url = escape_html(&item.url);
+                        let current = match item.path == page.path {
+                            true => " aria-current=\"page\"",
+                            false => "",
+                        };
+                        format!("<a href=\"{url}\"{current}>{icon}{title}</a>")
+                    }
+                    None => format!("{icon}{title}"),
+                };
+                let items: Vec<&Page> =
+                    items.into_iter().filter(|item| item.path != path).collect();
+                let list = create_list(&items, page, false);
                 let _ = write!(
                     html,
-                    "<details open><summary>{icon}{title}</summary>{list}</details>"
+                    "<details open><summary>{label}</summary>{list}</details>"
                 );
             }
             None => html.push_str(&list),

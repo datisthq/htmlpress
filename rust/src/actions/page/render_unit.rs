@@ -49,8 +49,22 @@ fn groups_the_navigation_by_folder() -> crate::Result<()> {
     let site = create_site()?;
     let html = render_page(&site, &site.pages[0], false)?;
     assert!(html.contains(
-        r#"<details open><summary>API</summary><ul><li><a href="/api/">API</a></li><li><a href="/api/cli.html">CLI</a></li></ul></details>"#
+        r#"<details open><summary><a href="/api/">API</a></summary><ul><li><a href="/api/cli.html">CLI</a></li></ul></details>"#
     ));
+    Ok(())
+}
+
+#[test]
+fn links_a_group_to_its_index_page() -> crate::Result<()> {
+    let mut site = create_site()?;
+    let api = render_page(&site, &site.pages[2], false)?;
+    assert!(api.contains(r#"<summary><a href="/api/" aria-current="page">API</a>"#));
+    site.pages.retain(|item| item.path != "api/index.html");
+    let html = render_page(&site, &site.pages[0], false)?;
+    assert!(
+        html.contains(r#"<details open><summary>api</summary>"#),
+        "{html}"
+    );
     Ok(())
 }
 
@@ -352,7 +366,7 @@ fn shows_only_the_open_sections_pages_with_its_brand() -> crate::Result<()> {
     assert!(!cli.contains(r#"<a href="/guide.html""#), "{cli}");
     assert!(cli.contains(r#"<a rel="prev" href="/api/"><small>Previous</small>API</a>"#));
     assert!(!cli.contains(r#"rel="next""#));
-    assert!(!cli.contains("<summary>API</summary>"), "{cli}");
+    assert!(!cli.contains("<summary>"), "{cli}");
 
     let guide = render_page(&site, &site.pages[1], false)?;
     assert!(guide.contains(r#"<a href="/" data-section aria-current="page">Docs</a>"#));
@@ -450,9 +464,8 @@ fn shows_page_icons_only_at_the_top_level() -> crate::Result<()> {
     site.pages[2].icon = Some("code".to_owned());
     site.pages[3].icon = Some("rocket".to_owned());
     let html = render_page(&site, &site.pages[0], false)?;
-    assert!(html.contains("<details open><summary><svg viewBox"));
-    assert!(html.contains("</svg>API</summary>"));
-    assert!(html.contains(r#"<li><a href="/api/">API</a></li>"#));
+    assert!(html.contains(r#"<details open><summary><a href="/api/"><svg viewBox"#));
+    assert!(html.contains("</svg>API</a></summary>"));
     assert!(html.contains(r#"<li><a href="/api/cli.html">CLI</a></li>"#));
     Ok(())
 }
@@ -463,9 +476,9 @@ fn lists_a_folder_with_only_its_index_as_one_page() -> crate::Result<()> {
     site.pages
         .push(read_page("start/index.html", "<title>Start</title>")?);
     let html = render_page(&site, &site.pages[0], false)?;
-    assert!(!html.contains("<summary>Start</summary>"));
+    assert!(!html.contains(r#"<summary><a href="/start/">"#));
     assert!(html.contains(r#"<li><a href="/start/">Start</a></li>"#));
-    assert!(html.contains("<summary>API</summary>"));
+    assert!(html.contains(r#"<summary><a href="/api/">API</a></summary>"#));
     Ok(())
 }
 
