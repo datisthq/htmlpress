@@ -2,7 +2,7 @@
   :scope {
     display: block;
   }
-  button {
+  :scope > button {
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -20,23 +20,14 @@
     cursor: pointer;
     transition: background 0.15s;
   }
-  button:hover {
+  :scope > button:hover {
     background: var(--htmlpress-surface);
   }
-  button svg {
-    flex-shrink: 0;
-    width: 1rem;
-    height: 1rem;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 2;
-    stroke-linecap: round;
-  }
-  button span {
+  :scope > button span {
     flex: 1;
     text-align: left;
   }
-  kbd {
+  :scope > button kbd {
     padding: 0.125rem 0.375rem;
     box-shadow: none;
     color: inherit;
@@ -45,97 +36,290 @@
     background: var(--htmlpress-bg);
     font: 0.625rem/1.4 var(--htmlpress-mono);
   }
+  svg {
+    flex-shrink: 0;
+    width: 1rem;
+    height: 1rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
   dialog {
-    width: min(40rem, calc(100vw - 2rem));
-    max-height: min(36rem, calc(100dvh - 8rem));
-    margin: 6rem auto auto;
+    position: fixed;
+    inset: 33.333vh auto auto 50%;
+    width: 28rem;
+    max-width: calc(100% - 2rem);
+    max-height: none;
+    margin: 0;
     padding: 0;
     overflow: hidden;
-    border: 1px solid var(--htmlpress-border);
-    border-radius: var(--htmlpress-radius);
+    border: 0;
+    border-radius: 1.5rem;
     background: var(--htmlpress-bg);
-    box-shadow: 0 16px 48px oklch(0 0 0 / 0.2);
+    box-shadow: 0 0 0 1px color-mix(in oklab, var(--htmlpress-text) 10%, transparent);
     color: var(--htmlpress-text);
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    transform: translateX(-50%);
+    transition:
+      opacity 0.1s,
+      scale 0.1s,
+      overlay 0.1s allow-discrete,
+      display 0.1s allow-discrete;
   }
-  dialog[open] {
-    display: flex;
-    flex-direction: column;
+  dialog:not([open]) {
+    opacity: 0;
+    scale: 0.95;
   }
   dialog::backdrop {
-    background: oklch(0 0 0 / 0.4);
-    backdrop-filter: blur(2px);
+    background: oklch(0 0 0 / 0.1);
+    backdrop-filter: blur(4px);
+    transition:
+      opacity 0.1s,
+      overlay 0.1s allow-discrete,
+      display 0.1s allow-discrete;
+  }
+  dialog:not([open])::backdrop {
+    opacity: 0;
+  }
+  @starting-style {
+    dialog[open] {
+      opacity: 0;
+      scale: 0.95;
+    }
+    dialog[open]::backdrop {
+      opacity: 0;
+    }
+  }
+  .command {
+    display: flex;
+    flex-direction: column;
+    padding: 0.25rem;
+    border-radius: 1rem;
+  }
+
+  .field {
+    display: flex;
+    align-items: center;
+    height: 3rem;
+    border: 1px solid color-mix(in oklab, var(--htmlpress-border) 30%, transparent);
+    border-radius: 999px;
+    background: color-mix(in oklab, var(--htmlpress-border) 30%, transparent);
+    color: var(--htmlpress-muted);
+  }
+  dialog .field {
+    margin: 0.25rem 0.25rem 0.5rem;
+  }
+  .field > svg {
+    width: 1.25rem;
+    height: 1.25rem;
+    margin: 0 0.375rem 0 0.75rem;
+    opacity: 0.5;
   }
   input {
-    flex-shrink: 0;
-    padding: 1rem 1.25rem;
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    padding: 0;
     border: 0;
-    border-bottom: 1px solid var(--htmlpress-border);
     outline: none;
     background: none;
-    color: inherit;
+    color: var(--htmlpress-text);
     font: inherit;
-    font-size: 1rem;
+    font-size: 1.125rem;
+    line-height: 1.75rem;
   }
-  [role="listbox"] {
-    overflow-y: auto;
-    padding: 0.5rem;
+  input::placeholder {
+    color: var(--htmlpress-muted);
   }
-  [role="listbox"]:empty {
+  .clear {
+    display: flex;
+    padding: 0 0.75rem 0 0.375rem;
+    border: 0;
+    background: none;
+    color: inherit;
+    opacity: 0.5;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .clear:hover {
+    opacity: 1;
+  }
+  .clear[hidden] {
     display: none;
   }
-  section + section {
-    margin-top: 0.5rem;
+
+  .list {
+    max-height: 20rem;
+    overflow: hidden auto;
+    outline: none;
+    scroll-padding-block: 0.25rem;
   }
-  h3 {
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
+  .empty {
     margin: 0;
-    padding: 0.5rem 0.75rem 0.25rem;
-    font-size: 0.8125rem;
-    font-weight: 600;
+    padding: 1.5rem 0;
+    font-size: 0.875rem;
+    text-align: center;
   }
-  small {
+  [role="group"] {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.25rem;
+  }
+  .heading {
+    padding: 0.375rem 0.5rem;
     color: var(--htmlpress-muted);
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1rem;
+  }
+  .heading + [role="option"] {
+    margin-top: -0.5rem;
+  }
+  [role="option"] {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 0.5rem;
+    border-radius: calc(1rem - 4px);
+    background: color-mix(in oklab, var(--htmlpress-surface) 50%, transparent);
+    color: var(--htmlpress-text);
     font-weight: 400;
-  }
-  a {
-    display: block;
-    padding: 0.5rem 0.75rem;
-    border-radius: 0.75rem;
-    color: inherit;
     text-decoration: none;
+    cursor: pointer;
+    user-select: none;
   }
-  a[aria-selected="true"],
-  a:hover {
-    background: color-mix(in oklab, var(--htmlpress-accent) 8%, transparent);
+  [role="option"][aria-selected="true"] {
+    background: color-mix(in oklab, var(--htmlpress-accent) 10%, transparent);
+  }
+  [role="option"] > svg {
+    align-self: flex-start;
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-top: 0.125rem;
+    opacity: 0.6;
+  }
+  [role="option"] > span {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    min-width: 0;
   }
   strong {
-    display: block;
-    font-size: 0.875rem;
+    font-size: 1rem;
     font-weight: 500;
+    line-height: 1.5rem;
   }
-  a span {
-    display: block;
+  strong + span {
+    display: -webkit-box;
     overflow: hidden;
     color: var(--htmlpress-muted);
-    font-size: 0.8125rem;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
   }
   mark {
-    border-radius: 0.2em;
-    background: color-mix(in oklab, var(--htmlpress-accent) 20%, transparent);
-    color: inherit;
+    background: none;
+    color: var(--htmlpress-text);
+    font-weight: 500;
   }
-  p {
-    margin: 0;
-    padding: 1rem 0.75rem;
+
+  .footer {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 0.5rem;
+    padding: 0.625rem 1rem;
+    border-top: 1px solid var(--htmlpress-border);
     color: var(--htmlpress-muted);
     font-size: 0.875rem;
   }
+  .footer span {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+  }
+  .footer kbd {
+    padding: 0.125rem 0.375rem;
+    border: 1px solid var(--htmlpress-border);
+    border-radius: 0.25rem;
+    box-shadow: none;
+    background: var(--htmlpress-surface);
+    color: inherit;
+    font: 0.75rem/1rem var(--htmlpress-mono);
+  }
+
+  /* The header takeover below 56rem: htmlpress-search stays unpositioned, so the bar
+     covers the sticky header it sits in */
+  .bar {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    background: var(--htmlpress-bg);
+  }
+  .bar[hidden] {
+    display: none;
+  }
+  .row {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    height: 100%;
+    padding: 0 0.5rem 0 0.25rem;
+  }
+  .row .field {
+    flex: 1;
+    border-color: transparent;
+    background: transparent;
+  }
+  .close {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: none;
+    color: var(--htmlpress-muted);
+    cursor: pointer;
+    transition:
+      background 0.15s,
+      color 0.15s;
+  }
+  .close:hover {
+    background: var(--htmlpress-surface);
+    color: var(--htmlpress-text);
+  }
+  .close svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+  .panel {
+    position: fixed;
+    inset: 4rem 0 0;
+    display: flex;
+    flex-direction: column;
+    padding: 0.25rem;
+    border-top: 1px solid var(--htmlpress-border);
+    background: var(--htmlpress-bg);
+  }
+  .panel .list {
+    flex: 1;
+    max-height: none;
+    overscroll-behavior: contain;
+  }
+
   @media (max-width: 56rem) {
-    button {
+    :scope > button {
       width: 2.25rem;
       padding: 0;
       box-shadow: none;
@@ -143,18 +327,9 @@
       border: 0;
       background: none;
     }
-    button span,
-    kbd {
+    :scope > button span,
+    :scope > button kbd {
       display: none;
-    }
-    dialog {
-      width: 100vw;
-      max-width: none;
-      height: 100dvh;
-      max-height: none;
-      margin: 0;
-      border: 0;
-      border-radius: 0;
     }
   }
 }

@@ -442,6 +442,7 @@ title: Htmlpress</code></pre>
   set under <code>prefers-color-scheme</code> or the header's theme toggle:
   <code>--htmlpress-accent</code>, <code>--htmlpress-accent-text</code>,
   <code>--htmlpress-banner</code>, <code>--htmlpress-banner-text</code>,
+  <code>--htmlpress-highlight</code>, <code>--htmlpress-highlight-text</code>,
   <code>--htmlpress-prose</code>, <code>--htmlpress-prose-strong</code>,
   <code>--htmlpress-prose-marker</code>, <code>--htmlpress-bg</code>,
   <code>--htmlpress-surface</code>, <code>--htmlpress-text</code>,
@@ -511,7 +512,10 @@ title: Htmlpress</code></pre>
     Search over every page, with the script: a header button, also opened by
     <kbd>S</kbd>, <kbd>/</kbd> or <kbd>⌘K</kbd> / <kbd>Ctrl K</kbd>. The build writes the
     index to <code>_htmlpress/search.json</code>, split at each page's headings, and the
-    dialog loads it on first open; results are grouped by page and land on the heading.
+    dialog loads it on first open. Any word of the query matches, as a word's start or
+    within one typo; a result opens its page with <code>?highlight=</code> the query,
+    whose matches are painted in <code>--htmlpress-highlight</code> and scrolled to. Below
+    56rem the field takes over the header instead of a dialog.
   </dd>
   <dt><code>&lt;htmlpress-toolbar&gt;</code></dt>
   <dd>

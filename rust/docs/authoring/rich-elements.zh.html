@@ -434,6 +434,7 @@ title: Htmlpress</code></pre>
   <code>prefers-color-scheme</code> 或页眉的主题切换下有一套深色值：
   <code>--htmlpress-accent</code>、<code>--htmlpress-accent-text</code>、
   <code>--htmlpress-banner</code>、<code>--htmlpress-banner-text</code>、
+  <code>--htmlpress-highlight</code>、<code>--htmlpress-highlight-text</code>、
   <code>--htmlpress-bg</code>、<code>--htmlpress-surface</code>、
   <code>--htmlpress-text</code>、<code>--htmlpress-muted</code>、
   <code>--htmlpress-border</code>、<code>--htmlpress-info</code>、
@@ -498,7 +499,9 @@ title: Htmlpress</code></pre>
     借助脚本搜索所有页面：页眉中的一个按钮，也可以通过
     <kbd>S</kbd>、<kbd>/</kbd> 或 <kbd>⌘K</kbd> / <kbd>Ctrl K</kbd> 打开。构建会把索引写入
     <code>_htmlpress/search.json</code
-    >，并在每个页面的标题处拆分，对话框在首次打开时加载它；结果按页面分组，并跳转到对应标题。
+    >，并在每个页面的标题处拆分，对话框在首次打开时加载它。查询中的任一词语都可匹配；结果会以
+    <code>?highlight=</code> 加查询打开其页面，匹配处用 <code>--htmlpress-highlight</code>
+    标出并滚动到可见位置。宽度小于 56rem 时，搜索框会占据页眉而不是弹出对话框。
   </dd>
   <dt><code>&lt;htmlpress-toolbar&gt;</code></dt>
   <dd>

@@ -454,7 +454,8 @@ title: Htmlpress</code></pre>
   <code>:root</code>, con un conjunto oscuro bajo <code>prefers-color-scheme</code> o el
   selector de tema de la cabecera: <code>--htmlpress-accent</code>,
   <code>--htmlpress-accent-text</code>, <code>--htmlpress-banner</code>,
-  <code>--htmlpress-banner-text</code>, <code>--htmlpress-bg</code>,
+  <code>--htmlpress-banner-text</code>, <code>--htmlpress-highlight</code>,
+  <code>--htmlpress-highlight-text</code>, <code>--htmlpress-bg</code>,
   <code>--htmlpress-surface</code>, <code>--htmlpress-text</code>,
   <code>--htmlpress-muted</code>, <code>--htmlpress-border</code>,
   <code>--htmlpress-info</code>, <code>--htmlpress-success</code>,
@@ -523,8 +524,11 @@ title: Htmlpress</code></pre>
     Búsqueda en todas las páginas, con el script: un botón en la cabecera, que también se
     abre con <kbd>S</kbd>, <kbd>/</kbd> o <kbd>⌘K</kbd> / <kbd>Ctrl K</kbd>. La
     compilación escribe el índice en <code>_htmlpress/search.json</code>, dividido en los
-    encabezados de cada página, y el diálogo lo carga la primera vez que se abre; los
-    resultados se agrupan por página y llevan al encabezado.
+    encabezados de cada página, y el diálogo lo carga la primera vez que se abre. Coincide
+    cualquier palabra de la consulta, como inicio de palabra o con una errata; un
+    resultado abre su página con <code>?highlight=</code> y la consulta, cuyas
+    coincidencias se pintan con <code>--htmlpress-highlight</code> y se desplazan a la
+    vista. Por debajo de 56rem el campo ocupa la cabecera en lugar de un diálogo.
   </dd>
   <dt><code>&lt;htmlpress-toolbar&gt;</code></dt>
   <dd>

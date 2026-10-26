@@ -38,8 +38,20 @@ fn splits_each_page_at_its_headings() -> crate::Result<()> {
     assert!(chunks[0]["heading"].is_null());
     assert_eq!(chunks[1]["heading"], "Install");
     assert_eq!(chunks[1]["id"], "install");
-    assert_eq!(chunks[1]["text"], "Run it. cargo install");
+    assert_eq!(chunks[1]["text"], "Run it.");
     assert_eq!(chunks[2]["id"], "flags");
     assert_eq!(chunks[2]["text"], "Use -p.");
     Ok(())
+}
+
+#[test]
+fn groups_pages_by_their_inner_folders() {
+    assert_eq!(create_group("/"), None);
+    assert_eq!(create_group("/guide.html"), None);
+    assert_eq!(create_group("/authoring/code-blocks.html"), None);
+    assert_eq!(create_group("/authoring/deep/index.html"), None);
+    assert_eq!(
+        create_group("/docs/api-reference/rust-crate/build.html"),
+        Some("Api Reference › Rust Crate".to_owned())
+    );
 }

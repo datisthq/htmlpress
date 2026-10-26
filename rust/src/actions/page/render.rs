@@ -431,7 +431,7 @@ fn create_attributes(tag: &std::collections::BTreeMap<String, String>) -> String
 
 // The strings the components' scripts write, which they read from here and fall back to
 // English without, so an escaped script keeps working
-const SCRIPT_MESSAGES: [&str; 16] = [
+const SCRIPT_MESSAGES: [&str; 24] = [
     "code.copied",
     "code.copy",
     "code.expand",
@@ -445,8 +445,16 @@ const SCRIPT_MESSAGES: [&str; 16] = [
     "page.openChatGpt",
     "page.openClaude",
     "search.button",
+    "search.close",
+    "search.description",
+    "search.dismiss",
     "search.empty",
+    "search.hint",
     "search.label",
+    "search.navigate",
+    "search.pages",
+    "search.placeholder",
+    "search.select",
     "theme.toggle",
 ];
 

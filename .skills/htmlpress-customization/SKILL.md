@@ -34,7 +34,8 @@ Most looks are a token. Override it in `.htmlpress/styles/tokens.css`, or in one
 
 `--htmlpress-accent`, `-accent-text`, `-font`, `-mono`, `-bg`, `-surface`, `-text`, `-muted`,
 `-prose`, `-prose-strong`, `-prose-marker`, `-border`, `-shadow`, `-radius`, `-width`,
-`-nav-width`, `-banner`, `-banner-text`, and the
+`-nav-width`, `-banner`, `-banner-text`, `-highlight`, `-highlight-text` (search matches on
+the page a result opened), and the
 callout colours `-info`, `-success`, `-warning`, `-danger`.
 
 ## Escaping

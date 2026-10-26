@@ -1,7 +1,9 @@
-use std::cell::RefCell;
+use std::cell::{Cell, RefCell};
+use std::rc::Rc;
 
 use lol_html::{RewriteStrSettings, element, rewrite_str, text};
 
+use crate::actions::icon::render::render_icon;
 use crate::actions::section::find::find_section;
 use crate::models::error::Error;
 use crate::models::language::SiteLanguage;
@@ -39,6 +41,9 @@ pub(crate) fn index_site(site: &Site) -> crate::Result<String> {
             "title": page.title,
             "url": format!("{base}{}", page.url),
             "section": section,
+            "group": create_group(&page.key),
+            "description": page.description,
+            "icon": page.icon.as_deref().and_then(render_icon),
             "chunks": chunks
                 .into_iter()
                 .map(|chunk| serde_json::json!({
@@ -53,6 +58,27 @@ pub(crate) fn index_site(site: &Site) -> crate::Result<String> {
         .map_err(|error| Error::Usage(format!("cannot write {SEARCH_INDEX}: {error}")))
 }
 
+// Livemark's grouping: a page two folders deep or more is grouped under the folders
+// between its first and its own, title-cased; the rest fall under the "Pages" group
+fn create_group(key: &str) -> Option<String> {
+    let path = key.trim_matches('/').trim_end_matches(".html");
+    let path = path.strip_suffix("/index").unwrap_or(path);
+    let segments: Vec<&str> = path.split('/').collect();
+    if segments.len() <= 2 {
+        return None;
+    }
+    let folders = segments[1..segments.len() - 1].iter().map(|folder| {
+        let words = folder.split('-').map(|word| {
+            let mut chars = word.chars();
+            chars.next().map_or_else(String::new, |first| {
+                first.to_uppercase().chain(chars).collect::<String>()
+            })
+        });
+        words.collect::<Vec<_>>().join(" ")
+    });
+    Some(folders.collect::<Vec<_>>().join(" › "))
+}
+
 #[derive(Default)]
 struct Chunk {
     id: Option<String>,
@@ -64,7 +90,22 @@ struct Chunk {
 // <h1> and code, scripts and styles are left out, since none is prose a reader searches
 fn read_chunks(page: &Page) -> Result<Vec<Chunk>, String> {
     let chunks = RefCell::new(vec![Chunk::default()]);
+    // A text handler sees only its own element, so code inside <pre> is skipped by depth
+    let code = Rc::new(Cell::new(0_usize));
     let settings = RewriteStrSettings::new()
+        .append_element_content_handler(element!("pre", |el| {
+            let Some(handlers) = el.end_tag_handlers() else {
+                return Ok(());
+            };
+            code.set(code.get() + 1);
+            let code = code.clone();
+            let handler: lol_html::EndTagHandler<'static> = Box::new(move |_| {
+                code.set(code.get().saturating_sub(1));
+                Ok(())
+            });
+            handlers.push(handler);
+            Ok(())
+        }))
         .append_element_content_handler(element!("h2[id], h3[id]", |el| {
             chunks.borrow_mut().push(Chunk {
                 id: el.get_attribute("id"),
@@ -92,6 +133,9 @@ fn read_chunks(page: &Page) -> Result<Vec<Chunk>, String> {
         .append_element_content_handler(text!(
             ":not(h1, h2[id], h3[id], script, style, svg, template)",
             |chunk| {
+                if code.get() > 0 {
+                    return Ok(());
+                }
                 if let Some(last) = chunks.borrow_mut().last_mut() {
                     last.text.push_str(chunk.as_str());
                 }

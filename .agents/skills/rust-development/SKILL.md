@@ -98,8 +98,10 @@ run from source: `cargo run --manifest-path rust/Cargo.toml -- build docs`.
    `robots.txt`, `sitemap.xml` and, when the project has none, the built-in `404.html`
    (`NOT_FOUND`), which the nav and pager never list. `index_site` writes `_htmlpress/search.json`
    (each page's text split at its `h2`/`h3`, words separated at element starts since
-   lol_html may cut one text node into several chunks), which `htmlpress-search` fetches on
-   first open. `describe_site` adds the agent files:
+   lol_html may cut one text node into several chunks; `<pre>` is skipped by depth, since a
+   text handler sees only its own element), which `htmlpress-search` fetches on first open.
+   The widget mirrors Livemark's: a result links `?highlight=<query>`, and the opened page
+   paints the matches with the CSS Custom Highlight API, so the DOM stays untouched. `describe_site` adds the agent files:
    each page as Markdown (`page/convert` first rewrites `htmlpress-*` components and bare
    `<pre>` into plain HTML, since htmd fences only `<pre><code>`), `llms.txt`, the skills
    `load_skills` matched, and `_headers`; a shipped file of the same name wins, except

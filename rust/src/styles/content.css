@@ -448,3 +448,9 @@ img[data-theme="dark"] {
 :root[data-theme="dark"] img[data-theme="light"] {
   display: none;
 }
+
+/* The search query's matches on the page a result opened, set by htmlpress-search */
+::highlight(htmlpress-search) {
+  background-color: var(--htmlpress-highlight);
+  color: var(--htmlpress-highlight-text);
+}
