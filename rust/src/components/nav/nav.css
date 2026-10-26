@@ -70,8 +70,9 @@
     line-height: 1.25rem;
     text-decoration: none;
   }
+  /* A color, not opacity: text under opacity loses subpixel antialiasing and reads blurred */
   a:not([aria-current="page"]) {
-    opacity: 0.75;
+    color: color-mix(in srgb, var(--htmlpress-text) 75%, var(--htmlpress-surface));
   }
   a:hover,
   summary:not(:has(> a)):hover {

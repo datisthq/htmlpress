@@ -3,7 +3,9 @@
   --htmlpress-font:
     ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
     sans-serif;
-  --htmlpress-mono: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
+  --htmlpress-mono:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
   --htmlpress-bg: oklch(1 0 0);
   --htmlpress-surface: oklch(0.985 0 0);
   --htmlpress-text: oklch(0.145 0 0);
@@ -29,12 +31,12 @@
   :root:not([data-theme="light"]) {
     color-scheme: dark;
     --htmlpress-bg: oklch(0.145 0 0);
-    --htmlpress-surface: oklch(0.185 0 0);
+    --htmlpress-surface: oklch(0.205 0 0);
     --htmlpress-text: oklch(0.985 0 0);
     --htmlpress-muted: oklch(0.708 0 0);
     --htmlpress-border: oklch(0.269 0 0);
-    --htmlpress-accent: oklch(0.68 0.17 259.815);
-    --htmlpress-accent-text: oklch(0.145 0 0);
+    --htmlpress-accent: oklch(0.623 0.214 259.815);
+    --htmlpress-accent-text: oklch(0.985 0 0);
     --htmlpress-banner: oklch(0.269 0 0);
     --htmlpress-banner-text: oklch(0.985 0 0);
     --htmlpress-info: oklch(0.72 0.14 250);
@@ -47,12 +49,12 @@
 :root[data-theme="dark"] {
   color-scheme: dark;
   --htmlpress-bg: oklch(0.145 0 0);
-  --htmlpress-surface: oklch(0.185 0 0);
+  --htmlpress-surface: oklch(0.205 0 0);
   --htmlpress-text: oklch(0.985 0 0);
   --htmlpress-muted: oklch(0.708 0 0);
   --htmlpress-border: oklch(0.269 0 0);
-  --htmlpress-accent: oklch(0.68 0.17 259.815);
-  --htmlpress-accent-text: oklch(0.145 0 0);
+  --htmlpress-accent: oklch(0.623 0.214 259.815);
+  --htmlpress-accent-text: oklch(0.985 0 0);
   --htmlpress-banner: oklch(0.269 0 0);
   --htmlpress-banner-text: oklch(0.985 0 0);
   --htmlpress-info: oklch(0.72 0.14 250);
