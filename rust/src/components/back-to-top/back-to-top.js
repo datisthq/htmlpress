@@ -7,14 +7,23 @@ class HtmlpressBackToTop extends HTMLElement {
     link.setAttribute("aria-label", readMessages()["nav.backToTop"] ?? "Back to top")
     link.setAttribute("aria-keyshortcuts", "B")
     link.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true">${ICON}</svg>`
+    link.addEventListener("click", event => {
+      event.preventDefault()
+      scrollToTop()
+    })
     this.replaceChildren(link)
     const update = () => this.toggleAttribute("data-visible", scrollY > 400)
     addEventListener("scroll", update, { passive: true })
     update()
     document.addEventListener("keydown", event => {
-      if (isShortcut(event, "b")) scrollTo({ top: 0, behavior: "smooth" })
+      if (isShortcut(event, "b")) scrollToTop()
     })
   }
+}
+
+function scrollToTop() {
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches
+  scrollTo({ top: 0, behavior: reduced ? "auto" : "smooth" })
 }
 
 function isShortcut(event, key) {
