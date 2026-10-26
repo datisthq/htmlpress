@@ -1086,7 +1086,16 @@ fn read_latest(site: &Site, index: usize) -> Option<&str> {
 }
 
 fn create_pager(site: &Site, page: &Page) -> Option<String> {
-    let pages = NavNode::flatten(&read_nav(site, page));
+    // As in Livemark, a blog's or changelog's index pages nowhere: its posts page each other
+    let index = read_section(site, page)
+        .filter(|section| {
+            matches!(section.kind, SectionKind::Blog | SectionKind::Changelog)
+        })
+        .and_then(|section| section.prefix.as_deref());
+    let pages: Vec<&Page> = NavNode::flatten(&read_nav(site, page))
+        .into_iter()
+        .filter(|item| Some(item.url.as_str()) != index)
+        .collect();
     let index = pages.iter().position(|item| item.path == page.path)?;
     let prev = index
         .checked_sub(1)

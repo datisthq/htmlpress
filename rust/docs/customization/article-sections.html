@@ -205,8 +205,9 @@ sections:
     </p>
     <ul>
       <li>
-        an index at the prefix listing every post, unless the section has its own
-        <code>index.html</code>;
+        an index at the prefix listing every post, dated by the newest, unless the section
+        has its own <code>index.html</code>; the posts page from one to the next, the
+        index stays out of the previous and next links;
       </li>
       <li>a page per tag at <code>tags/&lt;tag&gt;/</code> under the prefix;</li>
       <li>
@@ -223,9 +224,9 @@ sections:
       A <code>changelog</code> section splits its <code>source</code> at each
       <code>##</code> heading into a page per version at
       <code>&lt;version&gt;/</code> under the prefix, newest first as the file lists them,
-      plus an index listing them. A release-please heading,
-      <code>## [0.2.0](…) (2026-10-01)</code>, gives the version and its date; the
-      release's <code>###</code> headings become its sections. With
+      plus an index listing them, each version a heading of the page's table of contents.
+      A release-please heading, <code>## [0.2.0](…) (2026-10-01)</code>, gives the version
+      and its date; the release's <code>###</code> headings become its sections. With
       <code>version: true</code> the tab shows the latest version.
     </p>
     <pre><code class="language-yaml">- title: Changelog

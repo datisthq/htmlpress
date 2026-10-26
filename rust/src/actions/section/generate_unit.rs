@@ -42,6 +42,8 @@ fn builds_a_blog_index_and_tag_pages() -> crate::Result<()> {
         "{index}"
     );
     assert!(index.contains("<p><span>Oct 1, 2026</span><span>Ann</span></p>"));
+    assert_eq!(generated[0].updated.as_deref(), Some("2026-10-01"));
+    assert!(!index.contains("<htmlpress-badge"));
     assert!(
         index.contains("<article><h2") && index.contains(r#"<a href="/blog/new.html">"#)
     );
@@ -89,10 +91,9 @@ fn builds_a_page_per_changelog_version() -> crate::Result<()> {
     assert_eq!(generated[1].date.as_deref(), Some("2026-10-01"));
     assert_eq!(generated[1].order, Some(0));
     assert_eq!(generated[1].source, "CHANGELOG.md");
-    assert!(
-        generated[0]
-            .content
-            .contains("<a href=\"/changelog/0-2-0/\">0.2.0</a> · Oct 1, 2026")
-    );
+    assert!(generated[0].content.contains(
+        "<a href=\"/changelog/0-2-0/\">0.2.0</a></h2><p><span>Oct 1, 2026</span></p>"
+    ));
+    assert_eq!(generated[0].updated.as_deref(), Some("2026-10-01"));
     Ok(())
 }

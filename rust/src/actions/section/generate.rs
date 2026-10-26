@@ -84,20 +84,10 @@ fn create_blog(
     let title = escape_html(&section.title);
     let mut index = format!("<title>{title}</title>\n<h1>{title}</h1>\n");
     index.push_str(&create_post_list(&posts, language));
-    if !tags.is_empty() {
-        let heading = escape_html(language.read_message("nav.tags"));
-        let _ = write!(index, "<h2>{heading}</h2>\n<p>");
-        for tag in &tags {
-            let _ = write!(
-                index,
-                "<a href=\"{}\"><htmlpress-badge type=\"neutral\">{}</htmlpress-badge></a> ",
-                escape_html(&create_tag_url(prefix, tag)),
-                escape_html(tag)
-            );
-        }
-        index.push_str("</p>\n");
-    }
-    let mut created = vec![create_page(&format!("{folder}index.html"), &index, "")?];
+    // Its tags are the sidebar's; as in Livemark, the index is as new as its newest post
+    let mut page = create_page(&format!("{folder}index.html"), &index, "")?;
+    page.updated = read_newest(&posts);
+    let mut created = vec![page];
     for tag in tags {
         let tagged: Vec<&Page> = posts
             .iter()
@@ -113,7 +103,9 @@ fn create_blog(
             "{}index.html",
             create_tag_url(prefix, tag).trim_start_matches('/')
         );
-        created.push(create_page(&path, &html, "")?);
+        let mut page = create_page(&path, &html, "")?;
+        page.updated = read_newest(&tagged);
+        created.push(page);
     }
     Ok(created)
 }
@@ -174,7 +166,9 @@ fn create_changelog(
     };
     let folder = prefix.trim_start_matches('/');
     let title = escape_html(&section.title);
-    let mut index = format!("<title>{title}</title>\n<h1>{title}</h1>\n<ul>\n");
+    let mut index = format!(
+        "<title>{title}</title>\n<h1>{title}</h1>\n<section class=\"htmlpress-posts\">\n"
+    );
     let mut created = vec![];
     for (order, release) in releases.iter().enumerate() {
         let version = escape_html(&release.version);
@@ -198,20 +192,26 @@ fn create_changelog(
         }
         created.push(page);
         let when = date.map_or(String::new(), |date| {
-            format!(" · {}", format_date(date, language))
+            format!(
+                "<p><span>{}</span></p>",
+                escape_html(&format_date(date, language))
+            )
         });
         let _ = writeln!(
             index,
-            "<li><a href=\"{}\">{version}</a>{when}</li>",
+            "<article><h2><a href=\"{}\">{version}</a></h2>{when}</article>",
             escape_html(&url)
         );
     }
-    index.push_str("</ul>\n");
-    created.insert(
-        0,
-        create_page(&format!("{folder}index.html"), &index, source)?,
-    );
+    index.push_str("</section>\n");
+    let mut page = create_page(&format!("{folder}index.html"), &index, source)?;
+    page.updated = releases.iter().find_map(|release| release.date.clone());
+    created.insert(0, page);
     Ok(created)
+}
+
+fn read_newest(posts: &[&Page]) -> Option<String> {
+    posts.iter().filter_map(|post| post.date.clone()).max()
 }
 
 fn create_page(path: &str, html: &str, source: &str) -> crate::Result<Page> {

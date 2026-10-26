@@ -1,12 +1,14 @@
 use super::*;
 
+const PAINT: &str = " style=\"color: light-dark(#4C4F69, #CDD6F4)\"";
+
 #[test]
 fn colors_known_languages_in_both_themes() -> Result<(), String> {
     let html = "<pre><code class=\"language-rust\">let x = &quot;&lt;a&gt;&quot;;\n</code></pre>";
     let colored = highlight_code(html, "catppuccin-latte", "catppuccin-mocha")?;
     assert!(
         colored
-            .starts_with("<pre><code class=\"language-rust\"><span class=\"giallo-l\">"),
+            .starts_with("<pre><code class=\"language-rust\" style=\"color: light-dark(#4C4F69, #CDD6F4)\"><span class=\"giallo-l\">"),
         "{colored}"
     );
     assert!(colored.contains("light-dark(#8839EF, #CBA6F7)"));
@@ -23,10 +25,11 @@ fn leaves_plain_unknown_and_marked_up_blocks_alone() -> Result<(), String> {
         "<pre><code class=\"language-rust\">let <mark>x</mark> = 1;</code></pre>",
         "<p><code>plain inline</code></p>",
     ] {
-        assert_eq!(
-            highlight_code(html, "catppuccin-latte", "catppuccin-mocha")?,
-            html
-        );
+        // Left as it is, but a block's code takes the themes' text color
+        let colored = highlight_code(html, "catppuccin-latte", "catppuccin-mocha")?;
+        let painted = colored.contains(PAINT);
+        assert_eq!(painted, html.starts_with("<pre>"), "{colored}");
+        assert_eq!(colored.replace(PAINT, ""), html);
     }
     assert!(has_theme("catppuccin-mocha") && !has_theme("no-such-theme"));
     Ok(())

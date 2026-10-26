@@ -49,7 +49,7 @@
   [data-sections] [data-position="header"] {
     display: none;
   }
-  [data-sections] + [data-label] {
+  [data-sections]:has([data-position="sidebar"]) + [data-label] {
     margin-top: 1.25rem;
   }
   [data-sections] details {
@@ -99,22 +99,31 @@
     translate: none;
   }
   @media (max-width: 56rem) {
+    [data-sections] + [data-label] {
+      margin-top: 1.25rem;
+    }
     [data-sections]:not(:has([data-position="sidebar"])),
     [data-sections] [data-position="header"] {
       display: block;
     }
   }
+  /* A block, not a flex row: only a block's own text can end in Livemark's ellipsis */
   a {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+    display: block;
     height: 2rem;
+    overflow: hidden;
     padding: 0 0.75rem;
     border: 0 solid transparent;
     border-radius: 1rem;
     color: var(--htmlpress-text);
-    line-height: 1.25rem;
+    line-height: 2rem;
     text-decoration: none;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  a > svg {
+    margin-right: 0.5rem;
+    vertical-align: -0.1875rem;
   }
   /* A color, not opacity: text under opacity loses subpixel antialiasing and reads blurred */
   a:not([aria-current="page"]) {
@@ -137,6 +146,7 @@
   }
   a[aria-current="page"] {
     border-width: 1px;
+    line-height: calc(2rem - 2px);
     border-color: color-mix(in oklab, var(--htmlpress-accent) 20%, transparent);
     background: color-mix(in oklab, var(--htmlpress-accent) 2%, transparent);
     color: var(--htmlpress-accent);
@@ -182,6 +192,15 @@
     min-width: 0;
     padding-right: 2rem;
   }
+  /* A blog's recent posts and a changelog's releases: in Livemark a fixed heading, faded
+     like the rows around it, with no chevron to fold it */
+  li > details > summary {
+    color: color-mix(in srgb, var(--htmlpress-text) 75%, var(--htmlpress-surface));
+    pointer-events: none;
+  }
+  li > details > summary::after {
+    display: none;
+  }
   summary::-webkit-details-marker {
     display: none;
   }
@@ -215,6 +234,10 @@
   }
   details ul a {
     height: 1.75rem;
+    line-height: 1.75rem;
     translate: -1px;
+  }
+  details ul a[aria-current="page"] {
+    line-height: calc(1.75rem - 2px);
   }
 }

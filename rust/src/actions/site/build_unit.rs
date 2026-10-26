@@ -350,7 +350,7 @@ fn builds_a_blog_and_a_changelog() -> crate::Result<()> {
     );
     assert!(feed.contains("<pubDate>Thu, 01 Oct 2026 00:00:00 +0000</pubDate>"));
     assert!(read("blog/index.html").contains("href=\"/blog/hello.html\""));
-    assert!(read("blog/tags/news/index.html").contains("Tagged “news”"));
+    assert!(read("blog/tags/news/index.html").contains("Posts tagged ‘news’"));
     let version = read("changelog/0-2-0/index.html");
     assert!(version.contains("<h1>0.2.0</h1>"));
     assert!(

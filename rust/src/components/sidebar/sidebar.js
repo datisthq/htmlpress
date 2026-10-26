@@ -12,8 +12,12 @@ class HtmlpressSidebar extends HTMLElement {
     document.addEventListener("prerenderingchange", () => this.restore())
   }
 
+  // A first visit starts at the top, as Livemark's does; only a walk between pages
+  // keeps the scroll and brings the open page into view
   restore() {
-    this.scrollTop = Number(readStorage(KEY))
+    const saved = readStorage(KEY)
+    if (saved === null) return
+    this.scrollTop = Number(saved)
     this.revealCurrent()
   }
 

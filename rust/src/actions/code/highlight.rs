@@ -21,6 +21,7 @@ pub(crate) fn highlight_code(
     dark: &str,
 ) -> Result<String, String> {
     let html = highlight_selector(html, "pre > code", light, dark)?;
+    let html = paint_blocks(&html, light, dark)?;
     // Inline code, `<code class="language-js">` in prose, takes the same colors
     highlight_selector(&html, ":not(pre) > code", light, dark)
 }
@@ -73,6 +74,37 @@ fn highlight_selector(
             Ok(())
         }));
     rewrite_str(html, settings).map_err(|error| error.to_string())
+}
+
+// Every block takes the themes' own text color, as Livemark's does: a plain block's text
+// and a highlighted one's default tokens, which the renderer leaves uncolored
+fn paint_blocks(html: &str, light: &str, dark: &str) -> Result<String, String> {
+    let Some(registry) = load_registry() else {
+        return Ok(html.to_owned());
+    };
+    let (Some(light), Some(dark)) = (
+        read_foreground(registry, light),
+        read_foreground(registry, dark),
+    ) else {
+        return Ok(html.to_owned());
+    };
+    let color = format!("color: light-dark({light}, {dark})");
+    let settings = RewriteStrSettings::new().append_element_content_handler(element!(
+        "pre > code:not([style])",
+        |el| {
+            el.set_attribute("style", &color)?;
+            Ok(())
+        }
+    ));
+    rewrite_str(html, settings).map_err(|error| error.to_string())
+}
+
+// The renderer exposes a theme's base color only in the stylesheet it writes for it
+fn read_foreground(registry: &Registry, theme: &str) -> Option<String> {
+    let css = registry.generate_css(theme, "").ok()?;
+    let rule = &css[css.find(".code {")?..];
+    let value = &rule[rule.find("color:")? + "color:".len()..];
+    Some(value[..value.find(';')?].trim().to_owned())
 }
 
 /// Whether the built-in set has a theme by this name, for checking the config.
