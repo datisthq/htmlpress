@@ -1,0 +1,143 @@
+<title>GitHub Pages</title>
+<meta
+  name="description"
+  content="Despliega tu sitio en GitHub Pages, incluidos los sitios de proyecto bajo una subruta."
+/>
+<meta name="order" content="52" />
+<meta name="icon" content="github" />
+
+<h1>GitHub Pages</h1>
+<p>
+  GitHub Pages sirve un directorio de archivos estáticos con una de dos formas de URL:
+</p>
+<ul>
+  <li>
+    <strong>Sitio de usuario/organización</strong>:
+    <code>https://&lt;user&gt;.github.io/</code>, servido desde un repositorio llamado
+    <code>&lt;user&gt;.github.io</code>. Sin subruta.
+  </li>
+  <li>
+    <strong>Sitio de proyecto</strong>:
+    <code>https://&lt;user&gt;.github.io/&lt;repo&gt;/</code>, servido desde cualquier
+    otro repositorio. El prefijo <code>/&lt;repo&gt;/</code> importa; las URLs de páginas
+    y assets deben incluirlo.
+  </li>
+</ul>
+
+<h2>Compila el sitio</h2>
+<pre><code class="language-sh">htmlpress build</code></pre>
+<p>La salida queda en <code>.htmlpress/build/</code>.</p>
+
+<h2>Configura <code>base</code> para sitios de proyecto</h2>
+<p>
+  Si publicas bajo <code>https://&lt;user&gt;.github.io/&lt;repo&gt;/</code>, define
+  <code>base</code> para que cada URL relativa a la raíz de la compilación reciba el
+  prefijo. Sigue escribiendo los enlaces sin él (<code>/guides/build.html</code>);
+  htmlpress lo añade. <code>htmlpress start</code> y <code>preview</code> sirven bajo la
+  misma base, así que el desarrollo coincide con producción:
+</p>
+<pre><code class="language-yaml">site: https://acme.github.io
+base: /my-docs/</code></pre>
+<p>
+  Para sitios de usuario/organización en la raíz, omite <code>base</code> por completo.
+</p>
+<htmlpress-callout type="success" label="Consejo">
+  <p>
+    Los dominios personalizados se saltan la subruta <code>/&lt;repo&gt;/</code> incluso
+    en sitios de proyecto. Si vas a asociar un dominio como <code>docs.example.com</code>,
+    deja <code>base</code> sin definir y define <code>site</code> con el dominio final.
+  </p>
+</htmlpress-callout>
+
+<h2>Despliega manualmente</h2>
+<p>
+  El despliegue puntual más sencillo usa el paquete
+  <a href="https://www.npmjs.com/package/gh-pages"><code>gh-pages</code></a
+  >:
+</p>
+<pre><code class="language-sh">htmlpress build
+npx gh-pages -d .htmlpress/build --nojekyll --dotfiles</code></pre>
+<p>
+  Esto sube la compilación a la rama <code>gh-pages</code>. En la configuración de tu
+  repositorio, define <strong>Pages → Source</strong> como "Deploy from a branch" y elige
+  <code>gh-pages</code> / <code>/ (root)</code>.
+</p>
+<htmlpress-callout type="warning">
+  <p>
+    Mantén <code>--nojekyll</code>: un despliegue desde rama ejecuta Jekyll, que descarta
+    las carpetas que empiezan por <code>_</code> y, con ellas, el tema en
+    <code>_htmlpress/</code>. <code>--dotfiles</code> conserva <code>.well-known/</code>,
+    donde viven las skills de agente.
+  </p>
+</htmlpress-callout>
+
+<h2>Despliega con GitHub Actions</h2>
+<p>
+  Las actions oficiales de Pages son el camino más limpio: sin rama adicional ni tokens de
+  servicio.
+</p>
+<pre><code class="language-yaml">name: deploy
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npx gethtmlpress build
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .htmlpress/build
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/deploy-pages@v4
+        id: deployment</code></pre>
+<p>
+  Define <strong>Pages → Source</strong> como "GitHub Actions" en la configuración de tu
+  repositorio.
+</p>
+
+<h2>Dominio personalizado</h2>
+<p>
+  Añade al proyecto un archivo <code>CNAME</code> con tu dominio, junto a tus páginas:
+</p>
+<pre><code>docs.example.com</code></pre>
+<p>
+  Todo archivo del proyecto que no sea una página se copia tal cual a la salida de
+  compilación, en la misma ruta, así que un <code>CNAME</code> junto al
+  <code>index.html</code> raíz acaba en la raíz de tu despliegue. Configura el DNS en tu
+  registrador (un registro <code>CNAME</code> que apunte a
+  <code>&lt;user&gt;.github.io</code>) y define el dominio en
+  <strong>Pages → Custom domain</strong>.
+</p>
+
+<h2>Ver también</h2>
+<ul>
+  <li>
+    <a href="/es/customization/site-metadata.html">Metadatos del sitio</a>:
+    <code>site</code> es necesario para las URLs absolutas del sitemap y las etiquetas
+    Open Graph.
+  </li>
+  <li><a href="/es/deployment/">Despliegue</a>: volver al índice de hosts.</li>
+</ul>

@@ -1,0 +1,71 @@
+<title>Encabezados</title>
+<meta
+  name="description"
+  content="ID de encabezado generados, anclas personalizadas y la tabla de contenidos de la página."
+/>
+<meta name="order" content="32" />
+<meta name="icon" content="heading" />
+
+<h1>Encabezados</h1>
+<p>Los encabezados reciben automáticamente ID de ancla para poder enlazarlos.</p>
+
+<h2>ID generados automáticamente</h2>
+<pre><code class="language-html">&lt;h2&gt;My Heading&lt;/h2&gt;</code></pre>
+<p>
+  Se renderiza como <code>&lt;h2 id="my-heading"&gt;My Heading&lt;/h2&gt;</code>. Cada
+  <code>&lt;h2&gt;</code> y <code>&lt;h3&gt;</code> sin <code>id</code> recibe uno a
+  partir de su texto: en minúsculas, con cada secuencia de otros caracteres convertida en
+  un guion. Un slug que ya está ocupado en la página recibe un número,
+  <code>my-heading-2</code>.
+</p>
+
+<h2 id="custom-ids">ID de encabezado personalizados</h2>
+<p>Dale al encabezado su propio <code>id</code> y htmlpress lo conserva:</p>
+<pre><code class="language-html">&lt;h2 id="custom-id"&gt;My Heading&lt;/h2&gt;</code></pre>
+<p>
+  Enlázalo con <code>#custom-id</code>. Los id escritos en la página se reservan primero,
+  así que un slug generado nunca ocupa uno al que apunta un enlace desde otro sitio. Dale
+  un <code>id</code> a un encabezado solo cuando un enlace necesite que sea fijo. Este
+  mismo encabezado usa <code>id="custom-ids"</code>.
+</p>
+
+<h2>Niveles de encabezado</h2>
+<p>
+  Usa de <code>&lt;h2&gt;</code> a <code>&lt;h4&gt;</code> para estructurar el contenido.
+  El <code>&lt;h1&gt;</code> está reservado para el título de la página.
+</p>
+<p>
+  Solo <code>&lt;h2&gt;</code> y <code>&lt;h3&gt;</code> aparecen en la tabla de
+  contenidos; los encabezados más profundos tienen estilo pero no se listan.
+</p>
+
+<h2>Control de la tabla de contenidos</h2>
+<p>
+  La tabla de contenidos lista los <code>&lt;h2&gt;</code> y <code>&lt;h3&gt;</code> de la
+  página y resalta el que está a la vista. Los encabezados dentro de un componente de
+  aviso, tarjeta, pasos o pestañas quedan fuera, así que los encabezados propios de un
+  componente nunca saturan el esquema de la página.
+</p>
+<p>
+  <code>data-toc="false"</code> deja un encabezado fuera de la tabla de contenidos
+  mientras sigue en la página; <code>data-toc="only"</code> lista un encabezado allí sin
+  mostrarlo, como punto de referencia para un tramo de la página que no tiene título
+  visible. Cualquier otro valor hace fallar la compilación.
+</p>
+<pre><code class="language-html">&lt;h2 data-toc="false"&gt;Shown, not listed&lt;/h2&gt;
+&lt;h2 data-toc="only"&gt;Listed, not shown&lt;/h2&gt;</code></pre>
+
+<h2>Enlaces de ancla al pasar el ratón</h2>
+<p>
+  Cada <code>&lt;h2&gt;</code> y <code>&lt;h3&gt;</code> con id muestra al pasar el ratón
+  un enlace <code>#</code> a sí mismo, para copiar la URL del ancla y compartirla.
+</p>
+
+<h2>Tabla de contenidos en línea</h2>
+<p>
+  Un <code>&lt;htmlpress-toc&gt;</code> escrito en la página se rellena con la tabla de
+  contenidos de la página, enmarcada como una tarjeta; <code>level="2"</code> conserva
+  solo los <code>&lt;h2&gt;</code>. Una página sin encabezados no recibe ninguna.
+</p>
+<pre><code class="language-html">&lt;htmlpress-toc level="2"&gt;&lt;/htmlpress-toc&gt;</code></pre>
+<htmlpress-toc level="2"></htmlpress-toc>

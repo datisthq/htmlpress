@@ -1,0 +1,65 @@
+<title>Redacción</title>
+<meta
+  name="description"
+  content="Escribe páginas en HTML simple, con unos pocos componentes htmlpress-* para documentación."
+/>
+<meta name="order" content="30" />
+<meta name="icon" content="file-code" />
+
+<h1>Redacción</h1>
+<p>
+  Htmlpress acepta HTML semántico simple desde el primer momento, más un pequeño conjunto
+  de componentes <code>htmlpress-*</code> para lo que HTML no tiene elemento: avisos,
+  pestañas, pasos, tarjetas, terminales, diagramas y más. Un proyecto es una carpeta: cada
+  archivo <code>.html</code> que contiene es una página, y cualquier otro archivo se copia
+  tal cual a la salida, en la misma ruta. Las carpetas que empiezan por punto, como
+  <code>.git/</code> y <code>.htmlpress/</code>, y <code>node_modules/</code>, se omiten.
+  Cada una de las páginas siguientes cubre un área de la redacción.
+</p>
+
+<h2>Funcionalidades</h2>
+<htmlpress-grid cols="2">
+  <htmlpress-card>
+    <h3><a href="/es/authoring/frontmatter.html">Frontmatter</a></h3>
+    <p>
+      Las etiquetas de <code>&lt;head&gt;</code> que definen el título, la descripción y
+      el orden de una página.
+    </p>
+  </htmlpress-card>
+  <htmlpress-card>
+    <h3><a href="/es/authoring/headings.html">Encabezados</a></h3>
+    <p>ID generados, anclas personalizadas y la tabla de contenidos.</p>
+  </htmlpress-card>
+  <htmlpress-card>
+    <h3><a href="/es/authoring/links.html">Enlaces</a></h3>
+    <p>Enlaces internos, externos y de ancla, URL y la ruta base.</p>
+  </htmlpress-card>
+  <htmlpress-card>
+    <h3><a href="/es/authoring/media.html">Multimedia</a></h3>
+    <p>Imágenes con zoom, vídeo y audio incrustados.</p>
+  </htmlpress-card>
+  <htmlpress-card>
+    <h3><a href="/es/authoring/text-formatting.html">Formato de texto</a></h3>
+    <p>
+      Negrita, cursiva, listas, citas, notas al pie, listas de definiciones y
+      abreviaturas.
+    </p>
+  </htmlpress-card>
+  <htmlpress-card>
+    <h3><a href="/es/authoring/rich-elements.html">Elementos enriquecidos</a></h3>
+    <p>
+      Tablas, avisos, pestañas, pasos, tarjetas, insignias, botones y árboles de archivos.
+    </p>
+  </htmlpress-card>
+  <htmlpress-card>
+    <h3><a href="/es/authoring/code-blocks.html">Bloques de código</a></h3>
+    <p>
+      Botones de copiar, pestañas de código, pestañas de gestores de paquetes y
+      terminales.
+    </p>
+  </htmlpress-card>
+  <htmlpress-card>
+    <h3><a href="/es/authoring/advanced-syntax.html">Sintaxis avanzada</a></h3>
+    <p>Etiquetas de head, scripts, diagramas Mermaid y componentes del proyecto.</p>
+  </htmlpress-card>
+</htmlpress-grid>

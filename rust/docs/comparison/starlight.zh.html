@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="zh">
+  <head>
+    <title>Starlight 与 Htmlpress 对比</title>
+    <meta
+      name="description"
+      content="单一二进制文件构建的纯 HTML 页面与面向文档的 Astro Islands。"
+    />
+    <meta name="order" content="64" />
+    <meta name="icon" content="star" />
+  </head>
+  <body>
+    <h1>Starlight 与 Htmlpress 对比</h1>
+    <p>
+      <a href="https://starlight.astro.build">Starlight</a> 是 Astro 官方的文档主题，由
+      Astro 团队维护。它采用 Astro 的孤岛架构（默认零
+      JavaScript，交互组件按需启用），并支持 MDX 内容。
+    </p>
+    <h2>概览</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>维度</th>
+          <th>Htmlpress</th>
+          <th>Starlight</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>语言 / 运行时</td>
+          <td>Rust（单一二进制文件，无运行时）</td>
+          <td>TypeScript / Node 18+</td>
+        </tr>
+        <tr>
+          <td>UI 框架</td>
+          <td>无（纯 HTML + CSS，<code>htmlpress-*</code> Web 组件）</td>
+          <td>Astro 组件（HTML 优先），可选 React/Vue/Svelte/Solid 孤岛</td>
+        </tr>
+        <tr>
+          <td>构建工具</td>
+          <td>htmlpress 二进制文件</td>
+          <td>Astro（底层基于 Vite）</td>
+        </tr>
+        <tr>
+          <td>内容格式</td>
+          <td>HTML 页面</td>
+          <td>Markdown + MDX + MDoc</td>
+        </tr>
+        <tr>
+          <td>许可证</td>
+          <td>MIT，自托管</td>
+          <td>MIT，自托管</td>
+        </tr>
+        <tr>
+          <td>输出模式</td>
+          <td>预渲染静态页面</td>
+          <td>预渲染静态页面（可通过适配器实现 SSR）</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>架构</h2>
+    <p>
+      htmlpress 是一个 Rust 二进制文件，可从 npm（<code>gethtmlpress</code>）、PyPI 或
+      crates.io 安装。它用一个布局包裹每个 HTML 页面，并配上导航和主题；没有打包器、没有
+      UI 框架，也没有插件
+      API。每个内置文件——布局、样式、脚本以及每个组件——都可以被覆盖：在
+      <code>.htmlpress/</code> 下的相同路径放一个文件即可替换它。
+    </p>
+    <p>
+      htmlpress 页面在构建时渲染为 HTML，不进行任何水合：交互式的
+      <code>htmlpress-*</code>
+      组件是自定义元素，各自带一个小巧的原生脚本，只会链接到使用它们的页面。
+    </p>
+    <p>
+      Starlight 采用 Astro 的孤岛模型：页面在构建时渲染为 HTML，默认零
+      JavaScript。交互组件是显式声明的“孤岛”，按需进行水合。Starlight 的默认主题主要由
+      Astro 组件构成（没有客户端 JS）；使用 React/Vue/Svelte 需要主动启用。Astro
+      的组件模型是 Astro 自有的 <code>.astro</code> 语法（HTML + JS
+      frontmatter，经静态分析）。
+    </p>
+    <p>
+      在 htmlpress 这边，内容布局不受约束：它按 glob 扫描（<code>htmlpress.yaml</code>
+      中的 <code>include</code>/<code>exclude</code>，默认扫描所有
+      <code>.html</code> 文件），页面的 URL 取决于它在 glob 基础目录下的文件路径，因此
+      <code>docs/**/*.html</code> 会把 <code>docs/guide.html</code> 发布在
+      <code>/guide.html</code>。不要求存在 <code>docs/</code>
+      文件夹。导航由文件夹结构和每个页面的
+      <code>&lt;meta name="order"&gt;</code> 构建；文件夹的
+      <code>index.html</code> 为其分组命名。Starlight 要求内容放在
+      <code>src/content/docs/</code>（Astro
+      的内容集合目录）中，路由由该根目录下的文件路径推导而来。
+    </p>
+    <h2>内容层面</h2>
+    <p>
+      Starlight 接受带 frontmatter 的 Markdown + MDX，另外还支持
+      MDoc（Markdoc），用于带自定义标签的结构化、可校验内容。<code>.mdx</code>
+      文件中的组件默认是 Astro 组件；框架组件（React 等）需要显式的
+      <code>client:*</code> 指令才能水合。
+    </p>
+    <p>
+      htmlpress 页面是纯语义化 HTML，主题直接根据元素本身设置样式。更丰富的区块是
+      <code>htmlpress-*</code>
+      自定义元素（<code>htmlpress-callout</code>、<code>htmlpress-tabs</code>、<code>htmlpress-steps</code>、<code
+        >htmlpress-grid</code
+      >
+      等），其 CSS 和 JS 只会链接到使用该标签的页面。项目可以通过
+      <code>.htmlpress/components/&lt;name&gt;/&lt;name&gt;.html</code>
+      添加自己的标签，它会在构建时替换该标签。
+    </p>
+    <p>
+      htmlpress 没有 frontmatter：页面的元数据就是它自己的
+      <code>&lt;head&gt;</code>——<code>&lt;title&gt;</code>、<code
+        >&lt;meta name="description"&gt;</code
+      >、<code>&lt;meta name="order"&gt;</code>、<code>&lt;meta name="layout"&gt;</code>
+      和 <code>&lt;meta name="image"&gt;</code>；其他
+      <code>&lt;head&gt;</code> 标签会原样保留。Starlight 使用
+      frontmatter：<code>title</code>、<code>description</code>、<code>sidebar</code>、<code>tableOfContents</code>、<code>editUrl</code>、<code>lastUpdated</code>。
+    </p>
+    <h2>功能矩阵</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>功能</th>
+          <th>Htmlpress</th>
+          <th>Starlight</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>版本管理</td>
+          <td>部分支持（每个版本一个分区或一次部署）</td>
+          <td>否（社区插件）</td>
+        </tr>
+        <tr>
+          <td>国际化（i18n）</td>
+          <td>是（翻译、语言选择器、内置 7 种界面语言）</td>
+          <td>是（内置）</td>
+        </tr>
+        <tr>
+          <td>搜索</td>
+          <td>是（内置，客户端）</td>
+          <td>是（Pagefind，内置）</td>
+        </tr>
+        <tr>
+          <td>默认零 JS</td>
+          <td>否（小巧的原生脚本，无框架）</td>
+          <td>是（孤岛架构）</td>
+        </tr>
+        <tr>
+          <td>博客</td>
+          <td>否</td>
+          <td>否（使用 Astro 的内容集合）</td>
+        </tr>
+        <tr>
+          <td>更新日志</td>
+          <td>否</td>
+          <td>否</td>
+        </tr>
+        <tr>
+          <td>站点地图</td>
+          <td>是（需设置 <code>site</code>）</td>
+          <td>是</td>
+        </tr>
+        <tr>
+          <td>RSS</td>
+          <td>否</td>
+          <td>通过 <code>@astrojs/rss</code> 集成</td>
+        </tr>
+        <tr>
+          <td>主题</td>
+          <td><code>.htmlpress/</code> 中的覆盖文件 + <code>--htmlpress-*</code> 令牌</td>
+          <td>通过 Starlight 插槽覆盖组件</td>
+        </tr>
+        <tr>
+          <td>插件</td>
+          <td>否（使用 <code>.htmlpress/components/</code> 中的项目组件）</td>
+          <td>Astro 集成 + Starlight 插件</td>
+        </tr>
+        <tr>
+          <td>自定义路由</td>
+          <td>
+            任意 <code>.html</code> 文件；额外布局放在 <code>.htmlpress/layouts/</code>
+          </td>
+          <td>与 Starlight 内容并存的 Astro 页面</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>输出与部署</h2>
+    <p>
+      两者都会生成一个包含静态 HTML 和资源文件的目录。Starlight 默认输出到
+      <code>dist/</code>；htmlpress 输出到 <code>.htmlpress/build/</code>。
+    </p>
+    <p>
+      htmlpress 会把每个页面写成 <code>.htmlpress/build/</code> 中的静态 HTML，同时生成
+      <code>robots.txt</code>、设置了 <code>site</code> 时的
+      <code>sitemap.xml</code>、每个页面的 Markdown 副本、<code>llms.txt</code>，以及
+      <code>.well-known/agent-skills/</code> 下的智能体技能。<code>base</code>
+      键可让站点在子路径下提供服务。各托管平台的指南见<a href="/zh/deployment/">部署</a>。
+    </p>
+    <p>
+      Starlight 沿用 Astro 的适配器体系，支持在 Cloudflare、Netlify、Vercel、Node 和 Deno
+      上进行 SSR。htmlpress 没有服务端模式：构建结果只能是静态的。
+    </p>
+    <h2>另请参阅</h2>
+    <ul>
+      <li><a href="/zh/authoring/">编写</a>——htmlpress 的 HTML 编写方式。</li>
+      <li><a href="/zh/customization/">自定义</a>——htmlpress 的配置键与覆盖文件。</li>
+      <li><a href="/zh/comparison/">对比</a>——返回索引。</li>
+    </ul>
+  </body>
+</html>

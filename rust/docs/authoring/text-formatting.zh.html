@@ -1,0 +1,142 @@
+<title>文本格式</title>
+<meta
+  name="description"
+  content="粗体、斜体、代码、引用块、列表、脚注、定义列表和缩写。"
+/>
+<meta name="order" content="35" />
+<meta name="icon" content="type" />
+
+<h1>文本格式</h1>
+<p>
+  文本就是普通
+  HTML，主题直接为元素本身设置样式：写出语义化标记，效果就已经正确。无需类名，也无需内联样式。
+</p>
+
+<h2>粗体和斜体</h2>
+<pre><code class="language-html">&lt;strong&gt;bold text&lt;/strong&gt; and &lt;em&gt;italic text&lt;/em&gt; and &lt;strong&gt;&lt;em&gt;bold italic&lt;/em&gt;&lt;/strong&gt;</code></pre>
+<p>
+  渲染为：<strong>粗体文本</strong>、<em>斜体文本</em>和
+  <strong><em>粗斜体</em></strong>
+</p>
+
+<h2>删除线</h2>
+<pre><code class="language-html">&lt;s&gt;deleted text&lt;/s&gt;</code></pre>
+<p>渲染为：<s>已删除的文本</s></p>
+
+<h2>行内代码</h2>
+<pre><code>Use &lt;code&gt;const x = 1&lt;/code&gt; for inline code.</code></pre>
+<p>渲染为：使用 <code>const x = 1</code> 表示行内代码。</p>
+<p><code>&lt;kbd&gt;</code> 标记按键：按 <kbd>Ctrl</kbd> + <kbd>C</kbd> 复制。</p>
+
+<h2>行内代码高亮</h2>
+<p>
+  带有 <code>language-*</code> 类的行内
+  <code>&lt;code&gt;</code> 会像代码块一样高亮，使用相同的浅色和深色主题。
+</p>
+<pre><code class="language-html">Run &lt;code class="language-js"&gt;await build("docs")&lt;/code&gt; first.</code></pre>
+<p>渲染为：先运行 <code class="language-js">await build("docs")</code>。</p>
+
+<h2>引用块</h2>
+<pre><code class="language-html">&lt;blockquote&gt;&lt;p&gt;This is a blockquote.&lt;/p&gt;&lt;/blockquote&gt;</code></pre>
+<p>渲染为：</p>
+<blockquote><p>这是一个引用块。</p></blockquote>
+
+<h2>列表</h2>
+<p>无序列表和有序列表：</p>
+<ul>
+  <li>第一项</li>
+  <li>
+    第二项
+    <ul>
+      <li>嵌套项</li>
+    </ul>
+  </li>
+</ul>
+<ol>
+  <li>第一步</li>
+  <li>第二步</li>
+  <li>第三步</li>
+</ol>
+<pre><code class="language-html">&lt;ul&gt;
+  &lt;li&gt;First item&lt;/li&gt;
+  &lt;li&gt;Second item&lt;ul&gt;&lt;li&gt;Nested item&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;ol&gt;&lt;li&gt;Step one&lt;/li&gt;&lt;li&gt;Step two&lt;/li&gt;&lt;/ol&gt;</code></pre>
+
+<h2>任务列表</h2>
+<p>以禁用复选框开头的列表项：</p>
+<pre><code class="language-html">&lt;ul&gt;
+  &lt;li&gt;&lt;input type="checkbox" checked disabled&gt; Completed task&lt;/li&gt;
+  &lt;li&gt;&lt;input type="checkbox" disabled&gt; Pending task&lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+<p>渲染为：</p>
+<ul>
+  <li><input type="checkbox" checked disabled /> 已完成的任务</li>
+  <li><input type="checkbox" disabled /> 待办任务</li>
+</ul>
+
+<h2>水平分隔线</h2>
+<pre><code class="language-html">&lt;hr&gt;</code></pre>
+<hr />
+
+<h2>脚注</h2>
+<p>
+  无需组件。脚注引用是一个 <code>&lt;sup&gt;</code> 链接，指向带有相应 ID 的
+  <code>&lt;li&gt;</code
+  >；悬停或聚焦该引用时会预览脚注内容，但不含返回链接。没有脚本时，链接仍会跳转到脚注。
+</p>
+<pre><code>Here is a sentence with a footnote&lt;sup&gt;&lt;a href="#note-1" id="ref-1"&gt;1&lt;/a&gt;&lt;/sup&gt;.
+
+&lt;ol&gt;
+  &lt;li id="note-1"&gt;This is a numbered footnote. &lt;a href="#ref-1"&gt;↩&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;</code></pre>
+<p>渲染为：</p>
+<p>
+  这是一个带脚注的句子<sup><a href="#note-1" id="ref-1">1</a></sup
+  >，还有另一个<sup><a href="#note-2" id="ref-2">2</a></sup
+  >。
+</p>
+<ol>
+  <li id="note-1">这是一个编号脚注。<a href="#ref-1">↩</a></li>
+  <li id="note-2">悬停在引用上即可就地阅读脚注。<a href="#ref-2">↩</a></li>
+</ol>
+
+<h2>定义列表</h2>
+<p>为术语给出描述：</p>
+<pre><code class="language-html">&lt;dl&gt;
+  &lt;dt&gt;Page&lt;/dt&gt;
+  &lt;dd&gt;An .html file in a project&lt;/dd&gt;
+  &lt;dt&gt;Escape&lt;/dt&gt;
+  &lt;dd&gt;A project file that replaces a built-in asset&lt;/dd&gt;
+  &lt;dd&gt;Kept under .htmlpress/&lt;/dd&gt;
+&lt;/dl&gt;</code></pre>
+<p>渲染为：</p>
+<dl>
+  <dt>页面</dt>
+  <dd>项目中的一个 <code>.html</code> 文件</dd>
+  <dt>弹出文件</dt>
+  <dd>替换内置资源的项目文件</dd>
+  <dd>存放在 <code>.htmlpress/</code> 下</dd>
+</dl>
+
+<h2>缩写</h2>
+<p>
+  无需组件。<code>&lt;abbr title&gt;</code>
+  在悬停或聚焦时显示其完整形式；没有脚本时，title 仍作为浏览器原生的工具提示。
+</p>
+<pre><code>The &lt;abbr title="HyperText Markup Language"&gt;HTML&lt;/abbr&gt; standard is maintained by &lt;abbr title="World Wide Web Consortium"&gt;W3C&lt;/abbr&gt;.</code></pre>
+<p>
+  渲染为：<abbr title="超文本标记语言">HTML</abbr> 标准由
+  <abbr title="万维网联盟">W3C</abbr> 维护。
+</p>
+
+<h2>Emoji</h2>
+<p>直接书写 emoji 字符；页面使用 UTF-8 编码：</p>
+<pre><code>🚀 Launch 🎉 Celebrate ❤️ Love ⚠️ Careful ✅ Done</code></pre>
+<p>渲染为：🚀 发布 🎉 庆祝 ❤️ 喜爱 ⚠️ 小心 ✅ 完成</p>
+<p>
+  GitHub 的短代码会在构建时变成 emoji；未知的短代码，以及代码或
+  <code>data-literal</code> 元素中的任何内容，都保持原样：
+</p>
+<pre><code class="language-html">Ship it :rocket: :tada:</code></pre>
+<p>渲染为：发布吧 :rocket: :tada:</p>

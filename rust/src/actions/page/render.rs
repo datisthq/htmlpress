@@ -55,6 +55,7 @@ pub(crate) fn render_page(
     let content =
         add_byline(&page.content, create_byline(page, language)).map_err(fail)?;
     let content = fill_inline_tocs(&content, page, language).map_err(fail)?;
+    let content = label_callouts(&content, language).map_err(fail)?;
     let (light, dark) = site.config.read_code_themes();
     let content = highlight_code(&content, light, dark).map_err(fail)?;
     let content = add_titles(&content).map_err(fail)?;
@@ -831,7 +832,12 @@ fn create_section_link(site: &Site, page: &Page, index: usize) -> String {
     };
     let (href, current) = match section.kind {
         SectionKind::Custom => {
+            // An internal page leads to its version in the open page's language, if any
             let url = section.url.clone().unwrap_or_default();
+            let url = (site.translations.get(&url))
+                .and_then(|versions| versions.get(&page.language))
+                .cloned()
+                .unwrap_or(url);
             let current = is_custom_current(&url, &page.url);
             (url, current)
         }
@@ -968,6 +974,28 @@ fn fill_inline_tocs(
                 }
                 None => el.remove(),
             }
+            Ok(())
+        }
+    ));
+    rewrite_str(content, settings).map_err(|error| error.to_string())
+}
+
+// A callout's default label is CSS, which cannot know the page's language; an explicit
+// `label` wins over it, so each unlabelled callout gets its type's label in that language
+fn label_callouts(content: &str, language: &SiteLanguage) -> Result<String, String> {
+    if !content.contains("<htmlpress-callout") {
+        return Ok(content.to_owned());
+    }
+    let settings = RewriteStrSettings::new().append_element_content_handler(element!(
+        "htmlpress-callout:not([label])",
+        |el| {
+            let key = match el.get_attribute("type").as_deref().map(str::trim) {
+                Some("success") => "callout.success",
+                Some("warning") => "callout.warning",
+                Some("danger") => "callout.danger",
+                _ => "callout.info",
+            };
+            el.set_attribute("label", language.read_message(key))?;
             Ok(())
         }
     ));

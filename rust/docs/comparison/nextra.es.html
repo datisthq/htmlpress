@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <title>Nextra vs Htmlpress</title>
+    <meta
+      name="description"
+      content="Un generador de sitios independiente en HTML plano frente a Next.js con el modelo de paquetes de temas."
+    />
+    <meta name="order" content="66" />
+    <meta name="icon" content="square-stack" />
+  </head>
+  <body>
+    <h1>Nextra vs Htmlpress</h1>
+    <p>
+      <a href="https://nextra.site">Nextra</a> es un framework de documentación para
+      Next.js con una arquitectura de paquetes de temas. Nació sobre el Pages Router y ha
+      evolucionado para admitir también el App Router. Los sitios de documentación eligen
+      un tema (<code>nextra-theme-docs</code> para docs, <code>nextra-theme-blog</code>
+      para blogs) y lo configuran.
+    </p>
+    <h2>De un vistazo</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Aspecto</th>
+          <th>Htmlpress</th>
+          <th>Nextra</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Lenguaje / runtime</td>
+          <td>Rust (binario único, sin runtime)</td>
+          <td>TypeScript / Node 18+</td>
+        </tr>
+        <tr>
+          <td>Framework de UI</td>
+          <td>Ninguno (HTML + CSS plano, web components <code>htmlpress-*</code>)</td>
+          <td>React 18/19 (Next.js)</td>
+        </tr>
+        <tr>
+          <td>Herramienta de compilación</td>
+          <td>Binario de htmlpress</td>
+          <td>Next.js (Turbopack/Webpack)</td>
+        </tr>
+        <tr>
+          <td>Formato de contenido</td>
+          <td>Páginas HTML</td>
+          <td>Markdown + MDX</td>
+        </tr>
+        <tr>
+          <td>Licencia</td>
+          <td>MIT, autoalojado</td>
+          <td>MIT, autoalojado</td>
+        </tr>
+        <tr>
+          <td>Modelo de salida</td>
+          <td>Estático prerenderizado</td>
+          <td>Estático o SSR (modos de Next.js)</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>Arquitectura</h2>
+    <p>
+      htmlpress es un único binario de Rust que se instala desde npm
+      (<code>gethtmlpress</code>), PyPI o crates.io. Envuelve cada página HTML en un
+      layout con una navegación y un tema; no hay bundler, ni framework de UI, ni API de
+      plugins. Cada archivo integrado (el layout, los estilos, los scripts y cada
+      componente) se puede escapar: un archivo en la misma ruta bajo
+      <code>.htmlpress/</code> lo reemplaza. Una herramienta, un archivo de configuración
+      opcional y el contenido en archivos <code>.html</code>.
+    </p>
+    <p>
+      Nextra es una capa sobre una aplicación Next.js existente. La configuración consiste
+      en instalar <code>nextra</code> y un paquete de tema, conectarlos en
+      <code>next.config.js</code> y definir la navegación en un archivo
+      <code>_meta.json</code> (Pages Router) o <code>meta.js</code> (App Router) por
+      directorio. El paquete de tema controla toda la UI; la personalización se hace
+      mediante los hooks documentados del tema.
+    </p>
+    <p>
+      <code>nextra-theme-docs</code> es el tema de documentación que usan Vercel, SWR,
+      Turbo y muchos otros. Es estable, está mantenido y está completo para casos de uso
+      de documentación.
+    </p>
+    <p>
+      En htmlpress la disposición del contenido no tiene restricciones: escanea por glob
+      (<code>include</code>/<code>exclude</code> en <code>htmlpress.yaml</code>, todos los
+      archivos <code>.html</code> por defecto), y la URL de una página sigue su ruta de
+      archivo bajo la base del glob, así que <code>docs/**/*.html</code> sirve
+      <code>docs/guide.html</code> en <code>/guide.html</code>. No hace falta una carpeta
+      <code>docs/</code>. La navegación se construye a partir de las carpetas y del
+      <code>&lt;meta name="order"&gt;</code> de cada página; el <code>index.html</code> de
+      una carpeta da nombre a su grupo. Nextra lee el contenido de
+      <code>pages/</code> (Pages Router) o <code>content/</code> (App Router), con rutas
+      determinadas por las rutas de archivo y por los archivos <code>_meta.json</code> que
+      las acompañan.
+    </p>
+    <h2>Superficie de contenido</h2>
+    <p>
+      Nextra acepta Markdown + MDX con frontmatter y componentes de React incrustados.
+      Admite MDX remoto mediante <code>next-mdx-remote</code>, KaTeX/Mermaid mediante
+      plugins y optimización de imágenes mediante el componente
+      <code>&lt;Image&gt;</code> de Next.
+    </p>
+    <p>
+      Las páginas de htmlpress son HTML semántico plano, al que el tema da estilo a partir
+      de los propios elementos. Los bloques más ricos son elementos personalizados
+      <code>htmlpress-*</code> (<code>htmlpress-callout</code>,
+      <code>htmlpress-tabs</code>, <code>htmlpress-steps</code>,
+      <code>htmlpress-grid</code>, …), cuyo CSS y JS se enlazan solo en las páginas que
+      usan la etiqueta. Un proyecto añade su propia etiqueta con
+      <code>.htmlpress/components/&lt;name&gt;/&lt;name&gt;.html</code>, que reemplaza la
+      etiqueta en tiempo de compilación. Los diagramas Mermaid vienen integrados como
+      <code>htmlpress-mermaid</code>.
+    </p>
+    <p>
+      htmlpress no tiene frontmatter: los metadatos de una página son su propio
+      <code>&lt;head&gt;</code> — <code>&lt;title&gt;</code>,
+      <code>&lt;meta name="description"&gt;</code>,
+      <code>&lt;meta name="order"&gt;</code>, <code>&lt;meta name="layout"&gt;</code> y
+      <code>&lt;meta name="image"&gt;</code>; las demás etiquetas de
+      <code>&lt;head&gt;</code> se conservan. Nextra usa frontmatter (<code>title</code>,
+      <code>description</code>, <code>searchable</code>, <code>hide_title</code>) más un
+      <code>_meta.json</code> por directorio para la navegación; htmlpress no tiene
+      archivo de navegación.
+    </p>
+    <h2>Matriz de funciones</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Capacidad</th>
+          <th>Htmlpress</th>
+          <th>Nextra</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Versionado</td>
+          <td>Parcial (una sección o un despliegue por versión)</td>
+          <td>No (soluciones de la comunidad)</td>
+        </tr>
+        <tr>
+          <td>Internacionalización (i18n)</td>
+          <td>Sí (traducciones, selector de idioma, 7 idiomas de interfaz incluidos)</td>
+          <td>Sí (mediante i18n de Next + hooks de Nextra)</td>
+        </tr>
+        <tr>
+          <td>Búsqueda</td>
+          <td>Sí (integrada, en el cliente)</td>
+          <td>Sí (FlexSearch integrado, Algolia/Pagefind opcional)</td>
+        </tr>
+        <tr>
+          <td>Blog</td>
+          <td>No</td>
+          <td>Sí (<code>nextra-theme-blog</code>)</td>
+        </tr>
+        <tr>
+          <td>Registro de cambios</td>
+          <td>No</td>
+          <td>No (plugins de la comunidad)</td>
+        </tr>
+        <tr>
+          <td>Sitemap</td>
+          <td>Sí (con <code>site</code> definido)</td>
+          <td>Mediante <code>sitemap.ts</code> de Next.js</td>
+        </tr>
+        <tr>
+          <td>RSS</td>
+          <td>No</td>
+          <td>Sí (tema de blog); mediante rutas de Next para docs</td>
+        </tr>
+        <tr>
+          <td>Temas</td>
+          <td>Escapes en <code>.htmlpress/</code> + tokens <code>--htmlpress-*</code></td>
+          <td>Paquetes de temas; personalización mediante la configuración del tema</td>
+        </tr>
+        <tr>
+          <td>Rutas personalizadas</td>
+          <td>
+            Cualquier archivo <code>.html</code>; layouts adicionales en
+            <code>.htmlpress/layouts/</code>
+          </td>
+          <td>Cualquier página/ruta de Next</td>
+        </tr>
+        <tr>
+          <td>CLI independiente</td>
+          <td>Sí (<code>htmlpress build</code>)</td>
+          <td>No (comandos de Next.js)</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>Salida y despliegue</h2>
+    <p>
+      htmlpress escribe cada página como HTML estático en <code>.htmlpress/build/</code>,
+      junto con <code>robots.txt</code>, un <code>sitemap.xml</code> cuando
+      <code>site</code> está definido, una copia en Markdown de cada página,
+      <code>llms.txt</code> y las skills para agentes en
+      <code>.well-known/agent-skills/</code>. La clave <code>base</code> sirve el sitio
+      bajo una subruta. Consulta <a href="/es/deployment/">Despliegue</a> para ver guías
+      por hosting.
+    </p>
+    <p>
+      Nextra hereda los modos de salida de Next.js. La configuración más habitual para
+      documentación es la exportación estática completa (<code>output: 'export'</code>),
+      que produce un directorio estático desplegable en cualquier parte. Las
+      configuraciones con SSR apuntan a Vercel o a hostings de Node.
+    </p>
+    <h2>Ver también</h2>
+    <ul>
+      <li><a href="/es/authoring/">Redacción</a> — la superficie HTML de htmlpress.</li>
+      <li>
+        <a href="/es/customization/">Personalización</a> — las claves de configuración y
+        los escapes de htmlpress.
+      </li>
+      <li><a href="/es/comparison/">Comparativa</a> — volver al índice.</li>
+    </ul>
+  </body>
+</html>

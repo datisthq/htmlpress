@@ -1,0 +1,208 @@
+<title>Cloudflare</title>
+<meta
+  name="description"
+  content="Despliega con Cloudflare Workers y assets estáticos: la configuración que usa el propio htmlpress.dev."
+/>
+<meta name="order" content="53" />
+<meta name="icon" content="cloud" />
+
+<h1>Cloudflare</h1>
+<p>
+  Cloudflare Workers puede servir directamente un directorio de assets estáticos: sin
+  cómputo aparte ni shim de SPA. Así se publica <code>htmlpress.dev</code>, y la misma
+  estructura de <code>wrangler.jsonc</code> sirve para cualquier sitio htmlpress. Los
+  assets estáticos de Workers también leen el archivo <code>_headers</code> que escribe
+  cada compilación.
+</p>
+
+<h2>Compila el sitio</h2>
+<pre><code class="language-sh">htmlpress build</code></pre>
+<p>La salida queda en <code>.htmlpress/build/</code>.</p>
+
+<h2>Configura <code>wrangler.jsonc</code></h2>
+<p>Coloca esto en la raíz de tu proyecto:</p>
+<pre><code>{
+  "name": "my-docs",
+  "compatibility_date": "2026-04-01",
+  "workers_dev": true,
+  "assets": {
+    "directory": ".htmlpress/build",
+    "html_handling": "none",
+    "not_found_handling": "404-page",
+  },
+}</code></pre>
+<p>Cuatro campos hacen el trabajo pesado:</p>
+<table>
+  <thead>
+    <tr>
+      <th>Campo</th>
+      <th>Propósito</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>assets.directory</code></td>
+      <td>
+        Apunta Wrangler a la salida de compilación de htmlpress. Cada archivo se sirve tal
+        cual.
+      </td>
+    </tr>
+    <tr>
+      <td><code>assets.html_handling</code></td>
+      <td>
+        Sirve cada archivo en su propia ruta. El valor por defecto redirige
+        <code>/guide.html</code> a <code>/guide</code>, lejos de las URLs a las que enlaza
+        htmlpress y que coincide la regla de Markdown de más abajo.
+      </td>
+    </tr>
+    <tr>
+      <td><code>assets.not_found_handling</code></td>
+      <td>
+        Responde a las rutas desconocidas con el <code>404.html</code> de la compilación.
+      </td>
+    </tr>
+    <tr>
+      <td><code>workers_dev</code></td>
+      <td>
+        Te da una URL de previsualización
+        <code>&lt;name&gt;.&lt;account&gt;.workers.dev</code> mientras haces pruebas.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Despliega desde tu máquina</h2>
+<pre><code class="language-sh">htmlpress build
+npx wrangler deploy</code></pre>
+<p>
+  La primera ejecución te pide <code>wrangler login</code> para autorizar el acceso a tu
+  cuenta de Cloudflare.
+</p>
+
+<h2>Despliega con GitHub Actions</h2>
+<pre><code class="language-yaml">name: deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npx gethtmlpress build
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}</code></pre>
+<p>
+  Crea un token de API con alcance limitado en <strong>My Profile → API Tokens</strong>
+  (la plantilla "Edit Cloudflare Workers" concede exactamente lo que necesitas) y guarda
+  ambos valores como secretos del repositorio.
+</p>
+<p>
+  Sin un workflow, Workers Builds puede ejecutar la compilación por sí mismo: conecta el
+  repositorio en el panel y añade un bloque <code>build</code> a
+  <code>wrangler.jsonc</code>, como hace htmlpress.dev con
+  <code>"build": { "command": "pnpm build:docs" }</code>.
+</p>
+
+<h2>Dominio personalizado</h2>
+<p>Añade un bloque <code>routes</code> cuando tu zona esté en Cloudflare:</p>
+<pre><code>{
+  "name": "my-docs",
+  "compatibility_date": "2026-04-01",
+  "assets": { "directory": ".htmlpress/build", "not_found_handling": "404-page" },
+  "routes": [{ "pattern": "docs.example.com", "custom_domain": true }],
+}</code></pre>
+<p>
+  <code>custom_domain: true</code> indica a Cloudflare que aprovisione un dominio
+  gestionado: DNS, certificado y ruta se encargan por ti. Define <code>site</code> con el
+  mismo dominio en <code>htmlpress.yaml</code> para que las URLs absolutas del sitemap
+  coincidan.
+</p>
+<htmlpress-callout type="success" label="Consejo">
+  <p>
+    El propio <code>wrangler.jsonc</code> del repositorio de htmlpress es una referencia
+    funcional; consulta la
+    <a href="https://github.com/datisthq/htmlpress/blob/main/wrangler.jsonc"
+      >raíz del proyecto</a
+    >.
+  </p>
+</htmlpress-callout>
+
+<h2>Markdown para agentes</h2>
+<p>
+  Los agentes de IA piden una página en Markdown enviando
+  <code>Accept: text/markdown</code>. Los assets estáticos siempre responden con HTML, así
+  que añade a tu zona una URL Rewrite Rule que dirija esas peticiones a la
+  <a href="/es/customization/ai-agents.html">copia en Markdown</a> de la página:
+  <code>guides/build.html</code> tiene <code>guides/build.md</code> a su lado. Las URL
+  Rewrite Rules están disponibles en todos los planes, incluido Free, y el sitio sigue
+  siendo totalmente estático.
+</p>
+<p>
+  En el panel, abre tu dominio, ve a
+  <strong>Rules → Overview → Create rule → URL Rewrite Rule</strong> y rellena:
+</p>
+<table>
+  <thead>
+    <tr>
+      <th>Campo</th>
+      <th>Valor</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Rule name</td>
+      <td><code>Markdown for agents</code></td>
+    </tr>
+    <tr>
+      <td>If incoming requests match</td>
+      <td>Custom filter expression (abajo)</td>
+    </tr>
+    <tr>
+      <td>Path</td>
+      <td>
+        Rewrite to → <strong>Dynamic</strong> →
+        <code>wildcard_replace(http.request.uri.path, "*.html", "${1}.md")</code>
+      </td>
+    </tr>
+    <tr>
+      <td>Query</td>
+      <td>Preserve</td>
+    </tr>
+  </tbody>
+</table>
+<pre><code>any(http.request.headers["accept"][*] contains "text/markdown") and ends_with(http.request.uri.path, ".html")</code></pre>
+<p>
+  Las URLs de página terminan en <code>.html</code>, así que la regla solo afecta a las
+  páginas. Para URLs de carpeta como <code>/guides/</code>, añade una segunda regla que
+  coincida con <code>ends_with(http.request.uri.path, "/")</code> y reescriba a
+  <code>concat(http.request.uri.path, "index.md")</code>. Los assets estáticos sirven los
+  archivos <code>.md</code> como <code>text/markdown</code>, así que el tipo de respuesta
+  no necesita ninguna regla adicional.
+</p>
+<htmlpress-callout type="warning">
+  <p>
+    Despliega una compilación que contenga las copias en Markdown antes de activar la
+    regla. De lo contrario, un agente que pida Markdown recibirá un 404.
+  </p>
+</htmlpress-callout>
+
+<h2>Ver también</h2>
+<ul>
+  <li>
+    <a href="/es/customization/ai-agents.html">Agentes de IA</a>: lo que la compilación
+    publica para los agentes.
+  </li>
+  <li>
+    <a href="/es/customization/site-metadata.html">Metadatos del sitio</a>:
+    <code>site</code> hace posibles las URLs absolutas y el sitemap.
+  </li>
+  <li><a href="/es/deployment/">Despliegue</a>: volver al índice de hosts.</li>
+</ul>

@@ -1,0 +1,65 @@
+<title>部署</title>
+<meta name="description" content="如何将构建好的 htmlpress 站点发布到托管平台。" />
+<meta name="order" content="50" />
+<meta name="icon" content="cloud-upload" />
+
+<h1>部署</h1>
+<p>
+  <code>htmlpress build</code> 会在
+  <code>.htmlpress/build/</code> 中生成一个完全静态的站点：每个页面对应一个
+  <code>.html</code> 文件，路径与其源文件相同；此外还有
+  <code>404.html</code>、<code>robots.txt</code>、 <code>sitemap.xml</code>（设置了
+  <code>site</code> 时）、<code>_headers</code> 文件、 供智能体使用的
+  <a href="/zh/customization/ai-agents.html">Markdown 副本和 <code>llms.txt</code></a
+  >、 位于
+  <code>_htmlpress/</code>
+  下的主题与组件脚本，以及项目中的其他所有文件。把这个目录放到任意静态托管平台上，站点就上线了。
+</p>
+<p>
+  以下指南涵盖最常见的部署目标。任选其一即可：每篇指南都是独立完整的，同时给出手动命令和
+  CI 工作流。
+</p>
+
+<h2>托管平台</h2>
+<htmlpress-grid cols="2">
+  <htmlpress-card>
+    <h3><a href="/zh/deployment/static-hosting.html">静态托管</a></h3>
+    <p>任何能提供文件目录服务的主机：nginx、S3 + CloudFront、Caddy 等。</p>
+  </htmlpress-card>
+  <htmlpress-card>
+    <h3><a href="/zh/deployment/github-pages.html">GitHub Pages</a></h3>
+    <p>免费、原生集成 git，非常适合部署在 <code>/repo-name/</code> 路径下的项目站点。</p>
+  </htmlpress-card>
+  <htmlpress-card>
+    <h3><a href="/zh/deployment/cloudflare.html">Cloudflare</a></h3>
+    <p>Workers + 静态资源。<code>htmlpress.dev</code> 本身就采用这种方案。</p>
+  </htmlpress-card>
+  <htmlpress-card>
+    <h3><a href="/zh/deployment/vercel.html">Vercel</a></h3>
+    <p>与 Git 连接，每个拉取请求都有预览，域名零配置。</p>
+  </htmlpress-card>
+  <htmlpress-card>
+    <h3><a href="/zh/deployment/netlify.html">Netlify</a></h3>
+    <p>与 Git 连接，支持分支部署、原子发布和内置表单处理。</p>
+  </htmlpress-card>
+</htmlpress-grid>
+
+<h2>各指南的共同前提</h2>
+<ul>
+  <li>
+    你在项目根目录运行 <code>htmlpress build</code>，输出位于
+    <code>.htmlpress/build/</code>。在 CI 中，<code>npx gethtmlpress build</code>
+    无需预先安装即可运行同一个二进制文件；其他安装渠道见
+    <a href="/zh/introduction.html">简介</a>。
+  </li>
+  <li>
+    如果你需要 <code>sitemap.xml</code>、<code>robots.txt</code> 中的 sitemap 行、规范 URL
+    和绝对路径的社交标签，需要在 <code>htmlpress.yaml</code> 中设置 <code>site</code>；见
+    <a href="/zh/customization/site-metadata.html">站点元数据</a>。
+  </li>
+  <li>
+    只有当站点挂载在子路径下时（例如 GitHub Pages 项目站点）才需要
+    <code>base</code>。只有 <a href="/zh/deployment/github-pages.html">GitHub Pages</a>
+    指南涉及这一点。
+  </li>
+</ul>

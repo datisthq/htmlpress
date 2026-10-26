@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="zh">
+  <head>
+    <title>GitBook 与 Htmlpress 对比</title>
+    <meta
+      name="description"
+      content="带块编辑器和 Git Sync 的托管 SaaS 与基于文件、自托管的静态 HTML。"
+    />
+    <meta name="order" content="70" />
+    <meta name="icon" content="notebook-pen" />
+  </head>
+  <body>
+    <h1>GitBook 与 Htmlpress 对比</h1>
+    <p>
+      <a href="https://www.gitbook.com">GitBook</a>
+      是一个商业化的托管文档平台。内容在基于浏览器的块编辑器（Notion 风格）中编写，存放在
+      GitBook 的数据库里，并发布到托管在 GitBook 上的站点，位于
+      <code>gitbook.io</code> 之下或自定义域名。Git Sync 功能可以把该数据库以 Markdown
+      形式与 GitHub/GitLab 仓库双向同步，但唯一可信的来源是 GitBook 本身，而不是仓库。
+    </p>
+    <p>
+      早期开源的 <code>gitbook-cli</code> 静态生成器已于 2018
+      年弃用，与如今的产品无关；本页介绍的是当前的托管平台。
+    </p>
+    <h2>概览</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>维度</th>
+          <th>Htmlpress</th>
+          <th>GitBook</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>语言 / 运行时</td>
+          <td>Rust（单一二进制文件，无运行时）</td>
+          <td>托管 SaaS（无本地运行时）</td>
+        </tr>
+        <tr>
+          <td>UI 框架</td>
+          <td>无（纯 HTML + CSS，<code>htmlpress-*</code> Web 组件）</td>
+          <td>专有（由 GitBook 渲染）</td>
+        </tr>
+        <tr>
+          <td>构建工具</td>
+          <td>htmlpress 二进制文件</td>
+          <td>无（用户侧无需构建）</td>
+        </tr>
+        <tr>
+          <td>内容格式</td>
+          <td>HTML 页面</td>
+          <td>编辑器中的块模型；通过 Git 使用 GitBook 风格的 Markdown</td>
+        </tr>
+        <tr>
+          <td>许可证</td>
+          <td>MIT，自托管</td>
+          <td>专有；免费套餐 + 付费套餐；仅 Enterprise 版可自托管</td>
+        </tr>
+        <tr>
+          <td>输出模式</td>
+          <td>预渲染静态页面</td>
+          <td>托管在 GitBook 的基础设施上</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>架构</h2>
+    <p>
+      htmlpress 是一个 Rust 二进制文件，可从 npm（<code>gethtmlpress</code>）、PyPI 或
+      crates.io 安装。它用一个布局包裹每个 HTML 页面，并配上导航和主题；没有打包器、没有
+      UI 框架，也没有插件
+      API。每个内置文件——布局、样式、脚本以及每个组件——都可以被覆盖：在
+      <code>.htmlpress/</code>
+      下的相同路径放一个文件即可替换它。页面就是你仓库中的文件，并在构建时预渲染为静态
+      HTML。
+    </p>
+    <p>
+      GitBook 是一个多租户
+      SaaS。内容在基于块的所见即所得编辑器中编写：每个段落、标题、代码块、提示或嵌入内容都是一个有类型的块，存储在
+      GitBook 的数据库中。运行时是 GitBook
+      自己的——用户无需运行构建步骤，也不用部署静态站点。托管、搜索索引、CDN、重定向和分析都由平台管理。
+    </p>
+    <p>
+      Git Sync 是一项可选集成，它把一个 GitBook 空间映射到 GitHub 或 GitLab
+      仓库的某个分支。内容在编辑器与一个由 <code>.md</code>
+      文件组成的目录之间往返同步，这些文件使用 GitBook 扩展的 Markdown 风格（用
+      <code>{% hint %}</code> 表示的提示、标签页、内容引用、OpenAPI
+      块等）。同步是双向的：在编辑器中的编辑会向仓库推送提交；推送到该分支的提交会更新编辑器。仓库只是镜像，而非来源——GitBook
+      的模式才是权威模型。
+    </p>
+    <p>
+      在 htmlpress 这边，内容布局不受约束：它按 glob 扫描（<code>htmlpress.yaml</code>
+      中的 <code>include</code>/<code>exclude</code>，默认扫描所有
+      <code>.html</code> 文件），页面的 URL 取决于它在 glob 基础目录下的文件路径，因此
+      <code>docs/**/*.html</code> 会把 <code>docs/guide.html</code> 发布在
+      <code>/guide.html</code>。不要求存在 <code>docs/</code>
+      文件夹。导航由文件夹结构和每个页面的
+      <code>&lt;meta name="order"&gt;</code> 构建；文件夹的
+      <code>index.html</code> 为其分组命名。GitBook 的内容按照产品固定的层级组织——<strong
+        >组织 → 集合 → 空间 → 页面</strong
+      >——站点 URL 由这棵树推导而来。Git Sync 镜像以嵌套目录的形式反映这一层级。
+    </p>
+    <h2>内容层面</h2>
+    <p>
+      htmlpress 页面是纯语义化 HTML，主题直接根据元素本身设置样式。更丰富的区块是
+      <code>htmlpress-*</code>
+      自定义元素（<code>htmlpress-callout</code>、<code>htmlpress-tabs</code>、<code>htmlpress-steps</code>、<code
+        >htmlpress-grid</code
+      >
+      等），其 CSS 和 JS 只会链接到使用该标签的页面。项目可以通过
+      <code>.htmlpress/components/&lt;name&gt;/&lt;name&gt;.html</code>
+      添加自己的标签，它会在构建时替换该标签。htmlpress 没有
+      frontmatter：页面的元数据就是它自己的
+      <code>&lt;head&gt;</code>——<code>&lt;title&gt;</code>、<code
+        >&lt;meta name="description"&gt;</code
+      >、<code>&lt;meta name="order"&gt;</code>、<code>&lt;meta name="layout"&gt;</code>
+      和 <code>&lt;meta name="image"&gt;</code>；其他
+      <code>&lt;head&gt;</code> 标签会原样保留。
+    </p>
+    <p>
+      GitBook
+      的内容层面就是编辑器的块面板：段落、标题、列表、表格、提示（info/warning/danger/success）、标签页、可展开块、带标签分组的代码块、文件、图片、绘图、数学公式（KaTeX）、嵌入内容（Figma、Loom
+      等）、API 方法块、OpenAPI
+      参考以及内容引用（跨空间嵌入）。自定义组件无法由用户扩展——GitBook
+      提供什么块就只能用什么块。Git Sync 风格的 Markdown 通过类似 Liquid 的标签来编码
+      CommonMark 中没有的块，例如
+      <code>{% hint style="info" %}…{% endhint %}</code> 和
+      <code>{% tabs %}…{% endtabs %}</code>。
+    </p>
+    <p>
+      OpenAPI 是一等输入：GitBook 可以导入 OpenAPI 规范并据此渲染 API
+      参考页面，这一点更接近 Mintlify，而不是 htmlpress。
+    </p>
+    <h2>功能矩阵</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>功能</th>
+          <th>Htmlpress</th>
+          <th>GitBook</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>版本管理</td>
+          <td>部分支持（每个版本一个分区或一次部署）</td>
+          <td>是（空间变体 / 版本组）</td>
+        </tr>
+        <tr>
+          <td>国际化（i18n）</td>
+          <td>是（翻译、语言选择器、内置 7 种界面语言）</td>
+          <td>是（空间的按语言变体）</td>
+        </tr>
+        <tr>
+          <td>搜索</td>
+          <td>是（内置，客户端）</td>
+          <td>是（托管，付费套餐提供 GitBook AI / “Lens” 问答）</td>
+        </tr>
+        <tr>
+          <td>博客</td>
+          <td>否</td>
+          <td>否</td>
+        </tr>
+        <tr>
+          <td>更新日志</td>
+          <td>否</td>
+          <td>否（Change Requests 是编辑工作流，而非对外发布的栏目）</td>
+        </tr>
+        <tr>
+          <td>站点地图</td>
+          <td>是（需设置 <code>site</code>）</td>
+          <td>是（由平台生成）</td>
+        </tr>
+        <tr>
+          <td>RSS</td>
+          <td>否</td>
+          <td>否</td>
+        </tr>
+        <tr>
+          <td>主题</td>
+          <td><code>.htmlpress/</code> 中的覆盖文件 + <code>--htmlpress-*</code> 令牌</td>
+          <td>通过站点设置自定义（颜色、字体、布局）；不支持模板覆盖</td>
+        </tr>
+        <tr>
+          <td>插件</td>
+          <td>否（使用 <code>.htmlpress/components/</code> 中的项目组件）</td>
+          <td>专有集成（Intercom、Segment、GA 等）</td>
+        </tr>
+        <tr>
+          <td>自定义路由</td>
+          <td>
+            任意 <code>.html</code> 文件；额外布局放在 <code>.htmlpress/layouts/</code>
+          </td>
+          <td>否（URL 遵循 空间 → 页面 的层级）</td>
+        </tr>
+        <tr>
+          <td>基于 OpenAPI 的 API 参考</td>
+          <td>否</td>
+          <td>是（内置）</td>
+        </tr>
+        <tr>
+          <td>独立工具链</td>
+          <td>单一 Rust 二进制文件（npm、PyPI 或 crates.io）</td>
+          <td>用户侧无；SaaS</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>输出与部署</h2>
+    <p>
+      htmlpress 会把每个页面写成 <code>.htmlpress/build/</code> 中的静态 HTML，同时生成
+      <code>robots.txt</code>、设置了 <code>site</code> 时的
+      <code>sitemap.xml</code>、每个页面的 Markdown 副本、<code>llms.txt</code>，以及
+      <code>.well-known/agent-skills/</code> 下的智能体技能。<code>base</code>
+      键可让站点在子路径下提供服务。各托管平台的指南见<a href="/zh/deployment/">部署</a>。
+    </p>
+    <p>
+      GitBook 不会产出可部署的构件。站点默认托管在
+      <code>&lt;space&gt;.gitbook.io</code>，也可以通过 DNS
+      绑定自定义域名。CDN、TLS、重定向、访问控制和分析都在 GitBook
+      控制台中配置。自托管仅限 Enterprise 版，标准套餐不提供。最接近“你的内容”的构件，是
+      Git Sync 镜像写入所连接仓库的那些文件，而它们只是内容——并不是一个可构建的站点。
+    </p>
+    <h2>另请参阅</h2>
+    <ul>
+      <li><a href="/zh/authoring/">编写</a>——htmlpress 的 HTML 编写方式。</li>
+      <li><a href="/zh/customization/">自定义</a>——htmlpress 的配置键与覆盖文件。</li>
+      <li><a href="/zh/comparison/">对比</a>——返回索引。</li>
+    </ul>
+  </body>
+</html>

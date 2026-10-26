@@ -1,0 +1,590 @@
+<title>Elementos enriquecidos</title>
+<meta
+  name="description"
+  content="Tablas, avisos, pestañas, pasos, tarjetas, insignias, botones, árboles de archivos, los tokens del tema y el layout."
+/>
+<meta name="order" content="36" />
+<meta name="icon" content="layout-grid" />
+
+<h1>Elementos enriquecidos</h1>
+<p>
+  Unos pocos elementos <code>htmlpress-*</code> cubren lo que HTML no tiene como elemento.
+  Son elementos personalizados en light DOM, así que su contenido sigue siendo HTML simple
+  que se lee bien incluso antes de que cargue el script. Los estilos y el script de cada
+  uno se enlazan solo en las páginas que lo usan. Pon contenido de bloque
+  (<code>&lt;p&gt;</code>, <code>&lt;h3&gt;</code>, <code>&lt;pre&gt;</code>) dentro de un
+  componente, no texto suelto.
+</p>
+
+<h2>Tablas</h2>
+<p>
+  Una <code>&lt;table&gt;</code> simple recibe estilo tal cual. Envuelve una que tenga
+  <code>&lt;thead&gt;</code> en <code>&lt;htmlpress-table&gt;</code> y un clic en
+  cualquier cabecera ordena por ella:
+</p>
+<pre><code class="language-html">&lt;htmlpress-table&gt;
+  &lt;table&gt;
+    &lt;thead&gt;&lt;tr&gt;&lt;th&gt;Language&lt;/th&gt;&lt;th&gt;Year&lt;/th&gt;&lt;th&gt;Typing&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+    &lt;tbody&gt;&lt;tr&gt;&lt;td&gt;TypeScript&lt;/td&gt;&lt;td&gt;2012&lt;/td&gt;&lt;td&gt;Static&lt;/td&gt;&lt;/tr&gt;…&lt;/tbody&gt;
+  &lt;/table&gt;
+&lt;/htmlpress-table&gt;</code></pre>
+<p>Se renderiza como:</p>
+<htmlpress-table>
+  <table>
+    <thead>
+      <tr>
+        <th>Lenguaje</th>
+        <th>Año</th>
+        <th>Tipado</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>TypeScript</td>
+        <td>2012</td>
+        <td>Estático</td>
+      </tr>
+      <tr>
+        <td>Python</td>
+        <td>1991</td>
+        <td>Dinámico</td>
+      </tr>
+      <tr>
+        <td>Rust</td>
+        <td>2010</td>
+        <td>Estático</td>
+      </tr>
+      <tr>
+        <td>JavaScript</td>
+        <td>1995</td>
+        <td>Dinámico</td>
+      </tr>
+    </tbody>
+  </table>
+</htmlpress-table>
+
+<h2>Avisos</h2>
+<p>
+  Los avisos destacan información importante. <code>type</code> es <code>info</code> (el
+  predeterminado), <code>success</code>, <code>warning</code> o <code>danger</code>, y
+  <code>label</code> sustituye al encabezado que da el tipo:
+</p>
+<pre><code class="language-html">&lt;htmlpress-callout&gt;&lt;p&gt;This is a note.&lt;/p&gt;&lt;/htmlpress-callout&gt;
+
+&lt;htmlpress-callout type="warning" label="Breaking Change"&gt;
+  &lt;p&gt;This API has been removed in v2.&lt;/p&gt;
+&lt;/htmlpress-callout&gt;</code></pre>
+<p>Se renderiza como:</p>
+<htmlpress-callout><p>Esto es una nota.</p></htmlpress-callout>
+<htmlpress-callout type="success"><p>Todas las páginas compiladas.</p></htmlpress-callout>
+<htmlpress-callout type="warning"><p>Ten cuidado con esto.</p></htmlpress-callout>
+<htmlpress-callout type="danger">
+  <p>Nunca edites <code>.htmlpress/build</code>: cada compilación lo sustituye.</p>
+</htmlpress-callout>
+<htmlpress-callout type="warning" label="Cambio incompatible">
+  <p>Esta API se ha eliminado en la v2.</p>
+</htmlpress-callout>
+<p>
+  Los encabezados dentro de un aviso quedan fuera de la tabla de contenidos de la página.
+</p>
+
+<h2>Desplegables</h2>
+<p>
+  No hace falta ningún componente: el tema da estilo a un
+  <code>&lt;details&gt;</code> simple.
+</p>
+<pre><code class="language-html">&lt;details&gt;
+  &lt;summary&gt;Click to expand&lt;/summary&gt;
+  &lt;p&gt;Hidden content here with &lt;strong&gt;HTML&lt;/strong&gt; support.&lt;/p&gt;
+&lt;/details&gt;</code></pre>
+<p>Se renderiza como:</p>
+<details>
+  <summary>Haz clic para expandir</summary>
+  <p>Contenido oculto con soporte de <strong>HTML</strong>.</p>
+</details>
+<p>Puedes anidar cualquier HTML dentro, incluidos bloques de código, listas y avisos:</p>
+<details>
+  <summary>Ejemplo de configuración</summary>
+  <pre><code class="language-yaml">site: https://htmlpress.dev
+title: Htmlpress</code></pre>
+</details>
+
+<h2>Pestañas de código</h2>
+<p>
+  Las pestañas que contienen solo bloques de código se unen en un único bloque enmarcado.
+  Cada <code>&lt;section&gt;</code> es una pestaña, con el nombre de su
+  <code>title</code>:
+</p>
+<pre><code class="language-html">&lt;htmlpress-tabs sync="lang"&gt;
+  &lt;section title="JavaScript"&gt;&lt;pre&gt;&lt;code&gt;console.log("hello")&lt;/code&gt;&lt;/pre&gt;&lt;/section&gt;
+  &lt;section title="Python"&gt;&lt;pre&gt;&lt;code&gt;print("hello")&lt;/code&gt;&lt;/pre&gt;&lt;/section&gt;
+&lt;/htmlpress-tabs&gt;</code></pre>
+<p>Se renderiza como:</p>
+<htmlpress-tabs sync="lang">
+  <section title="JavaScript">
+    <pre><code>console.log("hello")</code></pre>
+  </section>
+  <section title="Python">
+    <pre><code>print("hello")</code></pre>
+  </section>
+</htmlpress-tabs>
+<p>
+  Añade <code>sync="key"</code> para mantener sincronizados los grupos de pestañas, como
+  se describe más abajo en Pestañas de contenido.
+</p>
+
+<h2>Pestañas de contenido</h2>
+<p>
+  Agrupa contenido arbitrario en pestañas con <code>&lt;htmlpress-tabs&gt;</code>, una
+  <code>&lt;section title&gt;</code> por pestaña.
+</p>
+<p>
+  Añade un atributo <code>sync</code> para sincronizar la selección de pestañas entre
+  grupos de pestañas. Cuando un lector selecciona una pestaña en un grupo, todos los demás
+  grupos con la misma clave <code>sync</code> cambian a la pestaña correspondiente, y la
+  elección se recuerda entre páginas en <code>localStorage</code>.
+</p>
+<pre><code class="language-html">&lt;htmlpress-tabs sync="channel"&gt;
+  &lt;section title="cargo"&gt;&lt;p&gt;From crates.io, built on your machine.&lt;/p&gt;&lt;/section&gt;
+  &lt;section title="npm"&gt;&lt;p&gt;A prebuilt binary per platform.&lt;/p&gt;&lt;/section&gt;
+  &lt;section title="pip"&gt;&lt;p&gt;A binary wheel.&lt;/p&gt;&lt;/section&gt;
+&lt;/htmlpress-tabs&gt;</code></pre>
+<p>Se renderiza como (ambos grupos comparten <code>sync="channel"</code>; cambia uno):</p>
+<htmlpress-tabs sync="channel">
+  <section title="cargo">
+    <pre><code class="language-sh">cargo install htmlpress</code></pre>
+  </section>
+  <section title="npm">
+    <pre><code>npm install -g gethtmlpress</code></pre>
+  </section>
+  <section title="pip">
+    <pre><code class="language-sh">pip install htmlpress</code></pre>
+  </section>
+</htmlpress-tabs>
+<htmlpress-tabs sync="channel">
+  <section title="cargo"><p>Desde crates.io, compilado en tu máquina.</p></section>
+  <section title="npm"><p>Un binario precompilado por plataforma.</p></section>
+  <section title="pip"><p>Un wheel binario.</p></section>
+</htmlpress-tabs>
+
+<h2>Pasos</h2>
+<p>
+  Un <code>&lt;ol&gt;</code> dentro de <code>&lt;htmlpress-steps&gt;</code> es una guía
+  numerada, un paso por <code>&lt;li&gt;</code>, cada uno encabezado por un
+  <code>&lt;h3&gt;</code>. Esos encabezados quedan fuera de la tabla de contenidos de la
+  página.
+</p>
+<pre><code class="language-html">&lt;htmlpress-steps&gt;
+  &lt;ol&gt;
+    &lt;li&gt;&lt;h3&gt;Install&lt;/h3&gt;&lt;p&gt;…&lt;/p&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;h3&gt;Write a page&lt;/h3&gt;&lt;p&gt;…&lt;/p&gt;&lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/htmlpress-steps&gt;</code></pre>
+<p>Se renderiza como:</p>
+<htmlpress-steps>
+  <ol>
+    <li>
+      <h3>Instala</h3>
+      <p>Elige un canal en las pestañas de arriba.</p>
+    </li>
+    <li>
+      <h3>Escribe una página</h3>
+      <p>Cualquier archivo <code>.html</code> de la carpeta.</p>
+    </li>
+    <li>
+      <h3>Arranca</h3>
+      <p>Ejecuta <code>htmlpress start</code> y abre la URL que muestra.</p>
+    </li>
+  </ol>
+</htmlpress-steps>
+
+<h2>Tarjetas</h2>
+<p>
+  Las tarjetas en <code>&lt;htmlpress-grid&gt;</code> llenan columnas adaptables;
+  <code>cols</code> fija su número de 2 a 4, y las pantallas estrechas vuelven a una sola.
+  Un enlace en el encabezado de una tarjeta hace que toda la tarjeta sea clicable.
+</p>
+<pre><code class="language-html">&lt;htmlpress-grid cols="2"&gt;
+  &lt;htmlpress-card&gt;
+    &lt;h3&gt;&lt;a href="/introduction.html"&gt;Getting Started&lt;/a&gt;&lt;/h3&gt;
+    &lt;p&gt;Learn how to set up your first project.&lt;/p&gt;
+  &lt;/htmlpress-card&gt;
+  &lt;htmlpress-card&gt;&lt;h3&gt;Plain HTML&lt;/h3&gt;&lt;p&gt;…&lt;/p&gt;&lt;/htmlpress-card&gt;
+&lt;/htmlpress-grid&gt;</code></pre>
+<p>Se renderiza como:</p>
+<htmlpress-grid cols="2">
+  <htmlpress-card>
+    <h3><a href="/es/introduction.html">Primeros pasos</a></h3>
+    <p>Aprende a configurar tu primer proyecto.</p>
+  </htmlpress-card>
+  <htmlpress-card>
+    <h3><a href="/es/customization/configuration-file.html">Configuración</a></h3>
+    <p>Configura tu proyecto de htmlpress.</p>
+  </htmlpress-card>
+  <htmlpress-card>
+    <h3><a href="https://github.com/datisthq/htmlpress">GitHub</a></h3>
+    <p>Consulta el código fuente en GitHub.</p>
+  </htmlpress-card>
+  <htmlpress-card>
+    <h3>HTML simple</h3>
+    <p>Una tarjeta sin enlace no es clicable.</p>
+  </htmlpress-card>
+</htmlpress-grid>
+<p>
+  Los encabezados dentro de una tarjeta quedan fuera de la tabla de contenidos de la
+  página.
+</p>
+
+<h2>Insignias</h2>
+<p>
+  Una etiqueta en línea. <code>type</code> es <code>info</code>, <code>success</code>,
+  <code>warning</code>, <code>danger</code> o <code>neutral</code>; sin él, el color de
+  acento.
+</p>
+<pre><code class="language-html">&lt;htmlpress-badge&gt;New&lt;/htmlpress-badge&gt;
+&lt;htmlpress-badge type="success"&gt;Stable&lt;/htmlpress-badge&gt;</code></pre>
+<p>
+  Se renderiza como:
+  <htmlpress-badge>Nuevo</htmlpress-badge>
+  <htmlpress-badge type="info">Info</htmlpress-badge>
+  <htmlpress-badge type="success">Estable</htmlpress-badge>
+  <htmlpress-badge type="warning">Beta</htmlpress-badge>
+  <htmlpress-badge type="danger">Eliminado</htmlpress-badge>
+  <htmlpress-badge type="neutral">v1</htmlpress-badge>
+</p>
+
+<h2>Botones</h2>
+<p>
+  Un enlace dentro de <code>&lt;htmlpress-button&gt;</code> es una llamada a la acción;
+  <code>type="secondary"</code> lo hace más discreto.
+</p>
+<pre><code class="language-html">&lt;htmlpress-button&gt;&lt;a href="/introduction.html"&gt;Get Started&lt;/a&gt;&lt;/htmlpress-button&gt;
+&lt;htmlpress-button type="secondary"&gt;&lt;a href="…"&gt;GitHub&lt;/a&gt;&lt;/htmlpress-button&gt;</code></pre>
+<p>Se renderiza como:</p>
+<p>
+  <htmlpress-button><a href="/es/introduction.html">Empezar</a></htmlpress-button>
+  <htmlpress-button type="secondary">
+    <a href="https://github.com/datisthq/htmlpress">GitHub</a>
+  </htmlpress-button>
+</p>
+
+<h2>Iconos</h2>
+<p>
+  <code>&lt;htmlpress-icon name="…"&gt;</code> dibuja en línea un icono integrado de
+  <a href="https://lucide.dev">Lucide</a>, con el color y el tamaño del texto; los mismos
+  nombres van en el <code>icon</code> de un enlace o de una sección. Un nombre desconocido
+  hace fallar la compilación. Estos son los 113 integrados:
+</p>
+<pre><code class="language-html">&lt;htmlpress-icon name="rocket"&gt;&lt;/htmlpress-icon&gt; Get started</code></pre>
+<htmlpress-grid cols="4">
+  <p><htmlpress-icon name="activity"></htmlpress-icon> activity</p>
+  <p><htmlpress-icon name="archive"></htmlpress-icon> archive</p>
+  <p><htmlpress-icon name="arrow-right"></htmlpress-icon> arrow-right</p>
+  <p><htmlpress-icon name="badge-check"></htmlpress-icon> badge-check</p>
+  <p><htmlpress-icon name="bell"></htmlpress-icon> bell</p>
+  <p><htmlpress-icon name="blocks"></htmlpress-icon> blocks</p>
+  <p><htmlpress-icon name="book"></htmlpress-icon> book</p>
+  <p><htmlpress-icon name="book-marked"></htmlpress-icon> book-marked</p>
+  <p><htmlpress-icon name="book-open"></htmlpress-icon> book-open</p>
+  <p><htmlpress-icon name="book-text"></htmlpress-icon> book-text</p>
+  <p><htmlpress-icon name="bookmark"></htmlpress-icon> bookmark</p>
+  <p><htmlpress-icon name="bot"></htmlpress-icon> bot</p>
+  <p><htmlpress-icon name="box"></htmlpress-icon> box</p>
+  <p><htmlpress-icon name="braces"></htmlpress-icon> braces</p>
+  <p><htmlpress-icon name="brain"></htmlpress-icon> brain</p>
+  <p><htmlpress-icon name="bug"></htmlpress-icon> bug</p>
+  <p><htmlpress-icon name="calendar"></htmlpress-icon> calendar</p>
+  <p><htmlpress-icon name="chart-column"></htmlpress-icon> chart-column</p>
+  <p><htmlpress-icon name="check"></htmlpress-icon> check</p>
+  <p><htmlpress-icon name="circle-help"></htmlpress-icon> circle-help</p>
+  <p><htmlpress-icon name="clock"></htmlpress-icon> clock</p>
+  <p><htmlpress-icon name="cloud"></htmlpress-icon> cloud</p>
+  <p><htmlpress-icon name="cloud-upload"></htmlpress-icon> cloud-upload</p>
+  <p><htmlpress-icon name="code"></htmlpress-icon> code</p>
+  <p><htmlpress-icon name="codepen"></htmlpress-icon> codepen</p>
+  <p><htmlpress-icon name="coffee"></htmlpress-icon> coffee</p>
+  <p><htmlpress-icon name="compass"></htmlpress-icon> compass</p>
+  <p><htmlpress-icon name="cpu"></htmlpress-icon> cpu</p>
+  <p><htmlpress-icon name="database"></htmlpress-icon> database</p>
+  <p><htmlpress-icon name="download"></htmlpress-icon> download</p>
+  <p><htmlpress-icon name="external-link"></htmlpress-icon> external-link</p>
+  <p><htmlpress-icon name="feather"></htmlpress-icon> feather</p>
+  <p><htmlpress-icon name="figma"></htmlpress-icon> figma</p>
+  <p><htmlpress-icon name="file"></htmlpress-icon> file</p>
+  <p><htmlpress-icon name="file-code"></htmlpress-icon> file-code</p>
+  <p><htmlpress-icon name="file-pen-line"></htmlpress-icon> file-pen-line</p>
+  <p><htmlpress-icon name="file-text"></htmlpress-icon> file-text</p>
+  <p><htmlpress-icon name="flag"></htmlpress-icon> flag</p>
+  <p><htmlpress-icon name="flask-conical"></htmlpress-icon> flask-conical</p>
+  <p><htmlpress-icon name="folder"></htmlpress-icon> folder</p>
+  <p><htmlpress-icon name="git-branch"></htmlpress-icon> git-branch</p>
+  <p>
+    <htmlpress-icon name="git-commit-horizontal"></htmlpress-icon> git-commit-horizontal
+  </p>
+  <p><htmlpress-icon name="git-pull-request"></htmlpress-icon> git-pull-request</p>
+  <p><htmlpress-icon name="github"></htmlpress-icon> github</p>
+  <p><htmlpress-icon name="gitlab"></htmlpress-icon> gitlab</p>
+  <p><htmlpress-icon name="globe"></htmlpress-icon> globe</p>
+  <p><htmlpress-icon name="graduation-cap"></htmlpress-icon> graduation-cap</p>
+  <p><htmlpress-icon name="hammer"></htmlpress-icon> hammer</p>
+  <p><htmlpress-icon name="heading"></htmlpress-icon> heading</p>
+  <p><htmlpress-icon name="heart"></htmlpress-icon> heart</p>
+  <p><htmlpress-icon name="heart-handshake"></htmlpress-icon> heart-handshake</p>
+  <p><htmlpress-icon name="history"></htmlpress-icon> history</p>
+  <p><htmlpress-icon name="house"></htmlpress-icon> house</p>
+  <p><htmlpress-icon name="image"></htmlpress-icon> image</p>
+  <p><htmlpress-icon name="info"></htmlpress-icon> info</p>
+  <p><htmlpress-icon name="key"></htmlpress-icon> key</p>
+  <p><htmlpress-icon name="layers"></htmlpress-icon> layers</p>
+  <p><htmlpress-icon name="layout-grid"></htmlpress-icon> layout-grid</p>
+  <p><htmlpress-icon name="layout-panel-left"></htmlpress-icon> layout-panel-left</p>
+  <p><htmlpress-icon name="library"></htmlpress-icon> library</p>
+  <p><htmlpress-icon name="life-buoy"></htmlpress-icon> life-buoy</p>
+  <p><htmlpress-icon name="lightbulb"></htmlpress-icon> lightbulb</p>
+  <p><htmlpress-icon name="link"></htmlpress-icon> link</p>
+  <p><htmlpress-icon name="linkedin"></htmlpress-icon> linkedin</p>
+  <p><htmlpress-icon name="list"></htmlpress-icon> list</p>
+  <p><htmlpress-icon name="lock"></htmlpress-icon> lock</p>
+  <p><htmlpress-icon name="mail"></htmlpress-icon> mail</p>
+  <p><htmlpress-icon name="map"></htmlpress-icon> map</p>
+  <p><htmlpress-icon name="megaphone"></htmlpress-icon> megaphone</p>
+  <p><htmlpress-icon name="message-circle"></htmlpress-icon> message-circle</p>
+  <p><htmlpress-icon name="monitor"></htmlpress-icon> monitor</p>
+  <p><htmlpress-icon name="newspaper"></htmlpress-icon> newspaper</p>
+  <p><htmlpress-icon name="notebook-pen"></htmlpress-icon> notebook-pen</p>
+  <p><htmlpress-icon name="package"></htmlpress-icon> package</p>
+  <p><htmlpress-icon name="palette"></htmlpress-icon> palette</p>
+  <p><htmlpress-icon name="pencil"></htmlpress-icon> pencil</p>
+  <p><htmlpress-icon name="pencil-ruler"></htmlpress-icon> pencil-ruler</p>
+  <p><htmlpress-icon name="play"></htmlpress-icon> play</p>
+  <p><htmlpress-icon name="plug"></htmlpress-icon> plug</p>
+  <p><htmlpress-icon name="presentation"></htmlpress-icon> presentation</p>
+  <p><htmlpress-icon name="puzzle"></htmlpress-icon> puzzle</p>
+  <p><htmlpress-icon name="rocket"></htmlpress-icon> rocket</p>
+  <p><htmlpress-icon name="route"></htmlpress-icon> route</p>
+  <p><htmlpress-icon name="rss"></htmlpress-icon> rss</p>
+  <p><htmlpress-icon name="scale"></htmlpress-icon> scale</p>
+  <p><htmlpress-icon name="scroll"></htmlpress-icon> scroll</p>
+  <p><htmlpress-icon name="search"></htmlpress-icon> search</p>
+  <p><htmlpress-icon name="server"></htmlpress-icon> server</p>
+  <p><htmlpress-icon name="settings"></htmlpress-icon> settings</p>
+  <p><htmlpress-icon name="shield"></htmlpress-icon> shield</p>
+  <p><htmlpress-icon name="sliders-horizontal"></htmlpress-icon> sliders-horizontal</p>
+  <p><htmlpress-icon name="smartphone"></htmlpress-icon> smartphone</p>
+  <p><htmlpress-icon name="sparkles"></htmlpress-icon> sparkles</p>
+  <p><htmlpress-icon name="square-dashed"></htmlpress-icon> square-dashed</p>
+  <p><htmlpress-icon name="square-stack"></htmlpress-icon> square-stack</p>
+  <p><htmlpress-icon name="star"></htmlpress-icon> star</p>
+  <p><htmlpress-icon name="table"></htmlpress-icon> table</p>
+  <p><htmlpress-icon name="tag"></htmlpress-icon> tag</p>
+  <p><htmlpress-icon name="terminal"></htmlpress-icon> terminal</p>
+  <p><htmlpress-icon name="triangle"></htmlpress-icon> triangle</p>
+  <p><htmlpress-icon name="trophy"></htmlpress-icon> trophy</p>
+  <p><htmlpress-icon name="twitter"></htmlpress-icon> twitter</p>
+  <p><htmlpress-icon name="type"></htmlpress-icon> type</p>
+  <p><htmlpress-icon name="upload"></htmlpress-icon> upload</p>
+  <p><htmlpress-icon name="user"></htmlpress-icon> user</p>
+  <p><htmlpress-icon name="users"></htmlpress-icon> users</p>
+  <p><htmlpress-icon name="video"></htmlpress-icon> video</p>
+  <p><htmlpress-icon name="webhook"></htmlpress-icon> webhook</p>
+  <p><htmlpress-icon name="wind"></htmlpress-icon> wind</p>
+  <p><htmlpress-icon name="workflow"></htmlpress-icon> workflow</p>
+  <p><htmlpress-icon name="wrench"></htmlpress-icon> wrench</p>
+  <p><htmlpress-icon name="youtube"></htmlpress-icon> youtube</p>
+  <p><htmlpress-icon name="zap"></htmlpress-icon> zap</p>
+</htmlpress-grid>
+
+<h2>Árbol de archivos</h2>
+<p>
+  Una lista anidada dentro de <code>&lt;htmlpress-file-tree&gt;</code>; un elemento que
+  contiene una lista es una carpeta.
+</p>
+<pre><code class="language-html">&lt;htmlpress-file-tree&gt;
+  &lt;ul&gt;
+    &lt;li&gt;docs&lt;ul&gt;&lt;li&gt;index.html&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;
+    &lt;li&gt;htmlpress.yaml&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/htmlpress-file-tree&gt;</code></pre>
+<p>Se renderiza como:</p>
+<htmlpress-file-tree>
+  <ul>
+    <li>
+      docs
+      <ul>
+        <li>index.html</li>
+        <li>
+          guides
+          <ul>
+            <li>build.html</li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li>htmlpress.yaml</li>
+  </ul>
+</htmlpress-file-tree>
+
+<h2>Columnas</h2>
+<p>
+  <code>&lt;htmlpress-grid&gt;</code> coloca cualquier hijo uno junto a otro, no solo
+  tarjetas:
+</p>
+<pre><code class="language-html">&lt;htmlpress-grid cols="2"&gt;
+  &lt;div&gt;&lt;p&gt;&lt;strong&gt;Left column&lt;/strong&gt; with content.&lt;/p&gt;&lt;/div&gt;
+  &lt;div&gt;&lt;p&gt;&lt;strong&gt;Right column&lt;/strong&gt; with more content.&lt;/p&gt;&lt;/div&gt;
+&lt;/htmlpress-grid&gt;</code></pre>
+<p>Se renderiza como:</p>
+<htmlpress-grid cols="2">
+  <div>
+    <p><strong>Columna izquierda</strong> con contenido, incluidas listas:</p>
+    <ul>
+      <li>Elemento uno</li>
+      <li>Elemento dos</li>
+    </ul>
+  </div>
+  <div>
+    <p><strong>Columna derecha</strong> con más contenido:</p>
+    <blockquote><p>Una cita también funciona aquí.</p></blockquote>
+  </div>
+</htmlpress-grid>
+
+<h2>Tokens del tema</h2>
+<p>
+  Los colores, las fuentes y los anchos son propiedades personalizadas de CSS en
+  <code>:root</code>, con un conjunto oscuro bajo <code>prefers-color-scheme</code> o el
+  selector de tema de la cabecera: <code>--htmlpress-accent</code>,
+  <code>--htmlpress-accent-text</code>, <code>--htmlpress-banner</code>,
+  <code>--htmlpress-banner-text</code>, <code>--htmlpress-bg</code>,
+  <code>--htmlpress-surface</code>, <code>--htmlpress-text</code>,
+  <code>--htmlpress-muted</code>, <code>--htmlpress-border</code>,
+  <code>--htmlpress-info</code>, <code>--htmlpress-success</code>,
+  <code>--htmlpress-warning</code>, <code>--htmlpress-danger</code>,
+  <code>--htmlpress-font</code>, <code>--htmlpress-mono</code>,
+  <code>--htmlpress-radius</code>, <code>--htmlpress-shadow</code>,
+  <code>--htmlpress-width</code> y <code>--htmlpress-nav-width</code>. Sobrescríbelas
+  desde la hoja de estilos propia de una página:
+</p>
+<pre><code>:root {
+  --htmlpress-accent: oklch(0.6 0.18 30);
+  --htmlpress-font: "Inter", system-ui, sans-serif;
+  --htmlpress-width: 52rem;
+}</code></pre>
+
+<h2 id="layout">Layout</h2>
+<p>
+  El layout es HTML simple. Htmlpress rellena su <code>&lt;head&gt;</code> (charset,
+  viewport, título, descripción, etiquetas de vista previa social, enlace canónico,
+  favicon, el tema, los estilos y scripts de los componentes que usa la página, las
+  etiquetas <code>head</code> de <code>htmlpress.yaml</code> y, por último, las etiquetas
+  de head propias de la página) y sustituye estos elementos al compilar:
+</p>
+<dl>
+  <dt><code>&lt;htmlpress-content&gt;</code></dt>
+  <dd>El contenido de la página.</dd>
+  <dt><code>&lt;htmlpress-brand&gt;</code></dt>
+  <dd>
+    El título del sitio con la <code>description</code> debajo, después del
+    <code>logo</code> si está definido, enlazando al inicio.
+  </dd>
+  <dt><code>&lt;htmlpress-banner&gt;</code></dt>
+  <dd>El <code>banner</code> de <code>htmlpress.yaml</code>.</dd>
+  <dt><code>&lt;htmlpress-breadcrumbs&gt;</code></dt>
+  <dd>
+    El inicio, cada carpeta por encima de la página (con el nombre y el enlace de su
+    página índice cuando la tiene) y, por último, la página.
+  </dd>
+  <dt><code>&lt;htmlpress-nav&gt;</code></dt>
+  <dd>
+    Las páginas de la sección abierta (todas las páginas si no hay <code>sections</code>),
+    agrupadas por carpeta superior bajo una etiqueta "Artículos" ("Entradas" en un blog,
+    "Versiones" en un changelog); el grupo de una carpeta lleva el nombre de su página
+    índice y enlaza a ella. Las secciones de la barra lateral la abren y los
+    <code>links</code> de la barra lateral la cierran, bajo "Enlaces".
+  </dd>
+  <dt><code>&lt;htmlpress-links&gt;</code></dt>
+  <dd>
+    Las secciones de la cabecera, con la abierta marcada, y después los
+    <code>links</code> de la cabecera de <code>htmlpress.yaml</code>.
+  </dd>
+  <dt><code>&lt;htmlpress-toc&gt;</code></dt>
+  <dd>
+    Los <code>&lt;h2&gt;</code> y <code>&lt;h3&gt;</code> de la página, resaltando el que
+    está a la vista. Un encabezado sin <code>id</code> recibe uno a partir de su texto.
+  </dd>
+  <dt><code>&lt;htmlpress-pager&gt;</code></dt>
+  <dd>Las páginas anterior y siguiente en el orden de la navegación.</dd>
+  <dt><code>&lt;htmlpress-edit&gt;</code></dt>
+  <dd>
+    Un enlace "Editar esta página" a partir de <code>edit</code> en
+    <code>htmlpress.yaml</code>.
+  </dd>
+  <dt><code>&lt;htmlpress-search&gt;</code></dt>
+  <dd>
+    Búsqueda en todas las páginas, con el script: un botón en la cabecera, que también se
+    abre con <kbd>S</kbd>, <kbd>/</kbd> o <kbd>⌘K</kbd> / <kbd>Ctrl K</kbd>. La
+    compilación escribe el índice en <code>_htmlpress/search.json</code>, dividido en los
+    encabezados de cada página, y el diálogo lo carga la primera vez que se abre; los
+    resultados se agrupan por página y llevan al encabezado.
+  </dd>
+  <dt><code>&lt;htmlpress-toolbar&gt;</code></dt>
+  <dd>
+    Un enlace a la copia en Markdown de la página; el script añade "Copiar Markdown",
+    "Abrir en ChatGPT" y "Abrir en Claude".
+  </dd>
+  <dt><code>&lt;htmlpress-footer&gt;</code></dt>
+  <dd>Un crédito "Hecho con Htmlpress".</dd>
+  <dt><code>&lt;htmlpress-language&gt;</code></dt>
+  <dd>
+    El selector de idioma, que enlaza a esta página en cada idioma; solo en un sitio con
+    <a href="/es/customization/translations.html">traducciones</a>.
+  </dd>
+  <dt><code>&lt;htmlpress-skip&gt;</code></dt>
+  <dd>El enlace "Saltar al contenido", que solo se muestra al recibir el foco.</dd>
+</dl>
+<p>
+  Cada texto que muestran estos elementos y sus scripts aparece en el idioma de la página.
+  Los scripts leen los suyos de un
+  <code>&lt;script type="application/json" id="htmlpress-messages"&gt;</code> que
+  htmlpress escribe en el head, y sin él recurren al inglés.
+</p>
+<p>
+  Un elemento sin nada que mostrar se elimina.
+  <code>&lt;htmlpress-nav-toggle&gt;</code> (la barra lateral como cajón en un móvil; en
+  pantallas más anchas, pliega la barra lateral y lo recuerda),
+  <code>&lt;htmlpress-theme-toggle&gt;</code> y
+  <code>&lt;htmlpress-back-to-top&gt;</code> los construye el script en el navegador. Sus
+  teclas coinciden con las de Livemark: <kbd>L</kbd> muestra u oculta la barra lateral,
+  <kbd>T</kbd> cambia el tema y <kbd>B</kbd> vuelve arriba, mientras que <kbd>J</kbd> y
+  <kbd>K</kbd> desplazan cualquier página hacia abajo y hacia arriba. Ninguna se activa
+  mientras escribes en un campo.
+</p>
+<p>
+  El marco que los rodea también está hecho de elementos. No contienen nada propio, solo
+  dan estilo y colocan lo que hay dentro, así que un layout conserva los que quiere y les
+  da roles de landmark como atributos:
+</p>
+<dl>
+  <dt><code>&lt;htmlpress-shell&gt;</code></dt>
+  <dd>La barra lateral junto al resto; apilados en un móvil.</dd>
+  <dt><code>&lt;htmlpress-sidebar&gt;</code></dt>
+  <dd>La marca y la navegación; un cajón en un móvil.</dd>
+  <dt><code>&lt;htmlpress-main&gt;</code></dt>
+  <dd>La columna junto a la barra lateral.</dd>
+  <dt><code>&lt;htmlpress-header&gt;</code></dt>
+  <dd>
+    La barra fija de arriba, que muestra su marca y su botón de menú solo en un móvil.
+  </dd>
+  <dt><code>&lt;htmlpress-page&gt;</code></dt>
+  <dd>El <code>&lt;main&gt;</code> que contiene, junto al aside.</dd>
+  <dt><code>&lt;htmlpress-aside&gt;</code></dt>
+  <dd>
+    La columna junto al contenido, oculta cuando está vacía o la pantalla es estrecha.
+  </dd>
+</dl>
+<p>
+  Un
+  <code>.htmlpress/layout.html</code> en el proyecto sustituye al layout integrado, y una
+  página puede elegir el suyo en <code>.htmlpress/layouts/</code>. Los estilos y el script
+  de cada componente se pueden sustituir o añadir de la misma forma: consulta
+  <a href="/es/customization/overriding-escaping.html">Sobrescritura/Escape</a>.
+</p>

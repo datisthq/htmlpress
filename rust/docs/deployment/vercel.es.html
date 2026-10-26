@@ -1,0 +1,98 @@
+<title>Vercel</title>
+<meta
+  name="description"
+  content="Despliega con la integración git de Vercel o su CLI, con URLs de previsualización por PR."
+/>
+<meta name="order" content="54" />
+<meta name="icon" content="triangle" />
+
+<h1>Vercel</h1>
+<p>
+  Vercel no reconoce un proyecto htmlpress ni adivina su directorio de compilación. Basta
+  con un pequeño <code>vercel.json</code>.
+</p>
+
+<h2>Compila el sitio</h2>
+<pre><code class="language-sh">htmlpress build</code></pre>
+<p>La salida queda en <code>.htmlpress/build/</code>.</p>
+
+<h2>Configura <code>vercel.json</code></h2>
+<p>
+  Coloca esto en la raíz de tu proyecto para que Vercel use el comando correcto y sirva el
+  directorio correcto:
+</p>
+<pre><code>{
+  "framework": null,
+  "buildCommand": "npx gethtmlpress build",
+  "outputDirectory": ".htmlpress/build"
+}</code></pre>
+<p>
+  Esa es toda la configuración: a partir de ahí Vercel se encarga de la instalación, la
+  compilación y el servicio estático, y responde a las rutas desconocidas con el
+  <code>404.html</code> de la compilación. Vercel ignora <code>_headers</code>; define las
+  cabeceras de respuesta en <code>vercel.json</code> en su lugar.
+</p>
+
+<h2>Despliega con la integración git</h2>
+<p>
+  El camino recomendado: importa tu repositorio en
+  <a href="https://vercel.com/new">vercel.com/new</a>. Vercel lee
+  <code>vercel.json</code> y ejecuta la misma compilación que ejecutarías en local. Cada
+  push a <code>main</code> se publica en producción; cada otra rama y PR recibe una URL de
+  previsualización única.
+</p>
+
+<h2>Despliega con la CLI</h2>
+<p>Para despliegues puntuales o automatizados con scripts:</p>
+<pre><code>vercel deploy --prod</code></pre>
+<p>
+  La primera ejecución te pide <code>vercel login</code> y vincula el directorio a un
+  proyecto de Vercel. Vercel ejecuta el <code>buildCommand</code> por sí mismo.
+</p>
+
+<h2>Despliega con GitHub Actions</h2>
+<p>
+  La integración git de Vercel suele bastar por sí sola, pero puedes condicionar los
+  despliegues a los tests de CI:
+</p>
+<pre><code class="language-yaml">name: deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npx gethtmlpress build --json
+      - run: npx vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}</code></pre>
+<p>
+  El primer <code>run</code> hace fallar el job antes de desplegar cuando una página no
+  compila. Necesitarás <code>VERCEL_TOKEN</code>, <code>VERCEL_ORG_ID</code> y
+  <code>VERCEL_PROJECT_ID</code> como secretos (los dos últimos están en
+  <code>.vercel/project.json</code> tras el primer <code>vercel link</code> en local).
+</p>
+
+<h2>Dominio personalizado</h2>
+<p>
+  En el panel del proyecto, <strong>Settings → Domains → Add</strong>. Vercel te guía por
+  los registros DNS y aprovisiona un certificado automáticamente. Define el mismo dominio
+  como <code>site</code> en <code>htmlpress.yaml</code>.
+</p>
+
+<h2>Ver también</h2>
+<ul>
+  <li>
+    <a href="/es/customization/site-metadata.html">Metadatos del sitio</a>:
+    <code>site</code> rellena las URLs del sitemap.
+  </li>
+  <li><a href="/es/deployment/">Despliegue</a>: volver al índice de hosts.</li>
+</ul>

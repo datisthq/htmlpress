@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <title>Secciones y soporte para blog</title>
+    <meta
+      name="description"
+      content="Presentamos las secciones configurables y el soporte para blog en Htmlpress"
+    />
+    <meta name="author" content="Htmlpress Team" />
+    <meta name="date" content="2026-04-15" />
+    <meta name="keywords" content="features, announcement" />
+  </head>
+  <body>
+    <h1>Secciones y soporte para blog</h1>
+    <p>
+      Acabamos de publicar dos funciones importantes: secciones configurables y soporte
+      para blog.
+    </p>
+
+    <h2>Secciones</h2>
+    <p>
+      Ahora puedes dividir tu sitio en varias secciones. Cada sección aparece como una
+      pestaña en la cabecera, y la barra lateral muestra solo las páginas de la sección
+      activa.
+    </p>
+    <pre><code class="language-yaml">sections:
+  - title: Docs
+    prefix: /
+  - title: Blog
+    prefix: /blog/
+    type: blog</code></pre>
+
+    <h2>Blog</h2>
+    <p>
+      Las secciones de blog listan sus entradas de la más reciente a la más antigua, y la
+      compilación añade una página índice con todas las entradas por fecha, una página por
+      etiqueta y un feed RSS. Este blog es una de ellas: consulta
+      <a href="/es/customization/article-sections.html">Secciones de artículos</a>.
+    </p>
+  </body>
+</html>

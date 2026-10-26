@@ -1,0 +1,207 @@
+<title>Sintaxis avanzada</title>
+<meta
+  name="description"
+  content="Cualquier elemento HTML, los estilos y scripts propios de una página, matemáticas, diagramas Mermaid y componentes del proyecto."
+/>
+<meta name="order" content="38" />
+<meta name="icon" content="puzzle" />
+
+<h1>Sintaxis avanzada</h1>
+
+<h2>Bloques HTML</h2>
+<p>
+  Una página es HTML, así que todos los elementos funcionan directamente. Algunos ejemplos
+  habituales son <code>&lt;kbd&gt;</code> para atajos de teclado,
+  <code>&lt;sup&gt;</code>/<code>&lt;sub&gt;</code> para superíndices y subíndices, y
+  <code>&lt;details&gt;</code>/<code>&lt;summary&gt;</code> para acordeones.
+</p>
+<pre><code>Press &lt;kbd&gt;Ctrl&lt;/kbd&gt; + &lt;kbd&gt;C&lt;/kbd&gt; to copy. Water is H&lt;sub&gt;2&lt;/sub&gt;O.</code></pre>
+<p>
+  Se renderiza como: Pulsa <kbd>Ctrl</kbd> + <kbd>C</kbd> para copiar. El agua es
+  H<sub>2</sub>O.
+</p>
+<p>
+  Prefiere los elementos semánticos a las clases y al <code>style</code> en línea: el tema
+  da estilo a los propios elementos, y eso es lo que hace que todas las páginas parezcan
+  del mismo sitio. Para cambiar el aspecto en todo el sitio, sobrescribe un
+  <a href="/es/authoring/rich-elements.html">token del tema</a>.
+</p>
+
+<h2>Renderizado de MDX</h2>
+<p>
+  No hay lenguaje de plantillas: lo que una página necesita más allá del HTML viene de su
+  propio <code>&lt;head&gt;</code>. Los <code>&lt;link&gt;</code>,
+  <code>&lt;style&gt;</code> y <code>&lt;script&gt;</code> de una página se conservan y se
+  añaden al head del layout, después del tema:
+</p>
+<pre><code class="language-html">&lt;title&gt;Version&lt;/title&gt;
+&lt;script type="module"&gt;
+  document.querySelector("#version").textContent = "2.0.0"
+&lt;/script&gt;
+
+&lt;h1&gt;Version&lt;/h1&gt;
+&lt;p&gt;The current version is &lt;strong id="version"&gt;&lt;/strong&gt;.&lt;/p&gt;</code></pre>
+<p>
+  Es una vía de escape para casos de uso avanzados. Para marcado compartido entre páginas,
+  usa un <a href="#documentos-incluidos">componente del proyecto</a>.
+</p>
+
+<h2>Expresiones LaTeX</h2>
+<p>
+  El LaTeX entre signos de dólar se renderiza a MathML al compilar, que los navegadores
+  dibujan de forma nativa, sin script ni fuente web. Un dólar simple es en línea, y un
+  dólar doble, un bloque centrado:
+</p>
+<pre><code class="language-html">&lt;p&gt;Inline: $E = mc^2$, with $x$, $\alpha$ or $\sum_{i=1}^{n} i$.&lt;/p&gt;
+&lt;p&gt;$$\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}$$&lt;/p&gt;</code></pre>
+<p>Se renderiza como:</p>
+<p>En línea: $E = mc^2$, con $x$, $\alpha$ o $\sum_{i=1}^{n} i$.</p>
+<p>$$\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}$$</p>
+<p>$$f(x) = \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{(x-\mu)^2}{2\sigma^2}}$$</p>
+<p>Matrices y ecuaciones alineadas:</p>
+<p>
+  $$\begin{pmatrix} a &amp; b \\ c &amp; d \end{pmatrix} \begin{pmatrix} x \\ y
+  \end{pmatrix} = \begin{pmatrix} ax + by \\ cx + dy \end{pmatrix}$$
+</p>
+<p>
+  Un signo de dólar solo es matemáticas alrededor de algo que lo parece: el de apertura va
+  seguido de un carácter que no es un espacio, y el de cierre sigue a un carácter que no
+  es un espacio y no va seguido de un dígito. Así, los precios, como en "cuesta $5 y $10",
+  se quedan como texto, y <code>\$</code> es siempre un signo de dólar normal. Un par
+  <code>$$</code> debe estar dentro de un mismo elemento. El código, los enlaces y los
+  elementos <code>data-literal</code> no se tocan.
+</p>
+<p>
+  <code>&lt;htmlpress-math&gt;</code> escribe lo mismo sin dólares;
+  <code>display</code> lo convierte en un bloque:
+</p>
+<pre><code class="language-html">&lt;htmlpress-math display&gt;a^2 + b^2 = c^2&lt;/htmlpress-math&gt;</code></pre>
+<htmlpress-math display>a^2 + b^2 = c^2</htmlpress-math>
+<p>
+  Un LaTeX no válido hace fallar la compilación con el mensaje del analizador. La copia en
+  Markdown de la página conserva el código fuente <code>$…$</code>. Una página puede
+  seguir escribiendo MathML a mano.
+</p>
+
+<h2>Diagramas Mermaid</h2>
+<p>
+  Un <code>&lt;pre&gt;</code> dentro de <code>&lt;htmlpress-mermaid&gt;</code> contiene
+  código fuente de <a href="https://mermaid.js.org">Mermaid</a>, dibujado en el tema
+  actual y redibujado cuando cambia el tema. Escapa <code>&lt;</code> y
+  <code>&amp;</code> en el código fuente. La biblioteca se carga desde jsDelivr solo en
+  las páginas que tienen un diagrama; sin conexión, se muestra el código fuente en su
+  lugar.
+</p>
+<pre><code class="language-html">&lt;htmlpress-mermaid&gt;
+  &lt;pre&gt;flowchart LR
+  pages[HTML pages] --&amp;gt; build[htmlpress build] --&amp;gt; site[Static site]&lt;/pre&gt;
+&lt;/htmlpress-mermaid&gt;</code></pre>
+<p>Se renderiza como:</p>
+<htmlpress-mermaid>
+  <pre>
+flowchart LR
+  pages[HTML pages] --&gt; build[htmlpress build] --&gt; site[Static site]</pre>
+</htmlpress-mermaid>
+<pre><code class="language-html">&lt;htmlpress-mermaid&gt;
+  &lt;pre&gt;pie title Languages
+  "Rust" : 45
+  "TypeScript" : 30
+  "Python" : 15
+  "Other" : 10&lt;/pre&gt;
+&lt;/htmlpress-mermaid&gt;</code></pre>
+<p>Se renderiza como:</p>
+<htmlpress-mermaid>
+  <pre>
+pie title Languages
+  "Rust" : 45
+  "TypeScript" : 30
+  "Python" : 15
+  "Other" : 10</pre>
+</htmlpress-mermaid>
+
+<h2>Documentos incluidos</h2>
+<p>
+  Un componente del proyecto comparte marcado entre páginas. Un archivo en
+  <code>.htmlpress/components/&lt;name&gt;/&lt;name&gt;.html</code> rellena cada
+  <code>&lt;htmlpress-&lt;name&gt;&gt;</code> de cada página al compilar:
+</p>
+<htmlpress-file-tree>
+  <ul>
+    <li>
+      .htmlpress
+      <ul>
+        <li>
+          components
+          <ul>
+            <li>
+              disclaimer
+              <ul>
+                <li>disclaimer.html</li>
+                <li>disclaimer.css</li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li>guide.html</li>
+  </ul>
+</htmlpress-file-tree>
+<pre><code class="language-html">&lt;!-- .htmlpress/components/disclaimer/disclaimer.html --&gt;
+&lt;aside&gt;&lt;p&gt;Provided as-is, without warranty.&lt;/p&gt;&lt;/aside&gt;
+
+&lt;!-- guide.html --&gt;
+&lt;htmlpress-disclaimer&gt;&lt;/htmlpress-disclaimer&gt;</code></pre>
+<ul>
+  <li>
+    Su <code>.css</code> y su <code>.js</code> se cargan solo en las páginas donde aparece
+    la etiqueta; la etiqueta se mantiene alrededor del marcado insertado, así que su CSS
+    se limita a la etiqueta, <code>@scope (htmlpress-disclaimer)</code>.
+  </li>
+  <li>
+    La carpeta es la etiqueta sin su prefijo <code>htmlpress-</code>, igual que la de un
+    componente integrado: una carpeta con el nombre de un componente integrado, como
+    <code>tabs</code>, lo sustituye.
+  </li>
+</ul>
+<p>
+  Consulta
+  <a href="/es/customization/overriding-escaping.html">Sobrescritura/Escape</a> para ver
+  todos los archivos bajo <code>.htmlpress/</code>.
+</p>
+<p>
+  <code>&lt;htmlpress-include src="…"&gt;</code> inserta otro archivo por su ruta,
+  relativa a la página (o al proyecto con una <code>/</code> inicial): el cuerpo de un
+  archivo <code>.html</code>, un archivo <code>.md</code> renderizado (sin su
+  frontmatter), o cualquier otro archivo como un bloque de código titulado con su nombre y
+  resaltado según su extensión.
+</p>
+<pre><code class="language-html">&lt;htmlpress-include src="../includes/disclaimer.md"&gt;&lt;/htmlpress-include&gt;</code></pre>
+<p>Se renderiza como:</p>
+<htmlpress-include src="../includes/disclaimer.md"></htmlpress-include>
+<p>
+  Un archivo de código acepta los atributos de los bloques de código, como
+  <code>data-lines</code>, <code>data-line-numbers</code> o <code>data-title</code>, que
+  sustituye al nombre del archivo:
+</p>
+<pre><code class="language-html">&lt;htmlpress-include src="../includes/build.ts" data-lines="3"&gt;&lt;/htmlpress-include&gt;</code></pre>
+<p>Se renderiza como:</p>
+<htmlpress-include src="../includes/build.ts" data-lines="3"></htmlpress-include>
+<ul>
+  <li>
+    Las inclusiones se anidan hasta cinco niveles, y una página expande como máximo 1000
+    de ellas o 16 MB. Un archivo que no existe, un ciclo, o una ruta que sale del proyecto
+    o nombra un archivo que empieza por punto, <code>node_modules</code> o
+    <code>.htmlpress</code>, hace fallar la compilación: un archivo incluido se publica.
+  </li>
+  <li>
+    Deja los parciales fuera del sitio con <code>exclude</code>, como hace este sitio con
+    <code>exclude: rust/docs/includes/**</code>; de lo contrario, un parcial
+    <code>.html</code> sería también una página.
+  </li>
+  <li>
+    El enlace "Editar esta página" y la fecha de actualización siguen siendo los de la
+    página; editar un archivo incluido recompila la página con
+    <code>htmlpress start</code>.
+  </li>
+</ul>

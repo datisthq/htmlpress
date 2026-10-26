@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="zh">
+  <head>
+    <title>Hugo 与 Htmlpress 对比</title>
+    <meta
+      name="description"
+      content="两款单一二进制的静态站点生成器：文档优先的纯 HTML 与通用的 Go。"
+    />
+    <meta name="order" content="68" />
+    <meta name="icon" content="feather" />
+  </head>
+  <body>
+    <h1>Hugo 与 Htmlpress 对比</h1>
+    <p>
+      <a href="https://gohugo.io">Hugo</a> 是一款用 Go
+      编写的通用静态站点生成器。它以单一二进制文件发布，构建速度极快，借助
+      <a href="https://www.docsy.dev">Docsy</a> 和
+      <a href="https://github.com/alex-shpak/hugo-book">Hugo Book</a>
+      等社区主题，从博客、作品集到文档站点都能胜任。
+    </p>
+    <h2>概览</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>维度</th>
+          <th>Htmlpress</th>
+          <th>Hugo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>语言 / 运行时</td>
+          <td>Rust（单一二进制文件，无运行时）</td>
+          <td>Go（单一二进制文件，无运行时）</td>
+        </tr>
+        <tr>
+          <td>UI 框架</td>
+          <td>无（纯 HTML + CSS，<code>htmlpress-*</code> Web 组件）</td>
+          <td>Go 模板（HTML + CSS）</td>
+        </tr>
+        <tr>
+          <td>构建工具</td>
+          <td>htmlpress 二进制文件</td>
+          <td>Hugo 二进制文件</td>
+        </tr>
+        <tr>
+          <td>内容格式</td>
+          <td>HTML 页面</td>
+          <td>带 Hugo 短代码的 Markdown</td>
+        </tr>
+        <tr>
+          <td>许可证</td>
+          <td>MIT，自托管</td>
+          <td>Apache-2.0，自托管</td>
+        </tr>
+        <tr>
+          <td>输出模式</td>
+          <td>预渲染静态页面</td>
+          <td>预渲染静态页面</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>架构</h2>
+    <p>
+      htmlpress 是一个 Rust 二进制文件，可从 npm（<code>gethtmlpress</code>）、PyPI 或
+      crates.io 安装。它用一个布局包裹每个 HTML 页面，并配上导航和主题；没有打包器、没有
+      UI 框架，也没有插件
+      API。每个内置文件——布局、样式、脚本以及每个组件——都可以被覆盖：在
+      <code>.htmlpress/</code> 下的相同路径放一个文件即可替换它。
+    </p>
+    <p>
+      Hugo 是单一的 Go
+      二进制文件——没有运行时依赖，也没有安装依赖包的步骤。站点结构基于约定：<code>content/</code>、<code>layouts/</code>、<code>static/</code>、<code>themes/</code>、<code>config.toml</code>（或
+      <code>.yaml</code>/<code>.json</code>）。布局使用 Go 的
+      <code>html/template</code> 语法。主题以 git 子模块的方式引入或复制到
+      <code>themes/&lt;name&gt;/</code> 中。htmlpress 的布局是不含模板语法的纯
+      HTML：由二进制文件填充其中的 <code>htmlpress-*</code> 占位元素。
+    </p>
+    <p>
+      Hugo
+      并非专为文档而生。同一个二进制文件可以驱动博客、营销站点、作品集和文档——文档场景是通过主题来支持的，而不是一等的栏目类型。
+    </p>
+    <p>
+      在 htmlpress 这边，内容布局不受约束：它按 glob 扫描（<code>htmlpress.yaml</code>
+      中的 <code>include</code>/<code>exclude</code>，默认扫描所有
+      <code>.html</code> 文件），页面的 URL 取决于它在 glob 基础目录下的文件路径，因此
+      <code>docs/**/*.html</code> 会把 <code>docs/guide.html</code> 发布在
+      <code>/guide.html</code>。不要求存在 <code>docs/</code>
+      文件夹。导航由文件夹结构和每个页面的
+      <code>&lt;meta name="order"&gt;</code> 构建；文件夹的
+      <code>index.html</code> 为其分组命名。Hugo 从 <code>content/</code>
+      读取内容，URL 结构与目录树一致（并可通过各栏目的 frontmatter 覆盖）。
+    </p>
+    <h2>内容层面</h2>
+    <p>Hugo 接受带 frontmatter 的 Markdown；htmlpress 接受 HTML 页面。</p>
+    <p>
+      Hugo 通过<strong>短代码</strong>嵌入组件——这是一种以 Go 模板编写的函数，在 Markdown
+      中以 <code>{{&lt; shortcode-name arg="value" &gt;}}</code> 调用。短代码定义在
+      <code>layouts/shortcodes/*.html</code> 中，是 Go 模板片段，直接输出 HTML。htmlpress
+      中最接近的对应物是项目组件：<code
+        >.htmlpress/components/&lt;name&gt;/&lt;name&gt;.html</code
+      >
+      会在构建时填充每一个 <code>&lt;htmlpress-&lt;name&gt;&gt;</code>。
+    </p>
+    <p>
+      Hugo 支持基于 Goldmark 的 Markdown
+      扩展（脚注、表格、定义列表，以及借助插件实现的数学公式）。如需更丰富的交互，通常的做法是嵌入
+      <code>&lt;script&gt;</code>，或在短代码中把 JS 框架作为孤岛使用。
+    </p>
+    <p>
+      htmlpress 页面是纯语义化 HTML，主题直接根据元素本身设置样式。更丰富的区块是
+      <code>htmlpress-*</code>
+      自定义元素（<code>htmlpress-callout</code>、<code>htmlpress-tabs</code>、<code>htmlpress-steps</code>、<code
+        >htmlpress-grid</code
+      >
+      等），其 CSS 和 JS 只会链接到使用该标签的页面。项目可以通过
+      <code>.htmlpress/components/&lt;name&gt;/&lt;name&gt;.html</code>
+      添加自己的标签，它会在构建时替换该标签。
+    </p>
+    <p>
+      htmlpress 没有 frontmatter：页面的元数据就是它自己的
+      <code>&lt;head&gt;</code>——<code>&lt;title&gt;</code>、<code
+        >&lt;meta name="description"&gt;</code
+      >、<code>&lt;meta name="order"&gt;</code>、<code>&lt;meta name="layout"&gt;</code>
+      和 <code>&lt;meta name="image"&gt;</code>；其他
+      <code>&lt;head&gt;</code> 标签会原样保留。Hugo 接受 TOML、YAML 或 JSON 格式的
+      frontmatter，字段包括
+      <code>title</code
+      >、<code>date</code>、<code>draft</code>、<code>weight</code>、<code>taxonomies</code>，以及用户自定义字段。
+    </p>
+    <h2>功能矩阵</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>功能</th>
+          <th>Htmlpress</th>
+          <th>Hugo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>版本管理</td>
+          <td>部分支持（每个版本一个分区或一次部署）</td>
+          <td>否（需通过分支/多个站点手动实现）</td>
+        </tr>
+        <tr>
+          <td>国际化（i18n）</td>
+          <td>是（翻译、语言选择器、内置 7 种界面语言）</td>
+          <td>是（内置，多语言模式）</td>
+        </tr>
+        <tr>
+          <td>搜索</td>
+          <td>是（内置，客户端）</td>
+          <td>否（由主题提供或使用外部服务）</td>
+        </tr>
+        <tr>
+          <td>博客</td>
+          <td>否</td>
+          <td>是（任何栏目都可按日期排序）</td>
+        </tr>
+        <tr>
+          <td>更新日志</td>
+          <td>否</td>
+          <td>否（手动）</td>
+        </tr>
+        <tr>
+          <td>站点地图</td>
+          <td>是（需设置 <code>site</code>）</td>
+          <td>是（内置）</td>
+        </tr>
+        <tr>
+          <td>RSS</td>
+          <td>否</td>
+          <td>是（内置，按栏目）</td>
+        </tr>
+        <tr>
+          <td>主题</td>
+          <td><code>.htmlpress/</code> 中的覆盖文件 + <code>--htmlpress-*</code> 令牌</td>
+          <td>主题目录及模板覆盖</td>
+        </tr>
+        <tr>
+          <td>插件</td>
+          <td>否（使用 <code>.htmlpress/components/</code> 中的项目组件）</td>
+          <td>Hugo Modules（Go）、短代码、钩子</td>
+        </tr>
+        <tr>
+          <td>自定义路由</td>
+          <td>
+            任意 <code>.html</code> 文件；额外布局放在 <code>.htmlpress/layouts/</code>
+          </td>
+          <td>布局 + 内容栏目</td>
+        </tr>
+        <tr>
+          <td>独立工具链</td>
+          <td>单一 Rust 二进制文件（npm、PyPI 或 crates.io）</td>
+          <td>单一 Go 二进制文件</td>
+        </tr>
+        <tr>
+          <td>构建速度</td>
+          <td>原生二进制文件，无打包器</td>
+          <td>属于最快的静态站点生成器之一</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>输出与部署</h2>
+    <p>
+      两款工具都会生成可部署到任意静态托管平台的静态 HTML 和资源文件。Hugo 默认输出到
+      <code>public/</code>；htmlpress 输出到 <code>.htmlpress/build/</code>。
+    </p>
+    <p>
+      htmlpress 会把每个页面写成 <code>.htmlpress/build/</code> 中的静态 HTML，同时生成
+      <code>robots.txt</code>、设置了 <code>site</code> 时的
+      <code>sitemap.xml</code>、每个页面的 Markdown 副本、<code>llms.txt</code>，以及
+      <code>.well-known/agent-skills/</code> 下的智能体技能。<code>base</code>
+      键可让站点在子路径下提供服务。各托管平台的指南见<a href="/zh/deployment/">部署</a>。
+    </p>
+    <h2>另请参阅</h2>
+    <ul>
+      <li><a href="/zh/authoring/">编写</a>——htmlpress 的 HTML 编写方式。</li>
+      <li><a href="/zh/customization/">自定义</a>——htmlpress 的配置键与覆盖文件。</li>
+      <li><a href="/zh/comparison/">对比</a>——返回索引。</li>
+    </ul>
+  </body>
+</html>

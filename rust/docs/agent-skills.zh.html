@@ -1,0 +1,121 @@
+<title>智能体技能</title>
+<meta name="description" content="教你的编码智能体编写、检查和自定义 htmlpress 站点。" />
+<meta name="order" content="20" />
+<meta name="icon" content="sparkles" />
+
+<h1>智能体技能</h1>
+<p>
+  Htmlpress 提供五个<a href="https://agentskills.io/">智能体技能（Agent Skills）</a>，告诉
+  Claude Code、Cursor 和 Codex 等编码智能体 htmlpress
+  项目是如何运作的。安装之后，你的智能体就会了解页面约定、有哪些组件、允许哪些配置键、如何弹出布局、如何部署以及如何检查自己的工作。你无需在提示词中解释其中任何一项。
+</p>
+<p>
+  Htmlpress 让智能体的工作保持简单：编写语义化 HTML，只在 HTML
+  没有对应元素时才使用组件，并把样式交给主题。页面提供的选择越少，所有页面看起来就越像同一个站点。
+</p>
+<table>
+  <thead>
+    <tr>
+      <th>技能</th>
+      <th>你的智能体在以下情况使用它</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>htmlpress-authoring</code></td>
+      <td>编写或编辑页面：meta 标签、标题、组件、代码块、数学公式和引入文件</td>
+    </tr>
+    <tr>
+      <td><code>htmlpress-configuration</code></td>
+      <td>编辑 <code>htmlpress.yaml</code>：分区、链接、补丁、include 和 exclude</td>
+    </tr>
+    <tr>
+      <td><code>htmlpress-customization</code></td>
+      <td>更改外观：令牌、弹出文件、布局和项目组件</td>
+    </tr>
+    <tr>
+      <td><code>htmlpress-landing</code></td>
+      <td>设计落地页，以 htmlpress.dev 自己的落地页为参考</td>
+    </tr>
+    <tr>
+      <td><code>htmlpress-deployment</code></td>
+      <td>将构建结果发布到 Cloudflare、GitHub Pages、Vercel、Netlify 或任何托管平台</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>从网站安装</h2>
+<p>
+  htmlpress.dev 在
+  <a href="/.well-known/agent-skills/index.json">/.well-known/agent-skills/</a>
+  下发布其技能，因此
+  <a href="https://github.com/vercel-labs/skills"><code>skills</code> CLI</a>
+  可以通过站点 URL 安装它们。在项目根目录运行：
+</p>
+<pre><code class="language-sh">npx skills add https://htmlpress.dev</code></pre>
+<p>它会询问要安装哪些技能以及为哪些智能体安装。要跳过这些提示，请以参数形式传入：</p>
+<pre><code class="language-sh">npx skills add https://htmlpress.dev --skill htmlpress-authoring --agent claude-code</code></pre>
+<p>
+  添加 <code>--global</code> 可为当前用户而非项目安装，添加
+  <code>--list</code> 可在不安装任何内容的情况下查看可用技能。之后运行
+  <code>npx skills update</code> 即可拉取更新的版本。
+</p>
+
+<h2>从软件包安装</h2>
+<htmlpress-callout type="info" label="即将推出">
+  <p>
+    这些技能尚未打包进 npm、PyPI 或 crates.io
+    的软件包中。在此之前，请从网站安装，或从仓库的
+    <a href="https://github.com/datisthq/htmlpress/tree/main/.skills">.skills/</a>
+    中复制。
+  </p>
+</htmlpress-callout>
+
+<h2>使用技能</h2>
+<p>
+  你无需亲自调用技能。智能体会读取每个技能的描述，并在任务匹配时加载它：请求新页面会加载
+  <code>htmlpress-authoring</code>，更改站点外观则会加载
+  <code>htmlpress-customization</code
+  >。如果你的智能体支持按名称调用技能，你也可以直接调用，例如在 Claude Code 中使用
+  <code>/htmlpress-deployment</code>。
+</p>
+
+<h3>工作循环</h3>
+<ol>
+  <li>运行一次 <code>htmlpress --llms</code> 来了解各条命令。</li>
+  <li>在项目文件夹中编写或编辑页面。</li>
+  <li>
+    运行 <code>htmlpress build &lt;root&gt; --json</code>，读取 <code>pages</code> 以及
+    stderr 上的任何错误。
+  </li>
+  <li>
+    如需目视检查，运行 <code>htmlpress start &lt;root&gt;</code> 并在浏览器中打开页面。
+  </li>
+</ol>
+
+<h3>值得交给智能体的规则</h3>
+<ul>
+  <li>
+    每个页面一个 <code>&lt;title&gt;</code> 和一个
+    <code>&lt;h1&gt;</code>；在导航顺序重要的地方添加
+    <code>&lt;meta name="order"&gt;</code>。
+  </li>
+  <li>
+    不使用内联 <code>style</code>，不为外观添加类名：改为覆盖
+    <code>--htmlpress-*</code> 令牌。
+  </li>
+  <li>
+    只使用<a href="/zh/authoring/rich-elements.html">文档中列出的组件</a>；其余一律使用纯
+    HTML。
+  </li>
+  <li>永远不要编辑 <code>.htmlpress/build</code>。</li>
+</ul>
+
+<h2>另请参阅</h2>
+<ul>
+  <li>
+    <a href="/zh/customization/ai-agents.html">AI 智能体</a
+    >：以同样的方式发布你自己项目的技能，与每次构建生成的 Markdown 副本和
+    <code>llms.txt</code> 放在一起。
+  </li>
+</ul>

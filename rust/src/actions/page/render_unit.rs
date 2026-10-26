@@ -571,9 +571,33 @@ fn writes_the_ui_in_the_pages_language() -> crate::Result<()> {
     ));
     assert!(html.contains(r#"<a rel="prev" href="/"><small>Anterior</small>Home</a>"#));
     assert!(html.contains(r#""search.label":"Buscar""#));
+    site.pages[1].content = r#"<htmlpress-callout type="warning"><p>!</p></htmlpress-callout><htmlpress-callout label="Ojo"></htmlpress-callout>"#.to_owned();
+    let callouts = render_page(&site, &site.pages[1], false)?;
+    assert!(
+        callouts.contains(r#"<htmlpress-callout type="warning" label="Advertencia">"#)
+    );
+    assert!(callouts.contains(r#"<htmlpress-callout label="Ojo">"#));
     let home = render_page(&site, &site.pages[0], false)?;
     assert!(home.contains(r#"<html lang="fa" dir="rtl">"#));
     assert!(home.contains("<p>Created with"));
+    Ok(())
+}
+
+#[test]
+fn leads_a_custom_section_to_the_pages_translation() -> crate::Result<()> {
+    let mut site = create_sectioned_site()?;
+    site.config.sections.push(Section {
+        title: "Start".into(),
+        kind: SectionKind::Custom,
+        url: Some("/guide.html".to_owned()),
+        ..Section::default()
+    });
+    let mut versions = std::collections::BTreeMap::new();
+    versions.insert("es".to_owned(), "/es/guide.html".to_owned());
+    site.translations.insert("/guide.html".to_owned(), versions);
+    site.pages[0].language = "es".to_owned();
+    let html = render_page(&site, &site.pages[0], false)?;
+    assert!(html.contains(r#"<a href="/es/guide.html" data-section>Start</a>"#));
     Ok(())
 }
 

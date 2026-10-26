@@ -1,0 +1,178 @@
+<title>代码块</title>
+<meta name="description" content="带有复制按钮、包管理器标签页和终端窗口的代码块。" />
+<meta name="order" content="37" />
+<meta name="icon" content="code" />
+
+<h1>代码块</h1>
+<p>
+  代码块就是
+  <code>&lt;pre&gt;&lt;code&gt;</code
+  >，由主题以等宽字体设置样式。每个代码块都有一个复制按钮。其中的代码需要转义：
+  <code>&lt;</code> 写作 <code>&amp;lt;</code>，<code>&amp;</code> 写作
+  <code>&amp;amp;</code>。代码块的标签页在
+  <a href="/zh/authoring/rich-elements.html">代码标签页</a>中介绍。
+</p>
+<pre><code class="language-html">&lt;pre&gt;&lt;code&gt;const greeting = "&amp;lt;hello&amp;gt;"&lt;/code&gt;&lt;/pre&gt;</code></pre>
+<p>渲染为：</p>
+<pre><code>const greeting = "&lt;hello&gt;"</code></pre>
+<h2>语法高亮</h2>
+<p>
+  <code>&lt;code&gt;</code> 上的 <code>language-*</code> 类会在构建时使用 VS Code 的
+  TextMate 语法为代码块着色，输出与 Shiki 相同，并提供跟随读者偏好的浅色和深色主题（见
+  <a href="/zh/customization/syntax-themes.html">语法主题</a>）。内置支持 220
+  多种语言及其常用别名（<code>ts</code>、<code>sh</code>、<code>yml</code>）；未知语言或自带标记的代码块保持纯文本。
+</p>
+<pre><code class="language-html">&lt;pre&gt;&lt;code class="language-rust"&gt;fn main() {
+    println!("hello");
+}&lt;/code&gt;&lt;/pre&gt;</code></pre>
+<p>渲染为：</p>
+<pre><code class="language-rust">fn main() {
+    println!("hello");
+}</code></pre>
+
+<h2>标题</h2>
+<p>
+  <code>&lt;pre&gt;</code> 上的
+  <code>data-title</code> 会为代码块添加标题栏，通常是文件名；无论代码块是否高亮都有效。
+</p>
+<pre><code class="language-html">&lt;pre data-title="htmlpress.yaml"&gt;&lt;code class="language-yaml"&gt;title: Htmlpress&lt;/code&gt;&lt;/pre&gt;</code></pre>
+<p>渲染为：</p>
+<pre data-title="htmlpress.yaml"><code class="language-yaml">title: Htmlpress</code></pre>
+
+<h2>行高亮</h2>
+<p>
+  高亮代码块上的 <code>data-lines</code> 用于标记行，从 1
+  开始计数：可以是单行或范围，以逗号分隔。
+</p>
+<pre><code class="language-html">&lt;pre&gt;&lt;code class="language-js" data-lines="2"&gt;…&lt;/code&gt;&lt;/pre&gt;</code></pre>
+<pre><code class="language-js" data-lines="2">const a = 1
+const b = 2
+const c = 3</code></pre>
+
+<h2>单词高亮</h2>
+<p>
+  高亮代码块上的
+  <code>data-words</code>
+  会标记每个逗号分隔单词的所有出现位置。被语法拆分成两个词法单元的单词不会被标记。
+</p>
+<pre><code class="language-html">&lt;pre&gt;&lt;code class="language-js" data-words="greeting"&gt;…&lt;/code&gt;&lt;/pre&gt;</code></pre>
+<pre><code class="language-js" data-words="greeting">const greeting = "hello"
+console.log(greeting)</code></pre>
+
+<h2>行号</h2>
+<p>
+  高亮代码块上的 <code>data-line-numbers</code> 会为各行编号；
+  <code>data-line-numbers="10"</code> 从 10 开始。复制按钮不会复制行号。
+</p>
+<pre><code class="language-js" data-line-numbers="10">const a = 1
+const b = 2</code></pre>
+
+<h2>差异行</h2>
+<p>
+  高亮代码块上的 <code>data-add</code> 和
+  <code>data-remove</code> 将行标记为新增或删除，并带有复制按钮会忽略的 <code>+</code> 或
+  <code>−</code>。在<a href="#终端">终端</a>中，<code>&lt;ins&gt;</code> 和
+  <code>&lt;del&gt;</code> 会把输出着色为绿色和红色。
+</p>
+<pre><code class="language-html">&lt;pre&gt;&lt;code class="language-js" data-remove="1" data-add="2"&gt;…&lt;/code&gt;&lt;/pre&gt;</code></pre>
+<pre><code class="language-js" data-remove="1" data-add="2">const port = 8080
+const port = 8000
+serve(port)</code></pre>
+
+<h2>聚焦行</h2>
+<p>高亮代码块上的 <code>data-focus</code> 会让其他所有行变暗，直到读者指向该代码块。</p>
+<pre><code class="language-js" data-focus="2">import { build } from "htmlpress"
+await build("docs")
+console.log("done")</code></pre>
+
+<h2>错误和警告</h2>
+<p><code>data-error</code> 和 <code>data-warning</code> 以红色和黄色标记行。</p>
+<pre><code class="language-js" data-error="1" data-warning="2">undefinedCall()
+const unused = 1</code></pre>
+<p>
+  每种行标记都接受与 <code>data-lines</code> 相同的列表，例如
+  <code>2,4-5</code>，无效的列表会导致构建失败。
+</p>
+
+<h2>可折叠代码</h2>
+<p>
+  用 <code>&lt;details&gt;</code> 包裹较长的代码块，可将其隐藏在
+  <code>&lt;summary&gt;</code> 之后：
+</p>
+<pre><code class="language-html">&lt;details&gt;
+  &lt;summary&gt;The full config&lt;/summary&gt;
+  &lt;pre&gt;&lt;code&gt;…&lt;/code&gt;&lt;/pre&gt;
+&lt;/details&gt;</code></pre>
+<p>
+  <code>&lt;pre&gt;</code> 上的
+  <code>data-collapse</code>
+  只显示前几行，代码块下方会出现一个“展开”栏用于显示其余部分；没有脚本时，代码块改为可滚动。不超过该高度的代码块不会出现展开栏。
+</p>
+<pre><code class="language-html">&lt;pre data-collapse="5"&gt;&lt;code class="language-yaml"&gt;…&lt;/code&gt;&lt;/pre&gt;</code></pre>
+<pre data-collapse="5"><code class="language-yaml">steps:
+  build: 1
+  build: 2
+  build: 3
+  build: 4
+  build: 5
+  build: 6
+  build: 7
+  build: 8
+  build: 9
+  build: 10
+  build: 11
+  build: 12</code></pre>
+
+<h2>语言图标</h2>
+<p>
+  带标题的代码块会在标题栏中显示其语言的
+  logo：TypeScript、JavaScript、React（<code>jsx</code>、<code>tsx</code>）、Python、Rust
+  和 shell，与 Livemark 显示的一致；其他语言则显示通用文件图标。
+</p>
+<pre data-title="main.rs"><code class="language-rust">fn main() {}</code></pre>
+<pre data-title="build.sh"><code class="language-sh">htmlpress build docs</code></pre>
+
+<h2>TypeScript 支持</h2>
+<htmlpress-callout label="暂无计划">
+  <p>
+    像 Twoslash 那样在悬停时显示类型信息需要 TypeScript 编译器，而单个 Rust
+    二进制文件并不包含它。TypeScript 代码块与其他代码块一样进行高亮。
+  </p>
+</htmlpress-callout>
+
+<h2>NPM 命令</h2>
+<p>
+  在 <code>&lt;htmlpress-package-tabs&gt;</code> 中写一条 <code>npm</code> 或
+  <code>npx</code> 命令，构建时会把它转换为 npm、pnpm、yarn 和 bun
+  的标签页，并在全站同步。其他行保持原样。
+</p>
+<pre><code class="language-html">&lt;htmlpress-package-tabs&gt;
+  &lt;pre&gt;&lt;code&gt;npm install --save-dev gethtmlpress&lt;/code&gt;&lt;/pre&gt;
+&lt;/htmlpress-package-tabs&gt;</code></pre>
+<p>渲染为：</p>
+<htmlpress-package-tabs>
+  <pre><code>npm install --save-dev gethtmlpress</code></pre>
+</htmlpress-package-tabs>
+
+<h2>终端</h2>
+<p>
+  <code>&lt;htmlpress-terminal&gt;</code> 中的
+  <code>&lt;pre&gt;</code> 看起来像一个终端窗口，在两种主题下都是深色，并以
+  <code>title</code> 命名。其中，<code>&lt;kbd&gt;</code>
+  表示输入的命令（会自动添加提示符），<code>&lt;samp&gt;</code>
+  表示普通输出，<code>&lt;ins&gt;</code>、<code>&lt;del&gt;</code> 和
+  <code>&lt;mark&gt;</code> 分别表示绿色、红色和黄色的输出。
+</p>
+<pre><code class="language-html">&lt;htmlpress-terminal title="zsh"&gt;
+  &lt;pre&gt;&lt;kbd&gt;htmlpress build docs&lt;/kbd&gt;
+&lt;samp&gt;built 7 pages…&lt;/samp&gt;
+&lt;ins&gt;✓ ready&lt;/ins&gt;&lt;/pre&gt;
+&lt;/htmlpress-terminal&gt;</code></pre>
+<p>渲染为：</p>
+<htmlpress-terminal title="zsh">
+  <pre><kbd>htmlpress build docs</kbd>
+<samp>built 7 pages and 0 files into docs/.htmlpress/build</samp>
+<ins>✓ ready</ins>
+<del>✗ 1 page failed</del>
+<mark>! 1 warning</mark></pre>
+</htmlpress-terminal>

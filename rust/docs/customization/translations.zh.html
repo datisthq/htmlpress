@@ -140,7 +140,9 @@ sections:
       每个分区以及每个带有
       <code>prefix</code> 的链接都会在每种语言的前缀下镜像一份：西班牙语博客位于
       <code>/es/blog/</code>，拥有自己的索引、标签页面和 RSS
-      订阅源，先列出西班牙语文章，再列出尚未翻译的默认语言文章。变更日志分区会在每种语言中构建其页面，发布说明保持原文。
+      订阅源，先列出西班牙语文章，再列出尚未翻译的默认语言文章。变更日志分区会在每种语言中构建其页面，发布说明保持原文。若
+      <code>custom</code> 分区的
+      <code>url</code> 指向站点内的页面，且当前语言有该页面的翻译，则会链接到该翻译。
     </p>
 
     <h2>尚未翻译的页面</h2>
@@ -213,7 +215,7 @@ sections:
         >：前缀和分区匹配的工作方式。
       </li>
       <li>
-        <a href="/authoring/frontmatter.html">Frontmatter</a>：页面自身的元数据，包括
+        <a href="/zh/authoring/frontmatter.html">Frontmatter</a>：页面自身的元数据，包括
         <code>&lt;meta name="language"&gt;</code>。
       </li>
     </ul>

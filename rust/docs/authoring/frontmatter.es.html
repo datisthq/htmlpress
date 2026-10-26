@@ -1,0 +1,230 @@
+<title>Frontmatter</title>
+<meta
+  name="description"
+  content="Las etiquetas de head que definen el título, la descripción, la imagen, el orden y el layout de una página."
+/>
+<meta name="order" content="31" />
+<meta name="icon" content="file-text" />
+
+<h1>Frontmatter</h1>
+<p>
+  Una página no tiene frontmatter en YAML: sus metadatos son el propio
+  <code>&lt;head&gt;</code> de HTML. Una página es un documento completo o un fragmento, y
+  htmlpress lee ambos de la misma forma. Todas las etiquetas son opcionales; cuando falta
+  una, htmlpress deduce valores predeterminados razonables a partir del archivo.
+</p>
+<pre><code class="language-html">&lt;title&gt;Getting started&lt;/title&gt;
+&lt;meta name="description" content="Install and run it."&gt;
+&lt;meta name="order" content="1"&gt;
+
+&lt;h1&gt;Getting started&lt;/h1&gt;
+&lt;p&gt;Plain HTML, styled by the theme.&lt;/p&gt;</code></pre>
+<p>
+  El cuerpo se convierte en el contenido de la página dentro del layout. Dale a cada
+  página un <code>&lt;title&gt;</code> y un <code>&lt;h1&gt;</code>.
+</p>
+
+<h2>Metadatos del artículo</h2>
+<p>Identidad y presentación de la página.</p>
+<table>
+  <thead>
+    <tr>
+      <th>Etiqueta</th>
+      <th>Predeterminado</th>
+      <th>Uso</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>&lt;title&gt;</code></td>
+      <td>el primer <code>&lt;h1&gt;</code> o, si no, el nombre del archivo</td>
+      <td>Da nombre a la página en la navegación y en la pestaña del navegador.</td>
+    </tr>
+    <tr>
+      <td><code>&lt;meta name="description"&gt;</code></td>
+      <td><code>description</code> de <code>htmlpress.yaml</code></td>
+      <td>
+        La descripción de la página para los buscadores y las vistas previas en redes
+        sociales.
+      </td>
+    </tr>
+    <tr>
+      <td><code>&lt;meta name="image"&gt;</code></td>
+      <td>ninguno</td>
+      <td>
+        La imagen que se muestra cuando se comparte la página, como
+        <code>og:image</code>; una URL relativa a la raíz se convierte en absoluta con
+        <code>site</code>.
+      </td>
+    </tr>
+    <tr>
+      <td>cualquier otra cosa en <code>&lt;head&gt;</code></td>
+      <td>ninguno</td>
+      <td>
+        Se conserva: los <code>&lt;link&gt;</code>, <code>&lt;style&gt;</code> o
+        <code>&lt;script&gt;</code> propios de una página se añaden al head del layout,
+        después del tema.
+      </td>
+    </tr>
+    <tr>
+      <td><code>&lt;meta name="date"&gt;</code></td>
+      <td>ninguno</td>
+      <td>
+        Cuándo se publicó la página, <code>YYYY-MM-DD</code> (una marca de tiempo se
+        recorta a su fecha; cualquier otra cosa es un error). Se muestra bajo el título y
+        ordena un blog.
+      </td>
+    </tr>
+    <tr>
+      <td><code>&lt;meta name="author"&gt;</code></td>
+      <td>ninguno</td>
+      <td>Un autor que se muestra bajo el título; repite la etiqueta para varios.</td>
+    </tr>
+    <tr>
+      <td><code>&lt;meta name="keywords"&gt;</code></td>
+      <td>ninguno</td>
+      <td>
+        Etiquetas separadas por comas; en un blog cada una recibe una página que lista sus
+        entradas.
+      </td>
+    </tr>
+  </tbody>
+</table>
+<p>
+  La línea bajo el <code>&lt;h1&gt;</code> de la página también indica cuándo cambió su
+  archivo por última vez, a partir de <code>git log</code>, cuando el proyecto está en un
+  repositorio git; esa misma fecha es el <code>&lt;lastmod&gt;</code> de la página en
+  <code>sitemap.xml</code>.
+</p>
+
+<h2>Ajustes de la barra lateral</h2>
+<p>Cómo aparece la página en la navegación.</p>
+<table>
+  <thead>
+    <tr>
+      <th>Etiqueta</th>
+      <th>Predeterminado</th>
+      <th>Uso</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>&lt;meta name="order"&gt;</code></td>
+      <td>ninguno (ordenado por ruta)</td>
+      <td>Una posición de orden entera; consulta "Reglas de orden" más abajo.</td>
+    </tr>
+    <tr>
+      <td><code>&lt;meta name="layout"&gt;</code></td>
+      <td>el layout del sitio</td>
+      <td>
+        Envuelve la página en <code>.htmlpress/layouts/&lt;name&gt;.html</code> en su
+        lugar, para una página que quiere otro marco, como una página de inicio sin la
+        barra lateral. Un layout que no existe hace fallar la compilación; consulta
+        <a href="/es/customization/overriding-escaping.html">Sobrescritura/Escape</a>.
+      </td>
+    </tr>
+    <tr>
+      <td><code>&lt;meta name="label"&gt;</code></td>
+      <td>el título</td>
+      <td>Un nombre más corto para la entrada de la página en la navegación.</td>
+    </tr>
+    <tr>
+      <td><code>&lt;meta name="icon"&gt;</code></td>
+      <td>ninguno</td>
+      <td>
+        Un <a href="/es/authoring/rich-elements.html">icono integrado</a> antes de una
+        entrada de primer nivel de la navegación, o del grupo de una carpeta para su
+        página índice; las páginas dentro de una carpeta no muestran ninguno. Un nombre
+        desconocido hace fallar la compilación.
+      </td>
+    </tr>
+    <tr>
+      <td><code>&lt;meta name="sidebar" content="false"&gt;</code></td>
+      <td><code>true</code></td>
+      <td>
+        Deja la página fuera de la navegación y de los enlaces anterior y siguiente; se
+        sigue compilando y es accesible por su URL.
+      </td>
+    </tr>
+    <tr>
+      <td><code>&lt;meta name="toc" content="false"&gt;</code></td>
+      <td><code>true</code></td>
+      <td>Desactiva la tabla de contenidos de la página.</td>
+    </tr>
+    <tr>
+      <td><code>&lt;meta name="source-url"&gt;</code></td>
+      <td><code>edit</code> seguido de la ruta de la página</td>
+      <td>
+        Adónde lleva el enlace al código fuente de la página, para una página cuyo origen
+        está en otro sitio;
+        <code>&lt;meta name="source-action" content="view"&gt;</code> lo etiqueta como
+        "Ver el código fuente" en lugar de "Editar esta página".
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>Reglas de orden</h3>
+<ul>
+  <li>El <code>index.html</code> de la raíz siempre va primero.</li>
+  <li>
+    Las páginas con un <code>order</code> de 0 o más van a continuación, en orden
+    ascendente.
+  </li>
+  <li>Les siguen las páginas sin él, por ruta.</li>
+  <li>
+    Las páginas con un <code>order</code> negativo van al final, así que
+    <code>-1</code> fija una página al final del todo y <code>-2</code> se coloca justo
+    antes.
+  </li>
+</ul>
+<p>
+  El orden sitúa una página entre sus hermanas: las páginas se anidan bajo el
+  <code>index.html</code> de su carpeta, y una carpeta se coloca donde iría su primera
+  página.
+</p>
+<p>
+  Un <code>order</code> que no es un entero hace fallar la compilación. Un
+  <code>404.html</code> en la raíz es la página que un hosting muestra para una URL que no
+  existe; queda fuera de la navegación, y un proyecto sin ella recibe un "Página no
+  encontrada" integrado.
+</p>
+
+<h2>URL</h2>
+<p>
+  Una página se escribe en la misma ruta desde la que se leyó, e
+  <code>index.html</code> se sirve en su carpeta: <code>guides/index.html</code> en
+  <code>/guides/</code>. Consulta <a href="/es/authoring/links.html">Enlaces</a>.
+</p>
+<p>
+  <code>&lt;meta name="path" content="/start/"&gt;</code> sirve la página en otra URL,
+  independiente de la ruta de su archivo: una ruta que termina en <code>/</code> se
+  compila al <code>index.html</code> de esa carpeta, y una que termina en
+  <code>.html</code> a ese archivo. Dos páginas en una misma URL hacen fallar la
+  compilación.
+</p>
+<p>
+  En un sitio con <code>languages</code>, un archivo llamado <code>guide.es.html</code>, o
+  uno con <code>&lt;meta name="language" content="es"&gt;</code>, es la traducción al
+  español de <code>guide.html</code>, servida en <code>/es/guide.html</code>; consulta
+  <a href="/es/customization/translations.html">Traducciones</a>.
+</p>
+
+<h2>Sobrescribir sin editar</h2>
+<p>
+  Cada campo de esta página también se puede definir desde <code>htmlpress.yaml</code>,
+  sin tocar el archivo; consulta
+  <a href="/es/customization/article-patches.html">Parches de artículos</a>.
+</p>
+
+<h2>Ver también</h2>
+<ul>
+  <li>
+    <a href="/es/customization/article-sections.html">Secciones de artículos</a>: cómo las
+    carpetas agrupan las páginas en la navegación.
+  </li>
+  <li>
+    <a href="/es/customization/article-patches.html">Parches de artículos</a>: definir los
+    metadatos de una página desde la configuración.
+  </li>
+</ul>

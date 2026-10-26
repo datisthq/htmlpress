@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="zh">
+  <head>
+    <title>Docusaurus vs Htmlpress</title>
+    <meta
+      name="description"
+      content="React + MDX 文档框架与纯 HTML 站点构建器的并列技术对比。"
+    />
+    <meta name="order" content="61" />
+    <meta name="icon" content="book-text" />
+  </head>
+  <body>
+    <h1>Docusaurus vs Htmlpress</h1>
+    <p>
+      <a href="https://docusaurus.io">Docusaurus</a> 是由 Meta
+      维护的开源文档框架。它通过基于 Webpack 的构建流水线渲染 React + MDX
+      内容，提供一流的版本管理和国际化支持，并拥有庞大的插件生态。
+    </p>
+    <h2>概览</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>维度</th>
+          <th>Htmlpress</th>
+          <th>Docusaurus</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>语言 / 运行时</td>
+          <td>Rust（单一二进制，无运行时）</td>
+          <td>TypeScript / Node 18+</td>
+        </tr>
+        <tr>
+          <td>UI 框架</td>
+          <td>无（纯 HTML + CSS，<code>htmlpress-*</code> Web 组件）</td>
+          <td>React 18</td>
+        </tr>
+        <tr>
+          <td>构建工具</td>
+          <td>htmlpress 二进制文件</td>
+          <td>Webpack</td>
+        </tr>
+        <tr>
+          <td>内容格式</td>
+          <td>HTML 页面</td>
+          <td>Markdown + MDX</td>
+        </tr>
+        <tr>
+          <td>许可证</td>
+          <td>MIT，自托管</td>
+          <td>MIT，自托管</td>
+        </tr>
+        <tr>
+          <td>输出模型</td>
+          <td>预渲染静态</td>
+          <td>预渲染静态</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>架构</h2>
+    <p>
+      htmlpress 是一个 Rust 二进制文件，可从 npm（<code>gethtmlpress</code>）、PyPI 或
+      crates.io 安装。它把每个 HTML 页面包裹进同一个带导航和主题的布局中；没有打包器、没有
+      UI 框架，也没有插件 API。每个内置文件——布局、样式、脚本和每个组件——都可以被弹出：在
+      <code>.htmlpress/</code> 下相同路径放置一个文件即可替换它。
+    </p>
+    <p>
+      Docusaurus 基于 Webpack 构建。其运行时由 React Router 加上负责主题、插件和内容源的
+      Docusaurus
+      核心组成。插件是一等公民——每个内置功能（文档、博客、页面、搜索）本身都是插件，第三方也以同样的方式扩展系统。
+    </p>
+    <p>
+      在 htmlpress 一侧，内容布局不受约束：它按 glob 扫描（<code>htmlpress.yaml</code>
+      中的 <code>include</code>/<code>exclude</code>，默认是所有 <code>.html</code>
+      文件），页面的 URL 跟随其在 glob 基础路径之下的文件路径，因此
+      <code>docs/**/*.html</code> 会把 <code>docs/guide.html</code> 提供在
+      <code>/guide.html</code>。不要求存在
+      <code>docs/</code> 文件夹。导航由文件夹和每个页面的
+      <code>&lt;meta name="order"&gt;</code> 构建；文件夹的
+      <code>index.html</code> 为其分组命名。Docusaurus 的 docs 插件需要一个
+      <code>docs/</code> 目录（可通过 <code>path</code> 配置，但基于文件夹而非 glob）。
+    </p>
+    <h2>内容形式</h2>
+    <p>
+      Docusaurus 接受带 frontmatter 的 Markdown 和 MDX，并允许在
+      <code>.md</code>/<code>.mdx</code> 文件中嵌入 React 组件。htmlpress
+      两者都不接受：页面就是一个 <code>.html</code> 文件，可以是完整文档，也可以是裸片段。
+    </p>
+    <p>
+      htmlpress 页面是纯语义化 HTML，主题直接根据元素本身设置样式。更丰富的区块是
+      <code>htmlpress-*</code>
+      自定义元素（<code>htmlpress-callout</code>、<code>htmlpress-tabs</code>、
+      <code>htmlpress-steps</code>、<code>htmlpress-grid</code>……），其 CSS 和 JS
+      只在使用该标签的页面上链接。项目可以通过
+      <code>.htmlpress/components/&lt;name&gt;/&lt;name&gt;.html</code>
+      添加自己的标签，它会在构建时替换该标签。Docusaurus 使用 MDX 组件以及
+      <code>admonition</code> 扩展来实现提示框。
+    </p>
+    <p>
+      htmlpress 没有 frontmatter：页面的元数据就是它自己的
+      <code>&lt;head&gt;</code>——<code>&lt;title&gt;</code>、
+      <code>&lt;meta name="description"&gt;</code>、
+      <code>&lt;meta name="order"&gt;</code>、<code>&lt;meta name="layout"&gt;</code> 和
+      <code>&lt;meta name="image"&gt;</code>；其他
+      <code>&lt;head&gt;</code> 标签会被保留。Docusaurus 使用
+      <code>id</code>、<code>slug</code>、
+      <code>sidebar_position</code>、<code>sidebar_label</code>、<code>tags</code>。
+    </p>
+    <h2>功能矩阵</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>能力</th>
+          <th>Htmlpress</th>
+          <th>Docusaurus</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>版本管理</td>
+          <td>部分支持（每个版本一个分区或一次部署）</td>
+          <td>是（内置）</td>
+        </tr>
+        <tr>
+          <td>国际化（i18n）</td>
+          <td>是（翻译、语言选择器、内置 7 种界面语言）</td>
+          <td>是（内置）</td>
+        </tr>
+        <tr>
+          <td>搜索</td>
+          <td>是（内置，客户端）</td>
+          <td>Algolia DocSearch 集成</td>
+        </tr>
+        <tr>
+          <td>博客</td>
+          <td>否</td>
+          <td>是（内置插件）</td>
+        </tr>
+        <tr>
+          <td>更新日志</td>
+          <td>否</td>
+          <td>否（社区插件）</td>
+        </tr>
+        <tr>
+          <td>Sitemap</td>
+          <td>是（设置 <code>site</code> 时）</td>
+          <td>是</td>
+        </tr>
+        <tr>
+          <td>RSS</td>
+          <td>否</td>
+          <td>是（用于博客插件）</td>
+        </tr>
+        <tr>
+          <td>主题</td>
+          <td><code>.htmlpress/</code> 中的弹出文件 + <code>--htmlpress-*</code> 令牌</td>
+          <td>主题包（<code>@docusaurus/theme-*</code>）</td>
+        </tr>
+        <tr>
+          <td>插件</td>
+          <td>否（<code>.htmlpress/components/</code> 中的项目组件）</td>
+          <td>一流的插件 API</td>
+        </tr>
+        <tr>
+          <td>自定义路由</td>
+          <td>
+            任意 <code>.html</code> 文件；<code>.htmlpress/layouts/</code> 中的额外布局
+          </td>
+          <td>由插件定义的路由</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>输出与部署</h2>
+    <p>
+      htmlpress 把每个页面写为 <code>.htmlpress/build/</code> 中的静态 HTML，同时写出
+      <code>robots.txt</code>、设置了 <code>site</code> 时的
+      <code>sitemap.xml</code>、每个页面的 Markdown 副本、<code>llms.txt</code>，以及位于
+      <code>.well-known/agent-skills/</code> 下的智能体技能。<code>base</code>
+      键让站点在子路径下提供服务。托管平台指南见 <a href="/zh/deployment/">部署</a>。
+    </p>
+    <p>
+      Docusaurus 同样预渲染为静态 HTML，输出到
+      <code>build/</code>。其静态输出可以运行在同样的托管平台上（GitHub
+      Pages、Cloudflare、Vercel、Netlify、静态托管）。Docusaurus 的内置 i18n
+      会为每个语言区域生成独立的输出树。
+    </p>
+    <h2>另请参阅</h2>
+    <ul>
+      <li><a href="/zh/authoring/">编写</a>——htmlpress 的 HTML 写作面。</li>
+      <li><a href="/zh/customization/">自定义</a>——htmlpress 的配置键与弹出文件。</li>
+      <li><a href="/zh/comparison/">对比</a>——返回索引。</li>
+    </ul>
+  </body>
+</html>

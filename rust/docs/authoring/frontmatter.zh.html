@@ -1,0 +1,206 @@
+<title>前置元数据</title>
+<meta name="description" content="设置页面标题、描述、图片、排序和布局的 head 标签。" />
+<meta name="order" content="31" />
+<meta name="icon" content="file-text" />
+
+<h1>前置元数据</h1>
+<p>
+  页面没有 YAML 前置元数据：它的元数据就是 HTML 的 <code>&lt;head&gt;</code>
+  本身。页面可以是完整文档，也可以是片段，htmlpress
+  以相同方式读取两者。每个标签都是可选的；缺少某个标签时，htmlpress
+  会根据文件推导出合理的默认值。
+</p>
+<pre><code class="language-html">&lt;title&gt;Getting started&lt;/title&gt;
+&lt;meta name="description" content="Install and run it."&gt;
+&lt;meta name="order" content="1"&gt;
+
+&lt;h1&gt;Getting started&lt;/h1&gt;
+&lt;p&gt;Plain HTML, styled by the theme.&lt;/p&gt;</code></pre>
+<p>
+  body 会成为布局内的页面内容。每个页面应有一个
+  <code>&lt;title&gt;</code> 和一个 <code>&lt;h1&gt;</code>。
+</p>
+
+<h2>文章元数据</h2>
+<p>页面的标识与呈现。</p>
+<table>
+  <thead>
+    <tr>
+      <th>标签</th>
+      <th>默认值</th>
+      <th>用途</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>&lt;title&gt;</code></td>
+      <td>第一个 <code>&lt;h1&gt;</code>，否则为文件名</td>
+      <td>在导航和浏览器标签页中显示的页面名称。</td>
+    </tr>
+    <tr>
+      <td><code>&lt;meta name="description"&gt;</code></td>
+      <td><code>htmlpress.yaml</code> 中的 <code>description</code></td>
+      <td>供搜索引擎和社交预览使用的页面描述。</td>
+    </tr>
+    <tr>
+      <td><code>&lt;meta name="image"&gt;</code></td>
+      <td>无</td>
+      <td>
+        页面被分享时显示的图片，即 <code>og:image</code>；根相对 URL 会借助
+        <code>site</code> 转为绝对 URL。
+      </td>
+    </tr>
+    <tr>
+      <td><code>&lt;head&gt;</code> 中的其他任何内容</td>
+      <td>无</td>
+      <td>
+        保留：页面自己的 <code>&lt;link&gt;</code>、<code>&lt;style&gt;</code> 或
+        <code>&lt;script&gt;</code> 会添加到布局的 head 中，位于主题之后。
+      </td>
+    </tr>
+    <tr>
+      <td><code>&lt;meta name="date"&gt;</code></td>
+      <td>无</td>
+      <td>
+        页面的发布日期，格式为
+        <code>YYYY-MM-DD</code
+        >（时间戳会被截取为日期；其他格式会报错）。显示在标题下方，并用于博客排序。
+      </td>
+    </tr>
+    <tr>
+      <td><code>&lt;meta name="author"&gt;</code></td>
+      <td>无</td>
+      <td>显示在标题下方的作者；有多位作者时重复该标签。</td>
+    </tr>
+    <tr>
+      <td><code>&lt;meta name="keywords"&gt;</code></td>
+      <td>无</td>
+      <td>逗号分隔的标签；在博客中，每个标签都有一个列出其文章的页面。</td>
+    </tr>
+  </tbody>
+</table>
+<p>
+  当项目位于 git 仓库中时，页面 <code>&lt;h1&gt;</code> 下方的那一行还会根据
+  <code>git log</code> 显示文件最后修改的时间；同一日期也会作为页面在
+  <code>sitemap.xml</code> 中的 <code>&lt;lastmod&gt;</code>。
+</p>
+
+<h2>侧边栏设置</h2>
+<p>页面在导航中的显示方式。</p>
+<table>
+  <thead>
+    <tr>
+      <th>标签</th>
+      <th>默认值</th>
+      <th>用途</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>&lt;meta name="order"&gt;</code></td>
+      <td>无（按路径排序）</td>
+      <td>整数排序位置；见下文“排序规则”。</td>
+    </tr>
+    <tr>
+      <td><code>&lt;meta name="layout"&gt;</code></td>
+      <td>站点布局</td>
+      <td>
+        改用
+        <code>.htmlpress/layouts/&lt;name&gt;.html</code>
+        包裹页面，适用于需要不同外观框架的页面，例如不带侧边栏的落地页。布局不存在会导致构建失败；见
+        <a href="/zh/customization/overriding-escaping.html">覆盖/弹出</a>。
+      </td>
+    </tr>
+    <tr>
+      <td><code>&lt;meta name="label"&gt;</code></td>
+      <td>标题</td>
+      <td>页面导航条目的简短名称。</td>
+    </tr>
+    <tr>
+      <td><code>&lt;meta name="icon"&gt;</code></td>
+      <td>无</td>
+      <td>
+        显示在顶层导航条目前的<a href="/zh/authoring/rich-elements.html">内置图标</a
+        >，或用于索引页所在文件夹的分组；文件夹内的页面不显示图标。未知的名称会导致构建失败。
+      </td>
+    </tr>
+    <tr>
+      <td><code>&lt;meta name="sidebar" content="false"&gt;</code></td>
+      <td><code>true</code></td>
+      <td>
+        将页面排除在导航以及上一页和下一页链接之外；页面仍会被构建，并可通过其 URL 访问。
+      </td>
+    </tr>
+    <tr>
+      <td><code>&lt;meta name="toc" content="false"&gt;</code></td>
+      <td><code>true</code></td>
+      <td>关闭页面的目录。</td>
+    </tr>
+    <tr>
+      <td><code>&lt;meta name="source-url"&gt;</code></td>
+      <td><code>edit</code> 加上页面路径</td>
+      <td>
+        页面源码链接的目标地址，适用于源码存放在别处的页面；
+        <code>&lt;meta name="source-action" content="view"&gt;</code>
+        会把链接文字从“编辑此页”改为“查看源码”。
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>排序规则</h3>
+<ul>
+  <li>根目录的 <code>index.html</code> 始终排在最前。</li>
+  <li>其次是 <code>order</code> 为 0 或更大的页面，按升序排列。</li>
+  <li>然后是没有 order 的页面，按路径排列。</li>
+  <li>
+    <code>order</code> 为负数的页面排在最后，因此
+    <code>-1</code> 会把页面固定在最末尾，<code>-2</code> 紧挨在它之前。
+  </li>
+</ul>
+<p>
+  order 决定页面在同级页面中的位置：页面嵌套在其文件夹的
+  <code>index.html</code> 之下，而文件夹位于其第一个页面应在的位置。
+</p>
+<p>
+  非整数的 <code>order</code> 会导致构建失败。根目录下的 <code>404.html</code>
+  是托管服务在 URL
+  不存在时显示的页面；它不会出现在导航中，没有该页面的项目会获得一个内置的“页面未找到”页面。
+</p>
+
+<h2>URL</h2>
+<p>
+  页面会写入与读取时相同的路径，<code>index.html</code> 在其所在文件夹提供服务：
+  <code>guides/index.html</code> 对应 <code>/guides/</code>。见
+  <a href="/zh/authoring/links.html">链接</a>。
+</p>
+<p>
+  <code>&lt;meta name="path" content="/start/"&gt;</code> 让页面在另一个 URL
+  提供服务，与其文件路径无关：以 <code>/</code> 结尾的路径会构建为该文件夹的
+  <code>index.html</code>，以
+  <code>.html</code> 结尾的路径则构建为该文件。两个页面使用同一个 URL 会导致构建失败。
+</p>
+<p>
+  在设置了 <code>languages</code> 的站点上，名为 <code>guide.es.html</code> 的文件，或带有
+  <code>&lt;meta name="language" content="es"&gt;</code> 的文件，就是
+  <code>guide.html</code> 的西班牙语翻译，在 <code>/es/guide.html</code> 提供服务；见
+  <a href="/zh/customization/translations.html">翻译</a>。
+</p>
+
+<h2>无需编辑即可覆盖</h2>
+<p>
+  这里的每个字段也可以在 <code>htmlpress.yaml</code> 中设置，无需改动文件本身；见
+  <a href="/zh/customization/article-patches.html">文章补丁</a>。
+</p>
+
+<h2>另请参阅</h2>
+<ul>
+  <li>
+    <a href="/zh/customization/article-sections.html">文章分区</a> —
+    文件夹如何在导航中对页面分组。
+  </li>
+  <li>
+    <a href="/zh/customization/article-patches.html">文章补丁</a> —
+    通过配置设置页面元数据。
+  </li>
+</ul>

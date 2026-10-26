@@ -1,0 +1,139 @@
+<title>Skills de agente</title>
+<meta
+  name="description"
+  content="Enseña a tu agente de programación a escribir, revisar y personalizar un sitio de htmlpress."
+/>
+<meta name="order" content="20" />
+<meta name="icon" content="sparkles" />
+
+<h1>Skills de agente</h1>
+<p>
+  Htmlpress incluye cinco <a href="https://agentskills.io/">Agent Skills</a> que explican
+  a agentes de programación como Claude Code, Cursor y Codex cómo funciona un proyecto de
+  htmlpress. Una vez instaladas, tu agente conoce el contrato de las páginas, qué
+  componentes existen, qué claves de configuración se permiten, cómo escapar el layout,
+  cómo desplegar y cómo comprobar su trabajo. No tienes que explicarle nada de eso en el
+  prompt.
+</p>
+<p>
+  Htmlpress mantiene pequeño el trabajo de un agente: escribir HTML semántico, usar un
+  componente solo donde HTML no tiene ninguno y dejar los estilos al tema. Cuantas menos
+  opciones ofrece una página, más se parecen las páginas a un mismo sitio.
+</p>
+<table>
+  <thead>
+    <tr>
+      <th>Skill</th>
+      <th>Tu agente la usa al</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>htmlpress-authoring</code></td>
+      <td>
+        escribir o editar páginas: metas, encabezados, componentes, bloques de código,
+        matemáticas e inclusiones
+      </td>
+    </tr>
+    <tr>
+      <td><code>htmlpress-configuration</code></td>
+      <td>
+        editar <code>htmlpress.yaml</code>: secciones, enlaces, parches, include y exclude
+      </td>
+    </tr>
+    <tr>
+      <td><code>htmlpress-customization</code></td>
+      <td>cambiar el aspecto: tokens, escapes, layouts y componentes del proyecto</td>
+    </tr>
+    <tr>
+      <td><code>htmlpress-landing</code></td>
+      <td>diseñar una landing page, con la de htmlpress.dev como referencia</td>
+    </tr>
+    <tr>
+      <td><code>htmlpress-deployment</code></td>
+      <td>
+        publicar la compilación en Cloudflare, GitHub Pages, Vercel, Netlify o cualquier
+        hosting
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Instalar desde el sitio web</h2>
+<p>
+  htmlpress.dev publica sus skills en
+  <a href="/.well-known/agent-skills/index.json">/.well-known/agent-skills/</a>, así que
+  la <a href="https://github.com/vercel-labs/skills">CLI <code>skills</code></a> puede
+  instalarlas desde la URL del sitio. Ejecuta esto en la raíz de tu proyecto:
+</p>
+<pre><code class="language-sh">npx skills add https://htmlpress.dev</code></pre>
+<p>
+  Te pregunta qué skills instalar y para qué agentes. Para saltarte las preguntas, pásalos
+  como flags:
+</p>
+<pre><code class="language-sh">npx skills add https://htmlpress.dev --skill htmlpress-authoring --agent claude-code</code></pre>
+<p>
+  Añade <code>--global</code> para instalarlas para tu usuario en lugar del proyecto, y
+  <code>--list</code> para ver qué hay disponible sin instalar nada. Ejecuta
+  <code>npx skills update</code> más adelante para obtener versiones más recientes.
+</p>
+
+<h2>Instalar desde el paquete</h2>
+<htmlpress-callout type="info" label="Próximamente">
+  <p>
+    Las skills aún no vienen incluidas en los paquetes de npm, PyPI ni crates.io. Hasta
+    entonces, instálalas desde el sitio web o cópialas desde
+    <a href="https://github.com/datisthq/htmlpress/tree/main/.skills">.skills/</a> en el
+    repositorio.
+  </p>
+</htmlpress-callout>
+
+<h2>Usarlas</h2>
+<p>
+  No necesitas invocar una skill tú mismo. Los agentes leen la descripción de cada skill y
+  la cargan cuando una tarea coincide: pedir una página nueva carga
+  <code>htmlpress-authoring</code>, y un cambio en el aspecto del sitio,
+  <code>htmlpress-customization</code>. Si tu agente permite invocar skills por nombre,
+  también puedes llamar a una directamente, como con <code>/htmlpress-deployment</code> en
+  Claude Code.
+</p>
+
+<h3>El ciclo</h3>
+<ol>
+  <li>Ejecuta <code>htmlpress --llms</code> una vez para conocer los comandos.</li>
+  <li>Escribe o edita páginas en la carpeta del proyecto.</li>
+  <li>
+    Ejecuta <code>htmlpress build &lt;root&gt; --json</code> y lee <code>pages</code> y
+    cualquier error en stderr.
+  </li>
+  <li>
+    Para una comprobación visual, ejecuta <code>htmlpress start &lt;root&gt;</code> y abre
+    la página en un navegador.
+  </li>
+</ol>
+
+<h3>Reglas que conviene darle a un agente</h3>
+<ul>
+  <li>
+    Un <code>&lt;title&gt;</code> y un <code>&lt;h1&gt;</code> por página; un
+    <code>&lt;meta name="order"&gt;</code> donde importe el orden de la navegación.
+  </li>
+  <li>
+    Nada de <code>style</code> en línea ni clases para el aspecto: sobrescribe un token
+    <code>--htmlpress-*</code> en su lugar.
+  </li>
+  <li>
+    Solo los <a href="/es/authoring/rich-elements.html">componentes documentados</a>; todo
+    lo demás es HTML sencillo.
+  </li>
+  <li>Nunca edites <code>.htmlpress/build</code>.</li>
+</ul>
+
+<h2>Ver también</h2>
+<ul>
+  <li>
+    <a href="/es/customization/ai-agents.html">Agentes de IA</a>: publica las skills de tu
+    propio proyecto de la misma forma, junto a las copias en Markdown y el
+    <code>llms.txt</code> que escribe cada compilación.
+  </li>
+</ul>

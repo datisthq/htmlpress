@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="zh">
+  <head>
+    <title>Nextra 与 Htmlpress 对比</title>
+    <meta
+      name="description"
+      content="独立的纯 HTML 站点构建工具与采用主题包模型的 Next.js。"
+    />
+    <meta name="order" content="66" />
+    <meta name="icon" content="square-stack" />
+  </head>
+  <body>
+    <h1>Nextra 与 Htmlpress 对比</h1>
+    <p>
+      <a href="https://nextra.site">Nextra</a> 是一个采用主题包架构的 Next.js
+      文档框架。它最初基于 Pages Router，后来也迁移到支持 App
+      Router。文档站点选择一个主题（文档用 <code>nextra-theme-docs</code>，博客用
+      <code>nextra-theme-blog</code>）并对其进行配置。
+    </p>
+    <h2>概览</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>维度</th>
+          <th>Htmlpress</th>
+          <th>Nextra</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>语言 / 运行时</td>
+          <td>Rust（单一二进制文件，无运行时）</td>
+          <td>TypeScript / Node 18+</td>
+        </tr>
+        <tr>
+          <td>UI 框架</td>
+          <td>无（纯 HTML + CSS，<code>htmlpress-*</code> Web 组件）</td>
+          <td>React 18/19（Next.js）</td>
+        </tr>
+        <tr>
+          <td>构建工具</td>
+          <td>htmlpress 二进制文件</td>
+          <td>Next.js（Turbopack/Webpack）</td>
+        </tr>
+        <tr>
+          <td>内容格式</td>
+          <td>HTML 页面</td>
+          <td>Markdown + MDX</td>
+        </tr>
+        <tr>
+          <td>许可证</td>
+          <td>MIT，自托管</td>
+          <td>MIT，自托管</td>
+        </tr>
+        <tr>
+          <td>输出模式</td>
+          <td>预渲染静态页面</td>
+          <td>静态或 SSR（Next.js 模式）</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>架构</h2>
+    <p>
+      htmlpress 是一个 Rust 二进制文件，可从 npm（<code>gethtmlpress</code>）、PyPI 或
+      crates.io 安装。它用一个布局包裹每个 HTML 页面，并配上导航和主题；没有打包器、没有
+      UI 框架，也没有插件
+      API。每个内置文件——布局、样式、脚本以及每个组件——都可以被覆盖：在
+      <code>.htmlpress/</code>
+      下的相同路径放一个文件即可替换它。一个工具、一个可选的配置文件，内容就放在
+      <code>.html</code> 文件中。
+    </p>
+    <p>
+      Nextra 是构建在现有 Next.js 应用之上的一层。搭建过程包括安装
+      <code>nextra</code> 和一个主题包，把它们接入
+      <code>next.config.js</code>，并在每个目录中通过 <code>_meta.json</code>（Pages
+      Router）或 <code>meta.js</code>（App Router）文件定义导航。主题包掌控整个
+      UI；定制通过主题文档中给出的钩子完成。
+    </p>
+    <p>
+      <code>nextra-theme-docs</code> 是 Vercel、SWR、Turbo
+      等众多项目使用的文档主题。它稳定、持续维护，并且在文档场景下功能完备。
+    </p>
+    <p>
+      在 htmlpress 这边，内容布局不受约束：它按 glob 扫描（<code>htmlpress.yaml</code>
+      中的 <code>include</code>/<code>exclude</code>，默认扫描所有
+      <code>.html</code> 文件），页面的 URL 取决于它在 glob 基础目录下的文件路径，因此
+      <code>docs/**/*.html</code> 会把 <code>docs/guide.html</code> 发布在
+      <code>/guide.html</code>。不要求存在 <code>docs/</code>
+      文件夹。导航由文件夹结构和每个页面的
+      <code>&lt;meta name="order"&gt;</code> 构建；文件夹的
+      <code>index.html</code> 为其分组命名。Nextra 从 <code>pages/</code>（Pages
+      Router）或 <code>content/</code>（App Router）读取内容，路由由文件路径和与之并列的
+      <code>_meta.json</code> 文件决定。
+    </p>
+    <h2>内容层面</h2>
+    <p>
+      Nextra 接受带 frontmatter 和内嵌 React 组件的 Markdown + MDX。它通过
+      <code>next-mdx-remote</code> 支持远程 MDX，通过插件支持 KaTeX/Mermaid，并通过 Next
+      的 <code>&lt;Image&gt;</code> 组件进行图片优化。
+    </p>
+    <p>
+      htmlpress 页面是纯语义化 HTML，主题直接根据元素本身设置样式。更丰富的区块是
+      <code>htmlpress-*</code>
+      自定义元素（<code>htmlpress-callout</code>、<code>htmlpress-tabs</code>、<code>htmlpress-steps</code>、<code
+        >htmlpress-grid</code
+      >
+      等），其 CSS 和 JS 只会链接到使用该标签的页面。项目可以通过
+      <code>.htmlpress/components/&lt;name&gt;/&lt;name&gt;.html</code>
+      添加自己的标签，它会在构建时替换该标签。Mermaid 图表以
+      <code>htmlpress-mermaid</code> 的形式内置提供。
+    </p>
+    <p>
+      htmlpress 没有 frontmatter：页面的元数据就是它自己的
+      <code>&lt;head&gt;</code>——<code>&lt;title&gt;</code>、<code
+        >&lt;meta name="description"&gt;</code
+      >、<code>&lt;meta name="order"&gt;</code>、<code>&lt;meta name="layout"&gt;</code>
+      和 <code>&lt;meta name="image"&gt;</code>；其他
+      <code>&lt;head&gt;</code> 标签会原样保留。Nextra 使用
+      frontmatter（<code>title</code>、<code>description</code>、<code>searchable</code>、<code>hide_title</code>），并用每个目录中的
+      <code>_meta.json</code> 定义导航；htmlpress 没有导航文件。
+    </p>
+    <h2>功能矩阵</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>功能</th>
+          <th>Htmlpress</th>
+          <th>Nextra</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>版本管理</td>
+          <td>部分支持（每个版本一个分区或一次部署）</td>
+          <td>否（社区变通方案）</td>
+        </tr>
+        <tr>
+          <td>国际化（i18n）</td>
+          <td>是（翻译、语言选择器、内置 7 种界面语言）</td>
+          <td>是（通过 Next i18n + Nextra 钩子）</td>
+        </tr>
+        <tr>
+          <td>搜索</td>
+          <td>是（内置，客户端）</td>
+          <td>是（内置 FlexSearch，可选 Algolia/Pagefind）</td>
+        </tr>
+        <tr>
+          <td>博客</td>
+          <td>否</td>
+          <td>是（<code>nextra-theme-blog</code>）</td>
+        </tr>
+        <tr>
+          <td>更新日志</td>
+          <td>否</td>
+          <td>否（社区插件）</td>
+        </tr>
+        <tr>
+          <td>站点地图</td>
+          <td>是（需设置 <code>site</code>）</td>
+          <td>通过 Next.js 的 <code>sitemap.ts</code></td>
+        </tr>
+        <tr>
+          <td>RSS</td>
+          <td>否</td>
+          <td>是（博客主题），文档则通过 Next 路由</td>
+        </tr>
+        <tr>
+          <td>主题</td>
+          <td><code>.htmlpress/</code> 中的覆盖文件 + <code>--htmlpress-*</code> 令牌</td>
+          <td>主题包；通过主题配置定制</td>
+        </tr>
+        <tr>
+          <td>自定义路由</td>
+          <td>
+            任意 <code>.html</code> 文件；额外布局放在 <code>.htmlpress/layouts/</code>
+          </td>
+          <td>任意 Next 页面/路由</td>
+        </tr>
+        <tr>
+          <td>独立 CLI</td>
+          <td>是（<code>htmlpress build</code>）</td>
+          <td>否（使用 Next.js 命令）</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>输出与部署</h2>
+    <p>
+      htmlpress 会把每个页面写成 <code>.htmlpress/build/</code> 中的静态 HTML，同时生成
+      <code>robots.txt</code>、设置了 <code>site</code> 时的
+      <code>sitemap.xml</code>、每个页面的 Markdown 副本、<code>llms.txt</code>，以及
+      <code>.well-known/agent-skills/</code> 下的智能体技能。<code>base</code>
+      键可让站点在子路径下提供服务。各托管平台的指南见<a href="/zh/deployment/">部署</a>。
+    </p>
+    <p>
+      Nextra 沿用 Next.js 的输出模式。最常见的文档配置是完全静态导出（<code
+        >output: 'export'</code
+      >），它会生成一个可部署到任何地方的静态目录。SSR 配置则以 Vercel 或 Node
+      托管平台为目标。
+    </p>
+    <h2>另请参阅</h2>
+    <ul>
+      <li><a href="/zh/authoring/">编写</a>——htmlpress 的 HTML 编写方式。</li>
+      <li><a href="/zh/customization/">自定义</a>——htmlpress 的配置键与覆盖文件。</li>
+      <li><a href="/zh/comparison/">对比</a>——返回索引。</li>
+    </ul>
+  </body>
+</html>

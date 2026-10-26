@@ -1,0 +1,152 @@
+<title>Formato de texto</title>
+<meta
+  name="description"
+  content="Negrita, cursiva, código, citas, listas, notas al pie, listas de definiciones y abreviaturas."
+/>
+<meta name="order" content="35" />
+<meta name="icon" content="type" />
+
+<h1>Formato de texto</h1>
+<p>
+  El texto es HTML simple, y el tema da estilo a los propios elementos: escribe marcado
+  semántico y ya tendrá buen aspecto. Sin clases, sin estilos en línea.
+</p>
+
+<h2>Negrita y cursiva</h2>
+<pre><code class="language-html">&lt;strong&gt;bold text&lt;/strong&gt; and &lt;em&gt;italic text&lt;/em&gt; and &lt;strong&gt;&lt;em&gt;bold italic&lt;/em&gt;&lt;/strong&gt;</code></pre>
+<p>
+  Se renderiza como: <strong>texto en negrita</strong> y <em>texto en cursiva</em> y
+  <strong><em>negrita y cursiva</em></strong>
+</p>
+
+<h2>Tachado</h2>
+<pre><code class="language-html">&lt;s&gt;deleted text&lt;/s&gt;</code></pre>
+<p>Se renderiza como: <s>texto eliminado</s></p>
+
+<h2>Código en línea</h2>
+<pre><code>Use &lt;code&gt;const x = 1&lt;/code&gt; for inline code.</code></pre>
+<p>Se renderiza como: Usa <code>const x = 1</code> para código en línea.</p>
+<p>
+  <code>&lt;kbd&gt;</code> marca una tecla: pulsa <kbd>Ctrl</kbd> + <kbd>C</kbd> para
+  copiar.
+</p>
+
+<h2>Resaltado de código en línea</h2>
+<p>
+  Un <code>&lt;code&gt;</code> en línea con una clase <code>language-*</code> se resalta
+  como un bloque, en los mismos temas claro y oscuro.
+</p>
+<pre><code class="language-html">Run &lt;code class="language-js"&gt;await build("docs")&lt;/code&gt; first.</code></pre>
+<p>
+  Se renderiza como: Ejecuta primero <code class="language-js">await build("docs")</code>.
+</p>
+
+<h2>Citas</h2>
+<pre><code class="language-html">&lt;blockquote&gt;&lt;p&gt;This is a blockquote.&lt;/p&gt;&lt;/blockquote&gt;</code></pre>
+<p>Se renderiza como:</p>
+<blockquote><p>Esto es una cita.</p></blockquote>
+
+<h2>Listas</h2>
+<p>Listas no ordenadas y ordenadas:</p>
+<ul>
+  <li>Primer elemento</li>
+  <li>
+    Segundo elemento
+    <ul>
+      <li>Elemento anidado</li>
+    </ul>
+  </li>
+</ul>
+<ol>
+  <li>Paso uno</li>
+  <li>Paso dos</li>
+  <li>Paso tres</li>
+</ol>
+<pre><code class="language-html">&lt;ul&gt;
+  &lt;li&gt;First item&lt;/li&gt;
+  &lt;li&gt;Second item&lt;ul&gt;&lt;li&gt;Nested item&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;ol&gt;&lt;li&gt;Step one&lt;/li&gt;&lt;li&gt;Step two&lt;/li&gt;&lt;/ol&gt;</code></pre>
+
+<h2>Listas de tareas</h2>
+<p>Un elemento de lista encabezado por una casilla desactivada:</p>
+<pre><code class="language-html">&lt;ul&gt;
+  &lt;li&gt;&lt;input type="checkbox" checked disabled&gt; Completed task&lt;/li&gt;
+  &lt;li&gt;&lt;input type="checkbox" disabled&gt; Pending task&lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+<p>Se renderiza como:</p>
+<ul>
+  <li><input type="checkbox" checked disabled /> Tarea completada</li>
+  <li><input type="checkbox" disabled /> Tarea pendiente</li>
+</ul>
+
+<h2>Reglas horizontales</h2>
+<pre><code class="language-html">&lt;hr&gt;</code></pre>
+<hr />
+
+<h2>Notas al pie</h2>
+<p>
+  No hace falta ningún componente. Una referencia a una nota al pie es un enlace
+  <code>&lt;sup&gt;</code> a un <code>&lt;li&gt;</code> con ese id; al pasar el ratón o
+  enfocar la referencia se muestra una vista previa de su nota, sin los enlaces de vuelta.
+  Sin el script, el enlace sigue saltando a la nota.
+</p>
+<pre><code>Here is a sentence with a footnote&lt;sup&gt;&lt;a href="#note-1" id="ref-1"&gt;1&lt;/a&gt;&lt;/sup&gt;.
+
+&lt;ol&gt;
+  &lt;li id="note-1"&gt;This is a numbered footnote. &lt;a href="#ref-1"&gt;↩&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;</code></pre>
+<p>Se renderiza como:</p>
+<p>
+  Aquí hay una frase con una nota al pie<sup><a href="#note-1" id="ref-1">1</a></sup> y
+  otra<sup><a href="#note-2" id="ref-2">2</a></sup
+  >.
+</p>
+<ol>
+  <li id="note-1">Esto es una nota al pie numerada. <a href="#ref-1">↩</a></li>
+  <li id="note-2">
+    Pasa el ratón por la referencia para leer la nota en su sitio. <a href="#ref-2">↩</a>
+  </li>
+</ol>
+
+<h2>Listas de definiciones</h2>
+<p>Define términos con sus descripciones:</p>
+<pre><code class="language-html">&lt;dl&gt;
+  &lt;dt&gt;Page&lt;/dt&gt;
+  &lt;dd&gt;An .html file in a project&lt;/dd&gt;
+  &lt;dt&gt;Escape&lt;/dt&gt;
+  &lt;dd&gt;A project file that replaces a built-in asset&lt;/dd&gt;
+  &lt;dd&gt;Kept under .htmlpress/&lt;/dd&gt;
+&lt;/dl&gt;</code></pre>
+<p>Se renderiza como:</p>
+<dl>
+  <dt>Página</dt>
+  <dd>Un archivo <code>.html</code> de un proyecto</dd>
+  <dt>Escape</dt>
+  <dd>Un archivo del proyecto que sustituye a un recurso integrado</dd>
+  <dd>Se guarda en <code>.htmlpress/</code></dd>
+</dl>
+
+<h2>Abreviaturas</h2>
+<p>
+  No hace falta ningún componente. Un <code>&lt;abbr title&gt;</code> muestra su forma
+  completa al pasar el ratón o al enfocarlo; sin el script, el título sigue siendo un
+  tooltip nativo.
+</p>
+<pre><code>The &lt;abbr title="HyperText Markup Language"&gt;HTML&lt;/abbr&gt; standard is maintained by &lt;abbr title="World Wide Web Consortium"&gt;W3C&lt;/abbr&gt;.</code></pre>
+<p>
+  Se renderiza como: El estándar <abbr title="HyperText Markup Language">HTML</abbr> lo
+  mantiene el <abbr title="World Wide Web Consortium">W3C</abbr>.
+</p>
+
+<h2>Emoji</h2>
+<p>Escribe los caracteres emoji directamente; las páginas están en UTF-8:</p>
+<pre><code>🚀 Launch 🎉 Celebrate ❤️ Love ⚠️ Careful ✅ Done</code></pre>
+<p>Se renderiza como: 🚀 Lanzar 🎉 Celebrar ❤️ Amor ⚠️ Cuidado ✅ Hecho</p>
+<p>
+  Los códigos cortos de GitHub se convierten en emoji al compilar; uno desconocido, y
+  cualquier cosa dentro de código o de un elemento <code>data-literal</code>, se queda tal
+  como está escrito:
+</p>
+<pre><code class="language-html">Ship it :rocket: :tada:</code></pre>
+<p>Se renderiza como: Publícalo :rocket: :tada:</p>

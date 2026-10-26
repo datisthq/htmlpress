@@ -1,0 +1,192 @@
+<title>Cloudflare</title>
+<meta
+  name="description"
+  content="通过 Cloudflare Workers 静态资源部署——htmlpress.dev 本身采用的方案。"
+/>
+<meta name="order" content="53" />
+<meta name="icon" content="cloud" />
+
+<h1>Cloudflare</h1>
+<p>
+  Cloudflare Workers 可以直接提供静态资源目录：无需单独的计算资源，也无需 SPA 垫片。<code
+    >htmlpress.dev</code
+  >
+  就是这样发布的，同样结构的 <code>wrangler.jsonc</code> 适用于任何 htmlpress
+  站点。Workers 静态资源还会读取每次构建写出的 <code>_headers</code> 文件。
+</p>
+
+<h2>构建站点</h2>
+<pre><code class="language-sh">htmlpress build</code></pre>
+<p>输出位于 <code>.htmlpress/build/</code>。</p>
+
+<h2>配置 <code>wrangler.jsonc</code></h2>
+<p>将以下内容放在项目根目录：</p>
+<pre><code>{
+  "name": "my-docs",
+  "compatibility_date": "2026-04-01",
+  "workers_dev": true,
+  "assets": {
+    "directory": ".htmlpress/build",
+    "html_handling": "none",
+    "not_found_handling": "404-page",
+  },
+}</code></pre>
+<p>关键在于四个字段：</p>
+<table>
+  <thead>
+    <tr>
+      <th>字段</th>
+      <th>作用</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>assets.directory</code></td>
+      <td>让 Wrangler 指向 htmlpress 的构建输出。每个文件都按原样提供。</td>
+    </tr>
+    <tr>
+      <td><code>assets.html_handling</code></td>
+      <td>
+        让每个文件都在其自身路径上提供。默认行为会把 <code>/guide.html</code> 重定向到
+        <code>/guide</code>，偏离 htmlpress 所链接的 URL，也无法匹配下文的 Markdown 规则。
+      </td>
+    </tr>
+    <tr>
+      <td><code>assets.not_found_handling</code></td>
+      <td>用构建产出的 <code>404.html</code> 响应未知路径。</td>
+    </tr>
+    <tr>
+      <td><code>workers_dev</code></td>
+      <td>
+        测试期间为你提供一个 <code>&lt;name&gt;.&lt;account&gt;.workers.dev</code> 预览
+        URL。
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>从本机部署</h2>
+<pre><code class="language-sh">htmlpress build
+npx wrangler deploy</code></pre>
+<p>首次运行时会提示执行 <code>wrangler login</code>，以授权访问你的 Cloudflare 账户。</p>
+
+<h2>使用 GitHub Actions 部署</h2>
+<pre><code class="language-yaml">name: deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npx gethtmlpress build
+      - uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}</code></pre>
+<p>
+  在 <strong>My Profile → API Tokens</strong> 中创建一个限定范围的 API 令牌（“Edit
+  Cloudflare Workers”模板恰好授予所需权限），并将这两个值存为仓库密钥。
+</p>
+<p>
+  如果不使用工作流，也可以让 Workers Builds 自行运行构建：在控制台中连接仓库，并在
+  <code>wrangler.jsonc</code> 中添加 <code>build</code> 块，htmlpress.dev 就是用
+  <code>"build": { "command": "pnpm build:docs" }</code> 这样做的。
+</p>
+
+<h2>自定义域名</h2>
+<p>当你的域名区域托管在 Cloudflare 上后，添加一个 <code>routes</code> 块：</p>
+<pre><code>{
+  "name": "my-docs",
+  "compatibility_date": "2026-04-01",
+  "assets": { "directory": ".htmlpress/build", "not_found_handling": "404-page" },
+  "routes": [{ "pattern": "docs.example.com", "custom_domain": true }],
+}</code></pre>
+<p>
+  <code>custom_domain: true</code> 让 Cloudflare
+  提供托管域名：DNS、证书和路由都会自动处理。在 <code>htmlpress.yaml</code> 中把
+  <code>site</code> 设为同一域名，使 sitemap 中的绝对 URL 保持一致。
+</p>
+<htmlpress-callout type="success" label="提示">
+  <p>
+    htmlpress 仓库自带的 <code>wrangler.jsonc</code> 就是一个可用的参考；见
+    <a href="https://github.com/datisthq/htmlpress/blob/main/wrangler.jsonc">项目根目录</a
+    >。
+  </p>
+</htmlpress-callout>
+
+<h2>面向智能体的 Markdown</h2>
+<p>
+  AI 智能体通过发送 <code>Accept: text/markdown</code> 来请求页面的 Markdown
+  版本。静态资源总是返回 HTML，因此需要为你的域名区域添加一条 URL
+  重写规则，把这些请求指向页面的
+  <a href="/zh/customization/ai-agents.html">Markdown 副本</a>：<code
+    >guides/build.html</code
+  >
+  旁边就有 <code>guides/build.md</code>。URL 重写规则在所有套餐（包括
+  Free）中均可使用，站点也仍然是完全静态的。
+</p>
+<p>
+  在控制台中打开你的域名，进入
+  <strong>Rules → Overview → Create rule → URL Rewrite Rule</strong>，然后填写：
+</p>
+<table>
+  <thead>
+    <tr>
+      <th>字段</th>
+      <th>值</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Rule name</td>
+      <td><code>Markdown for agents</code></td>
+    </tr>
+    <tr>
+      <td>If incoming requests match</td>
+      <td>Custom filter expression（见下文）</td>
+    </tr>
+    <tr>
+      <td>Path</td>
+      <td>
+        Rewrite to → <strong>Dynamic</strong> →
+        <code>wildcard_replace(http.request.uri.path, "*.html", "${1}.md")</code>
+      </td>
+    </tr>
+    <tr>
+      <td>Query</td>
+      <td>Preserve</td>
+    </tr>
+  </tbody>
+</table>
+<pre><code>any(http.request.headers["accept"][*] contains "text/markdown") and ends_with(http.request.uri.path, ".html")</code></pre>
+<p>
+  页面 URL 以 <code>.html</code> 结尾，因此该规则只作用于页面。对于
+  <code>/guides/</code> 这样的文件夹 URL，再添加第二条规则，匹配
+  <code>ends_with(http.request.uri.path, "/")</code> 并重写为
+  <code>concat(http.request.uri.path, "index.md")</code>。静态资源会以
+  <code>text/markdown</code> 类型提供 <code>.md</code> 文件，因此响应类型无需额外规则。
+</p>
+<htmlpress-callout type="warning">
+  <p>
+    请先部署包含 Markdown 副本的构建，再启用该规则。否则请求 Markdown 的智能体会得到 404。
+  </p>
+</htmlpress-callout>
+
+<h2>另请参阅</h2>
+<ul>
+  <li>
+    <a href="/zh/customization/ai-agents.html">AI 智能体</a>：构建为智能体发布的内容。
+  </li>
+  <li>
+    <a href="/zh/customization/site-metadata.html">站点元数据</a>：<code>site</code>
+    用于生成绝对 URL 和 sitemap。
+  </li>
+  <li><a href="/zh/deployment/">部署</a>：返回托管平台索引。</li>
+</ul>

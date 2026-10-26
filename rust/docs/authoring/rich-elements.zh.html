@@ -1,0 +1,556 @@
+<title>富元素</title>
+<meta
+  name="description"
+  content="表格、提示框、标签页、步骤、卡片、徽章、按钮、文件树、主题令牌和布局。"
+/>
+<meta name="order" content="36" />
+<meta name="icon" content="layout-grid" />
+
+<h1>富元素</h1>
+<p>
+  少量 <code>htmlpress-*</code> 元素覆盖了 HTML 没有对应元素的场景。它们是轻量 DOM（light
+  DOM）自定义元素，因此其内容仍是普通
+  HTML，即使在脚本加载之前也能良好阅读。每个元素的样式和脚本只在使用它的页面上引入。在组件中放置块级内容（<code>&lt;p&gt;</code>、<code>&lt;h3&gt;</code>、<code>&lt;pre&gt;</code>），而不是裸文本。
+</p>
+
+<h2>表格</h2>
+<p>
+  普通的 <code>&lt;table&gt;</code> 会直接应用样式。把带有
+  <code>&lt;thead&gt;</code> 的表格包裹在
+  <code>&lt;htmlpress-table&gt;</code> 中，点击任意表头即可按该列排序：
+</p>
+<pre><code class="language-html">&lt;htmlpress-table&gt;
+  &lt;table&gt;
+    &lt;thead&gt;&lt;tr&gt;&lt;th&gt;Language&lt;/th&gt;&lt;th&gt;Year&lt;/th&gt;&lt;th&gt;Typing&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+    &lt;tbody&gt;&lt;tr&gt;&lt;td&gt;TypeScript&lt;/td&gt;&lt;td&gt;2012&lt;/td&gt;&lt;td&gt;Static&lt;/td&gt;&lt;/tr&gt;…&lt;/tbody&gt;
+  &lt;/table&gt;
+&lt;/htmlpress-table&gt;</code></pre>
+<p>渲染为：</p>
+<htmlpress-table>
+  <table>
+    <thead>
+      <tr>
+        <th>语言</th>
+        <th>年份</th>
+        <th>类型系统</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>TypeScript</td>
+        <td>2012</td>
+        <td>静态</td>
+      </tr>
+      <tr>
+        <td>Python</td>
+        <td>1991</td>
+        <td>动态</td>
+      </tr>
+      <tr>
+        <td>Rust</td>
+        <td>2010</td>
+        <td>静态</td>
+      </tr>
+      <tr>
+        <td>JavaScript</td>
+        <td>1995</td>
+        <td>动态</td>
+      </tr>
+    </tbody>
+  </table>
+</htmlpress-table>
+
+<h2>提示框</h2>
+<p>
+  提示框用于突出重要信息。<code>type</code> 可以是
+  <code>info</code>（默认）、<code>success</code>、<code>warning</code> 或
+  <code>danger</code>， <code>label</code> 会替换该类型自带的标题：
+</p>
+<pre><code class="language-html">&lt;htmlpress-callout&gt;&lt;p&gt;This is a note.&lt;/p&gt;&lt;/htmlpress-callout&gt;
+
+&lt;htmlpress-callout type="warning" label="Breaking Change"&gt;
+  &lt;p&gt;This API has been removed in v2.&lt;/p&gt;
+&lt;/htmlpress-callout&gt;</code></pre>
+<p>渲染为：</p>
+<htmlpress-callout><p>这是一条注释。</p></htmlpress-callout>
+<htmlpress-callout type="success"><p>所有页面均已构建。</p></htmlpress-callout>
+<htmlpress-callout type="warning"><p>使用时请小心。</p></htmlpress-callout>
+<htmlpress-callout type="danger">
+  <p>切勿编辑 <code>.htmlpress/build</code>：每次构建都会替换它。</p>
+</htmlpress-callout>
+<htmlpress-callout type="warning" label="破坏性变更">
+  <p>此 API 已在 v2 中移除。</p>
+</htmlpress-callout>
+<p>提示框内的标题不会进入页面目录。</p>
+
+<h2>可展开内容</h2>
+<p>无需组件：主题会为普通的 <code>&lt;details&gt;</code> 设置样式。</p>
+<pre><code class="language-html">&lt;details&gt;
+  &lt;summary&gt;Click to expand&lt;/summary&gt;
+  &lt;p&gt;Hidden content here with &lt;strong&gt;HTML&lt;/strong&gt; support.&lt;/p&gt;
+&lt;/details&gt;</code></pre>
+<p>渲染为：</p>
+<details>
+  <summary>点击展开</summary>
+  <p>这里是隐藏的内容，支持 <strong>HTML</strong>。</p>
+</details>
+<p>其中可以嵌套任何 HTML，包括代码块、列表和提示框：</p>
+<details>
+  <summary>配置示例</summary>
+  <pre><code class="language-yaml">site: https://htmlpress.dev
+title: Htmlpress</code></pre>
+</details>
+
+<h2>代码标签页</h2>
+<p>
+  只包含代码块的标签页会合并为一个带边框的块。每个
+  <code>&lt;section&gt;</code> 是一个标签页，以其 <code>title</code> 命名：
+</p>
+<pre><code class="language-html">&lt;htmlpress-tabs sync="lang"&gt;
+  &lt;section title="JavaScript"&gt;&lt;pre&gt;&lt;code&gt;console.log("hello")&lt;/code&gt;&lt;/pre&gt;&lt;/section&gt;
+  &lt;section title="Python"&gt;&lt;pre&gt;&lt;code&gt;print("hello")&lt;/code&gt;&lt;/pre&gt;&lt;/section&gt;
+&lt;/htmlpress-tabs&gt;</code></pre>
+<p>渲染为：</p>
+<htmlpress-tabs sync="lang">
+  <section title="JavaScript">
+    <pre><code>console.log("hello")</code></pre>
+  </section>
+  <section title="Python">
+    <pre><code>print("hello")</code></pre>
+  </section>
+</htmlpress-tabs>
+<p>添加 <code>sync="key"</code> 可让多个标签页组保持同步，详见下文“内容标签页”。</p>
+
+<h2>内容标签页</h2>
+<p>
+  用 <code>&lt;htmlpress-tabs&gt;</code> 把任意内容分组为标签页，每个标签页对应一个
+  <code>&lt;section title&gt;</code>。
+</p>
+<p>
+  添加
+  <code>sync</code>
+  属性可在多个标签页组之间同步选中状态。当读者在某个组中选择一个标签页时，所有具有相同
+  <code>sync</code> 键的其他组都会切换到对应的标签页，并且该选择会通过
+  <code>localStorage</code> 在页面之间记住。
+</p>
+<pre><code class="language-html">&lt;htmlpress-tabs sync="channel"&gt;
+  &lt;section title="cargo"&gt;&lt;p&gt;From crates.io, built on your machine.&lt;/p&gt;&lt;/section&gt;
+  &lt;section title="npm"&gt;&lt;p&gt;A prebuilt binary per platform.&lt;/p&gt;&lt;/section&gt;
+  &lt;section title="pip"&gt;&lt;p&gt;A binary wheel.&lt;/p&gt;&lt;/section&gt;
+&lt;/htmlpress-tabs&gt;</code></pre>
+<p>渲染为（两个组共享 <code>sync="channel"</code>；切换其中一个试试）：</p>
+<htmlpress-tabs sync="channel">
+  <section title="cargo">
+    <pre><code class="language-sh">cargo install htmlpress</code></pre>
+  </section>
+  <section title="npm">
+    <pre><code>npm install -g gethtmlpress</code></pre>
+  </section>
+  <section title="pip">
+    <pre><code class="language-sh">pip install htmlpress</code></pre>
+  </section>
+</htmlpress-tabs>
+<htmlpress-tabs sync="channel">
+  <section title="cargo"><p>来自 crates.io，在你的机器上构建。</p></section>
+  <section title="npm"><p>每个平台一个预构建的二进制文件。</p></section>
+  <section title="pip"><p>一个二进制 wheel。</p></section>
+</htmlpress-tabs>
+
+<h2>步骤</h2>
+<p>
+  <code>&lt;htmlpress-steps&gt;</code> 中的
+  <code>&lt;ol&gt;</code> 是一份带编号的指南，每个
+  <code>&lt;li&gt;</code> 是一个步骤，各以一个
+  <code>&lt;h3&gt;</code> 开头。这些标题不会进入页面目录。
+</p>
+<pre><code class="language-html">&lt;htmlpress-steps&gt;
+  &lt;ol&gt;
+    &lt;li&gt;&lt;h3&gt;Install&lt;/h3&gt;&lt;p&gt;…&lt;/p&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;h3&gt;Write a page&lt;/h3&gt;&lt;p&gt;…&lt;/p&gt;&lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/htmlpress-steps&gt;</code></pre>
+<p>渲染为：</p>
+<htmlpress-steps>
+  <ol>
+    <li>
+      <h3>安装</h3>
+      <p>从上面的标签页中选择一个渠道。</p>
+    </li>
+    <li>
+      <h3>编写页面</h3>
+      <p>文件夹中的任意 <code>.html</code> 文件。</p>
+    </li>
+    <li>
+      <h3>启动</h3>
+      <p>运行 <code>htmlpress start</code> 并打开它输出的 URL。</p>
+    </li>
+  </ol>
+</htmlpress-steps>
+
+<h2>卡片</h2>
+<p>
+  <code>&lt;htmlpress-grid&gt;</code> 中的卡片会填充响应式列；
+  <code>cols</code> 将列数固定为 2 到
+  4，窄屏时回退为一列。卡片标题中的链接会让整张卡片可点击。
+</p>
+<pre><code class="language-html">&lt;htmlpress-grid cols="2"&gt;
+  &lt;htmlpress-card&gt;
+    &lt;h3&gt;&lt;a href="/introduction.html"&gt;Getting Started&lt;/a&gt;&lt;/h3&gt;
+    &lt;p&gt;Learn how to set up your first project.&lt;/p&gt;
+  &lt;/htmlpress-card&gt;
+  &lt;htmlpress-card&gt;&lt;h3&gt;Plain HTML&lt;/h3&gt;&lt;p&gt;…&lt;/p&gt;&lt;/htmlpress-card&gt;
+&lt;/htmlpress-grid&gt;</code></pre>
+<p>渲染为：</p>
+<htmlpress-grid cols="2">
+  <htmlpress-card>
+    <h3><a href="/zh/introduction.html">快速开始</a></h3>
+    <p>了解如何搭建你的第一个项目。</p>
+  </htmlpress-card>
+  <htmlpress-card>
+    <h3><a href="/zh/customization/configuration-file.html">配置</a></h3>
+    <p>配置你的 htmlpress 项目。</p>
+  </htmlpress-card>
+  <htmlpress-card>
+    <h3><a href="https://github.com/datisthq/htmlpress">GitHub</a></h3>
+    <p>在 GitHub 上查看源代码。</p>
+  </htmlpress-card>
+  <htmlpress-card>
+    <h3>纯 HTML</h3>
+    <p>没有链接的卡片不可点击。</p>
+  </htmlpress-card>
+</htmlpress-grid>
+<p>卡片内的标题不会进入页面目录。</p>
+
+<h2>徽章</h2>
+<p>
+  行内标签。<code>type</code> 可以是
+  <code>info</code>、<code>success</code>、<code>warning</code>、<code>danger</code> 或
+  <code>neutral</code>；不设置时使用强调色。
+</p>
+<pre><code class="language-html">&lt;htmlpress-badge&gt;New&lt;/htmlpress-badge&gt;
+&lt;htmlpress-badge type="success"&gt;Stable&lt;/htmlpress-badge&gt;</code></pre>
+<p>
+  渲染为：
+  <htmlpress-badge>新</htmlpress-badge>
+  <htmlpress-badge type="info">信息</htmlpress-badge>
+  <htmlpress-badge type="success">稳定</htmlpress-badge>
+  <htmlpress-badge type="warning">测试版</htmlpress-badge>
+  <htmlpress-badge type="danger">已移除</htmlpress-badge>
+  <htmlpress-badge type="neutral">v1</htmlpress-badge>
+</p>
+
+<h2>按钮</h2>
+<p>
+  <code>&lt;htmlpress-button&gt;</code> 中的链接是一个行动号召按钮；
+  <code>type="secondary"</code> 让它更低调。
+</p>
+<pre><code class="language-html">&lt;htmlpress-button&gt;&lt;a href="/introduction.html"&gt;Get Started&lt;/a&gt;&lt;/htmlpress-button&gt;
+&lt;htmlpress-button type="secondary"&gt;&lt;a href="…"&gt;GitHub&lt;/a&gt;&lt;/htmlpress-button&gt;</code></pre>
+<p>渲染为：</p>
+<p>
+  <htmlpress-button><a href="/zh/introduction.html">快速开始</a></htmlpress-button>
+  <htmlpress-button type="secondary">
+    <a href="https://github.com/datisthq/htmlpress">GitHub</a>
+  </htmlpress-button>
+</p>
+
+<h2>图标</h2>
+<p>
+  <code>&lt;htmlpress-icon name="…"&gt;</code> 以行内方式绘制一个内置的
+  <a href="https://lucide.dev">Lucide</a>
+  图标，使用文本的颜色和大小；同样的名称也可用于链接或分区的
+  <code>icon</code>。未知的名称会导致构建失败。以下是全部 113 个内置图标：
+</p>
+<pre><code class="language-html">&lt;htmlpress-icon name="rocket"&gt;&lt;/htmlpress-icon&gt; Get started</code></pre>
+<htmlpress-grid cols="4">
+  <p><htmlpress-icon name="activity"></htmlpress-icon> activity</p>
+  <p><htmlpress-icon name="archive"></htmlpress-icon> archive</p>
+  <p><htmlpress-icon name="arrow-right"></htmlpress-icon> arrow-right</p>
+  <p><htmlpress-icon name="badge-check"></htmlpress-icon> badge-check</p>
+  <p><htmlpress-icon name="bell"></htmlpress-icon> bell</p>
+  <p><htmlpress-icon name="blocks"></htmlpress-icon> blocks</p>
+  <p><htmlpress-icon name="book"></htmlpress-icon> book</p>
+  <p><htmlpress-icon name="book-marked"></htmlpress-icon> book-marked</p>
+  <p><htmlpress-icon name="book-open"></htmlpress-icon> book-open</p>
+  <p><htmlpress-icon name="book-text"></htmlpress-icon> book-text</p>
+  <p><htmlpress-icon name="bookmark"></htmlpress-icon> bookmark</p>
+  <p><htmlpress-icon name="bot"></htmlpress-icon> bot</p>
+  <p><htmlpress-icon name="box"></htmlpress-icon> box</p>
+  <p><htmlpress-icon name="braces"></htmlpress-icon> braces</p>
+  <p><htmlpress-icon name="brain"></htmlpress-icon> brain</p>
+  <p><htmlpress-icon name="bug"></htmlpress-icon> bug</p>
+  <p><htmlpress-icon name="calendar"></htmlpress-icon> calendar</p>
+  <p><htmlpress-icon name="chart-column"></htmlpress-icon> chart-column</p>
+  <p><htmlpress-icon name="check"></htmlpress-icon> check</p>
+  <p><htmlpress-icon name="circle-help"></htmlpress-icon> circle-help</p>
+  <p><htmlpress-icon name="clock"></htmlpress-icon> clock</p>
+  <p><htmlpress-icon name="cloud"></htmlpress-icon> cloud</p>
+  <p><htmlpress-icon name="cloud-upload"></htmlpress-icon> cloud-upload</p>
+  <p><htmlpress-icon name="code"></htmlpress-icon> code</p>
+  <p><htmlpress-icon name="codepen"></htmlpress-icon> codepen</p>
+  <p><htmlpress-icon name="coffee"></htmlpress-icon> coffee</p>
+  <p><htmlpress-icon name="compass"></htmlpress-icon> compass</p>
+  <p><htmlpress-icon name="cpu"></htmlpress-icon> cpu</p>
+  <p><htmlpress-icon name="database"></htmlpress-icon> database</p>
+  <p><htmlpress-icon name="download"></htmlpress-icon> download</p>
+  <p><htmlpress-icon name="external-link"></htmlpress-icon> external-link</p>
+  <p><htmlpress-icon name="feather"></htmlpress-icon> feather</p>
+  <p><htmlpress-icon name="figma"></htmlpress-icon> figma</p>
+  <p><htmlpress-icon name="file"></htmlpress-icon> file</p>
+  <p><htmlpress-icon name="file-code"></htmlpress-icon> file-code</p>
+  <p><htmlpress-icon name="file-pen-line"></htmlpress-icon> file-pen-line</p>
+  <p><htmlpress-icon name="file-text"></htmlpress-icon> file-text</p>
+  <p><htmlpress-icon name="flag"></htmlpress-icon> flag</p>
+  <p><htmlpress-icon name="flask-conical"></htmlpress-icon> flask-conical</p>
+  <p><htmlpress-icon name="folder"></htmlpress-icon> folder</p>
+  <p><htmlpress-icon name="git-branch"></htmlpress-icon> git-branch</p>
+  <p>
+    <htmlpress-icon name="git-commit-horizontal"></htmlpress-icon> git-commit-horizontal
+  </p>
+  <p><htmlpress-icon name="git-pull-request"></htmlpress-icon> git-pull-request</p>
+  <p><htmlpress-icon name="github"></htmlpress-icon> github</p>
+  <p><htmlpress-icon name="gitlab"></htmlpress-icon> gitlab</p>
+  <p><htmlpress-icon name="globe"></htmlpress-icon> globe</p>
+  <p><htmlpress-icon name="graduation-cap"></htmlpress-icon> graduation-cap</p>
+  <p><htmlpress-icon name="hammer"></htmlpress-icon> hammer</p>
+  <p><htmlpress-icon name="heading"></htmlpress-icon> heading</p>
+  <p><htmlpress-icon name="heart"></htmlpress-icon> heart</p>
+  <p><htmlpress-icon name="heart-handshake"></htmlpress-icon> heart-handshake</p>
+  <p><htmlpress-icon name="history"></htmlpress-icon> history</p>
+  <p><htmlpress-icon name="house"></htmlpress-icon> house</p>
+  <p><htmlpress-icon name="image"></htmlpress-icon> image</p>
+  <p><htmlpress-icon name="info"></htmlpress-icon> info</p>
+  <p><htmlpress-icon name="key"></htmlpress-icon> key</p>
+  <p><htmlpress-icon name="layers"></htmlpress-icon> layers</p>
+  <p><htmlpress-icon name="layout-grid"></htmlpress-icon> layout-grid</p>
+  <p><htmlpress-icon name="layout-panel-left"></htmlpress-icon> layout-panel-left</p>
+  <p><htmlpress-icon name="library"></htmlpress-icon> library</p>
+  <p><htmlpress-icon name="life-buoy"></htmlpress-icon> life-buoy</p>
+  <p><htmlpress-icon name="lightbulb"></htmlpress-icon> lightbulb</p>
+  <p><htmlpress-icon name="link"></htmlpress-icon> link</p>
+  <p><htmlpress-icon name="linkedin"></htmlpress-icon> linkedin</p>
+  <p><htmlpress-icon name="list"></htmlpress-icon> list</p>
+  <p><htmlpress-icon name="lock"></htmlpress-icon> lock</p>
+  <p><htmlpress-icon name="mail"></htmlpress-icon> mail</p>
+  <p><htmlpress-icon name="map"></htmlpress-icon> map</p>
+  <p><htmlpress-icon name="megaphone"></htmlpress-icon> megaphone</p>
+  <p><htmlpress-icon name="message-circle"></htmlpress-icon> message-circle</p>
+  <p><htmlpress-icon name="monitor"></htmlpress-icon> monitor</p>
+  <p><htmlpress-icon name="newspaper"></htmlpress-icon> newspaper</p>
+  <p><htmlpress-icon name="notebook-pen"></htmlpress-icon> notebook-pen</p>
+  <p><htmlpress-icon name="package"></htmlpress-icon> package</p>
+  <p><htmlpress-icon name="palette"></htmlpress-icon> palette</p>
+  <p><htmlpress-icon name="pencil"></htmlpress-icon> pencil</p>
+  <p><htmlpress-icon name="pencil-ruler"></htmlpress-icon> pencil-ruler</p>
+  <p><htmlpress-icon name="play"></htmlpress-icon> play</p>
+  <p><htmlpress-icon name="plug"></htmlpress-icon> plug</p>
+  <p><htmlpress-icon name="presentation"></htmlpress-icon> presentation</p>
+  <p><htmlpress-icon name="puzzle"></htmlpress-icon> puzzle</p>
+  <p><htmlpress-icon name="rocket"></htmlpress-icon> rocket</p>
+  <p><htmlpress-icon name="route"></htmlpress-icon> route</p>
+  <p><htmlpress-icon name="rss"></htmlpress-icon> rss</p>
+  <p><htmlpress-icon name="scale"></htmlpress-icon> scale</p>
+  <p><htmlpress-icon name="scroll"></htmlpress-icon> scroll</p>
+  <p><htmlpress-icon name="search"></htmlpress-icon> search</p>
+  <p><htmlpress-icon name="server"></htmlpress-icon> server</p>
+  <p><htmlpress-icon name="settings"></htmlpress-icon> settings</p>
+  <p><htmlpress-icon name="shield"></htmlpress-icon> shield</p>
+  <p><htmlpress-icon name="sliders-horizontal"></htmlpress-icon> sliders-horizontal</p>
+  <p><htmlpress-icon name="smartphone"></htmlpress-icon> smartphone</p>
+  <p><htmlpress-icon name="sparkles"></htmlpress-icon> sparkles</p>
+  <p><htmlpress-icon name="square-dashed"></htmlpress-icon> square-dashed</p>
+  <p><htmlpress-icon name="square-stack"></htmlpress-icon> square-stack</p>
+  <p><htmlpress-icon name="star"></htmlpress-icon> star</p>
+  <p><htmlpress-icon name="table"></htmlpress-icon> table</p>
+  <p><htmlpress-icon name="tag"></htmlpress-icon> tag</p>
+  <p><htmlpress-icon name="terminal"></htmlpress-icon> terminal</p>
+  <p><htmlpress-icon name="triangle"></htmlpress-icon> triangle</p>
+  <p><htmlpress-icon name="trophy"></htmlpress-icon> trophy</p>
+  <p><htmlpress-icon name="twitter"></htmlpress-icon> twitter</p>
+  <p><htmlpress-icon name="type"></htmlpress-icon> type</p>
+  <p><htmlpress-icon name="upload"></htmlpress-icon> upload</p>
+  <p><htmlpress-icon name="user"></htmlpress-icon> user</p>
+  <p><htmlpress-icon name="users"></htmlpress-icon> users</p>
+  <p><htmlpress-icon name="video"></htmlpress-icon> video</p>
+  <p><htmlpress-icon name="webhook"></htmlpress-icon> webhook</p>
+  <p><htmlpress-icon name="wind"></htmlpress-icon> wind</p>
+  <p><htmlpress-icon name="workflow"></htmlpress-icon> workflow</p>
+  <p><htmlpress-icon name="wrench"></htmlpress-icon> wrench</p>
+  <p><htmlpress-icon name="youtube"></htmlpress-icon> youtube</p>
+  <p><htmlpress-icon name="zap"></htmlpress-icon> zap</p>
+</htmlpress-grid>
+
+<h2>文件树</h2>
+<p><code>&lt;htmlpress-file-tree&gt;</code> 中的嵌套列表；包含列表的项即为文件夹。</p>
+<pre><code class="language-html">&lt;htmlpress-file-tree&gt;
+  &lt;ul&gt;
+    &lt;li&gt;docs&lt;ul&gt;&lt;li&gt;index.html&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;
+    &lt;li&gt;htmlpress.yaml&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/htmlpress-file-tree&gt;</code></pre>
+<p>渲染为：</p>
+<htmlpress-file-tree>
+  <ul>
+    <li>
+      docs
+      <ul>
+        <li>index.html</li>
+        <li>
+          guides
+          <ul>
+            <li>build.html</li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li>htmlpress.yaml</li>
+  </ul>
+</htmlpress-file-tree>
+
+<h2>分栏</h2>
+<p><code>&lt;htmlpress-grid&gt;</code> 可以把任意子元素并排布局，而不仅限于卡片：</p>
+<pre><code class="language-html">&lt;htmlpress-grid cols="2"&gt;
+  &lt;div&gt;&lt;p&gt;&lt;strong&gt;Left column&lt;/strong&gt; with content.&lt;/p&gt;&lt;/div&gt;
+  &lt;div&gt;&lt;p&gt;&lt;strong&gt;Right column&lt;/strong&gt; with more content.&lt;/p&gt;&lt;/div&gt;
+&lt;/htmlpress-grid&gt;</code></pre>
+<p>渲染为：</p>
+<htmlpress-grid cols="2">
+  <div>
+    <p><strong>左栏</strong>包含内容，包括列表：</p>
+    <ul>
+      <li>第一项</li>
+      <li>第二项</li>
+    </ul>
+  </div>
+  <div>
+    <p><strong>右栏</strong>包含更多内容：</p>
+    <blockquote><p>引用块在这里同样可用。</p></blockquote>
+  </div>
+</htmlpress-grid>
+
+<h2>主题令牌</h2>
+<p>
+  颜色、字体和宽度都是 <code>:root</code> 上的 CSS 自定义属性，在
+  <code>prefers-color-scheme</code> 或页眉的主题切换下有一套深色值：
+  <code>--htmlpress-accent</code>、<code>--htmlpress-accent-text</code>、
+  <code>--htmlpress-banner</code>、<code>--htmlpress-banner-text</code>、
+  <code>--htmlpress-bg</code>、<code>--htmlpress-surface</code>、
+  <code>--htmlpress-text</code>、<code>--htmlpress-muted</code>、
+  <code>--htmlpress-border</code>、<code>--htmlpress-info</code>、
+  <code>--htmlpress-success</code>、<code>--htmlpress-warning</code>、
+  <code>--htmlpress-danger</code>、<code>--htmlpress-font</code>、
+  <code>--htmlpress-mono</code>、<code>--htmlpress-radius</code>、
+  <code>--htmlpress-shadow</code>、<code>--htmlpress-width</code> 和
+  <code>--htmlpress-nav-width</code>。可在页面自己的样式表中覆盖它们：
+</p>
+<pre><code>:root {
+  --htmlpress-accent: oklch(0.6 0.18 30);
+  --htmlpress-font: "Inter", system-ui, sans-serif;
+  --htmlpress-width: 52rem;
+}</code></pre>
+
+<h2 id="layout">布局</h2>
+<p>
+  布局就是普通 HTML。Htmlpress 会填充它的
+  <code>&lt;head&gt;</code
+  >（字符集、视口、标题、描述、社交预览标签、规范链接、favicon、主题、页面所用组件的样式和脚本、<code
+    >htmlpress.yaml</code
+  >
+  中的 <code>head</code> 标签，最后是页面自己的 head 标签），并在构建时替换以下元素：
+</p>
+<dl>
+  <dt><code>&lt;htmlpress-content&gt;</code></dt>
+  <dd>页面内容。</dd>
+  <dt><code>&lt;htmlpress-brand&gt;</code></dt>
+  <dd>
+    站点标题及其下方的 <code>description</code>，设置了
+    <code>logo</code> 时位于其后，链接到首页。
+  </dd>
+  <dt><code>&lt;htmlpress-banner&gt;</code></dt>
+  <dd><code>htmlpress.yaml</code> 中的 <code>banner</code>。</dd>
+  <dt><code>&lt;htmlpress-breadcrumbs&gt;</code></dt>
+  <dd>
+    首页、页面之上的每个文件夹（有索引页时以索引页命名并链接到它），然后是页面本身。
+  </dd>
+  <dt><code>&lt;htmlpress-nav&gt;</code></dt>
+  <dd>
+    当前打开分区的页面（未设置
+    <code>sections</code>
+    时为所有页面），在“文章”标签下按顶层文件夹分组（博客中为“文章”，更新日志中为“版本”）；文件夹的分组以其索引页命名并链接到它。侧边栏分区位于其开头，侧边栏
+    <code>links</code> 位于其末尾，归在“链接”之下。
+  </dd>
+  <dt><code>&lt;htmlpress-links&gt;</code></dt>
+  <dd>
+    页眉分区（标记当前打开的分区），然后是 <code>htmlpress.yaml</code> 中的页眉
+    <code>links</code>。
+  </dd>
+  <dt><code>&lt;htmlpress-toc&gt;</code></dt>
+  <dd>
+    页面的 <code>&lt;h2&gt;</code> 和 <code>&lt;h3&gt;</code>，并高亮当前可见的那个。没有
+    <code>id</code> 的标题会根据其文本获得一个 ID。
+  </dd>
+  <dt><code>&lt;htmlpress-pager&gt;</code></dt>
+  <dd>按导航顺序排列的上一页和下一页。</dd>
+  <dt><code>&lt;htmlpress-edit&gt;</code></dt>
+  <dd>根据 <code>htmlpress.yaml</code> 中的 <code>edit</code> 生成的“编辑此页”链接。</dd>
+  <dt><code>&lt;htmlpress-search&gt;</code></dt>
+  <dd>
+    借助脚本搜索所有页面：页眉中的一个按钮，也可以通过
+    <kbd>S</kbd>、<kbd>/</kbd> 或 <kbd>⌘K</kbd> / <kbd>Ctrl K</kbd> 打开。构建会把索引写入
+    <code>_htmlpress/search.json</code
+    >，并在每个页面的标题处拆分，对话框在首次打开时加载它；结果按页面分组，并跳转到对应标题。
+  </dd>
+  <dt><code>&lt;htmlpress-toolbar&gt;</code></dt>
+  <dd>
+    指向页面 Markdown 副本的链接；脚本会添加“复制 Markdown”“在 ChatGPT 中打开”和“在 Claude
+    中打开”。
+  </dd>
+  <dt><code>&lt;htmlpress-footer&gt;</code></dt>
+  <dd>“用 Htmlpress 构建”的署名。</dd>
+  <dt><code>&lt;htmlpress-language&gt;</code></dt>
+  <dd>
+    语言选择器，链接到本页面的各语言版本；仅在启用了
+    <a href="/zh/customization/translations.html">翻译</a>的站点上显示。
+  </dd>
+  <dt><code>&lt;htmlpress-skip&gt;</code></dt>
+  <dd>“跳到正文”链接，仅在获得焦点时显示。</dd>
+</dl>
+<p>
+  这些元素及其脚本显示的所有字符串都使用页面的语言。脚本从 htmlpress 写入 head 的
+  <code>&lt;script type="application/json" id="htmlpress-messages"&gt;</code>
+  中读取字符串，缺少它时回退为英语。
+</p>
+<p>
+  没有内容可显示的元素会被移除。
+  <code>&lt;htmlpress-nav-toggle&gt;</code
+  >（在手机上把侧边栏变为抽屉；在更宽的屏幕上则折叠侧边栏并记住该状态）、
+  <code>&lt;htmlpress-theme-toggle&gt;</code> 和
+  <code>&lt;htmlpress-back-to-top&gt;</code> 由脚本在浏览器中构建。它们的快捷键与 Livemark
+  一致：<kbd>L</kbd> 切换侧边栏，<kbd>T</kbd> 切换主题， <kbd>B</kbd> 返回顶部，而
+  <kbd>J</kbd> 和
+  <kbd>K</kbd> 可在任何页面上向下和向上滚动。在输入框中输入时，这些快捷键都不会触发。
+</p>
+<p>
+  它们周围的框架同样由元素构成。这些元素本身不包含内容，只负责为其中的内容设置样式和定位，因此布局可以保留需要的元素，并以属性的形式为它们赋予地标角色：
+</p>
+<dl>
+  <dt><code>&lt;htmlpress-shell&gt;</code></dt>
+  <dd>侧边栏与其余部分并排；在手机上堆叠排列。</dd>
+  <dt><code>&lt;htmlpress-sidebar&gt;</code></dt>
+  <dd>品牌和导航；在手机上为抽屉。</dd>
+  <dt><code>&lt;htmlpress-main&gt;</code></dt>
+  <dd>侧边栏旁边的栏。</dd>
+  <dt><code>&lt;htmlpress-header&gt;</code></dt>
+  <dd>顶部的粘性栏，仅在手机上显示品牌和菜单按钮。</dd>
+  <dt><code>&lt;htmlpress-page&gt;</code></dt>
+  <dd>它包含的 <code>&lt;main&gt;</code> 与侧栏并排。</dd>
+  <dt><code>&lt;htmlpress-aside&gt;</code></dt>
+  <dd>内容旁边的栏，为空或屏幕较窄时隐藏。</dd>
+</dl>
+<p>
+  项目中的
+  <code>.htmlpress/layout.html</code> 会替换内置布局，页面也可以从
+  <code>.htmlpress/layouts/</code>
+  中选择自己的布局。每个组件的样式和脚本都可以用同样的方式替换或添加：见
+  <a href="/zh/customization/overriding-escaping.html">覆盖/弹出</a>。
+</p>

@@ -1,0 +1,147 @@
+<title>静态托管</title>
+<meta
+  name="description"
+  content="从任意静态托管平台提供构建目录——nginx、S3 + CloudFront、Caddy 等。"
+/>
+<meta name="order" content="51" />
+<meta name="icon" content="server" />
+
+<h1>静态托管</h1>
+<p>
+  Htmlpress 的构建结果就是一个由 <code>.html</code>、<code>.css</code>、
+  <code>.js</code>
+  和资源文件组成的普通目录。任何能提供文件目录服务的东西都可以使用。本指南介绍几种常见方式。
+</p>
+
+<h2>构建站点</h2>
+<pre><code class="language-sh">htmlpress build</code></pre>
+<p>
+  输出位于 <code>.htmlpress/build/</code>。把该目录作为文档根目录。<code
+    >htmlpress preview</code
+  >
+  会在本地以托管平台的方式提供同一份构建。
+</p>
+
+<h2>预渲染与 SPA 回退</h2>
+<p>
+  每个页面都是一个真实的文件，写在其源文件对应的路径上：<code>guides/build.html</code> 在
+  <code>/guides/build.html</code> 提供，文件夹的 <code>index.html</code> 响应其
+  <code>/guides/</code> URL。没有客户端路由，因此任何托管平台都不需要 SPA 回退。
+</p>
+<p>
+  值得配置的是未找到页面。每次构建都会在根目录写出一个
+  <code>404.html</code
+  >（项目自己的，或内置的）；把托管平台的错误页面指向它，这样未知路径会显示站点的布局，而不是托管平台默认的错误页。
+</p>
+
+<h2>nginx</h2>
+<pre><code>server {
+  listen 80;
+  server_name docs.example.com;
+  root /var/www/docs;
+  index index.html;
+
+  # Try the exact file, then a folder's index.html, else the site's 404 page.
+  location / {
+    try_files $uri $uri/ =404;
+  }
+  error_page 404 /404.html;
+}</code></pre>
+<p>每次发布时将 <code>.htmlpress/build/*</code> 复制到 <code>/var/www/docs/</code>。</p>
+
+<h2>Caddy</h2>
+<pre><code>docs.example.com {
+  root * /var/www/docs
+  file_server
+  encode gzip zstd
+  handle_errors {
+    rewrite * /404.html
+    file_server
+  }
+}</code></pre>
+<p>当域名解析到 Caddy 时，它会自动签发 Let's Encrypt 证书。</p>
+
+<h2>AWS S3 + CloudFront</h2>
+<p>标准做法是以 S3 存储桶为源站，前面放 CloudFront：</p>
+<ol>
+  <li>
+    将 <code>.htmlpress/build/</code> 上传到 S3 存储桶（<code
+      >aws s3 sync .htmlpress/build/ s3://my-docs --delete</code
+    >）。
+  </li>
+  <li>
+    将 <strong>Static website hosting → Index document</strong> 设为
+    <code>index.html</code>，<strong>Error document</strong> 设为 <code>404.html</code>。
+  </li>
+  <li>创建一个指向该存储桶网站端点的 CloudFront 分配。</li>
+  <li>
+    在 CloudFront 中添加一条 <strong>Custom error response</strong>，将
+    <code>404</code> 映射到 <code>/404.html</code>，并保持响应码为 <code>404</code>。
+  </li>
+  <li>将该分配的默认根对象设为 <code>index.html</code>。</li>
+</ol>
+<p>
+  <code>_htmlpress/</code>
+  下的文件在每次构建之间保持文件名不变，因此请只做短时间缓存，或在每次发布时使其失效。
+</p>
+
+<h2>Apache</h2>
+<pre><code>DirectoryIndex index.html
+ErrorDocument 404 /404.html</code></pre>
+<p>
+  把这些写入文档根目录下的
+  <code>.htaccess</code
+  >，并将构建放在那里。真实存在的文件和文件夹会被直接提供；其他请求都会得到站点的 404
+  页面。
+</p>
+<htmlpress-callout type="warning">
+  <p>
+    Htmlpress 复制项目时会跳过点文件，因此请把 <code>.htaccess</code>
+    保留在服务器上，或在构建后再复制进去。
+  </p>
+</htmlpress-callout>
+
+<h2>其他托管平台</h2>
+<p>
+  同样的做法适用于 Render Static、Surge、Fly Static、Bunny，或任何带 CDN
+  的对象存储：上传目录，把域名指向它，并为未知路径提供 <code>404.html</code>。
+</p>
+
+<h2>使用 GitHub Actions 部署</h2>
+<p>一个最简的 nginx/SSH 示例：</p>
+<pre><code class="language-yaml">name: deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npx gethtmlpress build
+      - uses: easingthemes/ssh-deploy@v5
+        with:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
+          REMOTE_HOST: ${{ secrets.SSH_HOST }}
+          REMOTE_USER: ${{ secrets.SSH_USER }}
+          SOURCE: .htmlpress/build/
+          TARGET: /var/www/docs/
+          ARGS: -avzr --delete</code></pre>
+<p>
+  对于 S3，把部署步骤换成 <code>aws-actions/configure-aws-credentials</code> +
+  <code>aws s3 sync</code>。
+</p>
+
+<h2>另请参阅</h2>
+<ul>
+  <li>
+    <a href="/zh/customization/site-metadata.html">站点元数据</a>：<code>site</code>
+    用于生成绝对 URL 和 sitemap。
+  </li>
+  <li><a href="/zh/deployment/">部署</a>：返回托管平台索引。</li>
+</ul>

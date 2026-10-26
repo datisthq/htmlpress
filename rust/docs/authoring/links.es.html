@@ -1,0 +1,71 @@
+<title>Enlaces</title>
+<meta
+  name="description"
+  content="Enlaces internos, externos y de ancla, URL de las páginas y la ruta base."
+/>
+<meta name="order" content="33" />
+<meta name="icon" content="link" />
+
+<h1>Enlaces</h1>
+<p>
+  Una página se escribe en la misma ruta desde la que se leyó, así que los enlaces entre
+  páginas siguen funcionando. <code>index.html</code> se sirve en su carpeta:
+  <code>guides/index.html</code> en <code>/guides/</code>.
+</p>
+
+<h2>Enlaces internos</h2>
+<p>
+  Enlaza a otras páginas de tu documentación, de forma relativa a la raíz o relativa a la
+  página:
+</p>
+<pre><code class="language-html">&lt;a href="/introduction.html"&gt;Introduction&lt;/a&gt;
+&lt;a href="headings.html"&gt;Headings&lt;/a&gt;</code></pre>
+<p>Se renderiza como: <a href="/es/introduction.html">Introducción</a></p>
+<p>
+  Con <code>base</code> definido en <code>htmlpress.yaml</code>, cada URL relativa a la
+  raíz de la compilación (en <code>href</code>, <code>src</code>, <code>srcset</code>,
+  <code>poster</code> y <code>action</code>, tanto en las páginas como en el layout y en
+  el HTML de la configuración) lo recibe como prefijo: escribe <code>/guide.html</code> y
+  el sitio enlaza a <code>/repo/guide.html</code>. Las URL relativas y absolutas no se
+  tocan, ni tampoco los <code>url()</code> del CSS propio de una página.
+  <code>start</code> y <code>preview</code> también sirven el sitio bajo la base, y
+  redirigen <code>/</code> allí.
+</p>
+<p>
+  La navegación agrupa las páginas por su carpeta superior, con el nombre del título del
+  <code>index.html</code> de la carpeta o, si no, el nombre de la carpeta. El nombre de un
+  grupo enlaza a esa página índice, y el chevrón que hay a su lado pliega el grupo. Las
+  páginas de la raíz aparecen sin agrupar.
+</p>
+
+<h2>Enlaces externos</h2>
+<p>Enlaza a recursos externos:</p>
+<pre><code class="language-html">&lt;a href="https://github.com"&gt;GitHub&lt;/a&gt;</code></pre>
+<p>Se renderiza como: <a href="https://github.com">GitHub</a></p>
+
+<h2>Enlaces de ancla</h2>
+<p>Enlaza a un encabezado concreto de la página actual por su id:</p>
+<pre><code class="language-html">&lt;a href="#internal-links"&gt;See Internal Links&lt;/a&gt;</code></pre>
+<p>Se renderiza como: <a href="#enlaces-internos">Ver Enlaces internos</a></p>
+<p>
+  Un encabezado de otra página es su URL más el id:
+  <a href="/es/authoring/headings.html#custom-ids">ID de encabezado personalizados</a>.
+  Consulta <a href="/es/authoring/headings.html">Encabezados</a> para ver cómo se generan
+  los id.
+</p>
+
+<h2>Enlaces automáticos</h2>
+<p>
+  Una URL suelta en la prosa se convierte en un enlace al compilar, como en el Markdown de
+  GitHub: las URL <code>http://</code> y <code>https://</code>, las direcciones
+  <code>www.</code> y los correos electrónicos. La puntuación final queda fuera del
+  enlace.
+</p>
+<pre><code class="language-html">&lt;p&gt;See https://htmlpress.dev, or mail team@example.com.&lt;/p&gt;</code></pre>
+<p>Se renderiza como: Visita https://htmlpress.dev, o escribe a team@example.com.</p>
+<p>
+  El texto de los enlaces, el código, los bloques de código y los terminales se queda tal
+  como está escrito, igual que cualquier elemento con <code>data-literal</code>, para la
+  prosa que debe mostrar una URL sin convertir:
+</p>
+<pre><code class="language-html">&lt;p data-literal&gt;Type https://htmlpress.dev in the address bar.&lt;/p&gt;</code></pre>

@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <title>Starlight vs Htmlpress</title>
+    <meta
+      name="description"
+      content="Páginas HTML planas en un binario frente a las islas de Astro para docs."
+    />
+    <meta name="order" content="64" />
+    <meta name="icon" content="star" />
+  </head>
+  <body>
+    <h1>Starlight vs Htmlpress</h1>
+    <p>
+      <a href="https://starlight.astro.build">Starlight</a> es el tema oficial de
+      documentación de Astro, mantenido por el equipo de Astro. Usa la arquitectura de
+      islas de Astro (cero JavaScript por defecto, componentes interactivos opcionales) y
+      admite contenido MDX.
+    </p>
+    <h2>De un vistazo</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Aspecto</th>
+          <th>Htmlpress</th>
+          <th>Starlight</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Lenguaje / runtime</td>
+          <td>Rust (binario único, sin runtime)</td>
+          <td>TypeScript / Node 18+</td>
+        </tr>
+        <tr>
+          <td>Framework de UI</td>
+          <td>Ninguno (HTML + CSS plano, web components <code>htmlpress-*</code>)</td>
+          <td>
+            Componentes de Astro (HTML primero), islas opcionales de
+            React/Vue/Svelte/Solid
+          </td>
+        </tr>
+        <tr>
+          <td>Herramienta de compilación</td>
+          <td>Binario de htmlpress</td>
+          <td>Astro (Vite por debajo)</td>
+        </tr>
+        <tr>
+          <td>Formato de contenido</td>
+          <td>Páginas HTML</td>
+          <td>Markdown + MDX + MDoc</td>
+        </tr>
+        <tr>
+          <td>Licencia</td>
+          <td>MIT, autoalojado</td>
+          <td>MIT, autoalojado</td>
+        </tr>
+        <tr>
+          <td>Modelo de salida</td>
+          <td>Estático prerenderizado</td>
+          <td>Estático prerenderizado (con SSR posible mediante adaptadores)</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>Arquitectura</h2>
+    <p>
+      htmlpress es un único binario de Rust que se instala desde npm
+      (<code>gethtmlpress</code>), PyPI o crates.io. Envuelve cada página HTML en un
+      layout con una navegación y un tema; no hay bundler, ni framework de UI, ni API de
+      plugins. Cada archivo integrado (el layout, los estilos, los scripts y cada
+      componente) se puede escapar: un archivo en la misma ruta bajo
+      <code>.htmlpress/</code> lo reemplaza.
+    </p>
+    <p>
+      Las páginas de htmlpress se renderizan a HTML en tiempo de compilación y no hidratan
+      nada: los componentes interactivos <code>htmlpress-*</code> son elementos
+      personalizados con un pequeño script vanilla cada uno, enlazado solo en las páginas
+      que los usan.
+    </p>
+    <p>
+      Starlight usa el modelo de islas de Astro: las páginas se renderizan a HTML en
+      tiempo de compilación con cero JavaScript por defecto. Los componentes interactivos
+      son "islas" explícitas que se hidratan bajo demanda. El tema por defecto de
+      Starlight se compone sobre todo de componentes de Astro (sin JS en el cliente);
+      recurrir a React/Vue/Svelte es opcional. El modelo de componentes de Astro es su
+      propia sintaxis
+      <code>.astro</code> (HTML + frontmatter en JS, analizado estáticamente).
+    </p>
+    <p>
+      En htmlpress la disposición del contenido no tiene restricciones: escanea por glob
+      (<code>include</code>/<code>exclude</code> en <code>htmlpress.yaml</code>, todos los
+      archivos <code>.html</code> por defecto), y la URL de una página sigue su ruta de
+      archivo bajo la base del glob, así que <code>docs/**/*.html</code> sirve
+      <code>docs/guide.html</code> en <code>/guide.html</code>. No hace falta una carpeta
+      <code>docs/</code>. La navegación se construye a partir de las carpetas y del
+      <code>&lt;meta name="order"&gt;</code> de cada página; el <code>index.html</code> de
+      una carpeta da nombre a su grupo. Starlight exige el contenido en
+      <code>src/content/docs/</code> (el directorio de content collections de Astro), con
+      rutas derivadas de las rutas de archivo bajo esa raíz.
+    </p>
+    <h2>Superficie de contenido</h2>
+    <p>
+      Starlight acepta Markdown + MDX con frontmatter y, además, MDoc (Markdoc) para
+      contenido estructurado y validado con etiquetas personalizadas. Los componentes en
+      archivos <code>.mdx</code> son componentes de Astro por defecto; los componentes de
+      frameworks (React, etc.) necesitan directivas <code>client:*</code> explícitas para
+      hidratarse.
+    </p>
+    <p>
+      Las páginas de htmlpress son HTML semántico plano, al que el tema da estilo a partir
+      de los propios elementos. Los bloques más ricos son elementos personalizados
+      <code>htmlpress-*</code> (<code>htmlpress-callout</code>,
+      <code>htmlpress-tabs</code>, <code>htmlpress-steps</code>,
+      <code>htmlpress-grid</code>, …), cuyo CSS y JS se enlazan solo en las páginas que
+      usan la etiqueta. Un proyecto añade su propia etiqueta con
+      <code>.htmlpress/components/&lt;name&gt;/&lt;name&gt;.html</code>, que reemplaza la
+      etiqueta en tiempo de compilación.
+    </p>
+    <p>
+      htmlpress no tiene frontmatter: los metadatos de una página son su propio
+      <code>&lt;head&gt;</code> — <code>&lt;title&gt;</code>,
+      <code>&lt;meta name="description"&gt;</code>,
+      <code>&lt;meta name="order"&gt;</code>, <code>&lt;meta name="layout"&gt;</code> y
+      <code>&lt;meta name="image"&gt;</code>; las demás etiquetas de
+      <code>&lt;head&gt;</code> se conservan. Starlight usa frontmatter:
+      <code>title</code>, <code>description</code>, <code>sidebar</code>,
+      <code>tableOfContents</code>, <code>editUrl</code>, <code>lastUpdated</code>.
+    </p>
+    <h2>Matriz de funciones</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Capacidad</th>
+          <th>Htmlpress</th>
+          <th>Starlight</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Versionado</td>
+          <td>Parcial (una sección o un despliegue por versión)</td>
+          <td>No (plugins de la comunidad)</td>
+        </tr>
+        <tr>
+          <td>Internacionalización (i18n)</td>
+          <td>Sí (traducciones, selector de idioma, 7 idiomas de interfaz incluidos)</td>
+          <td>Sí (integrada)</td>
+        </tr>
+        <tr>
+          <td>Búsqueda</td>
+          <td>Sí (integrada, en el cliente)</td>
+          <td>Sí (Pagefind, integrada)</td>
+        </tr>
+        <tr>
+          <td>Cero JS por defecto</td>
+          <td>No (pequeños scripts vanilla, sin framework)</td>
+          <td>Sí (arquitectura de islas)</td>
+        </tr>
+        <tr>
+          <td>Blog</td>
+          <td>No</td>
+          <td>No (usa las content collections de Astro)</td>
+        </tr>
+        <tr>
+          <td>Registro de cambios</td>
+          <td>No</td>
+          <td>No</td>
+        </tr>
+        <tr>
+          <td>Sitemap</td>
+          <td>Sí (con <code>site</code> definido)</td>
+          <td>Sí</td>
+        </tr>
+        <tr>
+          <td>RSS</td>
+          <td>No</td>
+          <td>Mediante la integración <code>@astrojs/rss</code></td>
+        </tr>
+        <tr>
+          <td>Temas</td>
+          <td>Escapes en <code>.htmlpress/</code> + tokens <code>--htmlpress-*</code></td>
+          <td>Overrides de componentes mediante slots de Starlight</td>
+        </tr>
+        <tr>
+          <td>Plugins</td>
+          <td>No (componentes del proyecto en <code>.htmlpress/components/</code>)</td>
+          <td>Integraciones de Astro + plugins de Starlight</td>
+        </tr>
+        <tr>
+          <td>Rutas personalizadas</td>
+          <td>
+            Cualquier archivo <code>.html</code>; layouts adicionales en
+            <code>.htmlpress/layouts/</code>
+          </td>
+          <td>Páginas de Astro junto al contenido de Starlight</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>Salida y despliegue</h2>
+    <p>
+      Ambos producen un directorio de HTML estático + recursos. Starlight emite en
+      <code>dist/</code> por defecto; htmlpress emite en <code>.htmlpress/build/</code>.
+    </p>
+    <p>
+      htmlpress escribe cada página como HTML estático en <code>.htmlpress/build/</code>,
+      junto con <code>robots.txt</code>, un <code>sitemap.xml</code> cuando
+      <code>site</code> está definido, una copia en Markdown de cada página,
+      <code>llms.txt</code> y las skills para agentes en
+      <code>.well-known/agent-skills/</code>. La clave <code>base</code> sirve el sitio
+      bajo una subruta. Consulta <a href="/es/deployment/">Despliegue</a> para ver guías
+      por hosting.
+    </p>
+    <p>
+      Starlight hereda el sistema de adaptadores de Astro, que admite SSR en Cloudflare,
+      Netlify, Vercel, Node y Deno. htmlpress no tiene modo servidor: la compilación es
+      solo estática.
+    </p>
+    <h2>Ver también</h2>
+    <ul>
+      <li><a href="/es/authoring/">Redacción</a> — la superficie HTML de htmlpress.</li>
+      <li>
+        <a href="/es/customization/">Personalización</a> — las claves de configuración y
+        los escapes de htmlpress.
+      </li>
+      <li><a href="/es/comparison/">Comparativa</a> — volver al índice.</li>
+    </ul>
+  </body>
+</html>

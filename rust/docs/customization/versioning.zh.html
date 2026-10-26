@@ -73,9 +73,7 @@ sections:
     <h2>每个版本一次部署</h2>
     <p>
       当每个主版本都位于自己的分支上（<code>main</code>、<code>v1</code>……）时，把每个分支构建为独立站点，并通过各自的地址提供：子域名（<code>v1.docs.example.com</code>），或借助
-      <a href="/deployment/github-pages.html#configure-base-for-project-sites"
-        ><code>base</code></a
-      >
+      <a href="/zh/deployment/github-pages.html#为项目站点配置-base"><code>base</code></a>
       使用子路径（<code>docs.example.com/v1/</code>）。
     </p>
     <pre
@@ -104,7 +102,7 @@ banner: You are reading the v1 docs · &lt;a href="https://docs.example.com/"&gt
       <code>llms.txt</code
       >，因此各版本绝不会混在一起。代价是每个维护中的分支都需要一次构建和一个 CI
       任务；各托管平台的配置请参见
-      <a href="/deployment/">Deployment</a>。大多数托管平台开箱即支持把分支部署到各自的
+      <a href="/zh/deployment/">Deployment</a>。大多数托管平台开箱即支持把分支部署到各自的
       URL。
     </p>
 

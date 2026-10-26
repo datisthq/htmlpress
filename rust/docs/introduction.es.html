@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <title>Introducción</title>
+    <meta
+      name="description"
+      content="Aprende a configurar tu primer proyecto de htmlpress: instala, escribe páginas, ejecuta y compila."
+    />
+    <meta name="order" content="10" />
+    <meta name="icon" content="rocket" />
+  </head>
+  <body>
+    <h1>Htmlpress</h1>
+    <p>
+      Htmlpress convierte una carpeta de páginas HTML en un sitio. Cada página conserva su
+      propio marcado, y htmlpress añade un layout, un tema, una navegación y un servidor
+      de desarrollo con recarga en vivo. Es un único binario de Rust, que se instala desde
+      npm, PyPI o crates.io.
+    </p>
+    <p>
+      Está pensado para agentes de programación. Escriben HTML semántico sencillo, que
+      conocen mejor que cualquier lenguaje de plantillas, y cada página acaba con el
+      aspecto del mismo sitio: sin framework, sin configuración de compilación, sin clases
+      utilitarias.
+    </p>
+
+    <htmlpress-callout type="warning">
+      <p>
+        Htmlpress está en vista previa técnica: el contrato de las páginas aún puede
+        cambiar antes de la 1.0.
+      </p>
+    </htmlpress-callout>
+
+    <h2>Qué obtienes</h2>
+    <ul>
+      <li>
+        <strong>Solo escribe HTML.</strong> Una página es cualquier archivo
+        <code>.html</code>, un documento completo o un simple fragmento. Sus etiquetas
+        <code>&lt;title&gt;</code> y <code>&lt;meta&gt;</code> hacen lo que en otras
+        herramientas hace el frontmatter.
+      </li>
+      <li>
+        <strong>Un tema que estiliza los elementos.</strong> Los encabezados, las tablas,
+        los bloques de código, <code>&lt;details&gt;</code>, <code>&lt;figure&gt;</code> y
+        el resto se ven bien sin clases, en modo claro y oscuro.
+      </li>
+      <li>
+        <strong>Elementos enriquecidos.</strong> Avisos, pestañas, pasos, tarjetas,
+        insignias, árboles de archivos, tablas ordenables, terminales, pestañas de
+        paquetes (npm/pnpm/yarn/bun), diagramas de Mermaid e incrustaciones (YouTube,
+        SoundCloud), todos como elementos personalizados <code>htmlpress-*</code>.
+      </li>
+      <li>
+        <strong>Navegación gratis.</strong> Una barra lateral anidada por carpetas, migas
+        de pan, una tabla de contenidos, enlaces de anterior/siguiente y un enlace «Editar
+        esta página».
+      </li>
+      <li>
+        <strong>Multilingüe.</strong> Traducciones junto a sus originales, un selector de
+        idioma y la interfaz en siete idiomas incluidos; consulta
+        <a href="/es/customization/translations.html">Traducciones</a>.
+      </li>
+      <li>
+        <strong>Pensado para agentes.</strong> Cada compilación publica una copia en
+        Markdown de cada página, <code>llms.txt</code> y tus skills de agente; todos los
+        comandos hablan JSON.
+      </li>
+      <li>
+        <strong>Personalizable.</strong> Tokens <code>--htmlpress-*</code> y
+        sobrescrituras por archivo del layout, los estilos y los componentes mediante una
+        carpeta <code>.htmlpress/</code>.
+      </li>
+      <li>
+        <strong>Un solo binario.</strong> Sin runtime y sin dependencias: un sitio
+        estático con <code>sitemap.xml</code>, <code>robots.txt</code> y una página 404,
+        listo para cualquier hosting.
+      </li>
+    </ul>
+
+    <h2>Inicio rápido</h2>
+    <p>
+      No necesitas nada más que el binario. Todos los canales distribuyen el mismo binario
+      en la misma versión, así que elige el gestor de paquetes que ya use el proyecto.
+    </p>
+
+    <h3>Instalar</h3>
+    <htmlpress-tabs sync="channel">
+      <section title="npm">
+        <pre><code>npm install --global gethtmlpress
+# or run it without installing
+npx gethtmlpress --version</code></pre>
+        <p>
+          El paquete <code>gethtmlpress</code> incorpora un paquete de plataforma, como
+          <code>gethtmlpress-linux-x64</code>, mediante una dependencia opcional. Instalar
+          con <code>--omit=optional</code> deja fuera el binario.
+        </p>
+      </section>
+      <section title="PyPI">
+        <pre><code class="language-sh">pip install htmlpress
+# or run it without installing
+uvx htmlpress --version</code></pre>
+        <p>El wheel de tu plataforma lleva el binario; no se ejecuta código de Python.</p>
+      </section>
+      <section title="Cargo">
+        <pre><code class="language-sh">cargo install htmlpress</code></pre>
+        <p>Compila desde el código fuente con la toolchain de Rust, 1.88 o posterior.</p>
+      </section>
+    </htmlpress-tabs>
+    <p>Hay binarios precompilados para Linux, macOS y Windows en x64 y arm64:</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Plataforma</th>
+          <th>Paquete de npm</th>
+          <th>Target de Rust</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Linux x64</td>
+          <td><code>gethtmlpress-linux-x64</code></td>
+          <td><code>x86_64-unknown-linux-musl</code></td>
+        </tr>
+        <tr>
+          <td>Linux arm64</td>
+          <td><code>gethtmlpress-linux-arm64</code></td>
+          <td><code>aarch64-unknown-linux-musl</code></td>
+        </tr>
+        <tr>
+          <td>macOS x64</td>
+          <td><code>gethtmlpress-darwin-x64</code></td>
+          <td><code>x86_64-apple-darwin</code></td>
+        </tr>
+        <tr>
+          <td>macOS arm64</td>
+          <td><code>gethtmlpress-darwin-arm64</code></td>
+          <td><code>aarch64-apple-darwin</code></td>
+        </tr>
+        <tr>
+          <td>Windows x64</td>
+          <td><code>gethtmlpress-win32-x64</code></td>
+          <td><code>x86_64-pc-windows-msvc</code></td>
+        </tr>
+        <tr>
+          <td>Windows arm64</td>
+          <td><code>gethtmlpress-win32-arm64</code></td>
+          <td><code>aarch64-pc-windows-msvc</code></td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      En cualquier otra plataforma, compila con <code>cargo install htmlpress</code> y,
+      para el paquete de npm, apunta <code>HTMLPRESS_BINARY</code> al resultado.
+    </p>
+
+    <h3>Configurar</h3>
+    <p>
+      La configuración es opcional. Para definir los metadatos del sitio, crea
+      <code>htmlpress.yaml</code> en la raíz de tu proyecto:
+    </p>
+    <pre><code class="language-yaml">title: My docs
+description: Documentation for my project
+include: docs/**/*.html</code></pre>
+    <p>
+      Sin <code>include</code>, cada archivo <code>.html</code> del proyecto es una
+      página; con él, solo lo son los que coinciden, servidos sin la base del glob, así
+      que <code>docs/usage.html</code> queda en <code>/usage.html</code>. Consulta
+      <a href="/es/customization/configuration-file.html">Archivo de configuración</a>
+      para ver todas las claves.
+    </p>
+
+    <h3>Añadir contenido</h3>
+    <htmlpress-file-tree>
+      <ul>
+        <li>
+          docs/
+          <ul>
+            <li>index.html</li>
+            <li>getting-started.html</li>
+            <li>usage.html</li>
+          </ul>
+        </li>
+      </ul>
+    </htmlpress-file-tree>
+    <p>
+      Cada página define su título, descripción y orden en etiquetas que también puede
+      llevar un fragmento:
+    </p>
+    <pre><code class="language-html">&lt;title&gt;Getting Started&lt;/title&gt;
+&lt;meta name="description" content="Set up the project in five minutes." /&gt;
+&lt;meta name="order" content="1" /&gt;
+
+&lt;h1&gt;Getting Started&lt;/h1&gt;
+&lt;p&gt;Welcome!&lt;/p&gt;</code></pre>
+    <p>
+      Consulta <a href="/es/authoring/frontmatter.html">Frontmatter</a> para saber qué
+      significa cada etiqueta.
+    </p>
+
+    <h3>Ejecutar</h3>
+    <pre><code class="language-sh">htmlpress start    # dev server with live reload at http://localhost:8000
+htmlpress build    # production build to .htmlpress/build/
+htmlpress preview  # serve the production build locally
+htmlpress clear    # remove .htmlpress/build/</code></pre>
+    <p>
+      Ese es todo el ciclo. Añade <code>.htmlpress/build/</code> a tu
+      <code>.gitignore</code>. Este sitio se compila así a partir de la carpeta
+      <a href="https://github.com/datisthq/htmlpress/tree/main/rust/docs">rust/docs/</a>
+      del repositorio.
+    </p>
+
+    <h2>Estructura del proyecto</h2>
+    <p>Un sitio típico de htmlpress:</p>
+    <htmlpress-file-tree>
+      <ul>
+        <li>
+          my-project/
+          <ul>
+            <li>htmlpress.yaml — configuración (opcional)</li>
+            <li>index.html — la página de inicio</li>
+            <li>
+              guides/ — un grupo de la barra lateral, con el nombre de su
+              <code>index.html</code>
+              <ul>
+                <li>index.html</li>
+                <li>build.html</li>
+              </ul>
+            </li>
+            <li>logo.svg — cualquier otro archivo, copiado tal cual</li>
+            <li>
+              .htmlpress/ — escapes y la salida de la compilación
+              <ul>
+                <li>layout.html</li>
+                <li>build/</li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </htmlpress-file-tree>
+    <p>
+      Un archivo en <code>.htmlpress/</code> en la ruta de uno integrado, como
+      <code>layout.html</code>, <code>styles/tokens.css</code> o
+      <code>components/tabs/tabs.css</code>, reemplaza al predeterminado, así que puedes
+      personalizar el layout, el tema y los componentes sin hacer un fork. Ejecuta
+      <code>htmlpress escape &lt;name&gt;</code> para copiar un archivo predeterminado a
+      <code>.htmlpress/</code>, listo para editar.
+    </p>
+
+    <h2>Comandos</h2>
+
+    <h3><code>htmlpress build [root]</code></h3>
+    <p>
+      Renderiza el proyecto en <code>root</code> (por defecto <code>.</code>) en
+      <code>root/.htmlpress/build</code>, reemplazando lo que haya. <code>--out</code> /
+      <code>-o</code> elige otra carpeta; se rechaza una que contenga el proyecto, o una
+      carpeta visible dentro de él, ya que sus páginas se volverían a leer como fuentes.
+    </p>
+    <pre><code class="language-sh">$ htmlpress build docs
+built 6 pages and 0 files into docs/.htmlpress/build</code></pre>
+
+    <h3><code>htmlpress start [root]</code></h3>
+    <p>
+      Compila el proyecto, lo sirve en <code>http://localhost:8000</code> y lo recompila
+      con cada cambio. Las páginas abiertas se recargan solas después de cada compilación.
+      Una página rota imprime su error y mantiene en línea la última compilación correcta.
+    </p>
+    <p>
+      Si el 8000 está ocupado, prueba el 8001 y sigue hasta el 8009, e imprime la URL que
+      obtuvo. <code>--port</code> / <code>-p</code> indica un puerto concreto (<code
+        >0</code
+      >
+      elige cualquiera libre). <code>--host</code> solo sirve en todas las direcciones,
+      para que un teléfono en la misma red pueda abrir el sitio, e imprime también esa
+      URL; <code>--host &lt;address&gt;</code> sirve en una. Con <code>base</code> en
+      <code>htmlpress.yaml</code>, el sitio se sirve bajo esa ruta, las URL impresas la
+      incluyen y <code>/</code> lleva allí; reinicia después de cambiar <code>base</code>.
+      <code>--out</code> / <code>-o</code> funciona igual que en <code>build</code>.
+    </p>
+    <pre><code class="language-sh">$ htmlpress start docs --host
+serving http://localhost:8000
+network http://192.168.1.107:8000</code></pre>
+
+    <h3><code>htmlpress preview [root]</code></h3>
+    <p>
+      Compila el proyecto para producción y lo sirve tal como se desplegará: sin vigilar
+      cambios ni recargar. Acepta <code>--port</code>, <code>--host</code> y
+      <code>--out</code> como <code>start</code>.
+    </p>
+
+    <h3><code>htmlpress clear [root]</code></h3>
+    <p>
+      Elimina la salida de la compilación (<code>--out</code> para indicar otra), con la
+      misma protección que <code>build</code>.
+    </p>
+
+    <h3><code>htmlpress escape [names…]</code></h3>
+    <p>
+      Copia archivos integrados a <code>.htmlpress/</code> para editarlos: un nombre es
+      una ruta como <code>components/tabs/tabs.js</code>, o la etiqueta de un componente
+      para todos sus archivos. Sin nombres, lista cada archivo integrado e indica si el
+      proyecto lo ha escapado. <code>--root</code> / <code>-r</code> elige el proyecto
+      (por defecto <code>.</code>). Se niega a sobrescribir un archivo; consulta
+      <a href="/es/customization/overriding-escaping.html">Sobrescritura/Escape</a>.
+    </p>
+    <pre><code class="language-sh">$ htmlpress escape htmlpress-tabs
+escaped .htmlpress/components/tabs/tabs.css
+escaped .htmlpress/components/tabs/tabs.js</code></pre>
+
+    <h3>Para scripts y agentes</h3>
+    <p>
+      La CLI está construida con <a href="https://fireargs.dev">Fireargs</a>, así que
+      todos los comandos hablan JSON. <code>--json</code> imprime el resultado como JSON
+      y, con un valor, también recibe la entrada como JSON:
+    </p>
+    <pre><code class="language-sh">$ htmlpress build docs --json
+{
+  "output": "docs/.htmlpress/build",
+  "pages": 6,
+  "files": 0
+}
+$ htmlpress build --json '{"root":"docs","out":"dist"}'</code></pre>
+    <p>
+      <code>htmlpress --llms</code> imprime el esquema de entrada y salida de cada comando
+      como una lista de herramientas con forma de MCP, para que un agente aprenda la CLI
+      sin leer esta página.
+    </p>
+
+    <h2>Personalización</h2>
+    <p>
+      Htmlpress está pensado para verse bien sin configuración y no estorbarte cuando
+      necesitas más. Personalizaciones habituales:
+    </p>
+    <ul>
+      <li>
+        <strong>Metadatos del sitio</strong>: título, descripción, favicon, logo. Consulta
+        <a href="/es/customization/site-metadata.html">Metadatos del sitio</a>.
+      </li>
+      <li>
+        <strong>Secciones</strong>: agrupa las páginas por carpeta en la barra lateral.
+        Consulta
+        <a href="/es/customization/article-sections.html">Secciones de artículos</a>.
+      </li>
+      <li>
+        <strong>Enlaces externos</strong>: enlaces en la cabecera y la barra lateral hacia
+        cualquier sitio. Consulta
+        <a href="/es/customization/external-links.html">Enlaces externos</a>.
+      </li>
+      <li>
+        <strong>Sobrescritura/Escape</strong>: reemplaza el layout, cualquier hoja de
+        estilos o componente desde tu proyecto. Consulta
+        <a href="/es/customization/overriding-escaping.html">Sobrescritura/Escape</a>.
+      </li>
+      <li>
+        <strong>Agentes de IA</strong>: lo que cada compilación publica para los agentes.
+        Consulta <a href="/es/customization/ai-agents.html">Agentes de IA</a>.
+      </li>
+    </ul>
+
+    <h2>Documentación</h2>
+    <p>
+      La documentación completa está en
+      <strong><a href="https://htmlpress.dev">htmlpress.dev</a></strong
+      >:
+    </p>
+    <ul>
+      <li>
+        <a href="/es/authoring/">Referencia de redacción</a>: cada elemento y componente
+        con ejemplos
+      </li>
+      <li>
+        <a href="/es/customization/">Personalización</a>: cada opción, con fragmentos
+        listos para copiar y pegar
+      </li>
+      <li>
+        <a href="/es/deployment/">Despliegue</a>: publicar la compilación en un hosting
+      </li>
+      <li>
+        <a href="/es/contributing.html">Contribuir</a>: configuración local y flujo de PR
+      </li>
+    </ul>
+
+    <h2>Recursos</h2>
+    <ul>
+      <li>
+        <strong>npm</strong>:
+        <a href="https://www.npmjs.com/package/gethtmlpress"
+          >npmjs.com/package/gethtmlpress</a
+        >
+      </li>
+      <li>
+        <strong>PyPI</strong>:
+        <a href="https://pypi.org/project/htmlpress/">pypi.org/project/htmlpress</a>
+      </li>
+      <li>
+        <strong>crates.io</strong>:
+        <a href="https://crates.io/crates/htmlpress">crates.io/crates/htmlpress</a>
+      </li>
+      <li>
+        <strong>GitHub</strong>:
+        <a href="https://github.com/datisthq/htmlpress">github.com/datisthq/htmlpress</a>
+      </li>
+      <li>
+        <strong>Incidencias</strong>:
+        <a href="https://github.com/datisthq/htmlpress/issues"
+          >github.com/datisthq/htmlpress/issues</a
+        >
+      </li>
+      <li>
+        <strong>Discusiones</strong>:
+        <a href="https://github.com/datisthq/htmlpress/discussions"
+          >github.com/datisthq/htmlpress/discussions</a
+        >
+      </li>
+    </ul>
+
+    <h2>Licencia</h2>
+    <p>
+      MIT; consulta
+      <a href="https://github.com/datisthq/htmlpress/blob/main/LICENSE.md">LICENSE.md</a>.
+    </p>
+  </body>
+</html>

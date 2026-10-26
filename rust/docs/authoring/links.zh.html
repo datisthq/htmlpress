@@ -1,0 +1,61 @@
+<title>链接</title>
+<meta
+  name="description"
+  content="内部链接、外部链接和锚点链接、页面 URL 以及基础路径。"
+/>
+<meta name="order" content="33" />
+<meta name="icon" content="link" />
+
+<h1>链接</h1>
+<p>
+  页面会写入与读取时相同的路径，因此页面之间的链接始终有效。<code>index.html</code>
+  在其所在文件夹提供服务： <code>guides/index.html</code> 对应 <code>/guides/</code>。
+</p>
+
+<h2>内部链接</h2>
+<p>链接到文档中的其他页面，可以相对于根目录，也可以相对于当前页面：</p>
+<pre><code class="language-html">&lt;a href="/introduction.html"&gt;Introduction&lt;/a&gt;
+&lt;a href="headings.html"&gt;Headings&lt;/a&gt;</code></pre>
+<p>渲染为：<a href="/zh/introduction.html">简介</a></p>
+<p>
+  在 <code>htmlpress.yaml</code> 中设置 <code>base</code> 后，构建中的每个根相对 URL（位于
+  <code>href</code>、<code>src</code>、<code>srcset</code>、<code>poster</code> 和
+  <code>action</code> 中，无论是在页面、布局还是配置的 HTML 里）都会加上它作为前缀：写
+  <code>/guide.html</code>，站点就会链接到 <code>/repo/guide.html</code>。相对 URL 和绝对
+  URL 保持不变，页面自身 CSS 中的 <code>url()</code> 也一样。<code>start</code> 和
+  <code>preview</code> 同样在基础路径下提供站点，并把 <code>/</code> 重定向到那里。
+</p>
+<p>
+  导航按顶层文件夹对页面分组，组名取自该文件夹
+  <code>index.html</code>
+  的标题，否则使用文件夹名。组名链接到该索引页，旁边的箭头可以折叠该组。根目录下的页面不分组。
+</p>
+
+<h2>外部链接</h2>
+<p>链接到外部资源：</p>
+<pre><code class="language-html">&lt;a href="https://github.com"&gt;GitHub&lt;/a&gt;</code></pre>
+<p>渲染为：<a href="https://github.com">GitHub</a></p>
+
+<h2>锚点链接</h2>
+<p>通过 ID 链接到当前页面的某个标题：</p>
+<pre><code class="language-html">&lt;a href="#internal-links"&gt;See Internal Links&lt;/a&gt;</code></pre>
+<p>渲染为：<a href="#内部链接">参见内部链接</a></p>
+<p>
+  其他页面上的标题就是该页 URL 加上 ID：
+  <a href="/zh/authoring/headings.html#custom-ids">自定义标题 ID</a>。ID 的生成方式见
+  <a href="/zh/authoring/headings.html">标题</a>。
+</p>
+
+<h2>自动链接</h2>
+<p>
+  正文中的裸 URL 会在构建时变成链接，与 GitHub 风格的 Markdown 一样：
+  <code>http://</code> 和 <code>https://</code> URL、<code>www.</code>
+  地址以及电子邮件地址。末尾的标点留在链接之外。
+</p>
+<pre><code class="language-html">&lt;p&gt;See https://htmlpress.dev, or mail team@example.com.&lt;/p&gt;</code></pre>
+<p>渲染为：详见 https://htmlpress.dev ，或发邮件至 team@example.com 。</p>
+<p>
+  链接、代码、代码块和终端中的文本保持原样，任何带
+  <code>data-literal</code> 的元素也是如此，适用于必须显示原始 URL 的正文：
+</p>
+<pre><code class="language-html">&lt;p data-literal&gt;Type https://htmlpress.dev in the address bar.&lt;/p&gt;</code></pre>

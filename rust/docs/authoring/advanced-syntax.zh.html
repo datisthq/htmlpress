@@ -1,0 +1,196 @@
+<title>高级语法</title>
+<meta
+  name="description"
+  content="任意 HTML 元素、页面自己的样式和脚本、数学公式、Mermaid 图表和项目组件。"
+/>
+<meta name="order" content="38" />
+<meta name="icon" content="puzzle" />
+
+<h1>高级语法</h1>
+
+<h2>HTML 块</h2>
+<p>
+  页面就是 HTML，因此每个元素都可以直接使用。常见的例子包括用于键盘快捷键的
+  <code>&lt;kbd&gt;</code>、用于上标和下标的
+  <code>&lt;sup&gt;</code>/<code>&lt;sub&gt;</code>，以及用于折叠面板的
+  <code>&lt;details&gt;</code>/<code>&lt;summary&gt;</code>。
+</p>
+<pre><code>Press &lt;kbd&gt;Ctrl&lt;/kbd&gt; + &lt;kbd&gt;C&lt;/kbd&gt; to copy. Water is H&lt;sub&gt;2&lt;/sub&gt;O.</code></pre>
+<p>渲染为：按 <kbd>Ctrl</kbd> + <kbd>C</kbd> 复制。水的化学式是 H<sub>2</sub>O。</p>
+<p>
+  优先使用语义化元素，而不是类名和内联
+  <code>style</code
+  >：主题直接为元素本身设置样式，正是这一点让每个页面看起来都属于同一个站点。若要在全站范围内改变外观，请改为覆盖某个
+  <a href="/zh/authoring/rich-elements.html">主题令牌</a>。
+</p>
+
+<h2>MDX 渲染</h2>
+<p>
+  没有模板语言：页面在 HTML 之外需要的东西都来自它自己的
+  <code>&lt;head&gt;</code>。页面的 <code>&lt;link&gt;</code>、<code>&lt;style&gt;</code>
+  和 <code>&lt;script&gt;</code> 会被保留，并添加到布局的 head 中，位于主题之后：
+</p>
+<pre><code class="language-html">&lt;title&gt;Version&lt;/title&gt;
+&lt;script type="module"&gt;
+  document.querySelector("#version").textContent = "2.0.0"
+&lt;/script&gt;
+
+&lt;h1&gt;Version&lt;/h1&gt;
+&lt;p&gt;The current version is &lt;strong id="version"&gt;&lt;/strong&gt;.&lt;/p&gt;</code></pre>
+<p>
+  这是为高级用例准备的逃生舱。对于在多个页面之间共享的标记，请使用
+  <a href="#包含文档">项目组件</a>。
+</p>
+
+<h2>LaTeX 表达式</h2>
+<p>
+  美元符号之间的 LaTeX 会在构建时渲染为 MathML，由浏览器原生绘制，无需脚本或 Web
+  字体。单个美元符号表示行内公式，双美元符号表示居中的块级公式：
+</p>
+<pre><code class="language-html">&lt;p&gt;Inline: $E = mc^2$, with $x$, $\alpha$ or $\sum_{i=1}^{n} i$.&lt;/p&gt;
+&lt;p&gt;$$\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}$$&lt;/p&gt;</code></pre>
+<p>渲染为：</p>
+<p>行内：$E = mc^2$，以及 $x$、$\alpha$ 或 $\sum_{i=1}^{n} i$。</p>
+<p>$$\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}$$</p>
+<p>$$f(x) = \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{(x-\mu)^2}{2\sigma^2}}$$</p>
+<p>矩阵和对齐的方程：</p>
+<p>
+  $$\begin{pmatrix} a &amp; b \\ c &amp; d \end{pmatrix} \begin{pmatrix} x \\ y
+  \end{pmatrix} = \begin{pmatrix} ax + by \\ cx + dy \end{pmatrix}$$
+</p>
+<p>
+  只有包围着看起来像公式的内容时，美元符号才表示数学公式：开头的美元符号后面紧跟非空白字符，结尾的美元符号前面紧跟非空白字符，且后面不跟数字。因此像“it
+  costs $5 and $10”这样的价格仍是文本，而
+  <code>\$</code> 始终是普通的美元符号。一对
+  <code>$$</code> 必须位于同一个元素中。代码、链接和
+  <code>data-literal</code> 元素不受影响。
+</p>
+<p>
+  <code>&lt;htmlpress-math&gt;</code> 无需美元符号即可写出同样的公式；
+  <code>display</code> 让它成为块级公式：
+</p>
+<pre><code class="language-html">&lt;htmlpress-math display&gt;a^2 + b^2 = c^2&lt;/htmlpress-math&gt;</code></pre>
+<htmlpress-math display>a^2 + b^2 = c^2</htmlpress-math>
+<p>
+  无效的 LaTeX 会导致构建失败，并给出解析器的报错信息。页面的 Markdown 副本保留
+  <code>$…$</code> 源码。页面仍然可以手写 MathML。
+</p>
+
+<h2>Mermaid 图表</h2>
+<p>
+  <code>&lt;htmlpress-mermaid&gt;</code> 中的 <code>&lt;pre&gt;</code> 存放
+  <a href="https://mermaid.js.org">Mermaid</a>
+  源码，以当前主题绘制，并在主题切换时重新绘制。源码中的 <code>&lt;</code> 和
+  <code>&amp;</code> 需要转义。只有包含图表的页面才会从 jsDelivr
+  加载该库；离线时则显示源码。
+</p>
+<pre><code class="language-html">&lt;htmlpress-mermaid&gt;
+  &lt;pre&gt;flowchart LR
+  pages[HTML pages] --&amp;gt; build[htmlpress build] --&amp;gt; site[Static site]&lt;/pre&gt;
+&lt;/htmlpress-mermaid&gt;</code></pre>
+<p>渲染为：</p>
+<htmlpress-mermaid>
+  <pre>
+flowchart LR
+  pages[HTML pages] --&gt; build[htmlpress build] --&gt; site[Static site]</pre>
+</htmlpress-mermaid>
+<pre><code class="language-html">&lt;htmlpress-mermaid&gt;
+  &lt;pre&gt;pie title Languages
+  "Rust" : 45
+  "TypeScript" : 30
+  "Python" : 15
+  "Other" : 10&lt;/pre&gt;
+&lt;/htmlpress-mermaid&gt;</code></pre>
+<p>渲染为：</p>
+<htmlpress-mermaid>
+  <pre>
+pie title Languages
+  "Rust" : 45
+  "TypeScript" : 30
+  "Python" : 15
+  "Other" : 10</pre>
+</htmlpress-mermaid>
+
+<h2>包含文档</h2>
+<p>
+  项目组件用于在页面之间共享标记。位于
+  <code>.htmlpress/components/&lt;name&gt;/&lt;name&gt;.html</code>
+  的文件会在构建时填充每个页面中的每个 <code>&lt;htmlpress-&lt;name&gt;&gt;</code>：
+</p>
+<htmlpress-file-tree>
+  <ul>
+    <li>
+      .htmlpress
+      <ul>
+        <li>
+          components
+          <ul>
+            <li>
+              disclaimer
+              <ul>
+                <li>disclaimer.html</li>
+                <li>disclaimer.css</li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li>guide.html</li>
+  </ul>
+</htmlpress-file-tree>
+<pre><code class="language-html">&lt;!-- .htmlpress/components/disclaimer/disclaimer.html --&gt;
+&lt;aside&gt;&lt;p&gt;Provided as-is, without warranty.&lt;/p&gt;&lt;/aside&gt;
+
+&lt;!-- guide.html --&gt;
+&lt;htmlpress-disclaimer&gt;&lt;/htmlpress-disclaimer&gt;</code></pre>
+<ul>
+  <li>
+    它的 <code>.css</code> 和
+    <code>.js</code> 只在出现该标签的页面上加载；标签会保留在粘贴进来的标记外层，因此其
+    CSS 的作用域限定在该标签内，即 <code>@scope (htmlpress-disclaimer)</code>。
+  </li>
+  <li>
+    文件夹名就是去掉
+    <code>htmlpress-</code> 前缀的标签名，与内置组件相同：以内置组件命名的文件夹（例如
+    <code>tabs</code>）会替换该内置组件。
+  </li>
+</ul>
+<p>
+  <code>.htmlpress/</code> 下的所有文件见
+  <a href="/zh/customization/overriding-escaping.html">覆盖/弹出</a>。
+</p>
+<p>
+  <code>&lt;htmlpress-include src="…"&gt;</code>
+  按路径把另一个文件粘贴进来，路径相对于页面（以 <code>/</code> 开头时相对于项目）：<code
+    >.html</code
+  >
+  文件取其 body，<code>.md</code>
+  文件会被渲染（去掉其前置元数据），其他任何文件则作为代码块，以文件名为标题，并按扩展名进行高亮。
+</p>
+<pre><code class="language-html">&lt;htmlpress-include src="../includes/disclaimer.md"&gt;&lt;/htmlpress-include&gt;</code></pre>
+<p>渲染为：</p>
+<htmlpress-include src="../includes/disclaimer.md"></htmlpress-include>
+<p>
+  代码文件接受代码块属性，例如 <code>data-lines</code>、<code>data-line-numbers</code> 或
+  <code>data-title</code>（它会替换文件名）：
+</p>
+<pre><code class="language-html">&lt;htmlpress-include src="../includes/build.ts" data-lines="3"&gt;&lt;/htmlpress-include&gt;</code></pre>
+<p>渲染为：</p>
+<htmlpress-include src="../includes/build.ts" data-lines="3"></htmlpress-include>
+<ul>
+  <li>
+    包含最多可嵌套五层，单个页面最多展开 1,000 个包含或 16
+    MB。文件缺失、循环包含，或路径超出项目范围、指向点文件、<code>node_modules</code> 或
+    <code>.htmlpress</code>，都会导致构建失败：被包含的文件会被发布。
+  </li>
+  <li>
+    用 <code>exclude</code> 把片段文件排除在站点之外，就像本站使用
+    <code>exclude: rust/docs/includes/**</code> 那样；否则
+    <code>.html</code> 片段本身也会成为一个页面。
+  </li>
+  <li>
+    页面的“编辑此页”链接和更新日期仍属于页面本身；在
+    <code>htmlpress start</code> 下编辑被包含的文件会重新构建该页面。
+  </li>
+</ul>

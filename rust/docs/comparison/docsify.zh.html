@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="zh">
+  <head>
+    <title>Docsify vs Htmlpress</title>
+    <meta
+      name="description"
+      content="静态站点构建器与浏览器中的运行时 Markdown 渲染器之比。"
+    />
+    <meta name="order" content="69" />
+    <meta name="icon" content="wind" />
+  </head>
+  <body>
+    <h1>Docsify vs Htmlpress</h1>
+    <p>
+      <a href="https://docsify.js.org">Docsify</a>
+      是一款文档站点工具，它的做法与本节其他所有工具都不同：它不在构建时生成静态
+      HTML，而是只提供一个 <code>index.html</code> 加上一个 JavaScript
+      运行时，在浏览器中获取 Markdown 文件并即时渲染。没有构建步骤。
+    </p>
+    <h2>概览</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>维度</th>
+          <th>Htmlpress</th>
+          <th>Docsify</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>语言 / 运行时</td>
+          <td>Rust（单一二进制，无运行时）</td>
+          <td>浏览器 JavaScript（无构建）</td>
+        </tr>
+        <tr>
+          <td>UI 框架</td>
+          <td>无（纯 HTML + CSS，<code>htmlpress-*</code> Web 组件）</td>
+          <td>原生 JS + Vue 风格的模板指令</td>
+        </tr>
+        <tr>
+          <td>构建工具</td>
+          <td>htmlpress 二进制文件</td>
+          <td>无（运行时获取 + 渲染）</td>
+        </tr>
+        <tr>
+          <td>内容格式</td>
+          <td>HTML 页面</td>
+          <td>Markdown（在浏览器中使用 marked / Prism）</td>
+        </tr>
+        <tr>
+          <td>许可证</td>
+          <td>MIT，自托管</td>
+          <td>MIT，自托管</td>
+        </tr>
+        <tr>
+          <td>输出模型</td>
+          <td>预渲染静态</td>
+          <td>从原始 <code>.md</code> 文件进行客户端渲染</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>架构</h2>
+    <p>
+      htmlpress 是一个 Rust 二进制文件，可从 npm（<code>gethtmlpress</code>）、PyPI 或
+      crates.io 安装。它把每个 HTML 页面包裹进同一个带导航和主题的布局中；没有打包器、没有
+      UI 框架，也没有插件 API。每个内置文件——布局、样式、脚本和每个组件——都可以被弹出：在
+      <code>.htmlpress/</code>
+      下相同路径放置一个文件即可替换它。页面在构建时被预渲染为静态 HTML；编辑时，<code
+        >htmlpress start</code
+      >
+      会以实时重载的方式提供页面。
+    </p>
+    <p>
+      Docsify 没有构建流水线。一个站点就是一个 <code>index.html</code>，它从 CDN（或
+      <code>node_modules</code>）加载 <code>docsify.js</code>，并在
+      <code>window.$docsify</code> 上配置一个小型配置对象。运行时，脚本读取 URL
+      哈希（<code>#/some/page</code>），用 <code>fetch()</code> 获取对应的
+      <code>.md</code> 文件，交给 <code>marked</code> 解析 Markdown、<code>Prism</code>
+      做语法高亮，然后把结果注入页面。导航默认基于哈希；History API
+      模式需要手动开启，但要求服务器配置重写。
+    </p>
+    <p>
+      在 htmlpress 一侧，内容布局不受约束：它按 glob 扫描（<code>htmlpress.yaml</code>
+      中的 <code>include</code>/<code>exclude</code>，默认是所有 <code>.html</code>
+      文件），页面的 URL 跟随其在 glob 基础路径之下的文件路径，因此
+      <code>docs/**/*.html</code> 会把 <code>docs/guide.html</code> 提供在
+      <code>/guide.html</code>。不要求存在
+      <code>docs/</code> 文件夹。导航由文件夹和每个页面的
+      <code>&lt;meta name="order"&gt;</code> 构建；文件夹的
+      <code>index.html</code> 为其分组命名。Docsify 从单一源根目录读取（包含
+      <code>index.html</code> 的目录，可通过 <code>basePath</code> 配置），请求 URL
+      直接映射到磁盘上的文件路径——<code>#/guide/install</code> 会获取
+      <code>guide/install.md</code>。侧边栏导航需要在
+      <code>_sidebar.md</code> 中手动编写；没有自动生成的导航。
+    </p>
+    <h2>内容形式</h2>
+    <p>
+      Docsify 支持纯 Markdown（通过 <code>marked</code> 实现
+      CommonMark）以及少量内置扩展：辅助语法（通过
+      <a href="https://jhildenbiddle.github.io/docsify-tabs/">docsify-tabs</a>
+      和 admonition 插件实现的 <code>&gt; [!TIP]</code> 风格提示框）、HTML
+      直通，以及在加载可选 Vue 编译器时有限的 Vue 模板风格指令。没有 MDX，默认不解析
+      frontmatter（可由插件添加），也没有按页面的 React 组件。插件通过把函数推入
+      <code>window.$docsify.plugins</code>
+      来注册，并挂接到生命周期（<code>init</code>、<code>mounted</code>、
+      <code>beforeEach</code>、<code>afterEach</code>、<code>doneEach</code>、
+      <code>ready</code>）。
+    </p>
+    <p>
+      htmlpress 页面是纯语义化 HTML，主题直接根据元素本身设置样式。更丰富的区块是
+      <code>htmlpress-*</code>
+      自定义元素（<code>htmlpress-callout</code>、<code>htmlpress-tabs</code>、
+      <code>htmlpress-steps</code>、<code>htmlpress-grid</code>……），其 CSS 和 JS
+      只在使用该标签的页面上链接。项目可以通过
+      <code>.htmlpress/components/&lt;name&gt;/&lt;name&gt;.html</code>
+      添加自己的标签，它会在构建时替换该标签。
+    </p>
+    <p>
+      htmlpress 没有 frontmatter：页面的元数据就是它自己的
+      <code>&lt;head&gt;</code>——<code>&lt;title&gt;</code>、
+      <code>&lt;meta name="description"&gt;</code>、
+      <code>&lt;meta name="order"&gt;</code>、<code>&lt;meta name="layout"&gt;</code> 和
+      <code>&lt;meta name="image"&gt;</code>；其他
+      <code>&lt;head&gt;</code> 标签会被保留。
+    </p>
+    <h2>功能矩阵</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>能力</th>
+          <th>Htmlpress</th>
+          <th>Docsify</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>版本管理</td>
+          <td>部分支持（每个版本一个分区或一次部署）</td>
+          <td>是（通过 <code>alias</code> 配置实现多实例）</td>
+        </tr>
+        <tr>
+          <td>国际化（i18n）</td>
+          <td>是（翻译、语言选择器、内置 7 种界面语言）</td>
+          <td>是（<code>fallbackLanguages</code> + 按语言区域的文件）</td>
+        </tr>
+        <tr>
+          <td>搜索</td>
+          <td>是（内置，客户端）</td>
+          <td>是（内置全文搜索插件）</td>
+        </tr>
+        <tr>
+          <td>博客</td>
+          <td>否</td>
+          <td>否</td>
+        </tr>
+        <tr>
+          <td>更新日志</td>
+          <td>否</td>
+          <td>否（手动）</td>
+        </tr>
+        <tr>
+          <td>Sitemap</td>
+          <td>是（设置 <code>site</code> 时）</td>
+          <td>否（第三方插件）</td>
+        </tr>
+        <tr>
+          <td>RSS</td>
+          <td>否</td>
+          <td>否</td>
+        </tr>
+        <tr>
+          <td>主题</td>
+          <td><code>.htmlpress/</code> 中的弹出文件 + <code>--htmlpress-*</code> 令牌</td>
+          <td>CSS 主题（<code>vue.css</code>、<code>buble.css</code> 等）</td>
+        </tr>
+        <tr>
+          <td>插件</td>
+          <td>否（<code>.htmlpress/components/</code> 中的项目组件）</td>
+          <td><code>window.$docsify</code> 上的运行时 JS 插件</td>
+        </tr>
+        <tr>
+          <td>自定义路由</td>
+          <td>
+            任意 <code>.html</code> 文件；<code>.htmlpress/layouts/</code> 中的额外布局
+          </td>
+          <td>否（URL 与文件路径一一对应）</td>
+        </tr>
+        <tr>
+          <td>独立工具链</td>
+          <td>单一 Rust 二进制（npm、PyPI 或 crates.io）</td>
+          <td>运行时无；<code>docsify-cli</code> 仅用于初始化</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>输出与部署</h2>
+    <p>这是两者分歧最大的地方。</p>
+    <p>
+      htmlpress 生成一个由预渲染 HTML +
+      资源组成的目录（<code>.htmlpress/build/</code>）。每个页面都是真实的 HTML
+      文件；爬虫、链接预览和禁用 JS 的客户端都能看到渲染后的内容。htmlpress 把每个页面写为
+      <code>.htmlpress/build/</code> 中的静态 HTML，同时写出
+      <code>robots.txt</code>、设置了 <code>site</code> 时的
+      <code>sitemap.xml</code>、每个页面的 Markdown 副本、<code>llms.txt</code>，以及位于
+      <code>.well-known/agent-skills/</code> 下的智能体技能。<code>base</code>
+      键让站点在子路径下提供服务。托管平台指南见 <a href="/zh/deployment/">部署</a>。
+    </p>
+    <p>
+      Docsify 把原始 <code>.md</code> 文件与 <code>index.html</code>
+      一起发布。所谓“部署”就是把源目录上传到任意静态托管平台。代价是：零构建时间、编辑即刷新的写作体验，换来的是首次绘制时
+      HTML 为空——搜索引擎、社交预览和无 JS
+      客户端只能看到加载器外壳。该项目文档介绍了一种使用
+      <code>docsify-ssr</code> 或外部预渲染器的
+      <a href="https://docsify.js.org/#/ssr">SSR/预渲染工作流</a>，用于为 SEO
+      敏感的站点缓解这一问题。
+    </p>
+    <h2>另请参阅</h2>
+    <ul>
+      <li><a href="/zh/authoring/">编写</a>——htmlpress 的 HTML 写作面。</li>
+      <li><a href="/zh/customization/">自定义</a>——htmlpress 的配置键与弹出文件。</li>
+      <li><a href="/zh/comparison/">对比</a>——返回索引。</li>
+    </ul>
+  </body>
+</html>

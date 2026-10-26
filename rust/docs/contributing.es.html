@@ -1,0 +1,228 @@
+<title>Contribuir</title>
+<meta
+  name="description"
+  content="Cómo configurar htmlpress en local, proponer cambios y publicar una versión."
+/>
+<meta name="order" content="90" />
+<meta name="icon" content="heart-handshake" />
+
+<h1>Contribuir</h1>
+<p>
+  Htmlpress es un proyecto de código abierto y nos encantaría contar con tu ayuda, ya sea
+  corrigiendo un bug, puliendo la documentación o proponiendo una nueva función. Esta guía
+  recorre todo lo que necesitas para llevar un cambio desde tu editor hasta una versión
+  publicada.
+</p>
+
+<h2>Inicio rápido</h2>
+<p>
+  Necesitarás <a href="https://nodejs.org/">Node.js</a> 24+,
+  <a href="https://pnpm.io/">pnpm</a> 11+ y <a href="https://rustup.rs/">rustup</a>; para
+  compilar el wheel de Python, <a href="https://docs.astral.sh/uv/">uv</a>. Después:
+</p>
+<pre><code>git clone https://github.com/datisthq/htmlpress.git
+cd htmlpress
+pnpm install
+pnpm start</code></pre>
+<p>
+  <code>pnpm install</code> también descarga los crates de Rust cuando
+  <code>cargo</code> está en tu <code>PATH</code>. <code>pnpm start</code> ejecuta
+  htmlpress desde el código fuente sobre las páginas de este sitio en
+  <code>rust/docs/</code>, con recarga en vivo, para que puedas iterar sobre htmlpress
+  mientras ves el resultado en tu navegador.
+</p>
+
+<h2>Estructura del repositorio</h2>
+<pre><code>htmlpress/
+├── rust/                # the binary and the crates.io package `htmlpress`
+│   ├── src/
+│   │   ├── actions/     #   asset/escape + list, config/load, page/read + render, site/…
+│   │   ├── commands/    #   the `build`, `start`, `preview`, `clear` and `escape` commands
+│   │   ├── models/      #   Asset, Config, Page, Site, BuildOptions, Error
+│   │   ├── components/  #   built-in components, compiled in, like styles/ and scripts/
+│   │   ├── program.rs   #   the CLI
+│   │   └── lib.rs       #   the library façade
+│   ├── tests/           #   CLI integration tests
+│   └── docs/            #   this site, HTML built by htmlpress itself
+├── typescript/          # the npm package `gethtmlpress`: a shim that runs the binary
+├── python/              # the PyPI package `htmlpress`: maturin binary wheels
+├── .skills/             # shipped agent skills for people who use htmlpress
+├── .agents/skills/      # repo skills for coding agents (see AGENTS.md)
+├── .scripts/            # repo-wide guards and the `pnpm squash` script
+└── htmlpress.yaml       # this site's htmlpress config</code></pre>
+<p>
+  Todo el comportamiento vive en <code>rust/</code>. Los paquetes de npm y PyPI solo
+  distribuyen el mismo binario, así que una función nunca se añade en un wrapper.
+</p>
+
+<h2>Comandos locales</h2>
+<p>
+  Ejecútalos en la raíz del repositorio; cada uno se encadena a las secciones con
+  <code>pnpm -C &lt;section&gt;</code>.
+</p>
+<table>
+  <thead>
+    <tr>
+      <th>Comando</th>
+      <th>Qué hace</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>pnpm start</code></td>
+      <td>Sirve el sitio de documentación desde el código fuente con recarga en vivo</td>
+    </tr>
+    <tr>
+      <td><code>pnpm build:docs</code></td>
+      <td>Compilación de producción del sitio de documentación</td>
+    </tr>
+    <tr>
+      <td><code>pnpm build</code></td>
+      <td>Compila el binario de release, el shim de npm y el wheel de Python</td>
+    </tr>
+    <tr>
+      <td><code>pnpm check:types</code></td>
+      <td>
+        Comprobación de tipos con <code>tsgo --noEmit</code> y <code>cargo check</code>
+      </td>
+    </tr>
+    <tr>
+      <td><code>pnpm check:lint</code></td>
+      <td>
+        Comprobación de formato + lint (<code>vp fmt</code>, <code>vp lint</code>,
+        <code>cargo fmt</code>, <code>clippy</code>)
+      </td>
+    </tr>
+    <tr>
+      <td><code>pnpm check</code></td>
+      <td>Lint + tipos</td>
+    </tr>
+    <tr>
+      <td><code>pnpm format</code></td>
+      <td>
+        Corrige el formato automáticamente (<code>vp fmt</code>, <code>cargo fmt</code>)
+      </td>
+    </tr>
+    <tr>
+      <td><code>pnpm test:unit</code></td>
+      <td>
+        Ejecuta las comprobaciones del repositorio, los tests del shim y
+        <code>cargo test</code>
+      </td>
+    </tr>
+    <tr>
+      <td><code>pnpm test</code></td>
+      <td>Lint + tipos + unitarios</td>
+    </tr>
+    <tr>
+      <td><code>pnpm scan</code></td>
+      <td>Análisis de secretos y vulnerabilidades (gitleaks, semgrep)</td>
+    </tr>
+  </tbody>
+</table>
+<p>
+  Un cambio está listo para hacer push cuando <code>pnpm test</code> está en verde y
+  <code>pnpm build:docs</code> funciona.
+</p>
+
+<h2>Convenciones de código</h2>
+<ul>
+  <li>
+    <strong>Rust</strong>: edición 2024 con la toolchain estable fijada, sin avisos de
+    clippy y sin <code>unwrap</code>/<code>expect</code> fuera de los tests; tests
+    unitarios junto al módulo como <code>&lt;module&gt;_unit.rs</code>; ejecuta uno con
+    <code>cargo test &lt;name&gt;</code> desde <code>rust/</code>.
+  </li>
+  <li>
+    <strong>TypeScript</strong>: el modo estricto está activado. No uses <code>any</code>,
+    casts con <code>as</code> ni el <code>!</code> de no nulo sin permiso. Imports ESM
+    completos con la extensión <code>.ts</code>; tests junto al módulo como
+    <code>&lt;module&gt;.unit.ts</code>.
+  </li>
+  <li>
+    <strong>Comentarios</strong>: documentación solo en elementos públicos. Un comentario
+    debe nombrar el error que previene, no pasar de unas tres líneas, y los comentarios
+    nunca superan al código; la justificación y la historia van en git.
+  </li>
+  <li>
+    <strong>Páginas de documentación</strong>: HTML semántico y los componentes
+    <code>htmlpress-*</code> documentados, sin estilos en línea.
+  </li>
+  <li>
+    <strong>Formato</strong>: <code>pnpm format</code>. Sangría de 2 espacios, sin punto y
+    coma, comillas dobles (LF, UTF-8); rustfmt a 90 columnas.
+  </li>
+</ul>
+
+<h2>Proponer un cambio</h2>
+<ol>
+  <li>
+    <strong>Abre primero una issue</strong> para cualquier cosa mayor que una errata o un
+    bug pequeño. Es más fácil acordar la dirección antes del código.
+  </li>
+  <li>
+    <strong>Crea una rama desde <code>main</code></strong> con un nombre corto y
+    descriptivo (p. ej., <code>fix-fragment-title</code>, <code>feat-search</code>).
+  </li>
+  <li>
+    <strong>Escribe un historial de commits enfocado</strong>. Htmlpress usa
+    <a href="https://www.conventionalcommits.org/">Conventional Commits</a>; el prefijo
+    controla release-please:
+    <ul>
+      <li>
+        <code>fix:</code> corrección de un bug en lo que recibe quien instala → versión de
+        parche
+      </li>
+      <li>
+        <code>feat:</code> nueva función en lo que recibe quien instala → versión menor
+      </li>
+      <li>
+        <code>chore:</code>, <code>docs:</code>, <code>refactor:</code>,
+        <code>test:</code>, <code>perf:</code> → sin versión; úsalos para CI,
+        herramientas, dependencias, el sitio de documentación, las skills distribuidas y
+        cualquier otra cosa que quien instala nunca ve
+      </li>
+      <li>
+        nunca marques un commit como breaking (<code>!</code> o un pie
+        <code>BREAKING CHANGE:</code>)
+      </li>
+    </ul>
+  </li>
+  <li>
+    <strong>Ejecuta <code>pnpm test</code></strong> antes de hacer push.
+  </li>
+  <li>
+    <strong>Abre un PR</strong> contra <code>main</code>. Describe el <em>porqué</em>
+    (enlaza la issue), incluye una captura de pantalla o la salida de la CLI para
+    cualquier cambio visible, y señala todo aquello a lo que los revisores deban prestar
+    especial atención.
+  </li>
+</ol>
+
+<h2>Versiones</h2>
+<p>
+  Las versiones las gestiona
+  <a href="https://github.com/googleapis/release-please">release-please</a>: un
+  <code>feat</code> o <code>fix</code> que llega a <code>main</code> abre un Release PR, y
+  al fusionarlo se genera la versión, se etiqueta, se compila el binario para cada
+  plataforma y se publica en crates.io, npm y PyPI con una única versión compartida. Los
+  mantenedores nunca suben versiones a mano; release-please mantiene
+  <code>.release/manifest.json</code>.
+</p>
+
+<h2>Dónde encontrar ayuda</h2>
+<ul>
+  <li>
+    <strong>Bugs y solicitudes de funciones</strong>:
+    <a href="https://github.com/datisthq/htmlpress/issues">GitHub Issues</a>
+  </li>
+  <li>
+    <strong>Debate / ideas</strong>:
+    <a href="https://github.com/datisthq/htmlpress/discussions">GitHub Discussions</a>
+  </li>
+  <li>
+    <strong>Código fuente</strong>:
+    <a href="https://github.com/datisthq/htmlpress">github.com/datisthq/htmlpress</a>
+  </li>
+</ul>
+<p>Gracias por ayudar a mejorar htmlpress.</p>

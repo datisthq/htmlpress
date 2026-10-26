@@ -1,0 +1,96 @@
+<title>Netlify</title>
+<meta
+  name="description"
+  content="Despliega con la integración git de Netlify o su CLI, con previsualizaciones por rama y publicaciones atómicas."
+/>
+<meta name="order" content="55" />
+<meta name="icon" content="globe" />
+
+<h1>Netlify</h1>
+<p>
+  Netlify lee un pequeño <code>netlify.toml</code> en la raíz de tu proyecto para obtener
+  el comando de compilación y el directorio de publicación. El resto (previsualizaciones
+  de Git, despliegues atómicos, dominios personalizados) se gestiona automáticamente.
+  Netlify también lee el archivo <code>_headers</code> que escribe cada compilación y
+  sirve el <code>404.html</code> de la compilación para las rutas desconocidas.
+</p>
+
+<h2>Compila el sitio</h2>
+<pre><code class="language-sh">htmlpress build</code></pre>
+<p>La salida queda en <code>.htmlpress/build/</code>.</p>
+
+<h2>Configura <code>netlify.toml</code></h2>
+<pre><code>[build]
+command = "npx gethtmlpress build"
+publish = ".htmlpress/build"</code></pre>
+<p>
+  Es todo lo que Netlify necesita. El mismo archivo habilita <code>netlify dev</code> en
+  local si alguna vez quieres reproducir el comportamiento del edge de la plataforma.
+</p>
+
+<h2>Despliega con la integración git</h2>
+<p>
+  El camino recomendado: conecta tu repositorio en
+  <a href="https://app.netlify.com/start">app.netlify.com/start</a>. Netlify lee
+  <code>netlify.toml</code>, ejecuta la compilación y publica en producción cada push a
+  <code>main</code>. Las demás ramas y los PR reciben automáticamente URLs de
+  previsualización únicas.
+</p>
+
+<h2>Despliega con la CLI</h2>
+<p>Para despliegues puntuales o automatizados con scripts:</p>
+<pre><code class="language-sh">htmlpress build
+netlify deploy --prod --dir=.htmlpress/build</code></pre>
+<p>
+  La primera ejecución te pide <code>netlify login</code> y vincula el directorio a un
+  sitio.
+</p>
+
+<h2>Despliega con GitHub Actions</h2>
+<p>
+  La integración git de Netlify suele bastar, pero un workflow te permite condicionar el
+  despliegue a que pasen los tests:
+</p>
+<pre><code class="language-yaml">name: deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npx gethtmlpress build
+      - uses: nwtgck/actions-netlify@v3
+        with:
+          publish-dir: .htmlpress/build
+          production-deploy: true
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}</code></pre>
+<p>
+  Obtén el token de autenticación en
+  <strong>User settings → Applications → Personal access tokens</strong>, y el ID del
+  sitio en <strong>Site settings → General</strong>.
+</p>
+
+<h2>Dominio personalizado</h2>
+<p>
+  En el panel del sitio, <strong>Domain management → Add a domain</strong>. Netlify
+  aprovisiona el DNS y un certificado. Define el mismo dominio como <code>site</code> en
+  <code>htmlpress.yaml</code>.
+</p>
+
+<h2>Ver también</h2>
+<ul>
+  <li>
+    <a href="/es/customization/site-metadata.html">Metadatos del sitio</a>:
+    <code>site</code> rellena las URLs del sitemap.
+  </li>
+  <li><a href="/es/deployment/">Despliegue</a>: volver al índice de hosts.</li>
+</ul>

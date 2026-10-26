@@ -1,0 +1,213 @@
+<title>贡献</title>
+<meta name="description" content="如何在本地搭建 htmlpress、提出更改以及发布版本。" />
+<meta name="order" content="90" />
+<meta name="icon" content="heart-handshake" />
+
+<h1>贡献</h1>
+<p>
+  Htmlpress 是一个开源项目，我们非常欢迎你的帮助，无论是修复
+  bug、完善文档，还是提议新功能。本指南将带你了解把一项更改从编辑器带进正式版本所需的一切。
+</p>
+
+<h2>快速开始</h2>
+<p>
+  你需要 <a href="https://nodejs.org/">Node.js</a> 24+、<a href="https://pnpm.io/"
+    >pnpm</a
+  >
+  11+ 和 <a href="https://rustup.rs/">rustup</a>；如需构建 Python wheel，还需要
+  <a href="https://docs.astral.sh/uv/">uv</a>。然后：
+</p>
+<pre><code>git clone https://github.com/datisthq/htmlpress.git
+cd htmlpress
+pnpm install
+pnpm start</code></pre>
+<p>
+  当 <code>cargo</code> 位于你的 <code>PATH</code> 中时，<code>pnpm install</code>
+  也会获取 Rust crate。<code>pnpm start</code> 会从源码运行 htmlpress，为本站位于
+  <code>rust/docs/</code>
+  中的页面提供服务并支持实时重载，这样你就可以一边迭代 htmlpress，一边在浏览器中查看结果。
+</p>
+
+<h2>仓库结构</h2>
+<pre><code>htmlpress/
+├── rust/                # the binary and the crates.io package `htmlpress`
+│   ├── src/
+│   │   ├── actions/     #   asset/escape + list, config/load, page/read + render, site/…
+│   │   ├── commands/    #   the `build`, `start`, `preview`, `clear` and `escape` commands
+│   │   ├── models/      #   Asset, Config, Page, Site, BuildOptions, Error
+│   │   ├── components/  #   built-in components, compiled in, like styles/ and scripts/
+│   │   ├── program.rs   #   the CLI
+│   │   └── lib.rs       #   the library façade
+│   ├── tests/           #   CLI integration tests
+│   └── docs/            #   this site, HTML built by htmlpress itself
+├── typescript/          # the npm package `gethtmlpress`: a shim that runs the binary
+├── python/              # the PyPI package `htmlpress`: maturin binary wheels
+├── .skills/             # shipped agent skills for people who use htmlpress
+├── .agents/skills/      # repo skills for coding agents (see AGENTS.md)
+├── .scripts/            # repo-wide guards and the `pnpm squash` script
+└── htmlpress.yaml       # this site's htmlpress config</code></pre>
+<p>
+  所有行为都位于 <code>rust/</code> 中。npm 和 PyPI
+  软件包只负责交付同一个二进制文件，因此任何功能都不会落在包装器中。
+</p>
+
+<h2>本地命令</h2>
+<p>
+  在仓库根目录运行这些命令；每条命令都会通过
+  <code>pnpm -C &lt;section&gt;</code> 依次调用各个部分。
+</p>
+<table>
+  <thead>
+    <tr>
+      <th>命令</th>
+      <th>作用</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>pnpm start</code></td>
+      <td>从源码为文档站点提供服务，支持实时重载</td>
+    </tr>
+    <tr>
+      <td><code>pnpm build:docs</code></td>
+      <td>文档站点的生产构建</td>
+    </tr>
+    <tr>
+      <td><code>pnpm build</code></td>
+      <td>构建发布用的二进制文件、npm shim 和 Python wheel</td>
+    </tr>
+    <tr>
+      <td><code>pnpm check:types</code></td>
+      <td>通过 <code>tsgo --noEmit</code> 和 <code>cargo check</code> 进行类型检查</td>
+    </tr>
+    <tr>
+      <td><code>pnpm check:lint</code></td>
+      <td>
+        格式检查 + lint（<code>vp fmt</code>、<code>vp lint</code>、<code>cargo fmt</code
+        >、<code>clippy</code>）
+      </td>
+    </tr>
+    <tr>
+      <td><code>pnpm check</code></td>
+      <td>Lint + 类型检查</td>
+    </tr>
+    <tr>
+      <td><code>pnpm format</code></td>
+      <td>自动修复格式（<code>vp fmt</code>、<code>cargo fmt</code>）</td>
+    </tr>
+    <tr>
+      <td><code>pnpm test:unit</code></td>
+      <td>运行仓库守卫检查、shim 的测试以及 <code>cargo test</code></td>
+    </tr>
+    <tr>
+      <td><code>pnpm test</code></td>
+      <td>Lint + 类型检查 + 单元测试</td>
+    </tr>
+    <tr>
+      <td><code>pnpm scan</code></td>
+      <td>密钥和漏洞扫描（gitleaks、semgrep）</td>
+    </tr>
+  </tbody>
+</table>
+<p>
+  当 <code>pnpm test</code> 全部通过且 <code>pnpm build:docs</code>
+  成功时，更改就可以推送了。
+</p>
+
+<h2>代码约定</h2>
+<ul>
+  <li>
+    <strong>Rust</strong>：在固定的稳定版工具链上使用 2024 edition，通过 clippy
+    检查，测试之外不使用 <code>unwrap</code>/<code>expect</code>；单元测试以
+    <code>&lt;module&gt;_unit.rs</code> 的形式放在模块旁边，在 <code>rust/</code> 中用
+    <code>cargo test &lt;name&gt;</code> 运行单个测试。
+  </li>
+  <li>
+    <strong>TypeScript</strong>：开启严格模式。未经许可不要使用 <code>any</code>、<code
+      >as</code
+    >
+    类型断言或非空断言 <code>!</code>。使用带 <code>.ts</code> 扩展名的完整 ESM
+    导入；测试以 <code>&lt;module&gt;.unit.ts</code> 的形式放在模块旁边。
+  </li>
+  <li>
+    <strong>注释</strong
+    >：文档注释只用于公开项。注释必须指明它所防止的错误，长度控制在三行左右，且注释数量绝不能超过代码；设计理由和历史应记录在
+    git 中。
+  </li>
+  <li>
+    <strong>文档页面</strong>：使用语义化 HTML 和文档中列出的
+    <code>htmlpress-*</code> 组件，不使用内联样式。
+  </li>
+  <li>
+    <strong>格式</strong>：<code>pnpm format</code>。2
+    空格缩进、无分号、双引号（LF、UTF-8）；rustfmt 限宽 90 列。
+  </li>
+</ul>
+
+<h2>提出更改</h2>
+<ol>
+  <li>
+    <strong>先提交 issue</strong>：对于比错别字或小 bug
+    更大的改动，都应如此。在写代码之前先就方向达成一致会更容易。
+  </li>
+  <li>
+    <strong>从 <code>main</code> 创建分支</strong>，使用简短的描述性名称（例如
+    <code>fix-fragment-title</code>、<code>feat-search</code>）。
+  </li>
+  <li>
+    <strong>保持提交历史聚焦</strong>。Htmlpress 使用
+    <a href="https://www.conventionalcommits.org/">Conventional Commits</a>；前缀决定
+    release-please 的行为：
+    <ul>
+      <li><code>fix:</code> 修复安装者所获得内容中的 bug → 补丁版本</li>
+      <li><code>feat:</code> 为安装者所获得的内容添加新功能 → 次版本</li>
+      <li>
+        <code>chore:</code
+        >、<code>docs:</code>、<code>refactor:</code>、<code>test:</code>、<code
+          >perf:</code
+        >
+        → 不发布版本；用于
+        CI、工具、依赖、文档站点、随附的技能，以及安装者永远看不到的其他内容
+      </li>
+      <li>
+        永远不要把提交标记为破坏性变更（<code>!</code> 或
+        <code>BREAKING CHANGE:</code> 页脚）
+      </li>
+    </ul>
+  </li>
+  <li>
+    推送前<strong>运行 <code>pnpm test</code></strong
+    >。
+  </li>
+  <li>
+    针对 <code>main</code> <strong>发起 PR</strong>。说明<em>原因</em>（链接到对应
+    issue），为任何可见的改动附上截图或 CLI 输出，并指出评审者需要特别留意的地方。
+  </li>
+</ol>
+
+<h2>版本发布</h2>
+<p>
+  版本发布由
+  <a href="https://github.com/googleapis/release-please">release-please</a> 驱动：当
+  <code>feat</code> 或 <code>fix</code> 合入 <code>main</code> 时，会打开一个 Release
+  PR；合并它即会确定版本号、打上标签、为每个平台构建二进制文件，并以同一个共享版本发布到
+  crates.io、npm 和 PyPI。维护者从不手动提升版本号；<code>.release/manifest.json</code>
+  由 release-please 维护。
+</p>
+
+<h2>获取帮助</h2>
+<ul>
+  <li>
+    <strong>Bug 和功能请求</strong>：
+    <a href="https://github.com/datisthq/htmlpress/issues">GitHub Issues</a>
+  </li>
+  <li>
+    <strong>讨论 / 想法</strong>：
+    <a href="https://github.com/datisthq/htmlpress/discussions">GitHub Discussions</a>
+  </li>
+  <li>
+    <strong>源码</strong>：
+    <a href="https://github.com/datisthq/htmlpress">github.com/datisthq/htmlpress</a>
+  </li>
+</ul>
+<p>感谢你帮助 htmlpress 变得更好。</p>

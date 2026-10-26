@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <title>GitBook vs Htmlpress</title>
+    <meta
+      name="description"
+      content="SaaS alojado con editor de bloques y Git Sync frente a HTML estático autoalojado basado en archivos."
+    />
+    <meta name="order" content="70" />
+    <meta name="icon" content="notebook-pen" />
+  </head>
+  <body>
+    <h1>GitBook vs Htmlpress</h1>
+    <p>
+      <a href="https://www.gitbook.com">GitBook</a> es una plataforma comercial de
+      documentación alojada. La redacción se hace en un editor de bloques en el navegador
+      (al estilo de Notion), el contenido vive en la base de datos de GitBook y se publica
+      en sitios alojados por GitBook bajo <code>gitbook.io</code> o un dominio propio. La
+      función Git Sync puede reflejar esa base de datos hacia y desde un repositorio de
+      GitHub/GitLab como Markdown, pero la fuente de verdad es GitBook, no el repositorio.
+    </p>
+    <p>
+      El antiguo generador estático de código abierto <code>gitbook-cli</code> quedó
+      obsoleto en 2018 y no tiene relación con el producto actual; esta página trata de la
+      plataforma alojada actual.
+    </p>
+    <h2>De un vistazo</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Aspecto</th>
+          <th>Htmlpress</th>
+          <th>GitBook</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Lenguaje / runtime</td>
+          <td>Rust (binario único, sin runtime)</td>
+          <td>SaaS alojado (sin runtime local)</td>
+        </tr>
+        <tr>
+          <td>Framework de UI</td>
+          <td>Ninguno (HTML + CSS plano, web components <code>htmlpress-*</code>)</td>
+          <td>Propietario (renderizado por GitBook)</td>
+        </tr>
+        <tr>
+          <td>Herramienta de compilación</td>
+          <td>Binario de htmlpress</td>
+          <td>Ninguna (sin compilación por parte del usuario)</td>
+        </tr>
+        <tr>
+          <td>Formato de contenido</td>
+          <td>Páginas HTML</td>
+          <td>Modelo de bloques en el editor; Markdown con sabor GitBook vía Git</td>
+        </tr>
+        <tr>
+          <td>Licencia</td>
+          <td>MIT, autoalojado</td>
+          <td>
+            Propietaria; plan gratuito + planes de pago; autoalojamiento solo en
+            Enterprise
+          </td>
+        </tr>
+        <tr>
+          <td>Modelo de salida</td>
+          <td>Estático prerenderizado</td>
+          <td>Alojado en la infraestructura de GitBook</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>Arquitectura</h2>
+    <p>
+      htmlpress es un único binario de Rust que se instala desde npm
+      (<code>gethtmlpress</code>), PyPI o crates.io. Envuelve cada página HTML en un
+      layout con una navegación y un tema; no hay bundler, ni framework de UI, ni API de
+      plugins. Cada archivo integrado (el layout, los estilos, los scripts y cada
+      componente) se puede escapar: un archivo en la misma ruta bajo
+      <code>.htmlpress/</code> lo reemplaza. Las páginas son archivos de tu repositorio y
+      se prerenderizan a HTML estático en tiempo de compilación.
+    </p>
+    <p>
+      GitBook es un SaaS multiinquilino. El contenido se redacta en un editor WYSIWYG
+      basado en bloques: cada párrafo, encabezado, bloque de código, hint o embed es un
+      bloque tipado almacenado en la base de datos de GitBook. El runtime es el propio de
+      GitBook: no hay paso de compilación que ejecute el usuario ni sitio estático que
+      despliegue. El hosting, la indexación para búsqueda, la CDN, las redirecciones y la
+      analítica los gestiona la plataforma.
+    </p>
+    <p>
+      Git Sync es una integración opcional que asocia un espacio de GitBook a una rama de
+      un repositorio de GitHub o GitLab. El contenido va y viene entre el editor y un
+      directorio de archivos <code>.md</code> escritos en el Markdown extendido de GitBook
+      (hints con <code>{% hint %}</code>, pestañas, content refs, bloques de OpenAPI,
+      etc.). Es bidireccional: las ediciones en el editor envían commits al repositorio, y
+      los commits enviados a la rama actualizan el editor. El repositorio es un espejo, no
+      una fuente: el esquema de GitBook es el modelo canónico.
+    </p>
+    <p>
+      En htmlpress la disposición del contenido no tiene restricciones: escanea por glob
+      (<code>include</code>/<code>exclude</code> en <code>htmlpress.yaml</code>, todos los
+      archivos <code>.html</code> por defecto), y la URL de una página sigue su ruta de
+      archivo bajo la base del glob, así que <code>docs/**/*.html</code> sirve
+      <code>docs/guide.html</code> en <code>/guide.html</code>. No hace falta una carpeta
+      <code>docs/</code>. La navegación se construye a partir de las carpetas y del
+      <code>&lt;meta name="order"&gt;</code> de cada página; el <code>index.html</code> de
+      una carpeta da nombre a su grupo. El contenido de GitBook se organiza en una
+      jerarquía fijada por el producto —
+      <strong>Organizations → Collections → Spaces → Pages</strong> — con URLs del sitio
+      derivadas de ese árbol. El espejo de Git Sync refleja esta jerarquía como
+      directorios anidados.
+    </p>
+    <h2>Superficie de contenido</h2>
+    <p>
+      Las páginas de htmlpress son HTML semántico plano, al que el tema da estilo a partir
+      de los propios elementos. Los bloques más ricos son elementos personalizados
+      <code>htmlpress-*</code> (<code>htmlpress-callout</code>,
+      <code>htmlpress-tabs</code>, <code>htmlpress-steps</code>,
+      <code>htmlpress-grid</code>, …), cuyo CSS y JS se enlazan solo en las páginas que
+      usan la etiqueta. Un proyecto añade su propia etiqueta con
+      <code>.htmlpress/components/&lt;name&gt;/&lt;name&gt;.html</code>, que reemplaza la
+      etiqueta en tiempo de compilación. htmlpress no tiene frontmatter: los metadatos de
+      una página son su propio <code>&lt;head&gt;</code> — <code>&lt;title&gt;</code>,
+      <code>&lt;meta name="description"&gt;</code>,
+      <code>&lt;meta name="order"&gt;</code>, <code>&lt;meta name="layout"&gt;</code> y
+      <code>&lt;meta name="image"&gt;</code>; las demás etiquetas de
+      <code>&lt;head&gt;</code> se conservan.
+    </p>
+    <p>
+      La superficie de GitBook es la paleta de bloques del editor: párrafos, encabezados,
+      listas, tablas, hints (info/warning/danger/success), pestañas, bloques desplegables,
+      bloques de código con grupos de pestañas, archivos, imágenes, dibujos, matemáticas
+      (KaTeX), embeds (Figma, Loom, etc.), bloques de métodos de API, referencias OpenAPI
+      y content refs (transclusión entre espacios). Los componentes personalizados no son
+      extensibles por el usuario: el conjunto de bloques es el que trae GitBook. El sabor
+      de Markdown de Git Sync codifica los bloques que no están en CommonMark mediante
+      etiquetas al estilo Liquid, como
+      <code>{% hint style="info" %}…{% endhint %}</code> y
+      <code>{% tabs %}…{% endtabs %}</code>.
+    </p>
+    <p>
+      OpenAPI es una entrada de primera clase: GitBook puede importar una especificación
+      OpenAPI y renderizar a partir de ella páginas de referencia de API, lo que se acerca
+      más a la superficie de Mintlify que a la de htmlpress.
+    </p>
+    <h2>Matriz de funciones</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Capacidad</th>
+          <th>Htmlpress</th>
+          <th>GitBook</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Versionado</td>
+          <td>Parcial (una sección o un despliegue por versión)</td>
+          <td>Sí (variantes de espacio / grupos de versiones)</td>
+        </tr>
+        <tr>
+          <td>Internacionalización (i18n)</td>
+          <td>Sí (traducciones, selector de idioma, 7 idiomas de interfaz incluidos)</td>
+          <td>Sí (variantes por idioma de un espacio)</td>
+        </tr>
+        <tr>
+          <td>Búsqueda</td>
+          <td>Sí (integrada, en el cliente)</td>
+          <td>
+            Sí (alojada, con preguntas y respuestas de GitBook AI / "Lens" en planes de
+            pago)
+          </td>
+        </tr>
+        <tr>
+          <td>Blog</td>
+          <td>No</td>
+          <td>No</td>
+        </tr>
+        <tr>
+          <td>Registro de cambios</td>
+          <td>No</td>
+          <td>
+            No (los Change Requests son un flujo editorial, no una sección publicada)
+          </td>
+        </tr>
+        <tr>
+          <td>Sitemap</td>
+          <td>Sí (con <code>site</code> definido)</td>
+          <td>Sí (generado por la plataforma)</td>
+        </tr>
+        <tr>
+          <td>RSS</td>
+          <td>No</td>
+          <td>No</td>
+        </tr>
+        <tr>
+          <td>Temas</td>
+          <td>Escapes en <code>.htmlpress/</code> + tokens <code>--htmlpress-*</code></td>
+          <td>
+            Personalización desde los ajustes del sitio (colores, fuentes, layout); sin
+            overrides de plantillas
+          </td>
+        </tr>
+        <tr>
+          <td>Plugins</td>
+          <td>No (componentes del proyecto en <code>.htmlpress/components/</code>)</td>
+          <td>Integraciones propietarias (Intercom, Segment, GA, etc.)</td>
+        </tr>
+        <tr>
+          <td>Rutas personalizadas</td>
+          <td>
+            Cualquier archivo <code>.html</code>; layouts adicionales en
+            <code>.htmlpress/layouts/</code>
+          </td>
+          <td>No (las URLs siguen la jerarquía espacio → página)</td>
+        </tr>
+        <tr>
+          <td>Referencia de API desde OpenAPI</td>
+          <td>No</td>
+          <td>Sí (integrada)</td>
+        </tr>
+        <tr>
+          <td>Toolchain independiente</td>
+          <td>Un único binario de Rust (npm, PyPI o crates.io)</td>
+          <td>Ninguna por parte del usuario; SaaS</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>Salida y despliegue</h2>
+    <p>
+      htmlpress escribe cada página como HTML estático en <code>.htmlpress/build/</code>,
+      junto con <code>robots.txt</code>, un <code>sitemap.xml</code> cuando
+      <code>site</code> está definido, una copia en Markdown de cada página,
+      <code>llms.txt</code> y las skills para agentes en
+      <code>.well-known/agent-skills/</code>. La clave <code>base</code> sirve el sitio
+      bajo una subruta. Consulta <a href="/es/deployment/">Despliegue</a> para ver guías
+      por hosting.
+    </p>
+    <p>
+      GitBook no emite un artefacto desplegable. El sitio se aloja en
+      <code>&lt;space&gt;.gitbook.io</code> por defecto, o se asocia a un dominio propio
+      mediante DNS. La CDN, TLS, las redirecciones, el control de acceso y la analítica se
+      configuran en el panel de GitBook. El autoalojamiento está restringido al plan
+      Enterprise y no está disponible en los planes estándar. Lo más parecido a "tu
+      contenido" es lo que el espejo de Git Sync escribe en el repositorio conectado, que
+      es solo contenido, no un sitio compilable.
+    </p>
+    <h2>Ver también</h2>
+    <ul>
+      <li><a href="/es/authoring/">Redacción</a> — la superficie HTML de htmlpress.</li>
+      <li>
+        <a href="/es/customization/">Personalización</a> — las claves de configuración y
+        los escapes de htmlpress.
+      </li>
+      <li><a href="/es/comparison/">Comparativa</a> — volver al índice.</li>
+    </ul>
+  </body>
+</html>

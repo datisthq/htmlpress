@@ -1,0 +1,87 @@
+<title>Despliegue</title>
+<meta
+  name="description"
+  content="Cómo publicar tu sitio htmlpress compilado en un host."
+/>
+<meta name="order" content="50" />
+<meta name="icon" content="cloud-upload" />
+
+<h1>Despliegue</h1>
+<p>
+  <code>htmlpress build</code> genera un sitio completamente estático en
+  <code>.htmlpress/build/</code>: un archivo <code>.html</code> por cada página en la
+  misma ruta que su fuente, un <code>404.html</code>, <code>robots.txt</code>, un
+  <code>sitemap.xml</code> (cuando <code>site</code> está definido), un archivo
+  <code>_headers</code>, las
+  <a href="/es/customization/ai-agents.html"
+    >copias en Markdown y <code>llms.txt</code></a
+  >
+  para agentes, los scripts del tema y de los componentes en <code>_htmlpress/</code>, y
+  todos los demás archivos del proyecto. Sube ese directorio a cualquier host estático y
+  tu sitio estará en línea.
+</p>
+<p>
+  Estas guías recorren los destinos más habituales. Elige uno: cada guía es autónoma y
+  muestra tanto el comando manual como un workflow de CI.
+</p>
+
+<h2>Hosts</h2>
+<htmlpress-grid cols="2">
+  <htmlpress-card>
+    <h3><a href="/es/deployment/static-hosting.html">Hosting estático</a></h3>
+    <p>
+      Cualquier host que sirva un directorio de archivos: nginx, S3 + CloudFront, Caddy y
+      similares.
+    </p>
+  </htmlpress-card>
+  <htmlpress-card>
+    <h3><a href="/es/deployment/github-pages.html">GitHub Pages</a></h3>
+    <p>
+      Gratuito, nativo de git y adecuado para sitios de proyecto bajo una ruta
+      <code>/repo-name/</code>.
+    </p>
+  </htmlpress-card>
+  <htmlpress-card>
+    <h3><a href="/es/deployment/cloudflare.html">Cloudflare</a></h3>
+    <p>
+      Workers + assets estáticos. La configuración que usa el propio
+      <code>htmlpress.dev</code>.
+    </p>
+  </htmlpress-card>
+  <htmlpress-card>
+    <h3><a href="/es/deployment/vercel.html">Vercel</a></h3>
+    <p>
+      Conectado a git, con previsualizaciones por pull request y dominios sin
+      configuración.
+    </p>
+  </htmlpress-card>
+  <htmlpress-card>
+    <h3><a href="/es/deployment/netlify.html">Netlify</a></h3>
+    <p>
+      Conectado a git, con despliegues por rama, publicaciones atómicas y gestión de
+      formularios integrada.
+    </p>
+  </htmlpress-card>
+</htmlpress-grid>
+
+<h2>Qué asume cada guía</h2>
+<ul>
+  <li>
+    Ejecutas <code>htmlpress build</code> en la raíz del proyecto y la salida queda en
+    <code>.htmlpress/build/</code>. En CI, <code>npx gethtmlpress build</code> ejecuta el
+    mismo binario sin instalarlo antes; consulta
+    <a href="/es/introduction.html">Introducción</a>
+    para los demás canales.
+  </li>
+  <li>
+    Has definido <code>site</code> en <code>htmlpress.yaml</code> si quieres
+    <code>sitemap.xml</code>, la línea del sitemap en <code>robots.txt</code>, URLs
+    canónicas y etiquetas sociales absolutas; consulta
+    <a href="/es/customization/site-metadata.html">Metadatos del sitio</a>.
+  </li>
+  <li>
+    Solo necesitas <code>base</code> si tu sitio se monta bajo una subruta (p. ej., los
+    sitios de proyecto de GitHub Pages). La guía de
+    <a href="/es/deployment/github-pages.html">GitHub Pages</a> es la única que lo cubre.
+  </li>
+</ul>

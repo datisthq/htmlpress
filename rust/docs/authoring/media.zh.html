@@ -1,0 +1,113 @@
+<title>媒体</title>
+<meta
+  name="description"
+  content="图片、可缩放的图片，以及 YouTube 和 SoundCloud 嵌入。"
+/>
+<meta name="order" content="34" />
+<meta name="icon" content="image" />
+
+<h1>媒体</h1>
+<p>
+  图片就是普通的 <code>&lt;img&gt;</code> 元素，会缩放到内容宽度。用
+  <code>&lt;figure&gt;</code> 包裹并加上 <code>&lt;figcaption&gt;</code> 即可添加图注。
+</p>
+
+<h2>内部图片</h2>
+<p>引用项目中的图片；所有非页面文件都会复制到输出中的相同路径：</p>
+<pre><code class="language-html">&lt;img src="/screenshots/docs.webp" alt="An htmlpress docs page"&gt;</code></pre>
+<p>渲染为：</p>
+<figure>
+  <img
+    src="/screenshots/docs.webp"
+    alt="一个 htmlpress 文档页面，包含导航、代码块和目录"
+    width="1440"
+    height="900"
+  />
+  <figcaption>一个 htmlpress 文档页面。</figcaption>
+</figure>
+
+<h2>外部图片</h2>
+<p>引用外部 URL 的图片：</p>
+<pre><code class="language-html">&lt;img src="https://picsum.photos/seed/htmlpress/800/300" alt="Placeholder"&gt;</code></pre>
+<p>渲染为：</p>
+<p>
+  <img
+    src="https://picsum.photos/seed/htmlpress/800/300"
+    alt="占位图"
+    width="800"
+    height="300"
+  />
+</p>
+
+<h2>Base64 图片</h2>
+<p>使用 data URI 直接嵌入小图片：</p>
+<pre><code class="language-html">&lt;img src="data:image/png;base64,iVBORw0KGgo…" alt="banner"&gt;</code></pre>
+<p>渲染为：</p>
+<p>
+  <img
+    src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAABQCAIAAADTD63nAAABU0lEQVR4nO3csU3DUBRAUUCIGVJlHLcwAVV2YIbsQJUJUmccJCRmoKKgthOR3IDNOe138WxdveZLvn0c3m/g0u5+ewCWSVgkhEVCWCSERUJYJIRFQlgkhEXifvr47eP1OnMwR+vVZuzIxiJxZGN9e3p+qedgXva77fQDNhYJYZEQFglhkRAWCWGREBYJYZEQFglhkRAWCWGROOkSeswwPFxqjr/jcPgcO1rk+06b+BrTbCwSwiIhLBLCIiEsEsIiISwSwiIhLBLCIiEsEsIiISwSwiIhLBLCIiEsEsIiISwSwiIhLBLCIiEsEsIiISwSwiIhLBLCIiEsEsIicdZvjH78j5uZ+m/vew4bi4SwSAiLhLBICIuEsEgIi4SwSAiLhLBICIuEsEicdAm9323rOVgYG4vEkY21Xm2uMwcLY2OREBYJYZEQFglhkRAWCWGREBaJL1tnFXf+b+eSAAAAAElFTkSuQmCC"
+    alt="横幅"
+    width="200"
+    height="80"
+  />
+</p>
+
+<h2>主题图片</h2>
+<p>
+  在 <code>&lt;img&gt;</code> 上设置 <code>data-theme="light"</code> 或
+  <code>data-theme="dark"</code
+  >，图片就只在对应主题下显示，既跟随页眉的主题切换，也跟随系统设置；Livemark 风格的
+  <code>src</code> 结尾 <code>#light</code> 和
+  <code>#dark</code> 同样有效。把两张图片并排放置：
+</p>
+<pre><code class="language-html">&lt;img src="/screenshots/docs.webp" alt="The docs" data-theme="light"&gt;
+&lt;img src="/screenshots/docs-dark.webp" alt="The docs" data-theme="dark"&gt;</code></pre>
+<p>渲染为（切换主题即可看到变化）：</p>
+<p>
+  <img src="/screenshots/docs.webp" alt="浅色模式下的文档站点" data-theme="light" />
+  <img src="/screenshots/docs-dark.webp" alt="深色模式下的文档站点" data-theme="dark" />
+</p>
+<p>页面的 Markdown 副本只保留浅色图片。</p>
+
+<h2>图片缩放</h2>
+<p>
+  <code>&lt;htmlpress-zoom&gt;</code>
+  内的图片点击后会全屏打开；点击任意位置即可关闭。内部图片、外部图片和 base64 图片都适用。
+</p>
+<pre><code class="language-html">&lt;htmlpress-zoom&gt;&lt;img src="screenshot.png" alt="The docs site"&gt;&lt;/htmlpress-zoom&gt;</code></pre>
+<p>渲染为（点击试试）：</p>
+<htmlpress-zoom>
+  <img
+    src="/screenshots/components.webp"
+    alt="htmlpress 组件页面，展示四种颜色的提示框"
+    width="1440"
+    height="900"
+  />
+</htmlpress-zoom>
+
+<h2>视频块</h2>
+<p>
+  <code>&lt;htmlpress-youtube&gt;</code> 内的链接会变成该视频的播放器（支持
+  <code>watch</code>、<code>youtu.be</code>、<code>embed</code>、<code>shorts</code> 或
+  <code>live</code> URL）；没有脚本时它仍是一个链接：
+</p>
+<pre><code class="language-html">&lt;htmlpress-youtube&gt;
+  &lt;a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"&gt;The video&lt;/a&gt;
+&lt;/htmlpress-youtube&gt;</code></pre>
+<p>渲染为：</p>
+<htmlpress-youtube>
+  <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">视频</a>
+</htmlpress-youtube>
+
+<h2>音频块</h2>
+<p>
+  <code>&lt;htmlpress-soundcloud&gt;</code>
+  内的链接会变成该曲目的播放器；没有脚本时它仍是一个链接：
+</p>
+<pre><code class="language-html">&lt;htmlpress-soundcloud&gt;
+  &lt;a href="https://soundcloud.com/flume/never-be-like-you-feat-kai"&gt;The track&lt;/a&gt;
+&lt;/htmlpress-soundcloud&gt;</code></pre>
+<p>渲染为：</p>
+<htmlpress-soundcloud>
+  <a href="https://soundcloud.com/flume/never-be-like-you-feat-kai">曲目</a>
+</htmlpress-soundcloud>

@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <title>Mintlify vs Htmlpress</title>
+    <meta
+      name="description"
+      content="Generador de sitios de código abierto y autoalojado frente a un SaaS comercial de docs alojado."
+    />
+    <meta name="order" content="63" />
+    <meta name="icon" content="sparkles" />
+  </head>
+  <body>
+    <h1>Mintlify vs Htmlpress</h1>
+    <p>
+      <a href="https://mintlify.com">Mintlify</a> es una plataforma comercial de
+      documentación. El contenido se redacta en MDX dentro de un repositorio Git; Mintlify
+      aloja el sitio renderizado, la búsqueda y la analítica. El precio es por editor, con
+      un plan gratuito para proyectos de código abierto.
+    </p>
+    <h2>De un vistazo</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Aspecto</th>
+          <th>Htmlpress</th>
+          <th>Mintlify</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Lenguaje / runtime</td>
+          <td>Rust (binario único, sin runtime)</td>
+          <td>
+            Redacción en MDX; el runtime es el stack alojado de Mintlify (no público)
+          </td>
+        </tr>
+        <tr>
+          <td>Framework de UI</td>
+          <td>Ninguno (HTML + CSS plano, web components <code>htmlpress-*</code>)</td>
+          <td>React (según la documentación de Mintlify)</td>
+        </tr>
+        <tr>
+          <td>Herramienta de compilación</td>
+          <td>Binario de htmlpress</td>
+          <td>CLI de Mintlify (vista previa) + compilación alojada</td>
+        </tr>
+        <tr>
+          <td>Formato de contenido</td>
+          <td>Páginas HTML</td>
+          <td>Markdown + MDX</td>
+        </tr>
+        <tr>
+          <td>Licencia</td>
+          <td>MIT, autoalojado</td>
+          <td>Propietaria, solo alojado</td>
+        </tr>
+        <tr>
+          <td>Modelo de salida</td>
+          <td>Estático prerenderizado</td>
+          <td>Alojado en la infraestructura de Mintlify</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>Arquitectura</h2>
+    <p>
+      htmlpress es un único binario de Rust que se instala desde npm
+      (<code>gethtmlpress</code>), PyPI o crates.io. Envuelve cada página HTML en un
+      layout con una navegación y un tema; no hay bundler, ni framework de UI, ni API de
+      plugins. Cada archivo integrado (el layout, los estilos, los scripts y cada
+      componente) se puede escapar: un archivo en la misma ruta bajo
+      <code>.htmlpress/</code> lo reemplaza. Tanto el código fuente como la salida son
+      tuyos.
+    </p>
+    <p>
+      Mintlify es un SaaS alojado. Haces commit de MDX + un archivo de configuración
+      <code>mint.json</code> a un repositorio Git; Mintlify lo descarga en cada push, lo
+      compila y sirve el resultado desde <code>&lt;your-subdomain&gt;.mintlify.app</code>
+      o un dominio propio. El pipeline de compilación y el runtime están gestionados y no
+      se pueden instalar por tu cuenta.
+    </p>
+    <p>
+      En htmlpress la disposición del contenido no tiene restricciones: escanea por glob
+      (<code>include</code>/<code>exclude</code> en <code>htmlpress.yaml</code>, todos los
+      archivos <code>.html</code> por defecto), y la URL de una página sigue su ruta de
+      archivo bajo la base del glob, así que <code>docs/**/*.html</code> sirve
+      <code>docs/guide.html</code> en <code>/guide.html</code>. No hace falta una carpeta
+      <code>docs/</code>. La navegación se construye a partir de las carpetas y del
+      <code>&lt;meta name="order"&gt;</code> de cada página; el <code>index.html</code> de
+      una carpeta da nombre a su grupo. Mintlify espera que el árbol de archivos coincida
+      con el bloque <code>navigation</code> de <code>mint.json</code>; las rutas reflejan
+      las rutas de archivo bajo la raíz de contenido configurada.
+    </p>
+    <h2>Superficie de contenido</h2>
+    <p>
+      Mintlify acepta Markdown + MDX con frontmatter e incrustación de componentes. Trae
+      un conjunto fijo de componentes (<code>&lt;Card&gt;</code>,
+      <code>&lt;Accordion&gt;</code>, <code>&lt;Tabs&gt;</code>,
+      <code>&lt;Steps&gt;</code>, …) que los autores combinan en MDX. No escribes tus
+      propios componentes de React para la UI de la documentación: usas las primitivas de
+      Mintlify.
+    </p>
+    <p>
+      Las páginas de htmlpress son HTML semántico plano, al que el tema da estilo a partir
+      de los propios elementos. Los bloques más ricos son elementos personalizados
+      <code>htmlpress-*</code> (<code>htmlpress-callout</code>,
+      <code>htmlpress-tabs</code>, <code>htmlpress-steps</code>,
+      <code>htmlpress-grid</code>, …), cuyo CSS y JS se enlazan solo en las páginas que
+      usan la etiqueta. Un proyecto añade su propia etiqueta con
+      <code>.htmlpress/components/&lt;name&gt;/&lt;name&gt;.html</code>, que reemplaza la
+      etiqueta en tiempo de compilación. Los integrados (<code>htmlpress-grid</code> +
+      <code>htmlpress-card</code>, <code>htmlpress-tabs</code>,
+      <code>htmlpress-steps</code>) producen el mismo tipo de UI y cada uno se puede
+      escapar.
+    </p>
+    <p>
+      El <code>mint.json</code> de Mintlify configura la navegación, la marca y las
+      integraciones en un único archivo declarativo. htmlpress usa
+      <code>htmlpress.yaml</code> para los ajustes del sitio y el
+      <code>&lt;head&gt;</code> de cada página para los suyos propios.
+    </p>
+    <h2>Matriz de funciones</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Capacidad</th>
+          <th>Htmlpress</th>
+          <th>Mintlify</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Versionado</td>
+          <td>Parcial (una sección o un despliegue por versión)</td>
+          <td>Sí (integrado)</td>
+        </tr>
+        <tr>
+          <td>Internacionalización (i18n)</td>
+          <td>Sí (traducciones, selector de idioma, 7 idiomas de interfaz incluidos)</td>
+          <td>Sí (integrada)</td>
+        </tr>
+        <tr>
+          <td>Búsqueda</td>
+          <td>Sí (integrada, en el cliente)</td>
+          <td>Sí (integrada, con IA)</td>
+        </tr>
+        <tr>
+          <td>Chat con IA / agentes</td>
+          <td>
+            No (archivos para agentes: <code>llms.txt</code>, copias en Markdown, skills)
+          </td>
+          <td>Sí (integrado)</td>
+        </tr>
+        <tr>
+          <td>Analítica</td>
+          <td>No (trae la tuya mediante scripts en <code>head</code>)</td>
+          <td>Sí (panel integrado)</td>
+        </tr>
+        <tr>
+          <td>Renderizado de OpenAPI</td>
+          <td>No</td>
+          <td>Sí (integrado)</td>
+        </tr>
+        <tr>
+          <td>Blog</td>
+          <td>No</td>
+          <td>Sí (páginas de changelog/novedades)</td>
+        </tr>
+        <tr>
+          <td>Sitemap</td>
+          <td>Sí (con <code>site</code> definido)</td>
+          <td>Sí</td>
+        </tr>
+        <tr>
+          <td>RSS</td>
+          <td>No</td>
+          <td>Sí (feeds del changelog)</td>
+        </tr>
+        <tr>
+          <td>Temas</td>
+          <td>Escapes en <code>.htmlpress/</code> + tokens <code>--htmlpress-*</code></td>
+          <td>Temas mediante <code>mint.json</code></td>
+        </tr>
+        <tr>
+          <td>Rutas personalizadas</td>
+          <td>
+            Cualquier archivo <code>.html</code>; layouts adicionales en
+            <code>.htmlpress/layouts/</code>
+          </td>
+          <td>No (solo contenido)</td>
+        </tr>
+        <tr>
+          <td>Autoalojamiento</td>
+          <td>Sí</td>
+          <td>No</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>Salida y despliegue</h2>
+    <p>
+      htmlpress escribe cada página como HTML estático en <code>.htmlpress/build/</code>,
+      junto con <code>robots.txt</code>, un <code>sitemap.xml</code> cuando
+      <code>site</code> está definido, una copia en Markdown de cada página,
+      <code>llms.txt</code> y las skills para agentes en
+      <code>.well-known/agent-skills/</code>. La clave <code>base</code> sirve el sitio
+      bajo una subruta. Consulta <a href="/es/deployment/">Despliegue</a> para ver guías
+      por hosting.
+    </p>
+    <p>
+      De los despliegues de Mintlify se encarga Mintlify. No compilas ni alojas la salida
+      tú mismo; la plataforma sirve el sitio renderizado desde su CDN y gestiona TLS,
+      dominios y vistas previas. Desvincularte de Mintlify implica reescribir el contenido
+      o migrarlo a otro lugar.
+    </p>
+    <h2>Ver también</h2>
+    <ul>
+      <li><a href="/es/authoring/">Redacción</a> — la superficie HTML de htmlpress.</li>
+      <li>
+        <a href="/es/customization/">Personalización</a> — las claves de configuración y
+        los escapes de htmlpress.
+      </li>
+      <li><a href="/es/comparison/">Comparativa</a> — volver al índice.</li>
+    </ul>
+  </body>
+</html>

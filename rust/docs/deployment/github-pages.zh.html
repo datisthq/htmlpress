@@ -1,0 +1,127 @@
+<title>GitHub Pages</title>
+<meta
+  name="description"
+  content="将站点部署到 GitHub Pages，包括位于子路径下的项目站点。"
+/>
+<meta name="order" content="52" />
+<meta name="icon" content="github" />
+
+<h1>GitHub Pages</h1>
+<p>GitHub Pages 以两种 URL 形式之一提供静态文件目录：</p>
+<ul>
+  <li>
+    <strong>用户/组织站点</strong>：<code>https://&lt;user&gt;.github.io/</code>，从名为
+    <code>&lt;user&gt;.github.io</code> 的仓库提供。没有子路径。
+  </li>
+  <li>
+    <strong>项目站点</strong>：
+    <code>https://&lt;user&gt;.github.io/&lt;repo&gt;/</code>，从其他任意仓库提供。
+    <code>/&lt;repo&gt;/</code> 前缀很重要；页面和资源的 URL 都必须包含它。
+  </li>
+</ul>
+
+<h2>构建站点</h2>
+<pre><code class="language-sh">htmlpress build</code></pre>
+<p>输出位于 <code>.htmlpress/build/</code>。</p>
+
+<h2>为项目站点配置 <code>base</code></h2>
+<p>
+  如果你发布在 <code>https://&lt;user&gt;.github.io/&lt;repo&gt;/</code> 下，请设置
+  <code>base</code>，让构建中每个根相对 URL
+  都带上该前缀。编写链接时照常不带前缀（<code>/guides/build.html</code>）；htmlpress
+  会自动加上。<code>htmlpress start</code> 和 <code>preview</code>
+  也在同一 base 下提供服务，因此开发环境与生产环境一致：
+</p>
+<pre><code class="language-yaml">site: https://acme.github.io
+base: /my-docs/</code></pre>
+<p>对于位于根路径的用户/组织站点，完全省略 <code>base</code>。</p>
+<htmlpress-callout type="success" label="提示">
+  <p>
+    即使是项目站点，使用自定义域名时也不再有
+    <code>/&lt;repo&gt;/</code> 子路径。如果你要绑定
+    <code>docs.example.com</code> 这样的域名，请不要设置 <code>base</code>，并把
+    <code>site</code> 设为最终域名。
+  </p>
+</htmlpress-callout>
+
+<h2>手动部署</h2>
+<p>
+  最简单的一次性部署方式是使用
+  <a href="https://www.npmjs.com/package/gh-pages"><code>gh-pages</code></a> 包：
+</p>
+<pre><code class="language-sh">htmlpress build
+npx gh-pages -d .htmlpress/build --nojekyll --dotfiles</code></pre>
+<p>
+  这会把构建推送到 <code>gh-pages</code> 分支。在仓库设置中，把
+  <strong>Pages → Source</strong> 设为“Deploy from a branch”，并选择
+  <code>gh-pages</code> / <code>/ (root)</code>。
+</p>
+<htmlpress-callout type="warning">
+  <p>
+    务必保留 <code>--nojekyll</code>：分支部署会运行 Jekyll，它会丢弃以
+    <code>_</code> 开头的文件夹，<code>_htmlpress/</code> 中的主题也会随之丢失。<code
+      >--dotfiles</code
+    >
+    则会保留存放智能体技能的 <code>.well-known/</code>。
+  </p>
+</htmlpress-callout>
+
+<h2>使用 GitHub Actions 部署</h2>
+<p>官方 Pages actions 是最简洁的方式：无需额外分支，也无需服务令牌。</p>
+<pre><code class="language-yaml">name: deploy
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npx gethtmlpress build
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .htmlpress/build
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/deploy-pages@v4
+        id: deployment</code></pre>
+<p>在仓库设置中把 <strong>Pages → Source</strong> 设为“GitHub Actions”。</p>
+
+<h2>自定义域名</h2>
+<p>在项目中、页面旁边添加一个写有你域名的 <code>CNAME</code> 文件：</p>
+<pre><code>docs.example.com</code></pre>
+<p>
+  项目中所有非页面文件都会按原样、以相同路径复制到构建输出中，因此放在根
+  <code>index.html</code> 旁的 <code>CNAME</code> 会出现在部署的根目录。在域名注册商处配置
+  DNS（一条指向 <code>&lt;user&gt;.github.io</code> 的 <code>CNAME</code> 记录），并在
+  <strong>Pages → Custom domain</strong> 中设置该域名。
+</p>
+
+<h2>另请参阅</h2>
+<ul>
+  <li>
+    <a href="/zh/customization/site-metadata.html">站点元数据</a>：sitemap 和 Open Graph
+    标签中的绝对 URL 需要 <code>site</code>。
+  </li>
+  <li><a href="/zh/deployment/">部署</a>：返回托管平台索引。</li>
+</ul>

@@ -5,6 +5,10 @@ description:
   en: HTML site generator
   es: Generador de sitios HTML
   zh: HTML 站点生成器
+banner:
+  en: '<aside aria-label="Announcement"><p><span>Htmlpress is in technical preview</span><a href="https://github.com/datisthq/htmlpress/issues"><span>Share feedback</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg></a></p></aside>'
+  es: '<aside aria-label="Announcement"><p><span>Htmlpress está en vista previa técnica</span><a href="https://github.com/datisthq/htmlpress/issues"><span>Envía tus comentarios</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg></a></p></aside>'
+  zh: '<aside aria-label="Announcement"><p><span>Htmlpress 正处于技术预览阶段</span><a href="https://github.com/datisthq/htmlpress/issues"><span>反馈意见</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg></a></p></aside>'
 languages:
   - code: en
     label: English
@@ -25,7 +29,7 @@ sections:
     type: blog
     prefix: /blog/
     icon: rss
-  - title: Changelog
+  - title: { en: Changelog, es: Registro de cambios, zh: 更新日志 }
     type: changelog
     prefix: /changelog/
     source: CHANGELOG.md

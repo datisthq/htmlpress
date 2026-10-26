@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="zh">
+  <head>
+    <title>简介</title>
+    <meta
+      name="description"
+      content="了解如何搭建你的第一个 htmlpress 项目：安装、编写页面、运行和构建。"
+    />
+    <meta name="order" content="10" />
+    <meta name="icon" content="rocket" />
+  </head>
+  <body>
+    <h1>Htmlpress</h1>
+    <p>
+      Htmlpress 把一个装满 HTML
+      页面的文件夹变成一个站点。每个页面保留自己的标记，htmlpress
+      则添加一个布局、一套主题、一个导航和一个支持实时重载的开发服务器。它是一个 Rust
+      二进制文件，可通过 npm、PyPI 或 crates.io 安装。
+    </p>
+    <p>
+      它是为编码智能体打造的。智能体编写纯粹的语义化 HTML——它们对 HTML
+      的了解远胜于任何模板语言——而每个页面最终看起来都属于同一个站点：没有框架，没有构建配置，没有工具类。
+    </p>
+
+    <htmlpress-callout type="warning">
+      <p>Htmlpress 目前处于技术预览阶段：在 1.0 之前，页面约定仍可能发生变化。</p>
+    </htmlpress-callout>
+
+    <h2>你将获得</h2>
+    <ul>
+      <li>
+        <strong>只需编写 HTML。</strong>页面就是任意
+        <code>.html</code> 文件，可以是完整文档，也可以是一个裸片段。它的
+        <code>&lt;title&gt;</code> 和 <code>&lt;meta&gt;</code> 标签承担了其他工具中
+        frontmatter 的作用。
+      </li>
+      <li>
+        <strong>基于元素的主题样式。</strong
+        >标题、表格、代码块、<code>&lt;details&gt;</code>、<code>&lt;figure&gt;</code>
+        等元素无需任何类名即可正确呈现，并支持浅色和深色模式。
+      </li>
+      <li>
+        <strong>丰富的元素。</strong
+        >提示框、标签页、步骤、卡片、徽章、文件树、可排序表格、终端、包管理器标签页（npm/pnpm/yarn/bun）、Mermaid
+        图表和嵌入内容（YouTube、SoundCloud），全部以 <code>htmlpress-*</code>
+        自定义元素的形式提供。
+      </li>
+      <li>
+        <strong>开箱即用的导航。</strong
+        >按文件夹嵌套的侧边栏、面包屑导航、目录、上一页/下一页链接，以及“编辑此页”链接。
+      </li>
+      <li>
+        <strong>多语言。</strong
+        >译文与原文并列存放，提供语言选择器，界面内置七种语言；参见<a
+          href="/zh/customization/translations.html"
+          >翻译</a
+        >。
+      </li>
+      <li>
+        <strong>为智能体打造。</strong>每次构建都会为每个页面发布一份 Markdown 副本、<code
+          >llms.txt</code
+        >
+        以及你的智能体技能；每条命令都支持 JSON。
+      </li>
+      <li>
+        <strong>可定制主题。</strong>提供 <code>--htmlpress-*</code> 令牌，并可通过
+        <code>.htmlpress/</code> 文件夹逐个文件覆盖布局、样式和组件。
+      </li>
+      <li>
+        <strong>单一二进制文件。</strong>无运行时、无依赖：生成带有
+        <code>sitemap.xml</code>、<code>robots.txt</code> 和 404
+        页面的静态站点，可部署到任何托管平台。
+      </li>
+    </ul>
+
+    <h2>快速开始</h2>
+    <p>
+      你只需要这个二进制文件。每个渠道都以相同版本发布同一个二进制文件，所以选择项目已经在用的包管理器即可。
+    </p>
+
+    <h3>安装</h3>
+    <htmlpress-tabs sync="channel">
+      <section title="npm">
+        <pre><code>npm install --global gethtmlpress
+# or run it without installing
+npx gethtmlpress --version</code></pre>
+        <p>
+          <code>gethtmlpress</code> 包通过可选依赖引入一个平台包，例如
+          <code>gethtmlpress-linux-x64</code>。使用
+          <code>--omit=optional</code> 安装会遗漏二进制文件。
+        </p>
+      </section>
+      <section title="PyPI">
+        <pre><code class="language-sh">pip install htmlpress
+# or run it without installing
+uvx htmlpress --version</code></pre>
+        <p>对应你所在平台的 wheel 携带了二进制文件；不会运行任何 Python 代码。</p>
+      </section>
+      <section title="Cargo">
+        <pre><code class="language-sh">cargo install htmlpress</code></pre>
+        <p>使用 1.88 或更高版本的 Rust 工具链从源码构建。</p>
+      </section>
+    </htmlpress-tabs>
+    <p>预构建的二进制文件覆盖 x64 和 arm64 架构上的 Linux、macOS 和 Windows：</p>
+    <table>
+      <thead>
+        <tr>
+          <th>平台</th>
+          <th>npm 包</th>
+          <th>Rust 目标</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Linux x64</td>
+          <td><code>gethtmlpress-linux-x64</code></td>
+          <td><code>x86_64-unknown-linux-musl</code></td>
+        </tr>
+        <tr>
+          <td>Linux arm64</td>
+          <td><code>gethtmlpress-linux-arm64</code></td>
+          <td><code>aarch64-unknown-linux-musl</code></td>
+        </tr>
+        <tr>
+          <td>macOS x64</td>
+          <td><code>gethtmlpress-darwin-x64</code></td>
+          <td><code>x86_64-apple-darwin</code></td>
+        </tr>
+        <tr>
+          <td>macOS arm64</td>
+          <td><code>gethtmlpress-darwin-arm64</code></td>
+          <td><code>aarch64-apple-darwin</code></td>
+        </tr>
+        <tr>
+          <td>Windows x64</td>
+          <td><code>gethtmlpress-win32-x64</code></td>
+          <td><code>x86_64-pc-windows-msvc</code></td>
+        </tr>
+        <tr>
+          <td>Windows arm64</td>
+          <td><code>gethtmlpress-win32-arm64</code></td>
+          <td><code>aarch64-pc-windows-msvc</code></td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      在其他平台上，请使用 <code>cargo install htmlpress</code> 构建；如果使用 npm
+      包，再将 <code>HTMLPRESS_BINARY</code> 指向构建结果。
+    </p>
+
+    <h3>配置</h3>
+    <p>
+      配置是可选的。要设置站点的元数据，请在项目根目录创建
+      <code>htmlpress.yaml</code>：
+    </p>
+    <pre><code class="language-yaml">title: My docs
+description: Documentation for my project
+include: docs/**/*.html</code></pre>
+    <p>
+      没有 <code>include</code> 时，项目中的每个
+      <code>.html</code> 文件都是一个页面；设置后，只有匹配的文件才是页面，并且去掉 glob
+      的基础路径后提供服务，因此 <code>docs/usage.html</code> 位于
+      <code>/usage.html</code>。所有键请参见<a
+        href="/zh/customization/configuration-file.html"
+        >配置文件</a
+      >。
+    </p>
+
+    <h3>添加内容</h3>
+    <htmlpress-file-tree>
+      <ul>
+        <li>
+          docs/
+          <ul>
+            <li>index.html</li>
+            <li>getting-started.html</li>
+            <li>usage.html</li>
+          </ul>
+        </li>
+      </ul>
+    </htmlpress-file-tree>
+    <p>每个页面通过片段中也可以携带的标签来设置标题、描述和顺序：</p>
+    <pre><code class="language-html">&lt;title&gt;Getting Started&lt;/title&gt;
+&lt;meta name="description" content="Set up the project in five minutes." /&gt;
+&lt;meta name="order" content="1" /&gt;
+
+&lt;h1&gt;Getting Started&lt;/h1&gt;
+&lt;p&gt;Welcome!&lt;/p&gt;</code></pre>
+    <p>各标签的含义请参见 <a href="/zh/authoring/frontmatter.html">Frontmatter</a>。</p>
+
+    <h3>运行</h3>
+    <pre><code class="language-sh">htmlpress start    # dev server with live reload at http://localhost:8000
+htmlpress build    # production build to .htmlpress/build/
+htmlpress preview  # serve the production build locally
+htmlpress clear    # remove .htmlpress/build/</code></pre>
+    <p>
+      整个流程就是这样。把 <code>.htmlpress/build/</code> 加入你的
+      <code>.gitignore</code>。本站正是用这种方式，从仓库的
+      <a href="https://github.com/datisthq/htmlpress/tree/main/rust/docs">rust/docs/</a>
+      文件夹构建而成。
+    </p>
+
+    <h2>项目结构</h2>
+    <p>一个典型的 htmlpress 站点：</p>
+    <htmlpress-file-tree>
+      <ul>
+        <li>
+          my-project/
+          <ul>
+            <li>htmlpress.yaml — 配置（可选）</li>
+            <li>index.html — 首页</li>
+            <li>
+              guides/ — 一个侧边栏分组，以其 <code>index.html</code> 命名
+              <ul>
+                <li>index.html</li>
+                <li>build.html</li>
+              </ul>
+            </li>
+            <li>logo.svg — 其他任意文件，原样复制</li>
+            <li>
+              .htmlpress/ — 弹出文件和构建输出
+              <ul>
+                <li>layout.html</li>
+                <li>build/</li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </htmlpress-file-tree>
+    <p>
+      位于 <code>.htmlpress/</code> 下、路径与内置文件相同的文件，例如
+      <code>layout.html</code>、<code>styles/tokens.css</code> 或
+      <code>components/tabs/tabs.css</code>，会替换默认文件，因此无需 fork
+      即可自定义布局、主题和组件。运行
+      <code>htmlpress escape &lt;name&gt;</code> 可将默认文件复制到
+      <code>.htmlpress/</code> 中以便编辑。
+    </p>
+
+    <h2>命令</h2>
+
+    <h3><code>htmlpress build [root]</code></h3>
+    <p>
+      将位于 <code>root</code>（默认为 <code>.</code>）的项目渲染到
+      <code>root/.htmlpress/build</code>，并替换其中已有的内容。<code>--out</code> /
+      <code>-o</code>
+      可指定其他文件夹；如果该文件夹会包含项目本身，或是项目内的可见文件夹，则会被拒绝，因为其中的页面会被当作源文件重新读取。
+    </p>
+    <pre><code class="language-sh">$ htmlpress build docs
+built 6 pages and 0 files into docs/.htmlpress/build</code></pre>
+
+    <h3><code>htmlpress start [root]</code></h3>
+    <p>
+      构建项目，在 <code>http://localhost:8000</code>
+      上提供服务，并在每次更改时重新构建。已打开的页面会在每次构建后自动重载。出错的页面会打印错误，同时保留上一次成功的构建。
+    </p>
+    <p>
+      当 8000 端口被占用时，它会依次尝试 8001 直到 8009，并打印实际获得的 URL。
+      <code>--port</code> / <code>-p</code> 可指定一个端口（<code>0</code>
+      表示任选一个空闲端口）。单独使用 <code>--host</code>
+      会在所有地址上提供服务，这样同一网络中的手机也能打开站点，同时也会打印该 URL；
+      <code>--host &lt;address&gt;</code> 则只在一个地址上提供服务。如果在
+      <code>htmlpress.yaml</code> 中设置了
+      <code>base</code>，站点会在该路径下提供服务，打印的 URL 会包含它，<code>/</code>
+      会跳转到那里；修改 <code>base</code> 后需要重启。 <code>--out</code> /
+      <code>-o</code> 的作用与 <code>build</code> 相同。
+    </p>
+    <pre><code class="language-sh">$ htmlpress start docs --host
+serving http://localhost:8000
+network http://192.168.1.107:8000</code></pre>
+
+    <h3><code>htmlpress preview [root]</code></h3>
+    <p>
+      以生产模式构建项目，并按部署后的样子提供服务：不监听文件，也不重载。与
+      <code>start</code> 一样接受 <code>--port</code>、<code>--host</code> 和
+      <code>--out</code>。
+    </p>
+
+    <h3><code>htmlpress clear [root]</code></h3>
+    <p>
+      删除构建输出（用 <code>--out</code> 指定其他目录），与 <code>build</code>
+      具有相同的保护机制。
+    </p>
+
+    <h3><code>htmlpress escape [names…]</code></h3>
+    <p>
+      将内置文件复制到 <code>.htmlpress/</code> 中以便编辑：名称可以是路径，例如
+      <code>components/tabs/tabs.js</code
+      >，也可以是组件的标签，表示其全部文件。不带名称时，它会列出所有内置文件，以及项目是否已弹出它们。<code
+        >--root</code
+      >
+      / <code>-r</code> 指定项目（默认为 <code>.</code>）。它不会覆盖已有文件；参见<a
+        href="/zh/customization/overriding-escaping.html"
+        >覆盖/弹出</a
+      >。
+    </p>
+    <pre><code class="language-sh">$ htmlpress escape htmlpress-tabs
+escaped .htmlpress/components/tabs/tabs.css
+escaped .htmlpress/components/tabs/tabs.js</code></pre>
+
+    <h3>面向脚本和智能体</h3>
+    <p>
+      该 CLI 基于 <a href="https://fireargs.dev">Fireargs</a> 构建，因此每条命令都支持
+      JSON。<code>--json</code> 会以 JSON 格式输出结果；如果带上一个值，它还会以 JSON
+      格式接收输入：
+    </p>
+    <pre><code class="language-sh">$ htmlpress build docs --json
+{
+  "output": "docs/.htmlpress/build",
+  "pages": 6,
+  "files": 0
+}
+$ htmlpress build --json '{"root":"docs","out":"dist"}'</code></pre>
+    <p>
+      <code>htmlpress --llms</code> 会以 MCP
+      风格的工具列表打印每条命令的输入和输出模式，这样智能体无需阅读本页就能学会使用该
+      CLI。
+    </p>
+
+    <h2>自定义</h2>
+    <p>
+      Htmlpress 的目标是零配置即可呈现良好效果，并在你需要更多功能时不碍事。常见的自定义：
+    </p>
+    <ul>
+      <li>
+        <strong>站点元数据</strong>：标题、描述、favicon、Logo。参见<a
+          href="/zh/customization/site-metadata.html"
+          >站点元数据</a
+        >。
+      </li>
+      <li>
+        <strong>分区</strong>：在侧边栏中按文件夹对页面分组。参见<a
+          href="/zh/customization/article-sections.html"
+          >文章分区</a
+        >。
+      </li>
+      <li>
+        <strong>外部链接</strong>：在页眉和侧边栏中添加指向任意位置的链接。参见<a
+          href="/zh/customization/external-links.html"
+          >外部链接</a
+        >。
+      </li>
+      <li>
+        <strong>覆盖/弹出</strong>：在项目中替换布局、任意样式表或组件。参见<a
+          href="/zh/customization/overriding-escaping.html"
+          >覆盖/弹出</a
+        >。
+      </li>
+      <li>
+        <strong>AI 智能体</strong>：每次构建为智能体发布的内容。参见<a
+          href="/zh/customization/ai-agents.html"
+          >AI 智能体</a
+        >。
+      </li>
+    </ul>
+
+    <h2>文档</h2>
+    <p>
+      完整文档位于
+      <strong><a href="https://htmlpress.dev">htmlpress.dev</a></strong
+      >：
+    </p>
+    <ul>
+      <li><a href="/zh/authoring/">编写参考</a>：所有元素和组件及其示例</li>
+      <li>
+        <a href="/zh/customization/">自定义</a>：所有可调选项，附可直接复制的代码片段
+      </li>
+      <li><a href="/zh/deployment/">部署</a>：将构建结果发布到托管平台</li>
+      <li><a href="/zh/contributing.html">贡献</a>：本地环境搭建和 PR 流程</li>
+    </ul>
+
+    <h2>资源</h2>
+    <ul>
+      <li>
+        <strong>npm</strong>：
+        <a href="https://www.npmjs.com/package/gethtmlpress"
+          >npmjs.com/package/gethtmlpress</a
+        >
+      </li>
+      <li>
+        <strong>PyPI</strong>：
+        <a href="https://pypi.org/project/htmlpress/">pypi.org/project/htmlpress</a>
+      </li>
+      <li>
+        <strong>crates.io</strong>：
+        <a href="https://crates.io/crates/htmlpress">crates.io/crates/htmlpress</a>
+      </li>
+      <li>
+        <strong>GitHub</strong>：
+        <a href="https://github.com/datisthq/htmlpress">github.com/datisthq/htmlpress</a>
+      </li>
+      <li>
+        <strong>问题反馈</strong>：
+        <a href="https://github.com/datisthq/htmlpress/issues"
+          >github.com/datisthq/htmlpress/issues</a
+        >
+      </li>
+      <li>
+        <strong>讨论区</strong>：
+        <a href="https://github.com/datisthq/htmlpress/discussions"
+          >github.com/datisthq/htmlpress/discussions</a
+        >
+      </li>
+    </ul>
+
+    <h2>许可证</h2>
+    <p>
+      MIT；参见
+      <a href="https://github.com/datisthq/htmlpress/blob/main/LICENSE.md">LICENSE.md</a
+      >。
+    </p>
+  </body>
+</html>

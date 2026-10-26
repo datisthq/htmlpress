@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="zh">
+  <head>
+    <title>MkDocs 与 Htmlpress 对比</title>
+    <meta name="description" content="Rust + 纯 HTML 与 Python + Jinja2 + Markdown。" />
+    <meta name="order" content="67" />
+    <meta name="icon" content="book-marked" />
+  </head>
+  <body>
+    <h1>MkDocs 与 Htmlpress 对比</h1>
+    <p>
+      <a href="https://www.mkdocs.org">MkDocs</a> 是一个基于 Python 的文档生成器。内容是纯
+      Markdown，布局是 Jinja2 模板，主题是可通过 pip 安装的 Python 包。事实上的标准主题是
+      <a href="https://squidfunk.github.io/mkdocs-material/">Material for MkDocs</a
+      >，大多数用户实际使用的就是它。
+    </p>
+    <h2>概览</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>维度</th>
+          <th>Htmlpress</th>
+          <th>MkDocs</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>语言 / 运行时</td>
+          <td>Rust（单一二进制文件，无运行时）</td>
+          <td>Python 3.8+</td>
+        </tr>
+        <tr>
+          <td>UI 框架</td>
+          <td>无（纯 HTML + CSS，<code>htmlpress-*</code> Web 组件）</td>
+          <td>Jinja2 模板（HTML + CSS）</td>
+        </tr>
+        <tr>
+          <td>构建工具</td>
+          <td>htmlpress 二进制文件</td>
+          <td>MkDocs CLI</td>
+        </tr>
+        <tr>
+          <td>内容格式</td>
+          <td>HTML 页面</td>
+          <td>Markdown（CommonMark + Python-Markdown 扩展）</td>
+        </tr>
+        <tr>
+          <td>许可证</td>
+          <td>MIT，自托管</td>
+          <td>BSD-2-Clause，自托管</td>
+        </tr>
+        <tr>
+          <td>输出模式</td>
+          <td>预渲染静态页面</td>
+          <td>预渲染静态页面</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>架构</h2>
+    <p>
+      htmlpress 是一个 Rust 二进制文件，可从 npm（<code>gethtmlpress</code>）、PyPI 或
+      crates.io 安装。它用一个布局包裹每个 HTML 页面，并配上导航和主题；没有打包器、没有
+      UI 框架，也没有插件
+      API。每个内置文件——布局、样式、脚本以及每个组件——都可以被覆盖：在
+      <code>.htmlpress/</code> 下的相同路径放一个文件即可替换它。在 PyPI 上它以二进制
+      wheel 发布，因此 <code>pip install htmlpress</code> 在运行时不需要任何 Python 代码。
+    </p>
+    <p>
+      MkDocs 是一个 Python CLI。站点通过 <code>mkdocs.yml</code>
+      配置。主题可通过 pip 安装；构建流水线让 Markdown 内容依次经过 Python-Markdown（或
+      pymdown-extensions）和 Jinja2 模板处理。没有 JavaScript
+      构建步骤——渲染后站点的交互性完全取决于主题模板输出的内容。
+    </p>
+    <p>
+      Material for MkDocs 增加了一套精心设计的主题、基于 lunr.js
+      的搜索索引、即时导航，以及丰富的插件生态（<code>mkdocs-material</code>
+      的扩展功能，加上 PyPI 上更广泛的 <code>mkdocs-*</code> 插件命名空间）。
+    </p>
+    <p>
+      在 htmlpress 这边，内容布局不受约束：它按 glob 扫描（<code>htmlpress.yaml</code>
+      中的 <code>include</code>/<code>exclude</code>，默认扫描所有
+      <code>.html</code> 文件），页面的 URL 取决于它在 glob 基础目录下的文件路径，因此
+      <code>docs/**/*.html</code> 会把 <code>docs/guide.html</code> 发布在
+      <code>/guide.html</code>。不要求存在 <code>docs/</code>
+      文件夹。导航由文件夹结构和每个页面的
+      <code>&lt;meta name="order"&gt;</code> 构建；文件夹的
+      <code>index.html</code> 为其分组命名。MkDocs 从 <code>docs/</code> 读取（可通过
+      <code>mkdocs.yml</code> 中的 <code>docs_dir</code>
+      配置），路由由该目录下的文件路径推导而来。
+    </p>
+    <h2>内容层面</h2>
+    <p>
+      MkDocs 接受带 frontmatter 的 Markdown；htmlpress 只接受 HTML。MkDocs 通过
+      Python-Markdown 扩展（提示框、标签页、脚注、定义列表）和
+      <code>pymdown-extensions</code>（它带来完整的 Material 语法：<code
+        >=== "Tab 1"</code
+      >
+      标签页、<code>:::note</code> 提示框、<code>++ctrl++</code> 键盘快捷键等）来扩展
+      Markdown。若要超出这些扩展所提供的定制能力，就需要编写 Python 插件或覆盖 Jinja
+      模板。
+    </p>
+    <p>
+      htmlpress 页面是纯语义化 HTML，主题直接根据元素本身设置样式。更丰富的区块是
+      <code>htmlpress-*</code>
+      自定义元素（<code>htmlpress-callout</code>、<code>htmlpress-tabs</code>、<code>htmlpress-steps</code>、<code
+        >htmlpress-grid</code
+      >
+      等），其 CSS 和 JS 只会链接到使用该标签的页面。项目可以通过
+      <code>.htmlpress/components/&lt;name&gt;/&lt;name&gt;.html</code>
+      添加自己的标签，它会在构建时替换该标签。同样的区块在这里就是纯 HTML
+      元素：<code>&lt;dl&gt;</code>、<code>&lt;kbd&gt;</code>、<code>&lt;details&gt;</code>。
+    </p>
+    <p>
+      htmlpress 没有 frontmatter：页面的元数据就是它自己的
+      <code>&lt;head&gt;</code>——<code>&lt;title&gt;</code>、<code
+        >&lt;meta name="description"&gt;</code
+      >、<code>&lt;meta name="order"&gt;</code>、<code>&lt;meta name="layout"&gt;</code>
+      和 <code>&lt;meta name="image"&gt;</code>；其他
+      <code>&lt;head&gt;</code> 标签会原样保留。MkDocs 读取
+      <code>title</code
+      >、<code>summary</code>、<code>tags</code>（需插件）、<code>template</code>，并使用
+      <code>mkdocs.yml</code> 定义导航。
+    </p>
+    <h2>功能矩阵</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>功能</th>
+          <th>Htmlpress</th>
+          <th>MkDocs</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>版本管理</td>
+          <td>部分支持（每个版本一个分区或一次部署）</td>
+          <td>是（通过 <code>mike</code> 插件）</td>
+        </tr>
+        <tr>
+          <td>国际化（i18n）</td>
+          <td>是（翻译、语言选择器、内置 7 种界面语言）</td>
+          <td>是（Material 的 i18n 插件）</td>
+        </tr>
+        <tr>
+          <td>搜索</td>
+          <td>是（内置，客户端）</td>
+          <td>是（内置，客户端）</td>
+        </tr>
+        <tr>
+          <td>博客</td>
+          <td>否</td>
+          <td>是（Material 的博客插件）</td>
+        </tr>
+        <tr>
+          <td>更新日志</td>
+          <td>否</td>
+          <td>否（手动）</td>
+        </tr>
+        <tr>
+          <td>站点地图</td>
+          <td>是（需设置 <code>site</code>）</td>
+          <td>是</td>
+        </tr>
+        <tr>
+          <td>RSS</td>
+          <td>否</td>
+          <td>通过插件</td>
+        </tr>
+        <tr>
+          <td>主题</td>
+          <td><code>.htmlpress/</code> 中的覆盖文件 + <code>--htmlpress-*</code> 令牌</td>
+          <td>主题包 + Jinja 覆盖</td>
+        </tr>
+        <tr>
+          <td>插件</td>
+          <td>否（使用 <code>.htmlpress/components/</code> 中的项目组件）</td>
+          <td>Python 插件（PyPI 上的 <code>mkdocs-*</code>）</td>
+        </tr>
+        <tr>
+          <td>自定义路由</td>
+          <td>
+            任意 <code>.html</code> 文件；额外布局放在 <code>.htmlpress/layouts/</code>
+          </td>
+          <td>否（仅限内容）</td>
+        </tr>
+        <tr>
+          <td>独立工具链</td>
+          <td>单一 Rust 二进制文件（npm、PyPI 或 crates.io）</td>
+          <td>Python + pip</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>输出与部署</h2>
+    <p>
+      两款工具都会生成可部署到任意静态托管平台的静态 HTML 和资源文件。MkDocs 默认输出到
+      <code>site/</code>；htmlpress 输出到 <code>.htmlpress/build/</code>。
+    </p>
+    <p>
+      htmlpress 会把每个页面写成 <code>.htmlpress/build/</code> 中的静态 HTML，同时生成
+      <code>robots.txt</code>、设置了 <code>site</code> 时的
+      <code>sitemap.xml</code>、每个页面的 Markdown 副本、<code>llms.txt</code>，以及
+      <code>.well-known/agent-skills/</code> 下的智能体技能。<code>base</code>
+      键可让站点在子路径下提供服务。各托管平台的指南见<a href="/zh/deployment/">部署</a>。
+    </p>
+    <h2>另请参阅</h2>
+    <ul>
+      <li><a href="/zh/authoring/">编写</a>——htmlpress 的 HTML 编写方式。</li>
+      <li><a href="/zh/customization/">自定义</a>——htmlpress 的配置键与覆盖文件。</li>
+      <li><a href="/zh/comparison/">对比</a>——返回索引。</li>
+    </ul>
+  </body>
+</html>

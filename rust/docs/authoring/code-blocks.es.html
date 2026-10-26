@@ -1,0 +1,192 @@
+<title>Bloques de código</title>
+<meta
+  name="description"
+  content="Bloques de código con botones de copiar, pestañas de gestores de paquetes y ventanas de terminal."
+/>
+<meta name="order" content="37" />
+<meta name="icon" content="code" />
+
+<h1>Bloques de código</h1>
+<p>
+  Un bloque de código es un <code>&lt;pre&gt;&lt;code&gt;</code>, con el estilo del tema
+  en su fuente monoespaciada. Cada bloque de código recibe un botón de copiar. Escapa el
+  código que contiene: <code>&amp;lt;</code> para <code>&lt;</code> y
+  <code>&amp;amp;</code> para <code>&amp;</code>. Las pestañas de bloques de código se
+  explican en <a href="/es/authoring/rich-elements.html">Pestañas de código</a>.
+</p>
+<pre><code class="language-html">&lt;pre&gt;&lt;code&gt;const greeting = "&amp;lt;hello&amp;gt;"&lt;/code&gt;&lt;/pre&gt;</code></pre>
+<p>Se renderiza como:</p>
+<pre><code>const greeting = "&lt;hello&gt;"</code></pre>
+<h2>Resaltado de sintaxis</h2>
+<p>
+  Una clase <code>language-*</code> en el <code>&lt;code&gt;</code> colorea el bloque al
+  compilar con las gramáticas TextMate de VS Code, el mismo resultado que Shiki, en un
+  tema claro y otro oscuro que siguen al del lector (consulta
+  <a href="/es/customization/syntax-themes.html">Temas de sintaxis</a>). Hay más de 220
+  lenguajes integrados, con sus alias habituales (<code>ts</code>, <code>sh</code>,
+  <code>yml</code>); uno desconocido, o un bloque que contiene marcado propio, queda sin
+  colorear.
+</p>
+<pre><code class="language-html">&lt;pre&gt;&lt;code class="language-rust"&gt;fn main() {
+    println!("hello");
+}&lt;/code&gt;&lt;/pre&gt;</code></pre>
+<p>Se renderiza como:</p>
+<pre><code class="language-rust">fn main() {
+    println!("hello");
+}</code></pre>
+
+<h2>Títulos</h2>
+<p>
+  <code>data-title</code> en el <code>&lt;pre&gt;</code> le da al bloque una barra de
+  título, normalmente el nombre del archivo; funciona tanto si el bloque está resaltado
+  como si no.
+</p>
+<pre><code class="language-html">&lt;pre data-title="htmlpress.yaml"&gt;&lt;code class="language-yaml"&gt;title: Htmlpress&lt;/code&gt;&lt;/pre&gt;</code></pre>
+<p>Se renderiza como:</p>
+<pre data-title="htmlpress.yaml"><code class="language-yaml">title: Htmlpress</code></pre>
+
+<h2>Resaltado de líneas</h2>
+<p>
+  <code>data-lines</code> en un bloque resaltado marca líneas, contadas desde 1: líneas
+  sueltas y rangos, separados por comas.
+</p>
+<pre><code class="language-html">&lt;pre&gt;&lt;code class="language-js" data-lines="2"&gt;…&lt;/code&gt;&lt;/pre&gt;</code></pre>
+<pre><code class="language-js" data-lines="2">const a = 1
+const b = 2
+const c = 3</code></pre>
+
+<h2>Resaltado de palabras</h2>
+<p>
+  <code>data-words</code> en un bloque resaltado marca cada aparición de cada palabra de
+  la lista separada por comas. Una palabra que la gramática divide en dos tokens no se
+  marca.
+</p>
+<pre><code class="language-html">&lt;pre&gt;&lt;code class="language-js" data-words="greeting"&gt;…&lt;/code&gt;&lt;/pre&gt;</code></pre>
+<pre><code class="language-js" data-words="greeting">const greeting = "hello"
+console.log(greeting)</code></pre>
+
+<h2>Números de línea</h2>
+<p>
+  <code>data-line-numbers</code> en un bloque resaltado numera sus líneas;
+  <code>data-line-numbers="10"</code> empieza desde 10. El botón de copiar deja fuera los
+  números.
+</p>
+<pre><code class="language-js" data-line-numbers="10">const a = 1
+const b = 2</code></pre>
+
+<h2>Líneas de diff</h2>
+<p>
+  <code>data-add</code> y <code>data-remove</code> en un bloque resaltado marcan líneas
+  como añadidas o eliminadas, con un <code>+</code> o un <code>−</code> que el botón de
+  copiar deja fuera. Dentro de un <a href="#terminal">terminal</a>,
+  <code>&lt;ins&gt;</code> y <code>&lt;del&gt;</code> colorean la salida de verde y rojo.
+</p>
+<pre><code class="language-html">&lt;pre&gt;&lt;code class="language-js" data-remove="1" data-add="2"&gt;…&lt;/code&gt;&lt;/pre&gt;</code></pre>
+<pre><code class="language-js" data-remove="1" data-add="2">const port = 8080
+const port = 8000
+serve(port)</code></pre>
+
+<h2>Líneas enfocadas</h2>
+<p>
+  <code>data-focus</code> en un bloque resaltado atenúa todas las demás líneas, hasta que
+  el lector apunta al bloque.
+</p>
+<pre><code class="language-js" data-focus="2">import { build } from "htmlpress"
+await build("docs")
+console.log("done")</code></pre>
+
+<h2>Errores y advertencias</h2>
+<p>
+  <code>data-error</code> y <code>data-warning</code> marcan líneas en rojo y amarillo.
+</p>
+<pre><code class="language-js" data-error="1" data-warning="2">undefinedCall()
+const unused = 1</code></pre>
+<p>
+  Cada marca de línea acepta la misma lista que <code>data-lines</code>, como
+  <code>2,4-5</code>, y una lista no válida hace fallar la compilación.
+</p>
+
+<h2>Código plegable</h2>
+<p>
+  Un <code>&lt;details&gt;</code> alrededor de un bloque largo lo oculta tras su
+  <code>&lt;summary&gt;</code>:
+</p>
+<pre><code class="language-html">&lt;details&gt;
+  &lt;summary&gt;The full config&lt;/summary&gt;
+  &lt;pre&gt;&lt;code&gt;…&lt;/code&gt;&lt;/pre&gt;
+&lt;/details&gt;</code></pre>
+<p>
+  <code>data-collapse</code> en el <code>&lt;pre&gt;</code> muestra solo sus primeras
+  líneas, con una barra Expandir bajo el bloque para el resto; sin el script, el bloque se
+  desplaza en su lugar. Un bloque que no supera esa altura no recibe barra.
+</p>
+<pre><code class="language-html">&lt;pre data-collapse="5"&gt;&lt;code class="language-yaml"&gt;…&lt;/code&gt;&lt;/pre&gt;</code></pre>
+<pre data-collapse="5"><code class="language-yaml">steps:
+  build: 1
+  build: 2
+  build: 3
+  build: 4
+  build: 5
+  build: 6
+  build: 7
+  build: 8
+  build: 9
+  build: 10
+  build: 11
+  build: 12</code></pre>
+
+<h2>Iconos de lenguaje</h2>
+<p>
+  Un bloque con título muestra el logo de su lenguaje en la barra de título: TypeScript,
+  JavaScript, React (<code>jsx</code>, <code>tsx</code>), Python, Rust y shell, el
+  conjunto que muestra Livemark, o un icono de archivo genérico para cualquier otro
+  lenguaje.
+</p>
+<pre data-title="main.rs"><code class="language-rust">fn main() {}</code></pre>
+<pre data-title="build.sh"><code class="language-sh">htmlpress build docs</code></pre>
+
+<h2>Soporte de TypeScript</h2>
+<htmlpress-callout label="No previsto">
+  <p>
+    La información de tipos al pasar el ratón, como la que ofrece Twoslash, necesita el
+    compilador de TypeScript, que un único binario de Rust no incluye. Un bloque de
+    TypeScript se resalta como cualquier otro.
+  </p>
+</htmlpress-callout>
+
+<h2>Comandos de npm</h2>
+<p>
+  Escribe un comando <code>npm</code> o <code>npx</code> dentro de
+  <code>&lt;htmlpress-package-tabs&gt;</code> y la compilación lo convierte en pestañas
+  para npm, pnpm, yarn y bun, sincronizadas en todo el sitio. Las demás líneas se quedan
+  tal como están escritas.
+</p>
+<pre><code class="language-html">&lt;htmlpress-package-tabs&gt;
+  &lt;pre&gt;&lt;code&gt;npm install --save-dev gethtmlpress&lt;/code&gt;&lt;/pre&gt;
+&lt;/htmlpress-package-tabs&gt;</code></pre>
+<p>Se renderiza como:</p>
+<htmlpress-package-tabs>
+  <pre><code>npm install --save-dev gethtmlpress</code></pre>
+</htmlpress-package-tabs>
+
+<h2>Terminal</h2>
+<p>
+  Un <code>&lt;pre&gt;</code> dentro de <code>&lt;htmlpress-terminal&gt;</code> parece una
+  ventana de terminal, oscura en ambos temas y con el nombre que indica
+  <code>title</code>. Dentro, <code>&lt;kbd&gt;</code> es un comando tecleado (se añade el
+  prompt), <code>&lt;samp&gt;</code> salida simple, y <code>&lt;ins&gt;</code>,
+  <code>&lt;del&gt;</code> y <code>&lt;mark&gt;</code> salida verde, roja y amarilla.
+</p>
+<pre><code class="language-html">&lt;htmlpress-terminal title="zsh"&gt;
+  &lt;pre&gt;&lt;kbd&gt;htmlpress build docs&lt;/kbd&gt;
+&lt;samp&gt;built 7 pages…&lt;/samp&gt;
+&lt;ins&gt;✓ ready&lt;/ins&gt;&lt;/pre&gt;
+&lt;/htmlpress-terminal&gt;</code></pre>
+<p>Se renderiza como:</p>
+<htmlpress-terminal title="zsh">
+  <pre><kbd>htmlpress build docs</kbd>
+<samp>built 7 pages and 0 files into docs/.htmlpress/build</samp>
+<ins>✓ ready</ins>
+<del>✗ 1 page failed</del>
+<mark>! 1 warning</mark></pre>
+</htmlpress-terminal>

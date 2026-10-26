@@ -1,0 +1,55 @@
+<title>编写</title>
+<meta
+  name="description"
+  content="用纯 HTML 编写页面，并借助少量 htmlpress-* 组件来撰写文档。"
+/>
+<meta name="order" content="30" />
+<meta name="icon" content="file-code" />
+
+<h1>编写</h1>
+<p>
+  Htmlpress 开箱即支持纯语义化 HTML，另外提供一小组
+  <code>htmlpress-*</code> 组件，覆盖 HTML
+  没有对应元素的场景：提示框、标签页、步骤、卡片、终端、图表等。一个项目就是一个文件夹：其中每个
+  <code>.html</code> 文件都是一个页面，其他文件则按原样复制到输出中的相同路径。<code
+    >.git/</code
+  >
+  和 <code>.htmlpress/</code> 这类点文件夹以及
+  <code>node_modules/</code> 会被跳过。下面每个页面介绍编写功能的一个方面。
+</p>
+
+<h2>功能</h2>
+<htmlpress-grid cols="2">
+  <htmlpress-card>
+    <h3><a href="/zh/authoring/frontmatter.html">前置元数据</a></h3>
+    <p>设置页面标题、描述和排序的 <code>&lt;head&gt;</code> 标签。</p>
+  </htmlpress-card>
+  <htmlpress-card>
+    <h3><a href="/zh/authoring/headings.html">标题</a></h3>
+    <p>自动生成的 ID、自定义锚点和目录。</p>
+  </htmlpress-card>
+  <htmlpress-card>
+    <h3><a href="/zh/authoring/links.html">链接</a></h3>
+    <p>内部链接、外部链接和锚点链接、URL 以及基础路径。</p>
+  </htmlpress-card>
+  <htmlpress-card>
+    <h3><a href="/zh/authoring/media.html">媒体</a></h3>
+    <p>可缩放的图片，以及视频和音频嵌入。</p>
+  </htmlpress-card>
+  <htmlpress-card>
+    <h3><a href="/zh/authoring/text-formatting.html">文本格式</a></h3>
+    <p>粗体、斜体、列表、引用块、脚注、定义列表和缩写。</p>
+  </htmlpress-card>
+  <htmlpress-card>
+    <h3><a href="/zh/authoring/rich-elements.html">富元素</a></h3>
+    <p>表格、提示框、标签页、步骤、卡片、徽章、按钮和文件树。</p>
+  </htmlpress-card>
+  <htmlpress-card>
+    <h3><a href="/zh/authoring/code-blocks.html">代码块</a></h3>
+    <p>复制按钮、代码标签页、包管理器标签页和终端。</p>
+  </htmlpress-card>
+  <htmlpress-card>
+    <h3><a href="/zh/authoring/advanced-syntax.html">高级语法</a></h3>
+    <p>Head 标签、脚本、Mermaid 图表和项目组件。</p>
+  </htmlpress-card>
+</htmlpress-grid>

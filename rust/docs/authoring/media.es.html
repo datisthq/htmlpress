@@ -1,0 +1,127 @@
+<title>Multimedia</title>
+<meta
+  name="description"
+  content="Imágenes, imágenes con zoom y contenido incrustado de YouTube y SoundCloud."
+/>
+<meta name="order" content="34" />
+<meta name="icon" content="image" />
+
+<h1>Multimedia</h1>
+<p>
+  Las imágenes son elementos <code>&lt;img&gt;</code> simples, escalados al ancho del
+  contenido. Envuelve una en <code>&lt;figure&gt;</code> con un
+  <code>&lt;figcaption&gt;</code> para añadirle un pie.
+</p>
+
+<h2>Imágenes internas</h2>
+<p>
+  Referencia imágenes de tu proyecto; cada archivo que no es una página se copia a la
+  salida en la misma ruta:
+</p>
+<pre><code class="language-html">&lt;img src="/screenshots/docs.webp" alt="An htmlpress docs page"&gt;</code></pre>
+<p>Se renderiza como:</p>
+<figure>
+  <img
+    src="/screenshots/docs.webp"
+    alt="Una página de documentación de htmlpress con la navegación, un bloque de código y la tabla de contenidos"
+    width="1440"
+    height="900"
+  />
+  <figcaption>Una página de documentación de htmlpress.</figcaption>
+</figure>
+
+<h2>Imágenes externas</h2>
+<p>Referencia imágenes desde URL externas:</p>
+<pre><code class="language-html">&lt;img src="https://picsum.photos/seed/htmlpress/800/300" alt="Placeholder"&gt;</code></pre>
+<p>Se renderiza como:</p>
+<p>
+  <img
+    src="https://picsum.photos/seed/htmlpress/800/300"
+    alt="Imagen de ejemplo"
+    width="800"
+    height="300"
+  />
+</p>
+
+<h2>Imágenes en Base64</h2>
+<p>Incrusta imágenes pequeñas directamente con URI de datos:</p>
+<pre><code class="language-html">&lt;img src="data:image/png;base64,iVBORw0KGgo…" alt="banner"&gt;</code></pre>
+<p>Se renderiza como:</p>
+<p>
+  <img
+    src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAABQCAIAAADTD63nAAABU0lEQVR4nO3csU3DUBRAUUCIGVJlHLcwAVV2YIbsQJUJUmccJCRmoKKgthOR3IDNOe138WxdveZLvn0c3m/g0u5+ewCWSVgkhEVCWCSERUJYJIRFQlgkhEXifvr47eP1OnMwR+vVZuzIxiJxZGN9e3p+qedgXva77fQDNhYJYZEQFglhkRAWCWGREBYJYZEQFglhkRAWCWGROOkSeswwPFxqjr/jcPgcO1rk+06b+BrTbCwSwiIhLBLCIiEsEsIiISwSwiIhLBLCIiEsEsIiISwSwiIhLBLCIiEsEsIiISwSwiIhLBLCIiEsEsIiISwSwiIhLBLCIiEsEsIicdZvjH78j5uZ+m/vew4bi4SwSAiLhLBICIuEsEgIi4SwSAiLhLBICIuEsEicdAm9323rOVgYG4vEkY21Xm2uMwcLY2OREBYJYZEQFglhkRAWCWGREBaJL1tnFXf+b+eSAAAAAElFTkSuQmCC"
+    alt="banner"
+    width="200"
+    height="80"
+  />
+</p>
+
+<h2>Imágenes según el tema</h2>
+<p>
+  <code>data-theme="light"</code> o <code>data-theme="dark"</code> en un
+  <code>&lt;img&gt;</code> lo muestra solo en ese tema, siguiendo tanto el selector de
+  tema de la cabecera como la configuración del sistema; las terminaciones
+  <code>#light</code> y <code>#dark</code> de Livemark en el <code>src</code> también
+  funcionan. Pon la pareja una junto a otra:
+</p>
+<pre><code class="language-html">&lt;img src="/screenshots/docs.webp" alt="The docs" data-theme="light"&gt;
+&lt;img src="/screenshots/docs-dark.webp" alt="The docs" data-theme="dark"&gt;</code></pre>
+<p>Se renderiza como (cambia el tema para alternar):</p>
+<p>
+  <img
+    src="/screenshots/docs.webp"
+    alt="El sitio de documentación en modo claro"
+    data-theme="light"
+  />
+  <img
+    src="/screenshots/docs-dark.webp"
+    alt="El sitio de documentación en modo oscuro"
+    data-theme="dark"
+  />
+</p>
+<p>La copia en Markdown de la página conserva solo la imagen clara.</p>
+
+<h2>Zoom de imágenes</h2>
+<p>
+  Una imagen dentro de <code>&lt;htmlpress-zoom&gt;</code> se abre a pantalla completa al
+  hacer clic; un clic en cualquier sitio la cierra. Funciona igual con imágenes internas,
+  externas y en base64.
+</p>
+<pre><code class="language-html">&lt;htmlpress-zoom&gt;&lt;img src="screenshot.png" alt="The docs site"&gt;&lt;/htmlpress-zoom&gt;</code></pre>
+<p>Se renderiza como (haz clic):</p>
+<htmlpress-zoom>
+  <img
+    src="/screenshots/components.webp"
+    alt="La página de componentes de htmlpress con avisos en cuatro colores"
+    width="1440"
+    height="900"
+  />
+</htmlpress-zoom>
+
+<h2>Bloques de vídeo</h2>
+<p>
+  Un enlace dentro de <code>&lt;htmlpress-youtube&gt;</code> se convierte en el
+  reproductor del vídeo (una URL <code>watch</code>, <code>youtu.be</code>,
+  <code>embed</code>, <code>shorts</code> o <code>live</code>); sin el script sigue siendo
+  un enlace:
+</p>
+<pre><code class="language-html">&lt;htmlpress-youtube&gt;
+  &lt;a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"&gt;The video&lt;/a&gt;
+&lt;/htmlpress-youtube&gt;</code></pre>
+<p>Se renderiza como:</p>
+<htmlpress-youtube>
+  <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">El vídeo</a>
+</htmlpress-youtube>
+
+<h2>Bloques de audio</h2>
+<p>
+  Un enlace dentro de <code>&lt;htmlpress-soundcloud&gt;</code> se convierte en el
+  reproductor de la pista; sin el script sigue siendo un enlace:
+</p>
+<pre><code class="language-html">&lt;htmlpress-soundcloud&gt;
+  &lt;a href="https://soundcloud.com/flume/never-be-like-you-feat-kai"&gt;The track&lt;/a&gt;
+&lt;/htmlpress-soundcloud&gt;</code></pre>
+<p>Se renderiza como:</p>
+<htmlpress-soundcloud>
+  <a href="https://soundcloud.com/flume/never-be-like-you-feat-kai">La pista</a>
+</htmlpress-soundcloud>

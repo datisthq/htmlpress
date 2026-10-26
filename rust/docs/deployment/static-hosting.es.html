@@ -1,0 +1,156 @@
+<title>Hosting estático</title>
+<meta
+  name="description"
+  content="Sirve el directorio de compilación desde cualquier host estático: nginx, S3 + CloudFront, Caddy y similares."
+/>
+<meta name="order" content="51" />
+<meta name="icon" content="server" />
+
+<h1>Hosting estático</h1>
+<p>
+  La compilación de Htmlpress es un directorio simple de archivos <code>.html</code>,
+  <code>.css</code>, <code>.js</code> y assets. Cualquier cosa capaz de servir un
+  directorio de archivos funcionará. Esta guía cubre los casos habituales.
+</p>
+
+<h2>Compila el sitio</h2>
+<pre><code class="language-sh">htmlpress build</code></pre>
+<p>
+  La salida queda en <code>.htmlpress/build/</code>. Trata ese directorio como la raíz de
+  documentos. <code>htmlpress preview</code> sirve la misma compilación en local, igual
+  que lo hará un host.
+</p>
+
+<h2>Prerenderizado frente a fallback de SPA</h2>
+<p>
+  Cada página es un archivo real, escrito en la ruta de su fuente:
+  <code>guides/build.html</code> se sirve en <code>/guides/build.html</code>, y el
+  <code>index.html</code> de una carpeta responde a su URL <code>/guides/</code>. No hay
+  enrutamiento en el cliente, así que ningún host necesita un fallback de SPA.
+</p>
+<p>
+  Lo que sí merece la pena configurar es la página de no encontrado. Cada compilación
+  escribe un <code>404.html</code> en la raíz (el del proyecto o uno integrado); apunta la
+  página de error del host a él para que las rutas desconocidas reciban el layout del
+  sitio en lugar del error por defecto del host.
+</p>
+
+<h2>nginx</h2>
+<pre><code>server {
+  listen 80;
+  server_name docs.example.com;
+  root /var/www/docs;
+  index index.html;
+
+  # Try the exact file, then a folder's index.html, else the site's 404 page.
+  location / {
+    try_files $uri $uri/ =404;
+  }
+  error_page 404 /404.html;
+}</code></pre>
+<p>
+  Copia <code>.htmlpress/build/*</code> a <code>/var/www/docs/</code> en cada publicación.
+</p>
+
+<h2>Caddy</h2>
+<pre><code>docs.example.com {
+  root * /var/www/docs
+  file_server
+  encode gzip zstd
+  handle_errors {
+    rewrite * /404.html
+    file_server
+  }
+}</code></pre>
+<p>
+  Caddy aprovisiona automáticamente certificados de Let's Encrypt cuando el dominio
+  resuelve hacia él.
+</p>
+
+<h2>AWS S3 + CloudFront</h2>
+<p>El patrón estándar es un bucket de S3 como origen y CloudFront delante:</p>
+<ol>
+  <li>
+    Sube <code>.htmlpress/build/</code> a un bucket de S3 (<code
+      >aws s3 sync .htmlpress/build/ s3://my-docs --delete</code
+    >).
+  </li>
+  <li>
+    Define <strong>Static website hosting → Index document</strong> como
+    <code>index.html</code> y <strong>Error document</strong> como <code>404.html</code>.
+  </li>
+  <li>Crea una distribución de CloudFront que apunte al endpoint web del bucket.</li>
+  <li>
+    En CloudFront, añade una <strong>Custom error response</strong> que asigne
+    <code>404</code> a <code>/404.html</code>, manteniendo el código de respuesta
+    <code>404</code>.
+  </li>
+  <li>
+    Define el objeto raíz por defecto de la distribución como <code>index.html</code>.
+  </li>
+</ol>
+<p>
+  Los archivos de <code>_htmlpress/</code> conservan su nombre de una compilación a otra,
+  así que guárdalos en caché por poco tiempo o invalídalos en cada publicación.
+</p>
+
+<h2>Apache</h2>
+<pre><code>DirectoryIndex index.html
+ErrorDocument 404 /404.html</code></pre>
+<p>
+  Pon esto en un <code>.htaccess</code> en la raíz de documentos y coloca allí la
+  compilación. Los archivos y carpetas reales se sirven directamente; todo lo demás recibe
+  la página 404 del sitio.
+</p>
+<htmlpress-callout type="warning">
+  <p>
+    Htmlpress omite los archivos ocultos al copiar un proyecto, así que mantén el
+    <code>.htaccess</code> en el servidor o cópialo después de la compilación.
+  </p>
+</htmlpress-callout>
+
+<h2>Otros hosts</h2>
+<p>
+  La misma receta funciona en Render Static, Surge, Fly Static, Bunny o cualquier
+  almacenamiento de objetos con CDN: sube el directorio, apunta un dominio a él y sirve
+  <code>404.html</code> para las rutas desconocidas.
+</p>
+
+<h2>Despliega con GitHub Actions</h2>
+<p>Un ejemplo mínimo con nginx/SSH:</p>
+<pre><code class="language-yaml">name: deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npx gethtmlpress build
+      - uses: easingthemes/ssh-deploy@v5
+        with:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
+          REMOTE_HOST: ${{ secrets.SSH_HOST }}
+          REMOTE_USER: ${{ secrets.SSH_USER }}
+          SOURCE: .htmlpress/build/
+          TARGET: /var/www/docs/
+          ARGS: -avzr --delete</code></pre>
+<p>
+  Para S3, sustituye el paso de despliegue por
+  <code>aws-actions/configure-aws-credentials</code> + <code>aws s3 sync</code>.
+</p>
+
+<h2>Ver también</h2>
+<ul>
+  <li>
+    <a href="/es/customization/site-metadata.html">Metadatos del sitio</a>:
+    <code>site</code> hace posibles las URLs absolutas y el sitemap.
+  </li>
+  <li><a href="/es/deployment/">Despliegue</a>: volver al índice de hosts.</li>
+</ul>

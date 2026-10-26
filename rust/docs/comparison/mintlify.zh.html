@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="zh">
+  <head>
+    <title>Mintlify 与 Htmlpress 对比</title>
+    <meta name="description" content="自托管的开源站点构建工具与托管的商业文档 SaaS。" />
+    <meta name="order" content="63" />
+    <meta name="icon" content="sparkles" />
+  </head>
+  <body>
+    <h1>Mintlify 与 Htmlpress 对比</h1>
+    <p>
+      <a href="https://mintlify.com">Mintlify</a> 是一个商业文档平台。内容以 MDX 形式在
+      Git 仓库中编写；Mintlify
+      负责托管渲染后的站点、搜索和分析。按编辑者数量计费，开源项目可使用免费套餐。
+    </p>
+    <h2>概览</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>维度</th>
+          <th>Htmlpress</th>
+          <th>Mintlify</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>语言 / 运行时</td>
+          <td>Rust（单一二进制文件，无运行时）</td>
+          <td>用 MDX 编写；运行时是 Mintlify 的托管技术栈（未公开）</td>
+        </tr>
+        <tr>
+          <td>UI 框架</td>
+          <td>无（纯 HTML + CSS，<code>htmlpress-*</code> Web 组件）</td>
+          <td>React（据 Mintlify 文档）</td>
+        </tr>
+        <tr>
+          <td>构建工具</td>
+          <td>htmlpress 二进制文件</td>
+          <td>Mintlify CLI（预览）+ 托管构建</td>
+        </tr>
+        <tr>
+          <td>内容格式</td>
+          <td>HTML 页面</td>
+          <td>Markdown + MDX</td>
+        </tr>
+        <tr>
+          <td>许可证</td>
+          <td>MIT，自托管</td>
+          <td>专有，仅限托管</td>
+        </tr>
+        <tr>
+          <td>输出模式</td>
+          <td>预渲染静态页面</td>
+          <td>托管在 Mintlify 的基础设施上</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>架构</h2>
+    <p>
+      htmlpress 是一个 Rust 二进制文件，可从 npm（<code>gethtmlpress</code>）、PyPI 或
+      crates.io 安装。它用一个布局包裹每个 HTML 页面，并配上导航和主题；没有打包器、没有
+      UI 框架，也没有插件
+      API。每个内置文件——布局、样式、脚本以及每个组件——都可以被覆盖：在
+      <code>.htmlpress/</code> 下的相同路径放一个文件即可替换它。源文件和输出都归你所有。
+    </p>
+    <p>
+      Mintlify 是一个托管 SaaS。你把 MDX 和 <code>mint.json</code> 配置提交到 Git
+      仓库；每次推送时 Mintlify 拉取代码、构建，并通过
+      <code>&lt;your-subdomain&gt;.mintlify.app</code>
+      或自定义域名提供结果。构建流水线和运行时均由平台管理，用户无法自行安装。
+    </p>
+    <p>
+      在 htmlpress 这边，内容布局不受约束：它按 glob 扫描（<code>htmlpress.yaml</code>
+      中的 <code>include</code>/<code>exclude</code>，默认扫描所有
+      <code>.html</code> 文件），页面的 URL 取决于它在 glob 基础目录下的文件路径，因此
+      <code>docs/**/*.html</code> 会把 <code>docs/guide.html</code> 发布在
+      <code>/guide.html</code>。不要求存在 <code>docs/</code>
+      文件夹。导航由文件夹结构和每个页面的
+      <code>&lt;meta name="order"&gt;</code> 构建；文件夹的
+      <code>index.html</code> 为其分组命名。Mintlify 要求文件树与
+      <code>mint.json</code> 中的 <code>navigation</code>
+      块一致；路由与所配置内容根目录下的文件路径对应。
+    </p>
+    <h2>内容层面</h2>
+    <p>
+      Mintlify 接受带 frontmatter 和组件嵌入的 Markdown +
+      MDX。它提供一组固定的组件（<code>&lt;Card&gt;</code>、<code>&lt;Accordion&gt;</code>、<code>&lt;Tabs&gt;</code>、<code
+        >&lt;Steps&gt;</code
+      >
+      等），供作者在 MDX 中组合使用。你不需要为文档 UI 编写自己的 React 组件——而是使用
+      Mintlify 提供的基础组件。
+    </p>
+    <p>
+      htmlpress 页面是纯语义化 HTML，主题直接根据元素本身设置样式。更丰富的区块是
+      <code>htmlpress-*</code>
+      自定义元素（<code>htmlpress-callout</code>、<code>htmlpress-tabs</code>、<code>htmlpress-steps</code>、<code
+        >htmlpress-grid</code
+      >
+      等），其 CSS 和 JS 只会链接到使用该标签的页面。项目可以通过
+      <code>.htmlpress/components/&lt;name&gt;/&lt;name&gt;.html</code>
+      添加自己的标签，它会在构建时替换该标签。内置组件（<code>htmlpress-grid</code> +
+      <code>htmlpress-card</code
+      >、<code>htmlpress-tabs</code>、<code>htmlpress-steps</code>）能实现同类
+      UI，并且每一个都可以被覆盖。
+    </p>
+    <p>
+      Mintlify 的 <code>mint.json</code>
+      在一个声明式文件中配置导航、品牌和集成。htmlpress 使用
+      <code>htmlpress.yaml</code> 进行站点级设置，每个页面则用自己的
+      <code>&lt;head&gt;</code> 进行页面级设置。
+    </p>
+    <h2>功能矩阵</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>功能</th>
+          <th>Htmlpress</th>
+          <th>Mintlify</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>版本管理</td>
+          <td>部分支持（每个版本一个分区或一次部署）</td>
+          <td>是（内置）</td>
+        </tr>
+        <tr>
+          <td>国际化（i18n）</td>
+          <td>是（翻译、语言选择器、内置 7 种界面语言）</td>
+          <td>是（内置）</td>
+        </tr>
+        <tr>
+          <td>搜索</td>
+          <td>是（内置，客户端）</td>
+          <td>是（内置，AI 驱动）</td>
+        </tr>
+        <tr>
+          <td>AI 聊天 / 智能体</td>
+          <td>否（智能体文件：<code>llms.txt</code>、Markdown 副本、技能）</td>
+          <td>是（内置）</td>
+        </tr>
+        <tr>
+          <td>分析</td>
+          <td>否（可通过 <code>head</code> 脚本自行接入）</td>
+          <td>是（内置仪表盘）</td>
+        </tr>
+        <tr>
+          <td>OpenAPI 渲染</td>
+          <td>否</td>
+          <td>是（内置）</td>
+        </tr>
+        <tr>
+          <td>博客</td>
+          <td>否</td>
+          <td>是（更新日志/新闻页面）</td>
+        </tr>
+        <tr>
+          <td>站点地图</td>
+          <td>是（需设置 <code>site</code>）</td>
+          <td>是</td>
+        </tr>
+        <tr>
+          <td>RSS</td>
+          <td>否</td>
+          <td>是（更新日志订阅源）</td>
+        </tr>
+        <tr>
+          <td>主题</td>
+          <td><code>.htmlpress/</code> 中的覆盖文件 + <code>--htmlpress-*</code> 令牌</td>
+          <td>通过 <code>mint.json</code> 设置主题</td>
+        </tr>
+        <tr>
+          <td>自定义路由</td>
+          <td>
+            任意 <code>.html</code> 文件；额外布局放在 <code>.htmlpress/layouts/</code>
+          </td>
+          <td>否（仅限内容）</td>
+        </tr>
+        <tr>
+          <td>自托管</td>
+          <td>是</td>
+          <td>否</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>输出与部署</h2>
+    <p>
+      htmlpress 会把每个页面写成 <code>.htmlpress/build/</code> 中的静态 HTML，同时生成
+      <code>robots.txt</code>、设置了 <code>site</code> 时的
+      <code>sitemap.xml</code>、每个页面的 Markdown 副本、<code>llms.txt</code>，以及
+      <code>.well-known/agent-skills/</code> 下的智能体技能。<code>base</code>
+      键可让站点在子路径下提供服务。各托管平台的指南见<a href="/zh/deployment/">部署</a>。
+    </p>
+    <p>
+      Mintlify 的部署由 Mintlify 负责。你不需要自己构建或托管输出；平台通过其 CDN
+      提供渲染后的站点，并配置 TLS、域名和预览。离开 Mintlify
+      意味着要重新编写内容或将其迁移到别处。
+    </p>
+    <h2>另请参阅</h2>
+    <ul>
+      <li><a href="/zh/authoring/">编写</a>——htmlpress 的 HTML 编写方式。</li>
+      <li><a href="/zh/customization/">自定义</a>——htmlpress 的配置键与覆盖文件。</li>
+      <li><a href="/zh/comparison/">对比</a>——返回索引。</li>
+    </ul>
+  </body>
+</html>

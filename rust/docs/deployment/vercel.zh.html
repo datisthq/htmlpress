@@ -1,0 +1,89 @@
+<title>Vercel</title>
+<meta
+  name="description"
+  content="通过 Vercel 的 git 集成或 CLI 部署，每个 PR 都有预览 URL。"
+/>
+<meta name="order" content="54" />
+<meta name="icon" content="triangle" />
+
+<h1>Vercel</h1>
+<p>
+  Vercel 无法识别 htmlpress 项目，也猜不出它的构建目录。只需一个小小的
+  <code>vercel.json</code> 即可。
+</p>
+
+<h2>构建站点</h2>
+<pre><code class="language-sh">htmlpress build</code></pre>
+<p>输出位于 <code>.htmlpress/build/</code>。</p>
+
+<h2>配置 <code>vercel.json</code></h2>
+<p>将以下内容放在项目根目录，让 Vercel 使用正确的命令并提供正确的目录：</p>
+<pre><code>{
+  "framework": null,
+  "buildCommand": "npx gethtmlpress build",
+  "outputDirectory": ".htmlpress/build"
+}</code></pre>
+<p>
+  这就是全部配置：此后 Vercel 会负责安装、构建和静态服务，并用构建产出的
+  <code>404.html</code> 响应未知路径。Vercel 会忽略 <code>_headers</code>；请改在
+  <code>vercel.json</code> 中设置响应头。
+</p>
+
+<h2>通过 git 集成部署</h2>
+<p>
+  推荐方式：在 <a href="https://vercel.com/new">vercel.com/new</a> 导入你的仓库。Vercel
+  会读取 <code>vercel.json</code>，运行与你本地相同的构建。每次推送到 <code>main</code>
+  都会发布到生产环境；其他每个分支和 PR 都会获得独立的预览 URL。
+</p>
+
+<h2>通过 CLI 部署</h2>
+<p>用于一次性或脚本化部署：</p>
+<pre><code>vercel deploy --prod</code></pre>
+<p>
+  首次运行时会提示执行 <code>vercel login</code>，并把目录关联到一个 Vercel 项目。Vercel
+  会自行运行 <code>buildCommand</code>。
+</p>
+
+<h2>使用 GitHub Actions 部署</h2>
+<p>Vercel 的 git 集成本身通常已经足够，但你也可以让部署以 CI 测试为前提：</p>
+<pre><code class="language-yaml">name: deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npx gethtmlpress build --json
+      - run: npx vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}</code></pre>
+<p>
+  当某个页面构建失败时，第一个 <code>run</code> 会在部署之前让任务失败。你需要把
+  <code>VERCEL_TOKEN</code>、<code>VERCEL_ORG_ID</code> 和
+  <code>VERCEL_PROJECT_ID</code> 设为密钥（后两者在首次本地执行
+  <code>vercel link</code> 后位于 <code>.vercel/project.json</code> 中）。
+</p>
+
+<h2>自定义域名</h2>
+<p>
+  在项目控制台中，进入 <strong>Settings → Domains → Add</strong>。Vercel 会引导你完成 DNS
+  记录配置，并自动签发证书。在 <code>htmlpress.yaml</code> 中把同一域名设为
+  <code>site</code>。
+</p>
+
+<h2>另请参阅</h2>
+<ul>
+  <li>
+    <a href="/zh/customization/site-metadata.html">站点元数据</a>：<code>site</code>
+    用于填充 sitemap 中的 URL。
+  </li>
+  <li><a href="/zh/deployment/">部署</a>：返回托管平台索引。</li>
+</ul>
