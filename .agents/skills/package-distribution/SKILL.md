@@ -59,12 +59,16 @@ script refuses to run while any platform's binary is missing.
 
 ## Versions
 
-One release-please component at `.`; `rust/Cargo.toml` and `typescript/package.json` are
-`extra-files`, `version.txt` the simple strategy's own file. `rust/Cargo.lock` follows on the
-next cargo build. Never bump any of them by hand.
+One release-please component at `.`; `rust/Cargo.toml`, `rust/Cargo.lock` and
+`typescript/package.json` are `extra-files`, `version.txt` the simple strategy's own file. Never
+bump any of them by hand. The lockfile entry needs `@.name.value` in its jsonpath, since
+release-please wraps TOML values; without it `cargo publish` finds a dirty lockfile and refuses.
 
 ## First publish
 
 Trusted publishing only covers packages that exist: the first npm publish of each platform
 package and the first `cargo publish` need tokens (`NPM_TOKEN`, `CARGO_REGISTRY_TOKEN`); PyPI
-accepts a pending trusted publisher for a new project.
+accepts a pending trusted publisher for a new project. Publish a `0.0.0` placeholder by hand so
+release-please's first version still reaches CI; a token made for that first publish may lack
+`publish-update` and cannot publish later versions. Unscoped npm names can trip npm's spam
+check, hence the `@htmlpress` scope.
