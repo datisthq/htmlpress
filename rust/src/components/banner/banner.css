@@ -4,17 +4,19 @@
     padding: 0.5rem 1.5rem;
     background: var(--htmlpress-banner);
     color: var(--htmlpress-banner-text);
-    font-size: 0.875rem;
+    font: 0.75rem/1rem var(--htmlpress-mono);
+    letter-spacing: 0.025em;
     text-align: center;
+    text-wrap: balance;
   }
   a {
     color: inherit;
-    text-underline-offset: 0.25em;
+    text-underline-offset: 4px;
   }
   a:hover {
     text-decoration: none;
   }
-  @media (max-width: 56rem) {
+  @media (max-width: 40rem) {
     :scope {
       padding-inline: 1rem;
     }

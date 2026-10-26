@@ -1,24 +1,25 @@
 @scope (htmlpress-footer) {
   :scope {
     display: block;
-    padding: 2rem 4.5rem;
-    border-top: 1px solid var(--htmlpress-border);
+    margin-top: 3rem;
     color: var(--htmlpress-muted);
     font-size: 0.875rem;
+    line-height: 1.25rem;
     text-align: center;
   }
   p {
     margin: 0;
   }
+  [aria-label="love"] {
+    color: oklch(0.637 0.237 25.331);
+  }
   a {
     color: inherit;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.15s;
   }
   a:hover {
     color: var(--htmlpress-text);
-  }
-  @media (max-width: 56rem) {
-    :scope {
-      padding-inline: 1rem;
-    }
   }
 }

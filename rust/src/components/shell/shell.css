@@ -3,6 +3,10 @@
     display: grid;
     grid-template-columns: var(--htmlpress-nav-width) minmax(0, 1fr);
     min-height: 100dvh;
+    transition: grid-template-columns 0.2s;
+  }
+  :root[data-nav-collapsed] :scope {
+    grid-template-columns: 0 minmax(0, 1fr);
   }
 
   @media (max-width: 56rem) {

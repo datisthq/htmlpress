@@ -4,17 +4,39 @@
     min-width: 0;
   }
   a {
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    min-width: 0;
     color: inherit;
-    font-size: 1.0625rem;
-    font-weight: 650;
-    letter-spacing: -0.01em;
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1;
     text-decoration: none;
   }
+  a:has(small) {
+    align-items: end;
+  }
   img {
+    flex-shrink: 0;
     width: auto;
-    height: 1.5rem;
-    margin-right: 0.5rem;
-    vertical-align: middle;
+    height: 1.625rem;
+  }
+  a:has(small) img {
+    margin-bottom: 0.3125rem;
+  }
+  span {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    min-width: 0;
+  }
+  small {
+    overflow: hidden;
+    font-size: 0.75rem;
+    font-weight: 400;
+    opacity: 0.8;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }

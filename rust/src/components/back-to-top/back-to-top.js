@@ -7,7 +7,7 @@ class HtmlpressBackToTop extends HTMLElement {
     link.setAttribute("aria-label", "Back to top")
     link.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true">${ICON}</svg>`
     this.replaceChildren(link)
-    const update = () => this.toggleAttribute("data-visible", scrollY > 600)
+    const update = () => this.toggleAttribute("data-visible", scrollY > 400)
     addEventListener("scroll", update, { passive: true })
     update()
   }

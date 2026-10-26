@@ -275,6 +275,17 @@ fn fills_the_logo_banner_and_footer() -> crate::Result<()> {
 }
 
 #[test]
+fn puts_the_description_under_the_brand_title() -> crate::Result<()> {
+    let mut site = create_site()?;
+    site.config.description = Some("Notes <&>".to_owned());
+    let html = render_page(&site, &site.pages[0], false)?;
+    assert!(html.contains(
+        r#"<a href="/"><span>Docs &lt;&amp;&gt;<small>Notes &lt;&amp;&gt;</small></span></a>"#
+    ));
+    Ok(())
+}
+
+#[test]
 fn puts_each_link_in_its_position() -> crate::Result<()> {
     let mut site = create_site()?;
     site.config.links = vec![

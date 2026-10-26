@@ -1,4 +1,4 @@
-@scope (htmlpress-landing-banner) {
+@scope (htmlpress-banner) {
   :scope {
     display: block;
     background: var(--htmlpress-banner);
@@ -39,6 +39,11 @@
   svg[aria-hidden] {
     width: 0.75rem;
     height: 0.75rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
     transition: translate 0.2s;
   }
   p:hover svg {

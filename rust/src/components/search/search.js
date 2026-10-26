@@ -1,6 +1,5 @@
 const ICON =
   '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.34-4.34"/></svg>'
-const SHORTCUT = /Mac|iPhone|iPad/.test(navigator.platform) ? "⌘K" : "Ctrl K"
 const MAX_PAGES = 10
 const MAX_CHUNKS = 3
 
@@ -10,11 +9,14 @@ class HtmlpressSearch extends HTMLElement {
     const button = document.createElement("button")
     button.type = "button"
     button.setAttribute("aria-label", "Search")
-    button.innerHTML = `${ICON}<span>Search</span><kbd>${SHORTCUT}</kbd>`
+    button.setAttribute("aria-keyshortcuts", "S")
+    button.innerHTML = `${ICON}<span>Search...</span><kbd>S</kbd>`
     button.addEventListener("click", () => this.open())
     document.addEventListener("keydown", event => {
+      const modified = event.metaKey || event.ctrlKey || event.altKey
       const shortcut = (event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k"
-      if (shortcut || (event.key === "/" && !isTyping(event.target))) {
+      const key = !modified && /^[s/]$/i.test(event.key) && !isTyping(event.target)
+      if (shortcut || key) {
         event.preventDefault()
         this.open()
       }

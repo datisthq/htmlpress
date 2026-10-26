@@ -2,29 +2,36 @@
   :scope {
     position: sticky;
     top: 0;
-    z-index: 10;
+    z-index: 20;
     display: flex;
     align-items: center;
-    gap: 1.5rem;
     height: 4rem;
-    padding: 0 1.5rem;
+    padding: 0 0.25rem 0 1rem;
     border-bottom: 1px solid var(--htmlpress-border);
-    background: color-mix(in oklab, var(--htmlpress-bg) 85%, transparent);
-    backdrop-filter: blur(8px);
+    background: var(--htmlpress-bg);
   }
   :scope htmlpress-brand,
   :scope htmlpress-nav-toggle {
     display: none;
   }
+  :scope htmlpress-nav-toggle:defined {
+    display: block;
+    margin-right: 1rem;
+  }
+  :root:not(:has(#htmlpress-sidebar)) :scope htmlpress-nav-toggle {
+    display: none;
+  }
+  :scope htmlpress-links {
+    flex: 1;
+    align-self: stretch;
+  }
+  :scope htmlpress-search,
   :scope htmlpress-theme-toggle {
     margin-left: auto;
   }
   /* Search, when the layout has it, takes the push to the right edge */
-  :scope htmlpress-search {
-    margin-left: auto;
-  }
   :scope htmlpress-search ~ htmlpress-theme-toggle {
-    margin-left: 0;
+    margin-left: 0.25rem;
   }
 
   @media (max-width: 56rem) {
@@ -34,10 +41,13 @@
     }
     :scope htmlpress-brand {
       display: block;
-      flex-shrink: 0;
+      flex: 0 1 auto;
     }
     :scope htmlpress-nav-toggle:defined {
-      display: block;
+      margin-right: 0;
+    }
+    :scope htmlpress-links {
+      flex: 0 1 auto;
     }
   }
 }

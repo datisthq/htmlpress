@@ -1,7 +1,7 @@
 site: https://htmlpress.dev
 title: Htmlpress
 logo: /logo.svg
-description: "Turn a folder of HTML pages into a site: one layout, one theme, live reload, made for agents."
+description: HTML site generator
 links:
   - title: GitHub
     url: https://github.com/datisthq/htmlpress

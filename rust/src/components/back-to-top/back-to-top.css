@@ -3,10 +3,15 @@
     position: fixed;
     right: 1.5rem;
     bottom: 1.5rem;
-    z-index: 10;
+    z-index: 30;
+    transition:
+      opacity 0.2s,
+      translate 0.2s;
   }
   :scope:not([data-visible]) {
-    display: none;
+    opacity: 0;
+    translate: 0 0.5rem;
+    pointer-events: none;
   }
   a {
     display: grid;
@@ -16,12 +21,14 @@
     border: 1px solid var(--htmlpress-border);
     border-radius: 999px;
     background: var(--htmlpress-bg);
-    box-shadow: var(--htmlpress-shadow);
+    box-shadow:
+      0 4px 6px -1px oklch(0 0 0 / 0.1),
+      0 2px 4px -2px oklch(0 0 0 / 0.1);
     color: var(--htmlpress-text);
   }
   svg {
-    width: 1.125rem;
-    height: 1.125rem;
+    width: 1rem;
+    height: 1rem;
     fill: none;
     stroke: currentColor;
     stroke-width: 2;

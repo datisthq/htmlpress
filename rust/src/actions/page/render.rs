@@ -281,9 +281,12 @@ fn create_head(
         let _ = writeln!(head, "<link rel=\"icon\" href=\"{favicon}\">");
     }
     // Set before the stylesheet applies, so a stored dark theme never flashes light
+    // and a collapsed sidebar never flashes open
     head.push_str(
         "<script>try { const theme = localStorage.getItem(\"htmlpress-theme\"); \
-         if (theme) document.documentElement.dataset.theme = theme } catch {}</script>\n",
+         if (theme) document.documentElement.dataset.theme = theme; \
+         if (localStorage.getItem(\"htmlpress-nav\") === \"collapsed\") \
+         document.documentElement.dataset.navCollapsed = \"\" } catch {}</script>\n",
     );
     let _ = writeln!(
         head,
@@ -387,20 +390,30 @@ fn create_attributes(tag: &std::collections::BTreeMap<String, String>) -> String
 }
 
 fn create_brand(site: &Site, page: &Page) -> String {
-    let (title, link) = read_brand(site, page);
+    let (title, description, link) = read_brand(site, page);
     let logo = site.config.logo.as_ref().map_or(String::new(), |logo| {
         format!("<img src=\"{}\" alt=\"\">", escape_html(logo))
     });
     let (title, link) = (escape_html(title), escape_html(link));
+    let title = match description {
+        Some(text) => format!("<span>{title}<small>{}</small></span>", escape_html(text)),
+        None => title,
+    };
     format!("<a href=\"{link}\">{logo}{title}</a>")
 }
 
 // The open page's section may rename the brand and point it at its own home
-fn read_brand<'a>(site: &'a Site, page: &Page) -> (&'a str, &'a str) {
+fn read_brand<'a>(site: &'a Site, page: &Page) -> (&'a str, Option<&'a str>, &'a str) {
     let section = read_section(site, page);
     let title = section.and_then(|section| section.site_title.as_deref());
+    let description = section.and_then(|section| section.site_description.as_deref());
     let link = section.and_then(|section| section.site_link.as_deref());
-    (title.unwrap_or(&site.title), link.unwrap_or("/"))
+    let description = description.or(site.config.description.as_deref());
+    (
+        title.unwrap_or(&site.title),
+        description,
+        link.unwrap_or("/"),
+    )
 }
 
 fn read_section<'a>(site: &'a Site, page: &Page) -> Option<&'a Section> {
@@ -419,7 +432,7 @@ fn create_breadcrumbs(site: &Site, page: &Page) -> Option<String> {
         return None;
     }
     let mut html = String::from("<nav aria-label=\"Breadcrumbs\"><ol>");
-    let (title, link) = read_brand(site, page);
+    let (title, _, link) = read_brand(site, page);
     let _ = write!(
         html,
         "<li><a href=\"{}\">{}</a></li>",

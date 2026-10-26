@@ -155,5 +155,8 @@ in light, dark and phone width (**`change-verification`**).
   swings the hue, and every callout tint comes out pink
 - The theme toggle's dark set is written twice (media query and `[data-theme="dark"]`);
   change both
+- `htmlpress-nav-toggle` sets `data-nav-open` (the phone drawer) or, wider,
+  `data-nav-collapsed`, which the head script restores from storage before any CSS
+  applies; keep collapse rules inside `(width > 56rem)` or a phone inherits a hidden sidebar
 - Mobile drawer rules hang off `:has(htmlpress-nav-toggle:defined)`, which counts as a type plus a
   pseudo-class: an override needs the same `:has()` or it silently loses

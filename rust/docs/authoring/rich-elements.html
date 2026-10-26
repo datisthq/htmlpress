@@ -469,7 +469,10 @@ title: Htmlpress</code></pre>
   <dt><code>&lt;htmlpress-content&gt;</code></dt>
   <dd>The page's content.</dd>
   <dt><code>&lt;htmlpress-brand&gt;</code></dt>
-  <dd>The site title, after the <code>logo</code> when set, linking home.</dd>
+  <dd>
+    The site title with the <code>description</code> below it, after the
+    <code>logo</code> when set, linking home.
+  </dd>
   <dt><code>&lt;htmlpress-banner&gt;</code></dt>
   <dd>The <code>banner</code> from <code>htmlpress.yaml</code>.</dd>
   <dt><code>&lt;htmlpress-breadcrumbs&gt;</code></dt>
@@ -500,9 +503,9 @@ title: Htmlpress</code></pre>
   <dt><code>&lt;htmlpress-search&gt;</code></dt>
   <dd>
     Search over every page, with the script: a header button, also opened by
-    <kbd>⌘K</kbd> / <kbd>Ctrl K</kbd> or <kbd>/</kbd>. The build writes the index to
-    <code>_htmlpress/search.json</code>, split at each page's headings, and the dialog
-    loads it on first open; results are grouped by page and land on the heading.
+    <kbd>S</kbd>, <kbd>/</kbd> or <kbd>⌘K</kbd> / <kbd>Ctrl K</kbd>. The build writes the
+    index to <code>_htmlpress/search.json</code>, split at each page's headings, and the
+    dialog loads it on first open; results are grouped by page and land on the heading.
   </dd>
   <dt><code>&lt;htmlpress-toolbar&gt;</code></dt>
   <dd>
@@ -513,7 +516,9 @@ title: Htmlpress</code></pre>
   <dd>A "Created with Htmlpress" credit.</dd>
 </dl>
 <p>
-  An element with nothing to show is removed. <code>&lt;htmlpress-nav-toggle&gt;</code>,
+  An element with nothing to show is removed.
+  <code>&lt;htmlpress-nav-toggle&gt;</code> (the sidebar as a drawer on a phone; wider, it
+  folds the sidebar away and remembers that),
   <code>&lt;htmlpress-theme-toggle&gt;</code> and
   <code>&lt;htmlpress-back-to-top&gt;</code> are built by the script in the browser.
 </p>

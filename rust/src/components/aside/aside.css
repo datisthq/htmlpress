@@ -2,9 +2,9 @@
   :scope {
     display: block;
     position: sticky;
-    top: 6.5rem;
+    top: 5rem;
     align-self: start;
-    max-height: calc(100dvh - 8rem);
+    max-height: calc(100dvh - 5rem);
     overflow-y: auto;
     font-size: 0.875rem;
     line-height: 1.43;
