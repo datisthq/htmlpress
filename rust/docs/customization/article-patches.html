@@ -44,7 +44,10 @@
       <code>order</code>, <code>path</code>, <code>sidebar</code>, <code>toc</code>,
       <code>image</code>, <code>author</code> (one or a list), <code>date</code>,
       <code>tags</code>, <code>sourceUrl</code> and <code>sourceAction</code>. Any other
-      field is an error, and so is a file that does not exist.
+      field is an error, and so is a file that does not exist, one outside the project (by
+      <code>..</code> or a symlink), or a dot-file, <code>node_modules</code> or
+      <code>.htmlpress</code> file: whatever a patch names is published, so secrets such
+      as <code>.env</code> never can be.
     </p>
 
     <h2>Merge semantics</h2>

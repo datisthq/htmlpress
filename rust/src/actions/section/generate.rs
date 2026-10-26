@@ -4,9 +4,11 @@ use std::path::Path;
 use crate::actions::changelog::split::split_changelog;
 use crate::actions::date::format::format_date;
 use crate::actions::page::read::read_page;
+use crate::actions::path::contain::read_contained;
 use crate::models::config::{Config, Section, SectionKind};
 use crate::models::error::Error;
 use crate::models::page::Page;
+use crate::settings::CONFIG_FILE;
 
 /// The pages blog and changelog sections build themselves: a blog's index and one page per
 /// tag, a changelog's page per version and its index. A section's own index page wins over
@@ -142,8 +144,11 @@ fn create_changelog(
     prefix: &str,
 ) -> crate::Result<Vec<Page>> {
     let source = section.source.as_deref().unwrap_or_default();
-    let file = root.join(source);
-    let markdown = std::fs::read_to_string(&file).map_err(Error::io(&file))?;
+    let markdown =
+        read_contained(root, source, false).map_err(|message| Error::Config {
+            path: root.join(CONFIG_FILE),
+            message: format!("section \"{}\": source {message}", section.title),
+        })?;
     let releases = split_changelog(&markdown);
     let folder = prefix.trim_start_matches('/');
     let title = escape_html(&section.title);

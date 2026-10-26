@@ -2,6 +2,7 @@ use std::path::{Path, PathBuf};
 
 use serde::Deserialize;
 
+use crate::actions::path::contain::contain_path;
 use crate::models::error::Error;
 use crate::models::skill::Skill;
 use crate::settings::CONFIG_FILE;
@@ -23,7 +24,17 @@ pub fn load_skills(root: &Path, patterns: &[String]) -> crate::Result<Vec<Skill>
         let matches = glob::glob_with(&full, options)
             .map_err(|error| fail(format!("skills: \"{pattern}\": {error}")))?;
         for path in matches {
-            paths.push(path.map_err(|error| fail(format!("skills: {error}")))?);
+            let path = path.map_err(|error| fail(format!("skills: {error}")))?;
+            // A skill is published as is, so a pattern may not reach past the project,
+            // though dot-folders such as `.skills/` are allowed
+            let relative = path
+                .strip_prefix(root)
+                .unwrap_or(&path)
+                .to_string_lossy()
+                .into_owned();
+            let real = contain_path(root, &relative, true)
+                .map_err(|message| fail(format!("skills: {message}")))?;
+            paths.push(real);
         }
     }
     paths.sort();

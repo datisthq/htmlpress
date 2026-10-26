@@ -100,6 +100,14 @@ run from source: `cargo run --manifest-path rust/Cargo.toml -- build docs`.
    `load_skills` matched, and `_headers`; a shipped file of the same name wins, except
    `_headers`, which is extended
 
+## Reading files a page or the config names
+
+Anything read by a path from a page or `htmlpress.yaml` ends up published, so it goes
+through `path/contain` (`contain_path`, `read_contained`): canonicalised, under the
+project root after symlinks, never in a dot-entry (unless the caller allows it, as
+`skills` does for `.skills/`), `node_modules/` or `.htmlpress/`, UTF-8 and at most 4 MB.
+Never `root.join(path)` and read it directly.
+
 ## The dev server
 
 Both servers strip the base from each request (`strip_base`) and redirect `/` to it.

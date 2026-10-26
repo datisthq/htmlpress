@@ -18,6 +18,7 @@ mod actions {
         pub(crate) mod load;
     }
     pub(crate) mod path {
+        pub(crate) mod contain;
         pub(crate) mod select;
     }
     pub(crate) mod date {

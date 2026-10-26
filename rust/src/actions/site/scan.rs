@@ -6,6 +6,7 @@ use crate::actions::git::read::read_dates;
 use crate::actions::markdown::render::render_markdown;
 use crate::actions::page::patch::patch_page;
 use crate::actions::page::read::{is_layout_name, read_page};
+use crate::actions::path::contain::read_contained;
 use crate::actions::path::select::{read_bases, select_paths};
 use crate::actions::section::generate::generate_pages;
 use crate::actions::skill::load::load_skills;
@@ -128,8 +129,7 @@ fn read_patched_file(root: &Path, bases: &[String], file: &str) -> Result<Page, 
         (Some(stem), _) | (_, Some(stem)) => stem,
         _ => return Err("a patched file is an .html page or a .md file".to_owned()),
     };
-    let text = std::fs::read_to_string(root.join(file))
-        .map_err(|error| format!("cannot read it: {error}"))?;
+    let text = read_contained(root, file, false)?;
     let html = match file.ends_with(".md") {
         true => render_markdown(&text),
         false => text,

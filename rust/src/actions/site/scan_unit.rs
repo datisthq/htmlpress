@@ -251,3 +251,31 @@ fn publishes_a_patched_readme_and_patches_a_page() -> crate::Result<()> {
     assert!(matches!(scan_site(root), Err(Error::Config { .. })));
     Ok(())
 }
+
+#[test]
+fn refuses_a_patch_or_changelog_that_reads_outside_the_project() -> crate::Result<()> {
+    let outer = tempfile::tempdir().map_err(Error::io("tempdir"))?;
+    write_file(outer.path(), "secret.md", "# Secret")?;
+    let root = outer.path().join("project");
+    write_file(&root, "index.html", "<h1>Home</h1>")?;
+    write_file(&root, ".env", "TOKEN=1")?;
+    write_file(&root, ".secrets/notes.md", "# Token")?;
+    for config in [
+        "patches:\n  - file: ../secret.md\n    article:\n      title: X\n",
+        "patches:\n  - file: .secrets/notes.md\n    article:\n      title: X\n",
+        "sections:\n  - title: Log\n    type: changelog\n    prefix: /log/\n    source: ../secret.md\n",
+        "sections:\n  - title: Log\n    type: changelog\n    prefix: /log/\n    source: .env\n",
+        "skills: ../*.md\n",
+    ] {
+        write_file(&root, CONFIG_FILE, config)?;
+        let error = scan_site(&root)
+            .err()
+            .map(|error| error.to_string())
+            .unwrap_or_default();
+        assert!(
+            error.contains("inside the project") || error.contains("never published"),
+            "{config}: {error}"
+        );
+    }
+    Ok(())
+}
