@@ -49,7 +49,8 @@ fn check_icons(config: &Config) -> Option<String> {
     let links = config.links.iter().map(|link| (&link.title, &link.icon));
     let sections =
         (config.sections.iter()).map(|section| (&section.title, &section.icon));
-    for (title, icon) in links.chain(sections) {
+    let patches = (config.patches.iter()).map(|patch| (&patch.file, &patch.article.icon));
+    for (title, icon) in links.chain(sections).chain(patches) {
         if let Some(icon) = icon
             && render_icon(icon).is_none()
         {

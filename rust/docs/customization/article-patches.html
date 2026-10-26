@@ -10,38 +10,47 @@
   </head>
   <body>
     <h1>Article Patches</h1>
-    <htmlpress-callout label="Coming soon"
-      ><p>
-        A <code>patches</code> key in <code>htmlpress.yaml</code> will set a page's title,
-        order or description from config, for an HTML file that is also read elsewhere and
-        should stay free of htmlpress-only metas. Today a page's metadata lives only in
-        its own <code>&lt;head&gt;</code>.
-      </p></htmlpress-callout
-    >
     <p>
-      Sometimes a file doubles as both site content and a file that's read elsewhere, a
-      shared page in another project. Adding htmlpress-only
-      <code>&lt;meta&gt;</code> tags to it pollutes the other view.
+      Sometimes a file doubles as site content and a file read elsewhere: a
+      <code>README.md</code> GitHub renders, or HTML another project shares. A patch sets
+      its page metadata from <code>htmlpress.yaml</code>, so the file stays as it is, the
+      way Livemark's patches set an article's frontmatter.
     </p>
 
     <h2>Basic usage</h2>
+    <pre><code>patches:
+  - file: README.md
+    article:
+      title: Introduction
+      description: Set up your first project.
+      path: /introduction/
+      order: 1
+  - file: guides/shared.html
+    article:
+      sidebar: false</code></pre>
     <p>
-      Each patch will name a file by its path and the metadata to apply, as if the
-      matching
-      <code>&lt;title&gt;</code> and <code>&lt;meta&gt;</code> tags were in its head.
+      A patched <code>.md</code> file becomes a page: its Markdown (with GitHub's tables,
+      task lists, strikethrough and footnotes) is rendered to HTML and built beside it as
+      an <code>.html</code> page, here moved to <code>/introduction/</code>. A patched
+      <code>.html</code> file must be a page already.
     </p>
 
     <h2>Fields</h2>
     <p>
-      A patch will take a <code>file</code>, the project-relative path, and the page
-      fields to set: those a page's <a href="/authoring/frontmatter.html">head</a> sets
-      today, such as the title, description, order and layout.
+      <code>file</code> is the project-relative path; <code>article</code> takes any of
+      the fields a page's <a href="/authoring/frontmatter.html">head</a> sets:
+      <code>title</code>, <code>label</code>, <code>description</code>, <code>icon</code>,
+      <code>order</code>, <code>path</code>, <code>sidebar</code>, <code>toc</code>,
+      <code>image</code>, <code>author</code> (one or a list), <code>date</code>,
+      <code>tags</code>, <code>sourceUrl</code> and <code>sourceAction</code>. Any other
+      field is an error, and so is a file that does not exist.
     </p>
 
     <h2>Merge semantics</h2>
     <p>
-      A patch's fields will apply on top of the page's own head; anything a patch leaves
-      out keeps its normal value.
+      A patch's fields apply on top of the page's own head; anything a patch leaves out
+      keeps its normal value. Relative links inside a moved file are not rewritten, so a
+      README's <code>docs/guide.md</code> link still points where it did.
     </p>
 
     <h2>What you can't patch</h2>

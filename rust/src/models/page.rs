@@ -12,6 +12,17 @@ pub struct Page {
     pub url: String,
     /// `<title>`, else the first `<h1>`, else the file name.
     pub title: String,
+    /// `<meta name="label">`: a shorter title for the navigation.
+    pub label: Option<String>,
+    /// `<meta name="icon">`: a built-in icon before the page's navigation entry.
+    pub icon: Option<String>,
+    /// `<meta name="sidebar" content="false">` leaves the page out of the navigation and
+    /// the previous and next links; it is still built.
+    pub sidebar: bool,
+    /// `<meta name="source-url">`: where "Edit this page" leads instead of `edit`'s URL.
+    pub source_url: Option<String>,
+    /// `<meta name="source-action" content="view">` labels that link "View source".
+    pub source_action: SourceAction,
     /// `<meta name="description">`.
     pub description: Option<String>,
     /// `<meta name="date">`: when the page was published, `YYYY-MM-DD`.
@@ -35,6 +46,15 @@ pub struct Page {
     pub content: String,
     /// The `<h2>` and `<h3>` headings, in order, for the page's table of contents.
     pub toc: Vec<Heading>,
+}
+
+/// What the page's source link offers.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Serialize, serde::Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum SourceAction {
+    #[default]
+    Edit,
+    View,
 }
 
 /// One heading of a page, linked from its table of contents.

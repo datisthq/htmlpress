@@ -3,11 +3,14 @@ use std::path::Path;
 
 use crate::actions::config::load::load_config;
 use crate::actions::git::read::read_dates;
+use crate::actions::markdown::render::render_markdown;
+use crate::actions::page::patch::patch_page;
 use crate::actions::page::read::{is_layout_name, read_page};
 use crate::actions::path::select::{read_bases, select_paths};
 use crate::actions::section::generate::generate_pages;
 use crate::actions::skill::load::load_skills;
 use crate::models::asset::{COMPONENT_PREFIX, read_component_path};
+use crate::models::config::Config;
 use crate::models::error::Error;
 use crate::models::page::Page;
 use crate::models::site::Site;
@@ -55,6 +58,8 @@ pub fn scan_site(root: &Path) -> crate::Result<Site> {
         });
     }
     let files = selection.files;
+    apply_patches(root, &config, &mut pages)?;
+    check_urls(&pages)?;
     // Before the generated pages join: a changelog's versions share its source file, whose
     // last change says nothing about when one version was written
     let dates = read_dates(root);
@@ -94,6 +99,64 @@ pub fn scan_site(root: &Path) -> crate::Result<Site> {
         assets,
         skills,
     })
+}
+
+// A patch names a page by its source; a patched `.md` file, not a page until now, is
+// rendered from Markdown and built beside where it sits, as an `.html` page
+fn apply_patches(
+    root: &Path,
+    config: &Config,
+    pages: &mut Vec<Page>,
+) -> crate::Result<()> {
+    let bases = read_bases(config);
+    for patch in &config.patches {
+        let fail = |message: String| Error::Config {
+            path: root.join(CONFIG_FILE),
+            message: format!("patch \"{}\": {message}", patch.file),
+        };
+        let page = match pages.iter().position(|page| page.source == patch.file) {
+            Some(index) => pages.remove(index),
+            None => read_patched_file(root, &bases, &patch.file).map_err(fail)?,
+        };
+        pages.push(patch_page(page, &patch.article).map_err(fail)?);
+    }
+    Ok(())
+}
+
+fn read_patched_file(root: &Path, bases: &[String], file: &str) -> Result<Page, String> {
+    let stem = match (file.strip_suffix(".md"), file.strip_suffix(".html")) {
+        (Some(stem), _) | (_, Some(stem)) => stem,
+        _ => return Err("a patched file is an .html page or a .md file".to_owned()),
+    };
+    let text = std::fs::read_to_string(root.join(file))
+        .map_err(|error| format!("cannot read it: {error}"))?;
+    let html = match file.ends_with(".md") {
+        true => render_markdown(&text),
+        false => text,
+    };
+    let output = (bases.iter())
+        .filter(|base| !base.is_empty())
+        .find_map(|base| stem.strip_prefix(&format!("{base}/")))
+        .unwrap_or(stem);
+    let page =
+        read_page(&format!("{output}.html"), &html).map_err(|error| error.to_string())?;
+    Ok(Page {
+        source: file.to_owned(),
+        ..page
+    })
+}
+
+// Two pages on one URL would overwrite each other's output without a word
+fn check_urls(pages: &[Page]) -> crate::Result<()> {
+    for (index, page) in pages.iter().enumerate() {
+        if let Some(other) = pages[..index].iter().find(|other| other.url == page.url) {
+            return Err(Error::page(&page.source)(format!(
+                "builds to {} like {}; give one a different path",
+                page.url, other.source
+            )));
+        }
+    }
+    Ok(())
 }
 
 // Only `layout.html`, the files directly in `styles/`, `scripts/`, `components/` and

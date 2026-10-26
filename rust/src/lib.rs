@@ -28,8 +28,12 @@ mod actions {
     pub(crate) mod package {
         pub(crate) mod convert;
     }
+    pub(crate) mod markdown {
+        pub(crate) mod render;
+    }
     pub(crate) mod page {
         pub(crate) mod convert;
+        pub(crate) mod patch;
         pub(crate) mod prefix;
         pub(crate) mod read;
         pub(crate) mod render;
@@ -84,10 +88,11 @@ pub use actions::skill::load::load_skills;
 pub use models::asset::{Asset, AssetStatus};
 pub use models::build::{BuildOptions, BuildReport};
 pub use models::config::{
-    Config, ContentSignals, Head, Link, Position, Section, SectionKind,
+    Config, ContentSignals, Head, Link, Patch, PatchArticle, Position, Section,
+    SectionKind,
 };
 pub use models::error::Error;
-pub use models::page::{Heading, Page};
+pub use models::page::{Heading, Page, SourceAction};
 pub use models::site::Site;
 pub use models::skill::Skill;
 pub use program::create_program;

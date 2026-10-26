@@ -1,5 +1,4 @@
-use pulldown_cmark::{Options, Parser, html};
-
+use crate::actions::markdown::render::render_markdown;
 use crate::actions::page::read::read_date;
 
 /// One version of a changelog.
@@ -47,11 +46,7 @@ fn create_release(heading: &str, body: &[&str]) -> Option<Release> {
     let date = text
         .split(|char: char| !(char.is_ascii_digit() || char == '-'))
         .find_map(read_date);
-    let mut html = String::new();
-    html::push_html(
-        &mut html,
-        Parser::new_ext(&body.join("\n"), Options::ENABLE_TABLES),
-    );
+    let mut html = render_markdown(&body.join("\n"));
     for level in 2..=6 {
         html = html
             .replace(&format!("<h{level}"), &format!("<h{}", level - 1))

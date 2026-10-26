@@ -16,6 +16,7 @@ use crate::models::asset::{create_component_path, read_component_path};
 use crate::models::config::{Link, Position, Section, SectionKind};
 use crate::models::error::Error;
 use crate::models::page::Page;
+use crate::models::page::SourceAction;
 use crate::models::site::Site;
 use crate::settings::{ASSETS_DIR, NOT_FOUND_PAGE, RELOAD_PATH};
 
@@ -466,7 +467,13 @@ fn create_nav(site: &Site, page: &Page) -> String {
     html.push_str(&create_section_list(site, page));
     for (folder, items) in groups {
         let list = create_list(&items, page);
+        let index_only = |folder: &str| {
+            let index = format!("{prefix}{folder}/index.html");
+            items.len() == 1 && items[0].path == index
+        };
         match folder {
+            // A folder holding nothing but its index reads as one page, not a group of one
+            Some(folder) if index_only(folder) => html.push_str(&list),
             Some(folder) => {
                 let index = format!("{prefix}{folder}/index.html");
                 let title = site
@@ -510,7 +517,7 @@ fn list_pages<'a>(site: &'a Site, page: &Page) -> Vec<&'a Page> {
     let sections = &site.config.sections;
     let section = find_section(sections, &page.url);
     let pages: Vec<&Page> = (site.pages.iter())
-        .filter(|item| item.path != NOT_FOUND_PAGE)
+        .filter(|item| item.path != NOT_FOUND_PAGE && item.sidebar)
         .filter(|item| find_section(sections, &item.url) == section)
         .collect();
     let Some(section) = section.and_then(|index| sections.get(index)) else {
@@ -536,8 +543,12 @@ fn create_list(items: &[&Page], page: &Page) -> String {
             false => "",
         };
         let url = escape_html(&item.url);
-        let title = escape_html(&item.title);
-        let _ = write!(html, "<li><a href=\"{url}\"{current}>{title}</a></li>");
+        let title = escape_html(item.label.as_ref().unwrap_or(&item.title));
+        let icon = create_icon(item.icon.as_deref());
+        let _ = write!(
+            html,
+            "<li><a href=\"{url}\"{current}>{icon}{title}</a></li>"
+        );
     }
     html.push_str("</ul>");
     html
@@ -752,12 +763,17 @@ fn create_toolbar(page: &Page) -> Option<String> {
 }
 
 fn create_edit(site: &Site, page: &Page) -> Option<String> {
-    // A page a section built itself has no source of its own to edit
-    if page.source.is_empty() {
-        return None;
-    }
-    let url = escape_html(&format!("{}{}", site.config.edit.as_ref()?, page.source));
-    Some(format!("<a href=\"{url}\">Edit this page</a>"))
+    let label = match page.source_action {
+        SourceAction::Edit => "Edit this page",
+        SourceAction::View => "View source",
+    };
+    // A page's own source link wins; a page a section built itself has no source to edit
+    let url = match &page.source_url {
+        Some(url) => url.clone(),
+        None if page.source.is_empty() => return None,
+        None => format!("{}{}", site.config.edit.as_ref()?, page.source),
+    };
+    Some(format!("<a href=\"{}\">{label}</a>", escape_html(&url)))
 }
 
 // Names were checked when the config loaded, so an unknown one cannot reach here

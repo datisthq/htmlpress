@@ -7,7 +7,7 @@ use lol_html::{RewriteStrSettings, doctype, element, rewrite_str, text};
 use crate::actions::icon::render::{list_icons, render_icon};
 use crate::actions::package::convert::{MANAGERS, convert_command};
 use crate::models::error::Error;
-use crate::models::page::{Heading, Page};
+use crate::models::page::{Heading, Page, SourceAction};
 
 /// Split one HTML source into a [`Page`]. `path` is relative to the project root. A full
 /// document and a bare fragment both work: the wrappers are dropped, the content kept.
@@ -24,16 +24,29 @@ pub fn read_page(path: &str, html: &str) -> crate::Result<Page> {
         true => read_head(html).map_err(Error::page(path))?,
         false => String::new(),
     };
+    let output = match &facts.route {
+        Some(route) => create_route_path(route).map_err(Error::page(path))?,
+        None => path.to_owned(),
+    };
+    let toc = match facts.toc {
+        true => toc,
+        false => vec![],
+    };
     let title = [facts.title, facts.heading]
         .into_iter()
         .map(|text| decode_entities(text.trim()))
         .find(|text| !text.is_empty())
         .unwrap_or_else(|| read_stem(path));
     Ok(Page {
-        path: path.to_owned(),
+        url: create_url(&output),
+        path: output,
         source: path.to_owned(),
-        url: create_url(path),
         title,
+        label: facts.label,
+        icon: facts.icon,
+        sidebar: facts.sidebar,
+        source_url: facts.source_url,
+        source_action: facts.source_action,
         description: facts.description,
         date: facts.date,
         authors: facts.authors,
@@ -53,6 +66,13 @@ struct Facts {
     title: String,
     heading: String,
     description: Option<String>,
+    label: Option<String>,
+    icon: Option<String>,
+    route: Option<String>,
+    sidebar: bool,
+    toc: bool,
+    source_url: Option<String>,
+    source_action: SourceAction,
     date: Option<String>,
     authors: Vec<String>,
     tags: Vec<String>,
@@ -65,7 +85,11 @@ struct Facts {
 }
 
 fn read_facts(html: &str) -> Result<Facts, String> {
-    let facts = RefCell::new(Facts::default());
+    let facts = RefCell::new(Facts {
+        sidebar: true,
+        toc: true,
+        ..Facts::default()
+    });
     let headings = Cell::new(0);
     let mut settings = RewriteStrSettings::new()
         .append_element_content_handler(element!("head", |_| {
@@ -149,6 +173,48 @@ fn read_facts(html: &str) -> Result<Facts, String> {
                 format!("<meta name=\"order\"> must be an integer, got \"{order}\"")
             })?;
             facts.borrow_mut().order = Some(order);
+            Ok(())
+        }))
+        .append_element_content_handler(element!("meta[name='label']", |el| {
+            facts.borrow_mut().label = read_content_attribute(el);
+            Ok(())
+        }))
+        .append_element_content_handler(element!("meta[name='icon']", |el| {
+            let icon = el.get_attribute("content").unwrap_or_default();
+            if render_icon(icon.trim()).is_none() {
+                return Err(format!("<meta name=\"icon\">: no built-in icon \"{icon}\"").into());
+            }
+            facts.borrow_mut().icon = Some(icon.trim().to_owned());
+            Ok(())
+        }))
+        .append_element_content_handler(element!("meta[name='path']", |el| {
+            facts.borrow_mut().route = read_content_attribute(el);
+            Ok(())
+        }))
+        .append_element_content_handler(element!("meta[name='sidebar']", |el| {
+            facts.borrow_mut().sidebar = read_flag(el, "sidebar")?;
+            Ok(())
+        }))
+        .append_element_content_handler(element!("meta[name='toc']", |el| {
+            facts.borrow_mut().toc = read_flag(el, "toc")?;
+            Ok(())
+        }))
+        .append_element_content_handler(element!("meta[name='source-url']", |el| {
+            facts.borrow_mut().source_url = read_content_attribute(el);
+            Ok(())
+        }))
+        .append_element_content_handler(element!("meta[name='source-action']", |el| {
+            let action = el.get_attribute("content").unwrap_or_default();
+            facts.borrow_mut().source_action = match action.trim() {
+                "edit" => SourceAction::Edit,
+                "view" => SourceAction::View,
+                _ => {
+                    return Err(format!(
+                        "<meta name=\"source-action\"> must be edit or view, got \"{action}\""
+                    )
+                    .into());
+                }
+            };
             Ok(())
         }))
         .append_element_content_handler(element!("meta[name='layout']", |el| {
@@ -320,6 +386,13 @@ const OWNED_BY_LAYOUT: &[&str] = &[
     "meta[name='image']",
     "meta[name='order']",
     "meta[name='layout']",
+    "meta[name='label']",
+    "meta[name='icon']",
+    "meta[name='path']",
+    "meta[name='sidebar']",
+    "meta[name='toc']",
+    "meta[name='source-url']",
+    "meta[name='source-action']",
 ];
 
 fn read_head(html: &str) -> Result<String, String> {
@@ -387,6 +460,44 @@ pub(crate) fn read_date(text: &str) -> Option<String> {
         if year.len() == 4 && month.len() == 2 && day.len() == 2
             && parts.iter().all(|part| part.chars().all(|char| char.is_ascii_digit())));
     valid.then(|| date.to_owned())
+}
+
+fn read_content_attribute(el: &lol_html::html_content::Element) -> Option<String> {
+    let content = el.get_attribute("content")?;
+    let content = content.trim();
+    (!content.is_empty()).then(|| content.to_owned())
+}
+
+fn read_flag(el: &lol_html::html_content::Element, name: &str) -> Result<bool, String> {
+    match el.get_attribute("content").unwrap_or_default().trim() {
+        "true" => Ok(true),
+        "false" => Ok(false),
+        other => Err(format!(
+            "<meta name=\"{name}\"> must be true or false, got \"{other}\""
+        )),
+    }
+}
+
+/// The output path a `path` override builds a page to: `/intro/` → `intro/index.html`,
+/// `/intro.html` → `intro.html`. Anything else is an error, since a URL that is neither a
+/// folder nor an `.html` file could not be served as the page.
+pub(crate) fn create_route_path(route: &str) -> Result<String, String> {
+    let Some(relative) = route.strip_prefix('/') else {
+        return Err(format!("path must start with \"/\", got \"{route}\""));
+    };
+    if relative.split('/').any(|part| part == "..") {
+        return Err(format!("path must stay inside the site, got \"{route}\""));
+    }
+    match (
+        relative.is_empty() || relative.ends_with('/'),
+        relative.ends_with(".html"),
+    ) {
+        (true, _) => Ok(format!("{relative}index.html")),
+        (false, true) => Ok(relative.to_owned()),
+        (false, false) => Err(format!(
+            "path must end with \"/\" or \".html\", got \"{route}\""
+        )),
+    }
 }
 
 pub(crate) fn create_url(path: &str) -> String {

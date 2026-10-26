@@ -425,3 +425,33 @@ fn puts_the_byline_under_the_title() -> crate::Result<()> {
     assert!(!home.contains("<htmlpress-byline>"));
     Ok(())
 }
+
+#[test]
+fn uses_labels_icons_and_hides_pages_from_the_navigation() -> crate::Result<()> {
+    let mut site = create_site()?;
+    site.config.edit = Some("https://x.dev/edit/".to_owned());
+    site.pages[1].label = Some("Short".to_owned());
+    site.pages[1].icon = Some("rocket".to_owned());
+    site.pages[3].sidebar = false;
+    site.pages[3].source_url = Some("https://x.dev/cli".to_owned());
+    site.pages[3].source_action = crate::models::page::SourceAction::View;
+    let html = render_page(&site, &site.pages[0], false)?;
+    assert!(html.contains(r#"<a href="/guide.html"><svg viewBox"#));
+    assert!(html.contains("</svg>Short</a>"));
+    assert!(!html.contains(r#"href="/api/cli.html""#));
+    let cli = render_page(&site, &site.pages[3], false)?;
+    assert!(cli.contains(r#"<a href="https://x.dev/cli">View source</a>"#));
+    Ok(())
+}
+
+#[test]
+fn lists_a_folder_with_only_its_index_as_one_page() -> crate::Result<()> {
+    let mut site = create_site()?;
+    site.pages
+        .push(read_page("start/index.html", "<title>Start</title>")?);
+    let html = render_page(&site, &site.pages[0], false)?;
+    assert!(!html.contains("<summary>Start</summary>"));
+    assert!(html.contains(r#"<li><a href="/start/">Start</a></li>"#));
+    assert!(html.contains("<summary>API</summary>"));
+    Ok(())
+}

@@ -70,7 +70,9 @@ run from source: `cargo run --manifest-path rust/Cargo.toml -- build docs`.
    built from the site. Inserted markup is never re-parsed, so a page's own `htmlpress-*` tags
    are left to the browser; an element with nothing to show is removed. With `sections`,
    `find_section` (longest prefix) picks the open page's section, and the nav, pager,
-   brand and breadcrumbs use only its pages and its `site*` overrides. `scan_site` adds the pages blog and
+   brand and breadcrumbs use only its pages and its `site*` overrides. `scan_site` applies `patches` first (`page/patch`; a patched
+   `.md` file is rendered by `markdown/render` into a new page) and refuses two pages on
+   one URL, then adds the pages blog and
    changelog sections build (`section/generate`: a blog's index and tag pages, a page per
    `changelog/split` release) after reading git's dates (`git/read`, one `git log`), so a
    generated page never borrows its source file's date. With `base`, a last

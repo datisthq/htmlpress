@@ -93,6 +93,11 @@ Put block content (`<p>`, `<h3>`, `<pre>`) inside a component, not bare text.
 - `<meta name="image" content="/cover.png">` in a page is its social preview image;
   `<meta name="date" content="YYYY-MM-DD">`, `<meta name="author">` (repeatable) and
   `<meta name="keywords" content="a, b">` date, sign and tag it (a blog post's metadata).
+- `<meta name="label">` (short nav name), `<meta name="icon">`, `<meta name="path"
+content="/start/">` (another URL), `<meta name="sidebar" content="false">` (built, not
+  listed), `<meta name="toc" content="false">`, `<meta name="source-url">` and
+  `<meta name="source-action" content="view">` (the source link). `patches` in the config
+  sets any of these for a file, and publishes a `.md` file such as `README.md` as a page.
 - A build writes `robots.txt`, with `site` a `sitemap.xml`, and for agents a Markdown copy
   of each page (`a.html` → `a.md`), `llms.txt`, the skills under `.well-known/agent-skills/`
   and `_headers`; a project file of the same name wins (`_headers` is extended instead).

@@ -2,6 +2,8 @@ use std::collections::BTreeMap;
 
 use serde::{Deserialize, Serialize};
 
+use crate::models::page::SourceAction;
+
 /// The project's `htmlpress.yaml`, shaped like Livemark's config. Every key is
 /// optional.
 #[derive(Debug, Clone, Default, PartialEq, Deserialize, Serialize)]
@@ -38,6 +40,9 @@ pub struct Config {
     /// Globs of files left out of the build entirely, pages or not.
     #[serde(deserialize_with = "read_patterns")]
     pub exclude: Vec<String>,
+    /// Page metadata set from the config, for files whose `<head>` should not carry it,
+    /// such as a `README.md` published as a page.
+    pub patches: Vec<Patch>,
     /// Globs of `SKILL.md` files, relative to the project, published for agents under
     /// `.well-known/agent-skills/`; one pattern or a list.
     #[serde(deserialize_with = "read_patterns")]
@@ -78,6 +83,39 @@ impl Config {
         let site = self.site.as_deref()?.trim_end_matches('/');
         Some(format!("{site}{}", self.read_base()))
     }
+}
+
+/// One `patches` entry: a page's metadata set from the config, as Livemark's patches set
+/// an article's frontmatter.
+#[derive(Debug, Clone, Default, PartialEq, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct Patch {
+    /// The `.html` page, or a `.md` file to publish as one, relative to the project.
+    pub file: String,
+    pub article: PatchArticle,
+}
+
+/// The page fields a [`Patch`] sets, each replacing what the page's own head says.
+#[derive(Debug, Clone, Default, PartialEq, Deserialize, Serialize)]
+#[serde(default, deny_unknown_fields, rename_all = "camelCase")]
+pub struct PatchArticle {
+    pub title: Option<String>,
+    pub label: Option<String>,
+    pub description: Option<String>,
+    pub icon: Option<String>,
+    pub order: Option<i64>,
+    /// Where the page is served, such as `/introduction/`.
+    pub path: Option<String>,
+    pub sidebar: Option<bool>,
+    pub toc: Option<bool>,
+    pub image: Option<String>,
+    /// One author or a list.
+    #[serde(deserialize_with = "read_patterns")]
+    pub author: Vec<String>,
+    pub date: Option<String>,
+    pub tags: Option<Vec<String>>,
+    pub source_url: Option<String>,
+    pub source_action: Option<SourceAction>,
 }
 
 /// One link from the config.

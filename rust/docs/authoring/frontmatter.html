@@ -85,12 +85,6 @@
   from <code>git log</code>, when the project is in a git repository; the same date is the
   page's <code>&lt;lastmod&gt;</code> in <code>sitemap.xml</code>.
 </p>
-<htmlpress-callout label="Coming soon">
-  <p>
-    A short navigation label and an icon for a page will come as further
-    <code>&lt;meta&gt;</code> tags.
-  </p>
-</htmlpress-callout>
 
 <h2>Sidebar settings</h2>
 <p>How the page shows up in the navigation.</p>
@@ -118,14 +112,43 @@
         <a href="/customization/overriding-escaping.html">Overriding and Escaping</a>.
       </td>
     </tr>
+    <tr>
+      <td><code>&lt;meta name="label"&gt;</code></td>
+      <td>the title</td>
+      <td>A shorter name for the page's navigation entry.</td>
+    </tr>
+    <tr>
+      <td><code>&lt;meta name="icon"&gt;</code></td>
+      <td>none</td>
+      <td>
+        A <a href="/authoring/rich-elements.html#icons">built-in icon</a> before the
+        navigation entry; an unknown name fails the build.
+      </td>
+    </tr>
+    <tr>
+      <td><code>&lt;meta name="sidebar" content="false"&gt;</code></td>
+      <td><code>true</code></td>
+      <td>
+        Leaves the page out of the navigation and the previous and next links; it is still
+        built and reachable by its URL.
+      </td>
+    </tr>
+    <tr>
+      <td><code>&lt;meta name="toc" content="false"&gt;</code></td>
+      <td><code>true</code></td>
+      <td>Turns off the page's table of contents.</td>
+    </tr>
+    <tr>
+      <td><code>&lt;meta name="source-url"&gt;</code></td>
+      <td><code>edit</code> followed by the page's path</td>
+      <td>
+        Where the page's source link leads, for a page whose source lives elsewhere;
+        <code>&lt;meta name="source-action" content="view"&gt;</code> labels it "View
+        source" instead of "Edit this page".
+      </td>
+    </tr>
   </tbody>
 </table>
-<htmlpress-callout label="Coming soon">
-  <p>
-    Hiding a page from the navigation while keeping it reachable, and turning off a page's
-    table of contents, will come as <code>&lt;meta&gt;</code> tags.
-  </p>
-</htmlpress-callout>
 
 <h3>Ordering rules</h3>
 <ul>
@@ -148,17 +171,18 @@
   served at its folder: <code>guides/index.html</code> at <code>/guides/</code>. See
   <a href="/authoring/links.html">Links</a>.
 </p>
-<htmlpress-callout label="Coming soon">
-  <p>Overriding a page's URL from its head, independent of its file path.</p>
-</htmlpress-callout>
+<p>
+  <code>&lt;meta name="path" content="/start/"&gt;</code> serves the page at another URL,
+  independent of its file path: a path ending in <code>/</code> is built to that folder's
+  <code>index.html</code>, one ending in <code>.html</code> to that file. Two pages on one
+  URL fail the build.
+</p>
 
 <h2>Overriding without editing</h2>
-<htmlpress-callout label="Coming soon">
-  <p>
-    Setting a page's metadata from <code>htmlpress.yaml</code> without touching the file;
-    see <a href="/customization/article-patches.html">Article Patches</a>.
-  </p>
-</htmlpress-callout>
+<p>
+  Every field here can also be set from <code>htmlpress.yaml</code>, without touching the
+  file; see <a href="/customization/article-patches.html">Article Patches</a>.
+</p>
 
 <h2>See also</h2>
 <ul>

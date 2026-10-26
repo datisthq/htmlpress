@@ -186,3 +186,35 @@ fn reads_the_date_authors_and_tags() -> crate::Result<()> {
     assert!(read_page("a.html", "<meta name=\"date\" content=\"Oct 1\">").is_err());
     Ok(())
 }
+
+#[test]
+fn reads_the_navigation_and_source_metas() -> crate::Result<()> {
+    let page = read_page(
+        "guides/long-name.html",
+        "<html><head><title>A long title</title><meta name=\"label\" content=\"Short\">\
+         <meta name=\"icon\" content=\"rocket\"><meta name=\"path\" content=\"/start/\">\
+         <meta name=\"sidebar\" content=\"false\"><meta name=\"toc\" content=\"false\">\
+         <meta name=\"source-url\" content=\"https://x.dev/src\">\
+         <meta name=\"source-action\" content=\"view\"></head>\
+         <body><h2>Part</h2></body></html>",
+    )?;
+    assert_eq!(page.label.as_deref(), Some("Short"));
+    assert_eq!(page.icon.as_deref(), Some("rocket"));
+    assert_eq!(
+        (page.path.as_str(), page.url.as_str()),
+        ("start/index.html", "/start/")
+    );
+    assert!(!page.sidebar && page.toc.is_empty());
+    assert_eq!(page.source_url.as_deref(), Some("https://x.dev/src"));
+    assert_eq!(page.source_action, SourceAction::View);
+    assert!(page.head.is_empty(), "{}", page.head);
+    for bad in [
+        "<meta name=\"icon\" content=\"nope\">",
+        "<meta name=\"path\" content=\"start\">",
+        "<meta name=\"sidebar\" content=\"no\">",
+        "<meta name=\"source-action\" content=\"open\">",
+    ] {
+        assert!(read_page("a.html", bad).is_err(), "{bad}");
+    }
+    Ok(())
+}

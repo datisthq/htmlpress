@@ -207,3 +207,47 @@ fn skips_a_base_that_links_outside_the_project() -> crate::Result<()> {
     assert!(site.pages.is_empty());
     Ok(())
 }
+
+#[test]
+fn publishes_a_patched_readme_and_patches_a_page() -> crate::Result<()> {
+    let root = tempfile::tempdir().map_err(Error::io("tempdir"))?;
+    let root = root.path();
+    write_file(root, "index.html", "<h1>Home</h1>")?;
+    write_file(root, "guide.html", "<title>Guide</title><h1>Guide</h1>")?;
+    write_file(
+        root,
+        "README.md",
+        "# Readme\n\nSome **text**.\n\n## Setup\n\n| a |\n|---|\n| b |\n",
+    )?;
+    write_file(
+        root,
+        CONFIG_FILE,
+        "patches:\n  - file: README.md\n    article:\n      title: Introduction\n      path: /introduction/\n      order: 1\n  - file: guide.html\n    article:\n      sidebar: false\n",
+    )?;
+    let site = scan_site(root)?;
+    let intro = site.pages.iter().find(|page| page.url == "/introduction/");
+    let intro = intro.ok_or_else(|| Error::Usage("no introduction".to_owned()))?;
+    assert_eq!(intro.title, "Introduction");
+    assert_eq!(intro.source, "README.md");
+    assert!(
+        intro.content.contains("<strong>text</strong>")
+            && intro.content.contains("<table>")
+    );
+    assert_eq!(intro.toc.len(), 1);
+    let guide = site.pages.iter().find(|page| page.source == "guide.html");
+    assert!(guide.is_some_and(|page| !page.sidebar));
+
+    write_file(
+        root,
+        CONFIG_FILE,
+        "patches:\n  - file: guide.html\n    article:\n      path: /\n",
+    )?;
+    assert!(scan_site(root).is_err());
+    write_file(
+        root,
+        CONFIG_FILE,
+        "patches:\n  - file: missing.md\n    article:\n      title: X\n",
+    )?;
+    assert!(matches!(scan_site(root), Err(Error::Config { .. })));
+    Ok(())
+}
