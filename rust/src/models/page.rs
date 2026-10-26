@@ -29,6 +29,9 @@ pub struct Page {
     /// `<meta name="sidebar" content="false">` leaves the page out of the navigation and
     /// the previous and next links; it is still built.
     pub sidebar: bool,
+    /// `<meta name="breadcrumbs">`: shows or hides the folder trail above the content,
+    /// overriding the config's `breadcrumbs`.
+    pub breadcrumbs: Option<bool>,
     /// `<meta name="source-url">`: where "Edit this page" leads instead of `edit`'s URL.
     pub source_url: Option<String>,
     /// `<meta name="source-action" content="view">` labels that link "View source".

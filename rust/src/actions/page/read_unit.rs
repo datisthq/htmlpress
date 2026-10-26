@@ -194,6 +194,7 @@ fn reads_the_navigation_and_source_metas() -> crate::Result<()> {
         "<html><head><title>A long title</title><meta name=\"label\" content=\"Short\">\
          <meta name=\"icon\" content=\"rocket\"><meta name=\"path\" content=\"/start/\">\
          <meta name=\"sidebar\" content=\"false\"><meta name=\"toc\" content=\"false\">\
+         <meta name=\"breadcrumbs\" content=\"false\">\
          <meta name=\"source-url\" content=\"https://x.dev/src\">\
          <meta name=\"source-action\" content=\"view\"></head>\
          <body><h2>Part</h2></body></html>",
@@ -205,6 +206,7 @@ fn reads_the_navigation_and_source_metas() -> crate::Result<()> {
         ("start/index.html", "/start/")
     );
     assert!(!page.sidebar && page.toc.is_empty());
+    assert_eq!(page.breadcrumbs, Some(false));
     assert_eq!(page.source_url.as_deref(), Some("https://x.dev/src"));
     assert_eq!(page.source_action, SourceAction::View);
     assert!(page.head.is_empty(), "{}", page.head);

@@ -663,6 +663,9 @@ fn read_section<'a>(site: &'a Site, page: &Page) -> Option<&'a Section> {
 
 // Every folder above the page, named and linked by its index page when it has one.
 fn create_breadcrumbs(site: &Site, page: &Page) -> Option<String> {
+    if !page.breadcrumbs.or(site.config.breadcrumbs).unwrap_or(true) {
+        return None;
+    }
     // A language's prefix is its home, not a folder to list
     let home = site
         .read_language(&page.language)

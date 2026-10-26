@@ -40,6 +40,7 @@ pub(crate) fn patch_page(page: Page, article: &PatchArticle) -> Result<Page, Str
     }
     page.order = article.order.or(page.order);
     page.sidebar = article.sidebar.unwrap_or(page.sidebar);
+    page.breadcrumbs = article.breadcrumbs.or(page.breadcrumbs);
     page.source_action = article.source_action.unwrap_or(page.source_action);
     Ok(page)
 }

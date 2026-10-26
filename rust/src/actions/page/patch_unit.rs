@@ -11,6 +11,7 @@ fn replaces_what_the_patch_sets_and_keeps_the_rest() -> Result<(), String> {
         path: Some("/introduction/".to_owned()),
         order: Some(1),
         toc: Some(false),
+        breadcrumbs: Some(false),
         author: vec!["Ann".to_owned()],
         source_action: Some(SourceAction::View),
         ..PatchArticle::default()
@@ -23,6 +24,7 @@ fn replaces_what_the_patch_sets_and_keeps_the_rest() -> Result<(), String> {
     assert_eq!(page.path, "introduction/index.html");
     assert_eq!(page.order, Some(1));
     assert!(page.toc.is_empty() && page.sidebar);
+    assert_eq!(page.breadcrumbs, Some(false));
     assert_eq!(page.authors, ["Ann"]);
     assert_eq!(page.source_action, SourceAction::View);
     let bad = PatchArticle {

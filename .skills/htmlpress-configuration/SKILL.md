@@ -29,6 +29,7 @@ description: Acme's docs.
 logo: /logo.svg
 favicon: /favicon.svg
 banner: <a href="/blog/">We shipped 2.0</a>
+breadcrumbs: false
 include: [docs/**/*.html]
 exclude: [docs/includes/**]
 codeThemeLight: catppuccin-latte
@@ -50,6 +51,8 @@ head:
 - `base` — a sub-path such as `/repo/`. Root-relative URLs get it as a prefix, so write them
   without it.
 - `title`, `description`, `logo`, `favicon` (URLs) and `banner` (HTML above the header).
+- `breadcrumbs` — `false` hides the folder trail above every page; default `true`, and a
+  page's `<meta name="breadcrumbs">` overrides it.
 - `include` — globs of the `.html` files that become pages, default `**/*.html`. Only files under
   a glob's base, its folders before the first wildcard, are read, and they are served without it:
   `docs/**/*.html` serves `docs/guide.html` at `/guide.html`. Other files there are copied as-is.
@@ -93,7 +96,7 @@ section.
 ## Patches
 
 Each patch is a `file` and an `article` of metas (`title`, `label`, `description`, `icon`,
-`order`, `path`, `sidebar`, `toc`, `image`, `author`, `date`, `tags`, `sourceUrl`,
+`order`, `path`, `sidebar`, `breadcrumbs`, `toc`, `image`, `author`, `date`, `tags`, `sourceUrl`,
 `sourceAction`), set without touching the file; a patched `.md` file such as `README.md` is
 published as a page. A patched path outside the project, through a symlink or into a dot-folder is refused.
 

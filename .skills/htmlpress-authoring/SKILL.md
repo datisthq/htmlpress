@@ -57,6 +57,7 @@ The config keys are in `htmlpress-configuration`; a different look in `htmlpress
 | `path` (`/start/`)                           | serves the page at another URL                               |
 | `sidebar` (`false`)                          | built, not listed                                            |
 | `toc` (`false`)                              | no table of contents                                         |
+| `breadcrumbs` (`false` / `true`)             | hides or shows the folder trail, over the config's           |
 | `layout` (`<name>`)                          | another layout, from `htmlpress-customization`               |
 | `language` (`<code>`)                        | marks the page a translation                                 |
 | `source-url`, `source-action` (`view`)       | the page's source link                                       |

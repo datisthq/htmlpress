@@ -53,6 +53,7 @@ pub fn read_page(path: &str, html: &str) -> crate::Result<Page> {
         label: facts.label,
         icon: facts.icon,
         sidebar: facts.sidebar,
+        breadcrumbs: facts.breadcrumbs,
         source_url: facts.source_url,
         source_action: facts.source_action,
         description: facts.description,
@@ -78,6 +79,7 @@ struct Facts {
     icon: Option<String>,
     route: Option<String>,
     sidebar: bool,
+    breadcrumbs: Option<bool>,
     toc: bool,
     source_url: Option<String>,
     source_action: SourceAction,
@@ -220,6 +222,10 @@ fn read_facts(html: &str) -> Result<Facts, String> {
         }))
         .append_element_content_handler(element!("meta[name='sidebar']", |el| {
             facts.borrow_mut().sidebar = read_flag(el, "sidebar")?;
+            Ok(())
+        }))
+        .append_element_content_handler(element!("meta[name='breadcrumbs']", |el| {
+            facts.borrow_mut().breadcrumbs = Some(read_flag(el, "breadcrumbs")?);
             Ok(())
         }))
         .append_element_content_handler(element!("meta[name='toc']", |el| {
@@ -433,6 +439,7 @@ const OWNED_BY_LAYOUT: &[&str] = &[
     "meta[name='path']",
     "meta[name='language']",
     "meta[name='sidebar']",
+    "meta[name='breadcrumbs']",
     "meta[name='toc']",
     "meta[name='source-url']",
     "meta[name='source-action']",

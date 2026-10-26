@@ -25,6 +25,9 @@ pub struct Config {
     pub description: Option<Localized>,
     /// HTML for an announcement bar above the header.
     pub banner: Option<Localized>,
+    /// Show the trail of folders above each page's content; defaults to true, and a
+    /// page's `<meta name="breadcrumbs">` overrides it.
+    pub breadcrumbs: Option<bool>,
     /// The languages the site is published in, the default first; one English without.
     pub languages: Vec<Language>,
     /// Links in the header or the sidebar, such as the project's repository.
@@ -147,6 +150,7 @@ pub struct PatchArticle {
     /// Where the page is served, such as `/introduction/`.
     pub path: Option<String>,
     pub sidebar: Option<bool>,
+    pub breadcrumbs: Option<bool>,
     pub toc: Option<bool>,
     pub image: Option<String>,
     /// One author or a list.

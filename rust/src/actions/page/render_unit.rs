@@ -376,6 +376,23 @@ fn fills_the_breadcrumbs_from_the_folders() -> crate::Result<()> {
 }
 
 #[test]
+fn hides_the_breadcrumbs_by_config_unless_the_page_shows_them() -> crate::Result<()> {
+    let mut site = create_site()?;
+    site.pages.push(read_page(
+        "api/v1/auth.html",
+        "<head><meta name=\"breadcrumbs\" content=\"true\"></head>",
+    )?);
+    site.pages
+        .push(read_page("api/v1/keys.html", "<title>Keys</title>")?);
+    site.config.breadcrumbs = Some(false);
+    let shown = render_page(&site, &site.pages[4], false)?;
+    assert!(shown.contains("<htmlpress-breadcrumbs><nav"));
+    let hidden = render_page(&site, &site.pages[5], false)?;
+    assert!(!hidden.contains("<htmlpress-breadcrumbs"));
+    Ok(())
+}
+
+#[test]
 fn links_the_markdown_from_the_head_and_the_toolbar() -> crate::Result<()> {
     let site = create_site()?;
     let html = render_page(&site, &site.pages[3], false)?;
