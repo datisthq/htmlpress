@@ -8,21 +8,24 @@
 
 <h1>链接</h1>
 <p>
-  页面会写入与读取时相同的路径，因此页面之间的链接始终有效。<code>index.html</code>
-  在其所在文件夹提供服务： <code>guides/index.html</code> 对应 <code>/guides/</code>。
+  每个页面都在它自己的文件夹 URL 上提供：<code>guides/build.html</code> 对应
+  <code>/guides/build/</code>，<code>index.html</code> 则在其所在文件夹提供，
+  <code>guides/index.html</code> 对应 <code>/guides/</code>。可以按 URL
+  链接页面，也可以按文件链接：指向页面文件的链接，无论是相对的还是根相对的，都会被改写为该页面的
+  URL，其他相对 URL 则从源文件所在位置解析。
 </p>
 
 <h2>内部链接</h2>
 <p>链接到文档中的其他页面，可以相对于根目录，也可以相对于当前页面：</p>
-<pre><code class="language-html">&lt;a href="/introduction.html"&gt;Introduction&lt;/a&gt;
+<pre><code class="language-html">&lt;a href="/introduction/"&gt;Introduction&lt;/a&gt;
 &lt;a href="headings.html"&gt;Headings&lt;/a&gt;</code></pre>
-<p>渲染为：<a href="/zh/introduction.html">简介</a></p>
+<p>渲染为：<a href="/zh/introduction/">简介</a></p>
 <p>
   在 <code>htmlpress.yaml</code> 中设置 <code>base</code> 后，构建中的每个根相对 URL（位于
   <code>href</code>、<code>src</code>、<code>srcset</code>、<code>poster</code> 和
   <code>action</code> 中，无论是在页面、布局还是配置的 HTML 里）都会加上它作为前缀：写
-  <code>/guide.html</code>，站点就会链接到 <code>/repo/guide.html</code>。相对 URL 和绝对
-  URL 保持不变，页面自身 CSS 中的 <code>url()</code> 也一样。<code>start</code> 和
+  <code>/guide/</code>，站点就会链接到 <code>/repo/guide/</code>。相对 URL 和绝对 URL
+  保持不变，页面自身 CSS 中的 <code>url()</code> 也一样。<code>start</code> 和
   <code>preview</code> 同样在基础路径下提供站点，并把 <code>/</code> 重定向到那里。
 </p>
 <p>
@@ -42,8 +45,8 @@
 <p>渲染为：<a href="#内部链接">参见内部链接</a></p>
 <p>
   其他页面上的标题就是该页 URL 加上 ID：
-  <a href="/zh/authoring/headings.html#custom-ids">自定义标题 ID</a>。ID 的生成方式见
-  <a href="/zh/authoring/headings.html">标题</a>。
+  <a href="/zh/authoring/headings/#custom-ids">自定义标题 ID</a>。ID 的生成方式见
+  <a href="/zh/authoring/headings/">标题</a>。
 </p>
 
 <h2>自动链接</h2>

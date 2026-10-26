@@ -37,8 +37,9 @@ fn builds_a_project_as_json() -> TestResult {
     let report: serde_json::Value = serde_json::from_str(&out)?;
     assert_eq!(report["pages"], 2);
     assert_eq!(report["files"], 0);
-    let page =
-        std::fs::read_to_string(root.path().join(".htmlpress/build/guides/build.html"))?;
+    let page = std::fs::read_to_string(
+        root.path().join(".htmlpress/build/guides/build/index.html"),
+    )?;
     assert!(page.contains("<p>Run it.</p>"));
     Ok(())
 }
@@ -157,27 +158,29 @@ fn builds_every_language_with_its_picker_and_fallbacks() -> TestResult {
     let build = root.path().join(".htmlpress/build");
     let read = |path: &str| std::fs::read_to_string(build.join(path));
 
-    let guide = read("es/guide.html")?;
+    let guide = read("es/guide/index.html")?;
     assert!(guide.contains(r#"<html lang="es">"#));
     assert!(guide.contains("<title>Guía · Documentos</title>"));
-    assert!(guide.contains(r#"<link rel="alternate" hreflang="en" href="https://docs.example.com/guide.html">"#));
-    assert!(guide.contains(r#"<link rel="alternate" hreflang="x-default" href="https://docs.example.com/guide.html">"#));
-    assert!(guide.contains(r#"<a href="/guide.html" hreflang="en" lang="en">"#));
+    assert!(guide.contains(
+        r#"<link rel="alternate" hreflang="en" href="https://docs.example.com/guide/">"#
+    ));
+    assert!(guide.contains(r#"<link rel="alternate" hreflang="x-default" href="https://docs.example.com/guide/">"#));
+    assert!(guide.contains(r#"<a href="/guide/" hreflang="en" lang="en">"#));
     assert!(guide.contains(r#"<a href="/zh/" hreflang="zh" lang="zh">"#));
-    assert!(guide.contains(r#"<a href="/install.html" hreflang="en" title="Aún sin traducir" data-untranslated>Install<small>en</small></a>"#));
-    assert!(!guide.contains(r#"href="/zh/start.html""#));
-    assert!(read("es/install.html").is_err());
-    assert!(read("guide.html")?.contains("<title>Guide · Docs</title>"));
+    assert!(guide.contains(r#"<a href="/install/" hreflang="en" title="Aún sin traducir" data-untranslated>Install<small>en</small></a>"#));
+    assert!(!guide.contains(r#"href="/zh/start/""#));
+    assert!(read("es/install/index.html").is_err());
+    assert!(read("guide/index.html")?.contains("<title>Guide · Docs</title>"));
 
     assert!(
         read("zh/index.html")?
-            .contains(r#"<meta http-equiv="refresh" content="0; url=/zh/start.html">"#)
+            .contains(r#"<meta http-equiv="refresh" content="0; url=/zh/start/">"#)
     );
-    assert!(read("zh/start.html")?.contains(r#"<html lang="zh">"#));
+    assert!(read("zh/start/index.html")?.contains(r#"<html lang="zh">"#));
     assert!(read("_htmlpress/search.es.json")?.contains("Instalación"));
     assert!(!read("_htmlpress/search.json")?.contains("Instalación"));
     assert!(read("es/llms.txt")?.contains("# Documentos"));
-    assert!(read("es/guide.md").is_ok());
+    assert!(read("es/guide/index.md").is_ok());
 
     let blog = read("es/blog/index.html")?;
     assert!(blog.contains("<h1>Bitácora</h1>"));
@@ -191,10 +194,10 @@ fn builds_every_language_with_its_picker_and_fallbacks() -> TestResult {
     )?;
     let (code, _) = run_cli(&["build", &path])?;
     assert_eq!(code, 0);
-    assert!(read("es/blog/index.html")?.contains(r#"<a href="/blog/news.html">"#));
+    assert!(read("es/blog/index.html")?.contains(r#"<a href="/blog/news/">"#));
     assert!(
         read("es/blog/rss.xml")?
-            .contains("<link>https://docs.example.com/blog/news.html</link>")
+            .contains("<link>https://docs.example.com/blog/news/</link>")
     );
     Ok(())
 }
@@ -253,13 +256,13 @@ fn redirects_home_and_points_changelog_copies_at_the_default() -> TestResult {
     assert_eq!(code, 0);
     let build = root.path().join(".htmlpress/build");
     let home = std::fs::read_to_string(build.join("index.html"))?;
-    assert!(home.contains(r#"url=/guide.html"#), "{home}");
+    assert!(home.contains(r#"url=/guide/"#), "{home}");
     let copy = std::fs::read_to_string(build.join("es/changelog/index.html"))?;
     assert!(
         copy.contains(r#"<link rel="canonical" href="https://acme.dev/changelog/">"#)
     );
     let sitemap = std::fs::read_to_string(build.join("sitemap.xml"))?;
-    assert!(sitemap.contains("https://acme.dev/es/guide.html"));
+    assert!(sitemap.contains("https://acme.dev/es/guide/"));
     assert!(!sitemap.contains("https://acme.dev/es/changelog/"));
     Ok(())
 }

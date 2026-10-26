@@ -29,7 +29,7 @@
       La mayoría de los proyectos solo necesitan mantener la documentación más reciente y
       la de la versión mayor anterior. Si las versiones antiguas solo necesitan sus notas,
       basta con una
-      <a href="/es/customization/article-sections.html#secciones-de-registro-de-cambios"
+      <a href="/es/customization/article-sections/#secciones-de-registro-de-cambios"
         >sección de registro de cambios</a
       >.
     </p>
@@ -72,7 +72,7 @@ sections:
       Para avisar a los lectores en las páginas antiguas, empieza cada una con un callout:
     </p>
     <pre><code class="language-html">&lt;htmlpress-callout type="warning"&gt;
-  &lt;p&gt;You are reading the docs for v1. &lt;a href="/getting-started.html"&gt;See the latest version&lt;/a&gt;.&lt;/p&gt;
+  &lt;p&gt;You are reading the docs for v1. &lt;a href="/getting-started/"&gt;See the latest version&lt;/a&gt;.&lt;/p&gt;
 &lt;/htmlpress-callout&gt;</code></pre>
     <p>Conviene saber:</p>
     <ul>
@@ -92,7 +92,7 @@ sections:
       <code>v1</code>, …), compila cada rama como un sitio propio y sírvela desde su
       propia dirección: un subdominio (<code>v1.docs.example.com</code>) o una subruta
       (<code>docs.example.com/v1/</code>) con
-      <a href="/es/deployment/github-pages.html#configura-base-para-sitios-de-proyecto"
+      <a href="/es/deployment/github-pages/#configura-base-para-sitios-de-proyecto"
         ><code>base</code></a
       >.
     </p>
@@ -106,7 +106,7 @@ banner: You are reading the v1 docs · &lt;a href="https://docs.example.com/"&gt
       <code>htmlpress start</code> y <code>preview</code> sirven bajo la misma base, así
       que la rama se previsualiza exactamente como se despliega. Enlaza los despliegues
       entre sí con una sección <code>custom</code> o un
-      <a href="/es/customization/external-links.html">enlace</a> de la cabecera, que actúa
+      <a href="/es/customization/external-links/">enlace</a> de la cabecera, que actúa
       como selector de versión:
     </p>
     <pre data-title="htmlpress.yaml (rama main)"><code class="language-yaml">sections:
@@ -127,11 +127,11 @@ banner: You are reading the v1 docs · &lt;a href="https://docs.example.com/"&gt
     <h2>Ver también</h2>
     <ul>
       <li>
-        <a href="/es/customization/article-sections.html">Secciones de artículos</a>:
-        tipos de sección, prefijos y correspondencia.
+        <a href="/es/customization/article-sections/">Secciones de artículos</a>: tipos de
+        sección, prefijos y correspondencia.
       </li>
       <li>
-        <a href="/es/customization/site-metadata.html">Metadatos del sitio</a>: los campos
+        <a href="/es/customization/site-metadata/">Metadatos del sitio</a>: los campos
         <code>banner</code>, <code>title</code> y <code>site</code> usados arriba.
       </li>
     </ul>

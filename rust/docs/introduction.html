@@ -52,7 +52,7 @@
       <li>
         <strong>Multilingual.</strong> Translations beside their originals, a language
         picker, and the UI in seven bundled languages; see
-        <a href="/customization/translations.html">Translations</a>.
+        <a href="/customization/translations/">Translations</a>.
       </li>
       <li>
         <strong>Made for agents.</strong> Every build publishes a Markdown copy of each
@@ -157,9 +157,8 @@ include: docs/**/*.html</code></pre>
     <p>
       Without <code>include</code>, every <code>.html</code> file in the project is a
       page; with it, only the matching ones are, served without the glob's base, so
-      <code>docs/usage.html</code> is at <code>/usage.html</code>. See
-      <a href="/customization/configuration-file.html">Configuration File</a> for every
-      key.
+      <code>docs/usage.html</code> is at <code>/usage/</code>. See
+      <a href="/customization/configuration-file/">Configuration File</a> for every key.
     </p>
 
     <h3>Add content</h3>
@@ -182,9 +181,7 @@ include: docs/**/*.html</code></pre>
 
 &lt;h1&gt;Getting Started&lt;/h1&gt;
 &lt;p&gt;Welcome!&lt;/p&gt;</code></pre>
-    <p>
-      See <a href="/authoring/frontmatter.html">Frontmatter</a> for what each tag means.
-    </p>
+    <p>See <a href="/authoring/frontmatter/">Frontmatter</a> for what each tag means.</p>
 
     <h3>Run</h3>
     <pre><code class="language-sh">htmlpress start    # dev server with live reload at http://localhost:8000
@@ -289,7 +286,7 @@ network http://192.168.1.107:8000</code></pre>
       files. Without names it lists every built-in file and whether the project has
       escaped it. <code>--root</code> / <code>-r</code> picks the project (default
       <code>.</code>). It refuses to overwrite a file; see
-      <a href="/customization/overriding-escaping.html">Overriding/Escaping</a>.
+      <a href="/customization/overriding-escaping/">Overriding/Escaping</a>.
     </p>
     <pre><code class="language-sh">$ htmlpress escape htmlpress-tabs
 escaped .htmlpress/components/tabs/tabs.css
@@ -321,24 +318,24 @@ $ htmlpress build --json '{"root":"docs","out":"dist"}'</code></pre>
     <ul>
       <li>
         <strong>Site metadata</strong>: title, description, favicon, logo. See
-        <a href="/customization/site-metadata.html">Site Metadata</a>.
+        <a href="/customization/site-metadata/">Site Metadata</a>.
       </li>
       <li>
         <strong>Sections</strong>: group pages by folder in the sidebar. See
-        <a href="/customization/article-sections.html">Article Sections</a>.
+        <a href="/customization/article-sections/">Article Sections</a>.
       </li>
       <li>
         <strong>External links</strong>: header and sidebar links to anywhere. See
-        <a href="/customization/external-links.html">External Links</a>.
+        <a href="/customization/external-links/">External Links</a>.
       </li>
       <li>
         <strong>Overriding/Escaping</strong>: replace the layout, any stylesheet or
         component from your project. See
-        <a href="/customization/overriding-escaping.html">Overriding/Escaping</a>.
+        <a href="/customization/overriding-escaping/">Overriding/Escaping</a>.
       </li>
       <li>
         <strong>AI agents</strong>: what every build publishes for agents. See
-        <a href="/customization/ai-agents.html">AI Agents</a>.
+        <a href="/customization/ai-agents/">AI Agents</a>.
       </li>
     </ul>
 
@@ -358,7 +355,7 @@ $ htmlpress build --json '{"root":"docs","out":"dist"}'</code></pre>
         snippets
       </li>
       <li><a href="/deployment/">Deployment</a>: publishing the build to a host</li>
-      <li><a href="/contributing.html">Contributing</a>: local setup and PR flow</li>
+      <li><a href="/contributing/">Contributing</a>: local setup and PR flow</li>
     </ul>
 
     <h2>Resources</h2>

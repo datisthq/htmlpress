@@ -8,9 +8,12 @@
 
 <h1>Enlaces</h1>
 <p>
-  Una página se escribe en la misma ruta desde la que se leyó, así que los enlaces entre
-  páginas siguen funcionando. <code>index.html</code> se sirve en su carpeta:
-  <code>guides/index.html</code> en <code>/guides/</code>.
+  Cada página se sirve en la URL de su propia carpeta: <code>guides/build.html</code> en
+  <code>/guides/build/</code>, e <code>index.html</code> en su carpeta,
+  <code>guides/index.html</code> en <code>/guides/</code>. Enlaza a una página por su URL
+  o por su archivo: un enlace que nombra el archivo de una página, relativo o relativo a
+  la raíz, se reescribe a la URL de la página, y cualquier otra URL relativa se resuelve
+  desde el archivo fuente.
 </p>
 
 <h2>Enlaces internos</h2>
@@ -18,18 +21,18 @@
   Enlaza a otras páginas de tu documentación, de forma relativa a la raíz o relativa a la
   página:
 </p>
-<pre><code class="language-html">&lt;a href="/introduction.html"&gt;Introduction&lt;/a&gt;
+<pre><code class="language-html">&lt;a href="/introduction/"&gt;Introduction&lt;/a&gt;
 &lt;a href="headings.html"&gt;Headings&lt;/a&gt;</code></pre>
-<p>Se renderiza como: <a href="/es/introduction.html">Introducción</a></p>
+<p>Se renderiza como: <a href="/es/introduction/">Introducción</a></p>
 <p>
   Con <code>base</code> definido en <code>htmlpress.yaml</code>, cada URL relativa a la
   raíz de la compilación (en <code>href</code>, <code>src</code>, <code>srcset</code>,
   <code>poster</code> y <code>action</code>, tanto en las páginas como en el layout y en
-  el HTML de la configuración) lo recibe como prefijo: escribe <code>/guide.html</code> y
-  el sitio enlaza a <code>/repo/guide.html</code>. Las URL relativas y absolutas no se
-  tocan, ni tampoco los <code>url()</code> del CSS propio de una página.
-  <code>start</code> y <code>preview</code> también sirven el sitio bajo la base, y
-  redirigen <code>/</code> allí.
+  el HTML de la configuración) lo recibe como prefijo: escribe <code>/guide/</code> y el
+  sitio enlaza a <code>/repo/guide/</code>. Las URL relativas y absolutas no se tocan, ni
+  tampoco los <code>url()</code> del CSS propio de una página. <code>start</code> y
+  <code>preview</code> también sirven el sitio bajo la base, y redirigen
+  <code>/</code> allí.
 </p>
 <p>
   La navegación agrupa las páginas por su carpeta superior, con el nombre del título del
@@ -49,9 +52,9 @@
 <p>Se renderiza como: <a href="#enlaces-internos">Ver Enlaces internos</a></p>
 <p>
   Un encabezado de otra página es su URL más el id:
-  <a href="/es/authoring/headings.html#custom-ids">ID de encabezado personalizados</a>.
-  Consulta <a href="/es/authoring/headings.html">Encabezados</a> para ver cómo se generan
-  los id.
+  <a href="/es/authoring/headings/#custom-ids">ID de encabezado personalizados</a>.
+  Consulta <a href="/es/authoring/headings/">Encabezados</a> para ver cómo se generan los
+  id.
 </p>
 
 <h2>Enlaces automáticos</h2>

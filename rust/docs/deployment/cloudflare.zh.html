@@ -27,11 +27,10 @@
   "workers_dev": true,
   "assets": {
     "directory": ".htmlpress/build",
-    "html_handling": "none",
     "not_found_handling": "404-page",
   },
 }</code></pre>
-<p>关键在于四个字段：</p>
+<p>关键在于三个字段：</p>
 <table>
   <thead>
     <tr>
@@ -43,13 +42,6 @@
     <tr>
       <td><code>assets.directory</code></td>
       <td>让 Wrangler 指向 htmlpress 的构建输出。每个文件都按原样提供。</td>
-    </tr>
-    <tr>
-      <td><code>assets.html_handling</code></td>
-      <td>
-        让每个文件都在其自身路径上提供。默认行为会把 <code>/guide.html</code> 重定向到
-        <code>/guide</code>，偏离 htmlpress 所链接的 URL，也无法匹配下文的 Markdown 规则。
-      </td>
     </tr>
     <tr>
       <td><code>assets.not_found_handling</code></td>
@@ -126,10 +118,8 @@ jobs:
   AI 智能体通过发送 <code>Accept: text/markdown</code> 来请求页面的 Markdown
   版本。静态资源总是返回 HTML，因此需要为你的域名区域添加一条 URL
   重写规则，把这些请求指向页面的
-  <a href="/zh/customization/ai-agents.html">Markdown 副本</a>：<code
-    >guides/build.html</code
-  >
-  旁边就有 <code>guides/build.md</code>。URL 重写规则在所有套餐（包括
+  <a href="/zh/customization/ai-agents/">Markdown 副本</a>：<code>/guides/build/</code> 的
+  HTML 旁边就有 <code>/guides/build/index.md</code>。URL 重写规则在所有套餐（包括
   Free）中均可使用，站点也仍然是完全静态的。
 </p>
 <p>
@@ -156,7 +146,7 @@ jobs:
       <td>Path</td>
       <td>
         Rewrite to → <strong>Dynamic</strong> →
-        <code>wildcard_replace(http.request.uri.path, "*.html", "${1}.md")</code>
+        <code>concat(http.request.uri.path, "index.md")</code>
       </td>
     </tr>
     <tr>
@@ -165,12 +155,9 @@ jobs:
     </tr>
   </tbody>
 </table>
-<pre><code>any(http.request.headers["accept"][*] contains "text/markdown") and ends_with(http.request.uri.path, ".html")</code></pre>
+<pre><code>any(http.request.headers["accept"][*] contains "text/markdown") and ends_with(http.request.uri.path, "/")</code></pre>
 <p>
-  页面 URL 以 <code>.html</code> 结尾，因此该规则只作用于页面。对于
-  <code>/guides/</code> 这样的文件夹 URL，再添加第二条规则，匹配
-  <code>ends_with(http.request.uri.path, "/")</code> 并重写为
-  <code>concat(http.request.uri.path, "index.md")</code>。静态资源会以
+  页面 URL 以 <code>/</code> 结尾，因此该规则只作用于页面。静态资源会以
   <code>text/markdown</code> 类型提供 <code>.md</code> 文件，因此响应类型无需额外规则。
 </p>
 <htmlpress-callout type="warning">
@@ -181,11 +168,9 @@ jobs:
 
 <h2>另请参阅</h2>
 <ul>
+  <li><a href="/zh/customization/ai-agents/">AI 智能体</a>：构建为智能体发布的内容。</li>
   <li>
-    <a href="/zh/customization/ai-agents.html">AI 智能体</a>：构建为智能体发布的内容。
-  </li>
-  <li>
-    <a href="/zh/customization/site-metadata.html">站点元数据</a>：<code>site</code>
+    <a href="/zh/customization/site-metadata/">站点元数据</a>：<code>site</code>
     用于生成绝对 URL 和 sitemap。
   </li>
   <li><a href="/zh/deployment/">部署</a>：返回托管平台索引。</li>

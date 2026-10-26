@@ -23,7 +23,7 @@
     </ul>
     <p>
       大多数项目只需保留最新文档和上一个主版本。如果旧版本只需要发布说明，一个
-      <a href="/zh/customization/article-sections.html">变更日志分区</a>
+      <a href="/zh/customization/article-sections/">变更日志分区</a>
       就足够了。
     </p>
 
@@ -62,7 +62,7 @@ sections:
     </p>
     <p>要在旧页面上提醒读者，可以在每个页面开头放一个标注框：</p>
     <pre><code class="language-html">&lt;htmlpress-callout type="warning"&gt;
-  &lt;p&gt;You are reading the docs for v1. &lt;a href="/getting-started.html"&gt;See the latest version&lt;/a&gt;.&lt;/p&gt;
+  &lt;p&gt;You are reading the docs for v1. &lt;a href="/getting-started/"&gt;See the latest version&lt;/a&gt;.&lt;/p&gt;
 &lt;/htmlpress-callout&gt;</code></pre>
     <p>需要注意：</p>
     <ul>
@@ -73,7 +73,7 @@ sections:
     <h2>每个版本一次部署</h2>
     <p>
       当每个主版本都位于自己的分支上（<code>main</code>、<code>v1</code>……）时，把每个分支构建为独立站点，并通过各自的地址提供：子域名（<code>v1.docs.example.com</code>），或借助
-      <a href="/zh/deployment/github-pages.html#为项目站点配置-base"><code>base</code></a>
+      <a href="/zh/deployment/github-pages/#为项目站点配置-base"><code>base</code></a>
       使用子路径（<code>docs.example.com/v1/</code>）。
     </p>
     <pre
@@ -86,7 +86,7 @@ banner: You are reading the v1 docs · &lt;a href="https://docs.example.com/"&gt
       <code>htmlpress start</code> 和
       <code>preview</code>
       在相同的基础路径下提供站点，因此分支的预览效果与部署后完全一致。可以用一个
-      <code>custom</code> 分区或一个页眉<a href="/zh/customization/external-links.html"
+      <code>custom</code> 分区或一个页眉<a href="/zh/customization/external-links/"
         >链接</a
       >把各个部署相互连接起来，充当版本切换器：
     </p>
@@ -109,11 +109,10 @@ banner: You are reading the v1 docs · &lt;a href="https://docs.example.com/"&gt
     <h2>另请参阅</h2>
     <ul>
       <li>
-        <a href="/zh/customization/article-sections.html">文章分区</a
-        >：分区类型、前缀和匹配。
+        <a href="/zh/customization/article-sections/">文章分区</a>：分区类型、前缀和匹配。
       </li>
       <li>
-        <a href="/zh/customization/site-metadata.html">站点元数据</a>：上文用到的
+        <a href="/zh/customization/site-metadata/">站点元数据</a>：上文用到的
         <code>banner</code>、<code>title</code> 和 <code>site</code> 字段。
       </li>
     </ul>

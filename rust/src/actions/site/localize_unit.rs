@@ -26,17 +26,14 @@ fn keeps_one_languages_pages_and_lists_the_untranslated_ones() -> crate::Result<
     assert_eq!(english.title, "Docs");
     assert_eq!(
         urls(&english),
-        [("/".to_owned(), false), ("/guide.html".to_owned(), false)]
+        [("/".to_owned(), false), ("/guide/".to_owned(), false)]
     );
     let spanish = localize_site(&site, "es");
     assert_eq!(spanish.title, "Documentos");
     assert_eq!(
         urls(&spanish),
-        [
-            ("/es/".to_owned(), false),
-            ("/es/guide.html".to_owned(), true)
-        ]
+        [("/es/".to_owned(), false), ("/es/guide/".to_owned(), true)]
     );
-    assert_eq!(spanish.pages[1].key, "/guide.html");
+    assert_eq!(spanish.pages[1].key, "/guide/");
     Ok(())
 }

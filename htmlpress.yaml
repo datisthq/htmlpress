@@ -23,7 +23,7 @@ links:
 sections:
   - title: { en: Docs, es: Documentación, zh: 文档 }
     type: custom
-    url: /introduction.html
+    url: /introduction/
     icon: book-open
   - title: { en: Examples, es: Ejemplos, zh: 示例 }
     prefix: /examples/

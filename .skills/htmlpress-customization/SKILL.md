@@ -134,5 +134,5 @@ at once.
 
 ## References
 
-- Overriding: https://htmlpress.dev/customization/overriding-escaping.html
-- Layouts: https://htmlpress.dev/customization/custom-routes.html
+- Overriding: https://htmlpress.dev/customization/overriding-escaping/
+- Layouts: https://htmlpress.dev/customization/custom-routes/

@@ -32,7 +32,7 @@ fn splits_each_page_at_its_headings() -> crate::Result<()> {
         .map_err(|error| Error::Usage(error.to_string()))?;
     let pages = index["pages"].as_array().cloned().unwrap_or_default();
     assert_eq!(pages.len(), 1);
-    assert_eq!(pages[0]["url"], "/repo/guide.html");
+    assert_eq!(pages[0]["url"], "/repo/guide/");
     let chunks = pages[0]["chunks"].as_array().cloned().unwrap_or_default();
     assert_eq!(chunks[0]["text"], "Start here & now.");
     assert!(chunks[0]["heading"].is_null());
@@ -47,11 +47,11 @@ fn splits_each_page_at_its_headings() -> crate::Result<()> {
 #[test]
 fn groups_pages_by_their_inner_folders() {
     assert_eq!(create_group("/"), None);
-    assert_eq!(create_group("/guide.html"), None);
-    assert_eq!(create_group("/authoring/code-blocks.html"), None);
-    assert_eq!(create_group("/authoring/deep/index.html"), None);
+    assert_eq!(create_group("/guide/"), None);
+    assert_eq!(create_group("/authoring/code-blocks/"), None);
+    assert_eq!(create_group("/authoring/deep/"), None);
     assert_eq!(
-        create_group("/docs/api-reference/rust-crate/build.html"),
+        create_group("/docs/api-reference/rust-crate/build/"),
         Some("Api Reference › Rust Crate".to_owned())
     );
 }

@@ -30,9 +30,9 @@
           <td><code>&lt;page&gt;.md</code></td>
           <td>
             A Markdown copy of every page beside its HTML:
-            <code>guides/build.html</code> gets <code>guides/build.md</code>, with its
-            title, description and content, each component reduced to plain Markdown (a
-            callout to a quote, tabs to bold headings)
+            <code>guides/build.html</code> gets <code>guides/build/index.md</code>, with
+            its title, description and content, each component reduced to plain Markdown
+            (a callout to a quote, tabs to bold headings)
           </td>
         </tr>
         <tr>
@@ -126,21 +126,20 @@
       URL. A static host can't answer that on its own, but a rewrite on your CDN can serve
       the page's <code>.md</code> copy for those requests and leave the HTML for everyone
       else. Every page has a copy, so the rewrite never points at a missing file. For a
-      ready-made rule, see <a href="/deployment/cloudflare.html">Cloudflare</a>.
+      ready-made rule, see <a href="/deployment/cloudflare/">Cloudflare</a>.
     </p>
 
     <h2>See also</h2>
     <ul>
       <li>
-        <a href="/agent-skills.html">Agent Skills</a>: install htmlpress' own skill into
-        your coding agent.
+        <a href="/agent-skills/">Agent Skills</a>: install htmlpress' own skill into your
+        coding agent.
       </li>
       <li>
-        <a href="/customization/configuration-file.html">Config File</a>: every top-level
-        key.
+        <a href="/customization/configuration-file/">Config File</a>: every top-level key.
       </li>
       <li>
-        <a href="/customization/custom-routes.html">Custom Routes</a>: static files copied
+        <a href="/customization/custom-routes/">Custom Routes</a>: static files copied
         beside your pages.
       </li>
     </ul>

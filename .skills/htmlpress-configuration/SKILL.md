@@ -120,8 +120,8 @@ misspelt key fails here with its name.
 
 ## References
 
-- Configuration: https://htmlpress.dev/customization/configuration-file.html
-- Sections: https://htmlpress.dev/customization/article-sections.html
-- Translations: https://htmlpress.dev/customization/translations.html
-- Versioning: https://htmlpress.dev/customization/versioning.html
-- Patches: https://htmlpress.dev/customization/article-patches.html
+- Configuration: https://htmlpress.dev/customization/configuration-file/
+- Sections: https://htmlpress.dev/customization/article-sections/
+- Translations: https://htmlpress.dev/customization/translations/
+- Versioning: https://htmlpress.dev/customization/versioning/
+- Patches: https://htmlpress.dev/customization/article-patches/

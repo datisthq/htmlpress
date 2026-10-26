@@ -22,7 +22,7 @@ fn reads_a_full_document() -> crate::Result<()> {
     assert_eq!(page.title, "Build & deploy");
     assert_eq!(page.description.as_deref(), Some("Ship the site."));
     assert_eq!(page.order, Some(2));
-    assert_eq!(page.url, "/guides/build.html");
+    assert_eq!(page.url, "/guides/build/");
     assert_eq!(page.head, r#"<link rel="stylesheet" href="extra.css">"#);
     assert!(page.content.starts_with("<h1>Building</h1>"));
     assert!(
@@ -91,8 +91,21 @@ fn rejects_a_non_integer_order() {
 fn creates_urls() {
     assert_eq!(create_url("index.html"), "/");
     assert_eq!(create_url("guides/index.html"), "/guides/");
-    assert_eq!(create_url("guides/build.html"), "/guides/build.html");
-    assert_eq!(create_url("myindex.html"), "/myindex.html");
+    assert_eq!(create_url("guides/build.html"), "/guides/build/");
+    assert_eq!(create_url("myindex.html"), "/myindex/");
+    assert_eq!(create_url("404.html"), "/404.html");
+}
+
+#[test]
+fn creates_output_paths() {
+    assert_eq!(create_output_path("index.html"), "index.html");
+    assert_eq!(create_output_path("guides/index.html"), "guides/index.html");
+    assert_eq!(
+        create_output_path("guides/build.html"),
+        "guides/build/index.html"
+    );
+    assert_eq!(create_output_path("404.html"), "404.html");
+    assert_eq!(create_output_path("es/404.html"), "es/404/index.html");
 }
 
 #[test]

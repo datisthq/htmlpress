@@ -108,7 +108,7 @@
         改用
         <code>.htmlpress/layouts/&lt;name&gt;.html</code>
         包裹页面，适用于需要不同外观框架的页面，例如不带侧边栏的落地页。布局不存在会导致构建失败；见
-        <a href="/zh/customization/overriding-escaping.html">覆盖/弹出</a>。
+        <a href="/zh/customization/overriding-escaping/">覆盖/弹出</a>。
       </td>
     </tr>
     <tr>
@@ -120,7 +120,7 @@
       <td><code>&lt;meta name="icon"&gt;</code></td>
       <td>无</td>
       <td>
-        显示在顶层导航条目前的<a href="/zh/authoring/rich-elements.html">内置图标</a
+        显示在顶层导航条目前的<a href="/zh/authoring/rich-elements/">内置图标</a
         >，或用于索引页所在文件夹的分组；文件夹内的页面不显示图标。未知的名称会导致构建失败。
       </td>
     </tr>
@@ -175,37 +175,38 @@
 
 <h2>URL</h2>
 <p>
-  页面会写入与读取时相同的路径，<code>index.html</code> 在其所在文件夹提供服务：
+  页面在以其文件命名的文件夹处提供服务，<code>guides/build.html</code> 对应
+  <code>/guides/build/</code>，<code>index.html</code> 则在其自身所在文件夹提供：
   <code>guides/index.html</code> 对应 <code>/guides/</code>。见
-  <a href="/zh/authoring/links.html">链接</a>。
+  <a href="/zh/authoring/links/">链接</a>。
 </p>
 <p>
   <code>&lt;meta name="path" content="/start/"&gt;</code> 让页面在另一个 URL
-  提供服务，与其文件路径无关：以 <code>/</code> 结尾的路径会构建为该文件夹的
-  <code>index.html</code>，以
-  <code>.html</code> 结尾的路径则构建为该文件。两个页面使用同一个 URL 会导致构建失败。
+  提供服务，与其文件路径无关：以 <code>/</code> 结尾的路径指向该文件夹，以
+  <code>.html</code> 结尾的路径则指向该文件所对应的页面，因此
+  <code>/start.html</code> 同样会在 <code>/start/</code> 提供该页面。两个页面使用同一个
+  URL 会导致构建失败。
 </p>
 <p>
   在设置了 <code>languages</code> 的站点上，名为 <code>guide.es.html</code> 的文件，或带有
   <code>&lt;meta name="language" content="es"&gt;</code> 的文件，就是
-  <code>guide.html</code> 的西班牙语翻译，在 <code>/es/guide.html</code> 提供服务；见
-  <a href="/zh/customization/translations.html">翻译</a>。
+  <code>guide.html</code> 的西班牙语翻译，在 <code>/es/guide/</code> 提供服务；见
+  <a href="/zh/customization/translations/">翻译</a>。
 </p>
 
 <h2>无需编辑即可覆盖</h2>
 <p>
   这里的每个字段也可以在 <code>htmlpress.yaml</code> 中设置，无需改动文件本身；见
-  <a href="/zh/customization/article-patches.html">文章补丁</a>。
+  <a href="/zh/customization/article-patches/">文章补丁</a>。
 </p>
 
 <h2>另请参阅</h2>
 <ul>
   <li>
-    <a href="/zh/customization/article-sections.html">文章分区</a> —
+    <a href="/zh/customization/article-sections/">文章分区</a> —
     文件夹如何在导航中对页面分组。
   </li>
   <li>
-    <a href="/zh/customization/article-patches.html">文章补丁</a> —
-    通过配置设置页面元数据。
+    <a href="/zh/customization/article-patches/">文章补丁</a> — 通过配置设置页面元数据。
   </li>
 </ul>

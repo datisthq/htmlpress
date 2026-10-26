@@ -23,10 +23,11 @@
 
 <h2>Prerenderizado frente a fallback de SPA</h2>
 <p>
-  Cada página es un archivo real, escrito en la ruta de su fuente:
-  <code>guides/build.html</code> se sirve en <code>/guides/build.html</code>, y el
-  <code>index.html</code> de una carpeta responde a su URL <code>/guides/</code>. No hay
-  enrutamiento en el cliente, así que ningún host necesita un fallback de SPA.
+  Cada página es un archivo real, un <code>index.html</code> en una carpeta con el nombre
+  de su fuente: <code>guides/build.html</code> se escribe en
+  <code>guides/build/index.html</code> y se sirve en <code>/guides/build/</code>, como
+  cualquier host estático responde a la URL de una carpeta. No hay enrutamiento en el
+  cliente, así que ningún host necesita un fallback de SPA.
 </p>
 <p>
   Lo que sí merece la pena configurar es la página de no encontrado. Cada compilación
@@ -149,7 +150,7 @@ jobs:
 <h2>Ver también</h2>
 <ul>
   <li>
-    <a href="/es/customization/site-metadata.html">Metadatos del sitio</a>:
+    <a href="/es/customization/site-metadata/">Metadatos del sitio</a>:
     <code>site</code> hace posibles las URLs absolutas y el sitemap.
   </li>
   <li><a href="/es/deployment/">Despliegue</a>: volver al índice de hosts.</li>

@@ -41,7 +41,7 @@ With `site` set it adds `sitemap.xml`. Never edit the output: every build replac
 
 | Host               | Setup                                                                                                                                                           |
 | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Cloudflare Workers | `wrangler.jsonc`: `assets.directory: ".htmlpress/build"`, `html_handling: "none"`, `not_found_handling: "404-page"`; `npx wrangler deploy`                      |
+| Cloudflare Workers | `wrangler.jsonc`: `assets.directory: ".htmlpress/build"`, `not_found_handling: "404-page"`; `npx wrangler deploy`                                               |
 | GitHub Pages       | `site: https://<user>.github.io`, `base: /<repo>/`; `npx gh-pages -d .htmlpress/build --nojekyll --dotfiles`, or the Pages actions uploading `.htmlpress/build` |
 | Vercel             | `vercel.json`: `"framework": null`, `"buildCommand": "npx gethtmlpress build"`, `"outputDirectory": ".htmlpress/build"`                                         |
 | Netlify            | `netlify.toml`: `[build] command = "npx gethtmlpress build"`, `publish = ".htmlpress/build"`                                                                    |
@@ -52,8 +52,6 @@ With `site` set it adds `sitemap.xml`. Never edit the output: every build replac
 ## Rules of thumb
 
 - Point the host's not-found page at `404.html`, so unknown paths keep the site's layout.
-- Keep `html_handling: "none"` on Cloudflare: its default redirects `/guide.html` to `/guide`,
-  away from the URLs htmlpress links to.
 - Keep `--nojekyll` and `--dotfiles` on a GitHub Pages branch deploy: Jekyll drops the
   `_htmlpress/` theme, and without dot-files `.well-known/` is lost.
 - Files under `_htmlpress/` keep their names between builds: cache them briefly or invalidate
@@ -69,4 +67,4 @@ styles load and links keep the prefix.
 ## References
 
 - Deployment: https://htmlpress.dev/deployment/
-- Static hosting: https://htmlpress.dev/deployment/static-hosting.html
+- Static hosting: https://htmlpress.dev/deployment/static-hosting/

@@ -35,16 +35,16 @@ fn own(parts: (&str, &str, &str)) -> (String, String, String) {
 fn moves_a_translation_under_its_languages_prefix() -> Result<(), String> {
     assert_eq!(
         detect("guide/install.es.html", "", true)?,
-        own(("es", "/es/guide/install.html", "/guide/install.html"))
+        own(("es", "/es/guide/install/", "/guide/install/"))
     );
     assert_eq!(detect("index.es.html", "", true)?, own(("es", "/es/", "/")));
     assert_eq!(
         detect("guide.en.html", "", true)?,
-        own(("en", "/guide.html", "/guide.html"))
+        own(("en", "/guide/", "/guide/"))
     );
     assert_eq!(
         detect("vite.config.html", "", true)?,
-        own(("en", "/vite.config.html", "/vite.config.html"))
+        own(("en", "/vite.config/", "/vite.config/"))
     );
     Ok(())
 }
@@ -60,11 +60,11 @@ fn reads_the_language_meta_over_the_suffix() -> Result<(), String> {
     let folder = r#"<meta name="language" content="es">"#;
     assert_eq!(
         detect("es/guia.html", folder, true)?,
-        own(("es", "/es/guia.html", "/guia.html"))
+        own(("es", "/es/guia/", "/guia/"))
     );
     assert_eq!(
         detect("guide.es.html", "", false)?,
-        own(("en", "/guide.es.html", "/guide.es.html"))
+        own(("en", "/guide.es/", "/guide.es/"))
     );
     let unknown = detect("a.html", r#"<meta name="language" content="fr">"#, true);
     assert!(unknown.is_err_and(|error| error.contains("\"fr\" is not configured")));

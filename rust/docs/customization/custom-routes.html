@@ -12,11 +12,10 @@
   <body>
     <h1>Custom Routes</h1>
     <p>
-      In htmlpress every <code>.html</code> file is already a route: a page is written to
-      the same path it was read from, no registration, no config change. What a custom
-      route adds is its own chrome: a layout of its own in
-      <code>.htmlpress/layouts/</code>, picked by the page with
-      <code>&lt;meta name="layout"&gt;</code>.
+      In htmlpress every <code>.html</code> file is already a route: a page is served at a
+      folder named after its file, no registration, no config change. What a custom route
+      adds is its own chrome: a layout of its own in <code>.htmlpress/layouts/</code>,
+      picked by the page with <code>&lt;meta name="layout"&gt;</code>.
     </p>
 
     <h2>Minimal example</h2>
@@ -36,7 +35,7 @@
   &lt;main&gt;&lt;htmlpress-content&gt;&lt;/htmlpress-content&gt;&lt;/main&gt;
 &lt;/body&gt;</code></pre>
     <p>
-      Save and visit <code>/about.html</code>. Without the meta, the page gets the site's
+      Save and visit <code>/about/</code>. Without the meta, the page gets the site's
       layout, the same chrome as every other page: banner, header, sidebar, table of
       contents and pager. With it, the page's content carries no byline either: no author,
       date or "Updated" line under its title.
@@ -107,7 +106,7 @@
           <td><code>&lt;htmlpress-language&gt;</code></td>
           <td>
             the language picker, on a site with
-            <a href="/customization/translations.html">translations</a>
+            <a href="/customization/translations/">translations</a>
           </td>
         </tr>
         <tr>
@@ -127,7 +126,7 @@
       <code>&lt;htmlpress-shell&gt;</code>, <code>&lt;htmlpress-sidebar&gt;</code>,
       <code>&lt;htmlpress-main&gt;</code>, <code>&lt;htmlpress-header&gt;</code>,
       <code>&lt;htmlpress-page&gt;</code> and <code>&lt;htmlpress-aside&gt;</code>; see
-      <a href="/authoring/rich-elements.html#layout">Layout</a>.
+      <a href="/authoring/rich-elements/#layout">Layout</a>.
     </p>
     <p>
       Htmlpress fills the layout's <code>&lt;head&gt;</code> the same way for every
@@ -141,8 +140,8 @@
     <h2>How it fits with the rest of the site</h2>
     <ul>
       <li>
-        <strong>Paths are URLs.</strong> File paths mirror URL paths:
-        <code>guide/quickstart.html</code> is <code>/guide/quickstart.html</code>, and
+        <strong>Paths are URLs.</strong> File paths mirror URL paths, each page at its own
+        folder: <code>guide/quickstart.html</code> is <code>/guide/quickstart/</code>, and
         <code>index.html</code> is served at its folder, <code>guide/index.html</code> at
         <code>/guide/</code>. Relative links between pages keep working.
       </li>
@@ -194,11 +193,11 @@
     <h2>See also</h2>
     <ul>
       <li>
-        <a href="/customization/overriding-escaping.html">Overriding/Escaping</a>: replace
-        the site's layout or a component instead of adding a new one.
+        <a href="/customization/overriding-escaping/">Overriding/Escaping</a>: replace the
+        site's layout or a component instead of adding a new one.
       </li>
       <li>
-        <a href="/customization/site-metadata.html">Site Metadata</a>: the site title and
+        <a href="/customization/site-metadata/">Site Metadata</a>: the site title and
         favicon that show on custom routes too.
       </li>
     </ul>

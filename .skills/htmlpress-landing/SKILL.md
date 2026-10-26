@@ -107,5 +107,5 @@ be reachable by keyboard.
 
 ## References
 
-- Layouts: https://htmlpress.dev/customization/custom-routes.html
-- Overriding: https://htmlpress.dev/customization/overriding-escaping.html
+- Layouts: https://htmlpress.dev/customization/custom-routes/
+- Overriding: https://htmlpress.dev/customization/overriding-escaping/

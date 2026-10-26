@@ -197,14 +197,24 @@ fn registers_every_built_in_asset_file() -> crate::Result<()> {
 fn puts_a_folders_index_before_its_pages() -> crate::Result<()> {
     let root = tempfile::tempdir().map_err(Error::io("tempdir"))?;
     let root = root.path();
-    for path in ["index.html", "api/auth.html", "api/index.html", "api.html"] {
+    for path in [
+        "index.html",
+        "api/auth.html",
+        "api/index.html",
+        "api-v2.html",
+    ] {
         write_file(root, path, "<h1>A</h1>")?;
     }
     let site = scan_site(root)?;
     let paths: Vec<&str> = site.pages.iter().map(|page| page.path.as_str()).collect();
     assert_eq!(
         paths,
-        ["index.html", "api.html", "api/index.html", "api/auth.html"]
+        [
+            "index.html",
+            "api-v2.html",
+            "api/index.html",
+            "api/auth.html"
+        ]
     );
     Ok(())
 }

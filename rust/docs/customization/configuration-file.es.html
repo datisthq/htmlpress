@@ -123,7 +123,7 @@
           <td>
             <code>meta</code>, <code>links</code> y <code>scripts</code> añadidos al head
             de cada página; consulta
-            <a href="/es/customization/site-metadata.html">Metadatos del sitio</a>
+            <a href="/es/customization/site-metadata/">Metadatos del sitio</a>
           </td>
         </tr>
         <tr>
@@ -131,7 +131,7 @@
           <td>ninguno</td>
           <td>
             enlaces en la cabecera o en la barra lateral; consulta
-            <a href="/es/customization/external-links.html">Enlaces externos</a>
+            <a href="/es/customization/external-links/">Enlaces externos</a>
           </td>
         </tr>
         <tr>
@@ -139,7 +139,7 @@
           <td>ninguno</td>
           <td>
             partes del sitio con una navegación propia; consulta
-            <a href="/es/customization/article-sections.html">Secciones de artículos</a>
+            <a href="/es/customization/article-sections/">Secciones de artículos</a>
           </td>
         </tr>
         <tr>
@@ -156,7 +156,7 @@
             <code>search</code>, <code>aiInput</code> y <code>aiTrain</code>: cómo pueden
             usar el contenido los sistemas automatizados, escrito en
             <code>robots.txt</code>; consulta
-            <a href="/es/customization/ai-agents.html">Agentes de IA</a>
+            <a href="/es/customization/ai-agents/">Agentes de IA</a>
           </td>
         </tr>
         <tr>
@@ -164,7 +164,7 @@
           <td><code>catppuccin-latte</code>, <code>catppuccin-mocha</code></td>
           <td>
             Los temas de los bloques de código; consulta
-            <a href="/es/customization/syntax-themes.html">Temas de sintaxis</a>.
+            <a href="/es/customization/syntax-themes/">Temas de sintaxis</a>.
           </td>
         </tr>
         <tr>
@@ -173,7 +173,7 @@
           <td>
             Metadatos de página definidos desde la configuración, y archivos
             <code>.md</code> publicados como páginas; consulta
-            <a href="/es/customization/article-patches.html">Parches de artículos</a>.
+            <a href="/es/customization/article-patches/">Parches de artículos</a>.
           </td>
         </tr>
         <tr>
@@ -182,7 +182,7 @@
           <td>
             un glob o una lista de archivos <code>SKILL.md</code>, relativos al proyecto,
             para publicar como
-            <a href="/es/customization/ai-agents.html">skills de agente</a>
+            <a href="/es/customization/ai-agents/">skills de agente</a>
           </td>
         </tr>
         <tr>
@@ -191,7 +191,7 @@
           <td>
             los idiomas en los que se publica el sitio, el predeterminado primero;
             consulta
-            <a href="/es/customization/translations.html">Traducciones</a>
+            <a href="/es/customization/translations/">Traducciones</a>
           </td>
         </tr>
       </tbody>
@@ -215,7 +215,7 @@
       carpetas que quieras. Las carpetas de cada glob anteriores a su primer comodín son
       su base: solo se leen los archivos bajo una base, y se sirven sin ella, de modo que
       <code>docs/**/*.html</code> compila <code>docs/guide.html</code> en
-      <code>/guide.html</code>. Los demás archivos bajo una base, incluidos los
+      <code>/guide/</code>. Los demás archivos bajo una base, incluidos los
       <code>.html</code> que <code>include</code> deja fuera, se copian tal cual.
     </p>
     <p>
@@ -230,8 +230,8 @@
       Con <code>base</code> definido, cada URL relativa a la raíz de la compilación (en
       <code>href</code>, <code>src</code>, <code>srcset</code>, <code>poster</code> y
       <code>action</code>, tanto en las páginas como en el layout y en el HTML de la
-      configuración) la recibe como prefijo: escribe <code>/guide.html</code> y el sitio
-      enlaza a <code>/repo/guide.html</code>. Las URL relativas y absolutas no se tocan, y
+      configuración) la recibe como prefijo: escribe <code>/guide/</code> y el sitio
+      enlaza a <code>/repo/guide/</code>. Las URL relativas y absolutas no se tocan, y
       tampoco las <code>url()</code> del CSS propio de una página. <code>start</code> y
       <code>preview</code> también sirven el sitio bajo la base, y redirigen
       <code>/</code> allí; reinicia <code>start</code> tras cambiar <code>base</code>.
@@ -243,7 +243,7 @@
 title: Htmlpress
 description: Turn a folder of HTML pages into a site.
 logo: /logo.svg
-banner: 'Version 1 is out: &lt;a href="/changelog.html"&gt;read more&lt;/a&gt;'
+banner: 'Version 1 is out: &lt;a href="/changelog/"&gt;read more&lt;/a&gt;'
 include: docs/**/*.html
 exclude: docs/**/_*
 links:
@@ -264,32 +264,32 @@ edit: https://github.com/datisthq/htmlpress/edit/main/docs/</code></pre>
     <h2>Adónde ir después</h2>
     <ul>
       <li>
-        <a href="/es/customization/site-metadata.html">Metadatos del sitio</a>: título,
+        <a href="/es/customization/site-metadata/">Metadatos del sitio</a>: título,
         descripción, favicon, logo.
       </li>
       <li>
-        <a href="/es/customization/article-sections.html">Secciones de artículos</a>:
-        divide el sitio en secciones con su propia navegación.
+        <a href="/es/customization/article-sections/">Secciones de artículos</a>: divide
+        el sitio en secciones con su propia navegación.
       </li>
       <li>
-        <a href="/es/customization/external-links.html">Enlaces externos</a>: enlaces de
-        la cabecera y de la barra lateral.
+        <a href="/es/customization/external-links/">Enlaces externos</a>: enlaces de la
+        cabecera y de la barra lateral.
       </li>
       <li>
-        <a href="/es/customization/syntax-themes.html">Temas de sintaxis</a>: el aspecto
-        de los bloques de código.
+        <a href="/es/customization/syntax-themes/">Temas de sintaxis</a>: el aspecto de
+        los bloques de código.
       </li>
       <li>
-        <a href="/es/customization/article-patches.html">Parches de artículos</a>:
-        sobrescribe los metadatos de una página desde la configuración.
+        <a href="/es/customization/article-patches/">Parches de artículos</a>: sobrescribe
+        los metadatos de una página desde la configuración.
       </li>
       <li>
-        <a href="/es/customization/overriding-escaping.html">Sobrescritura/Escape</a>:
+        <a href="/es/customization/overriding-escaping/">Sobrescritura/Escape</a>:
         reemplaza cualquier layout, hoja de estilos o componente integrado.
       </li>
       <li>
-        <a href="/es/customization/custom-routes.html">Rutas personalizadas</a>: páginas
-        con su propio layout.
+        <a href="/es/customization/custom-routes/">Rutas personalizadas</a>: páginas con
+        su propio layout.
       </li>
     </ul>
   </body>

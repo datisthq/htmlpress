@@ -18,7 +18,9 @@ fn builds_pages_files_and_assets() -> crate::Result<()> {
     assert_eq!((report.pages, report.files), (2, 1));
     let read = |path: &str| std::fs::read_to_string(options.output.join(path)).ok();
     assert!(read("index.html").is_some_and(|html| html.contains("<h1>Home</h1>")));
-    assert!(read("guides/build.html").is_some_and(|html| html.contains("theme.css")));
+    assert!(
+        read("guides/build/index.html").is_some_and(|html| html.contains("theme.css"))
+    );
     assert_eq!(read("images/logo.svg").as_deref(), Some("<svg></svg>"));
     assert!(read("_htmlpress/theme.css").is_some());
     assert!(read("_htmlpress/reload.js").is_none());
@@ -122,7 +124,7 @@ fn writes_robots_and_a_sitemap_unless_the_project_ships_them() -> crate::Result<
     assert!(robots.ends_with("\nSitemap: https://example.com/sitemap.xml\n"));
     let sitemap = read("sitemap.xml").unwrap_or_default();
     assert!(sitemap.contains("<loc>https://example.com/</loc>"));
-    assert!(sitemap.contains("<loc>https://example.com/guide.html</loc>"));
+    assert!(sitemap.contains("<loc>https://example.com/guide/</loc>"));
     assert!(!sitemap.contains("404"));
 
     write_source(root, "robots.txt", "User-agent: *\nDisallow: /\n")?;
@@ -178,7 +180,9 @@ fn writes_agent_files_and_keeps_the_projects_own() -> crate::Result<()> {
     build_site(&options)?;
     assert_eq!(read("index.md").as_deref(), Some("# Home\n"));
     assert_eq!(read("guide.md").as_deref(), Some("my own"));
-    assert!(read("llms.txt").is_some_and(|llms| llms.contains("- [Guide](/guide.md)")));
+    assert!(
+        read("llms.txt").is_some_and(|llms| llms.contains("- [Guide](/guide/index.md)"))
+    );
     assert!(read(".well-known/agent-skills/one/SKILL.md").is_some());
     assert!(read(".well-known/agent-skills/index.json").is_some());
     let headers = read("_headers").unwrap_or_default();
@@ -231,7 +235,7 @@ fn prefixes_every_url_with_the_base() -> crate::Result<()> {
     for page in [
         "index.html",
         "guides/index.html",
-        "guides/build.html",
+        "guides/build/index.html",
         "404.html",
     ] {
         let html = read(page);
@@ -251,27 +255,26 @@ fn prefixes_every_url_with_the_base() -> crate::Result<()> {
                 );
             }
         }
-        assert!(html.contains("../index.html") || page != "guides/build.html");
+        let up = r#"<a href="/repo/">Up</a>"#;
+        assert!(html.contains(up) || page != "guides/build/index.html");
     }
     assert!(
         read("index.html")
             .contains(r#"<link rel="canonical" href="https://x.dev/repo/">"#)
     );
     assert!(
-        read("guides/build.html")
-            .contains(r#"content="https://x.dev/repo/guides/build.html""#)
+        read("guides/build/index.html")
+            .contains(r#"content="https://x.dev/repo/guides/build/""#)
     );
     assert!(read("sitemap.xml").contains("<loc>https://x.dev/repo/guides/</loc>"));
     assert!(read("robots.txt").contains("Sitemap: https://x.dev/repo/sitemap.xml"));
-    assert!(read("llms.txt").contains("(https://x.dev/repo/guides/build.md)"));
+    assert!(read("llms.txt").contains("(https://x.dev/repo/guides/build/index.md)"));
     assert!(read("_headers").starts_with("/repo/\n  Link: </repo/llms.txt>"));
     assert!(
         read("index.html")
             .contains(r#"<htmlpress-search data-index="/repo/_htmlpress/search.json">"#)
     );
-    assert!(
-        read("_htmlpress/search.json").contains("\"url\":\"/repo/guides/build.html\"")
-    );
+    assert!(read("_htmlpress/search.json").contains("\"url\":\"/repo/guides/build/\""));
     assert!(
         read(".well-known/agent-skills/index.json")
             .contains("\"url\": \"/repo/.well-known/agent-skills/one/SKILL.md\"")
@@ -345,11 +348,11 @@ fn builds_a_blog_and_a_changelog() -> crate::Result<()> {
     build_site(&options)?;
     let feed = read("blog/rss.xml");
     assert!(
-        feed.contains("<link>https://x.dev/blog/hello.html</link>"),
+        feed.contains("<link>https://x.dev/blog/hello/</link>"),
         "{feed}"
     );
     assert!(feed.contains("<pubDate>Thu, 01 Oct 2026 00:00:00 +0000</pubDate>"));
-    assert!(read("blog/index.html").contains("href=\"/blog/hello.html\""));
+    assert!(read("blog/index.html").contains("href=\"/blog/hello/\""));
     assert!(read("blog/tags/news/index.html").contains("Posts tagged ‘news’"));
     let version = read("changelog/0-2-0/index.html");
     assert!(version.contains("<h1>0.2.0</h1>"));
@@ -361,9 +364,11 @@ fn builds_a_blog_and_a_changelog() -> crate::Result<()> {
     let nav = version.find("href=\"/changelog/\"").unwrap_or(usize::MAX);
     assert!(nav < version.find("href=\"/changelog/0-1-0/\"").unwrap_or(0));
     assert!(read("index.html").contains("type=\"application/rss+xml\""));
-    assert!(read("sitemap.xml").contains(
-        "<loc>https://x.dev/blog/hello.html</loc><lastmod>2026-10-01</lastmod>"
-    ));
+    assert!(
+        read("sitemap.xml").contains(
+            "<loc>https://x.dev/blog/hello/</loc><lastmod>2026-10-01</lastmod>"
+        )
+    );
     Ok(())
 }
 

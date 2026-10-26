@@ -38,9 +38,11 @@ The config keys are in `htmlpress-configuration`; a different look in `htmlpress
 - Other `<head>` tags (`<link>`, `<style>`, `<script>`) are kept and added after the theme.
 - The navigation nests pages by folder at any depth (`guides/cli/…` inside `guides/…`), each
   group named by its `index.html`, whose title links to it.
-- Pages are written to the same path, so link between them with relative hrefs
-  (`guides/build.html`). Images and other files are copied as-is; a relative `src`,
-  `srcset` or `poster` resolves from the source file, even when the page moves.
+- Each page is served at its own folder URL: `guides/build.html` at `/guides/build/`,
+  `guides/index.html` at `/guides/`. Link to the page file (`guides/build.html`, relative or
+  root-relative) or to its URL: a link naming a page's file becomes its URL. Images and other
+  files are copied as-is; a relative `href`, `src`, `srcset` or `poster` resolves from the
+  source file, even when the page moves.
 - A root `404.html` is the not-found page, kept out of the navigation; without one a built-in
   is used.
 
@@ -125,7 +127,7 @@ component, not bare text.
 | `<htmlpress-file-tree>` + nested `<ul>`          | a file tree; an `<li>` holding a `<ul>` is a folder                                                                     |
 | `<htmlpress-table>` + `<table>`                  | a table sorted by a click on a `<thead>` header                                                                         |
 | `<htmlpress-zoom>` + `<img>`                     | an image that opens full screen on click                                                                                |
-| `<htmlpress-icon name="…">`                      | an inline Lucide icon; names at htmlpress.dev/authoring/rich-elements.html#icons                                        |
+| `<htmlpress-icon name="…">`                      | an inline Lucide icon; names at htmlpress.dev/authoring/rich-elements/#icons                                            |
 | `<htmlpress-button type="…">` + `<a>`            | a call-to-action link; `type` `secondary`/`outline`/`ghost`/`link`/`positive`/`warning`/`destructive`, `size` `sm`/`lg` |
 | `<htmlpress-package-tabs>` + `<pre><code>`       | one `npm`/`npx` command, built into npm, pnpm, yarn and bun tabs                                                        |
 | `<htmlpress-terminal title="…">` + `<pre>`       | terminal output: `<kbd>` command, `<samp>` output, `<ins>`/`<del>`/`<mark>` colours                                     |
@@ -148,5 +150,5 @@ For a visual check, run `start` and open the page; look at it narrow as well as 
 ## References
 
 - Pages: https://htmlpress.dev/authoring/
-- Components: https://htmlpress.dev/authoring/rich-elements.html
-- Code blocks: https://htmlpress.dev/authoring/code-blocks.html
+- Components: https://htmlpress.dev/authoring/rich-elements/
+- Code blocks: https://htmlpress.dev/authoring/code-blocks/

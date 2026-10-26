@@ -111,7 +111,7 @@
         Wraps the page in <code>.htmlpress/layouts/&lt;name&gt;.html</code> instead, for a
         page that wants different chrome, such as a landing page without the sidebar. A
         missing layout fails the build; see
-        <a href="/customization/overriding-escaping.html">Overriding and Escaping</a>.
+        <a href="/customization/overriding-escaping/">Overriding and Escaping</a>.
       </td>
     </tr>
     <tr>
@@ -123,9 +123,9 @@
       <td><code>&lt;meta name="icon"&gt;</code></td>
       <td>none</td>
       <td>
-        A <a href="/authoring/rich-elements.html#icons">built-in icon</a> before a
-        top-level navigation entry, or a folder's group for its index page; pages inside a
-        folder show none. An unknown name fails the build.
+        A <a href="/authoring/rich-elements/#icons">built-in icon</a> before a top-level
+        navigation entry, or a folder's group for its index page; pages inside a folder
+        show none. An unknown name fails the build.
       </td>
     </tr>
     <tr>
@@ -183,37 +183,39 @@
 
 <h2>URL</h2>
 <p>
-  A page is written to the same path it was read from, and <code>index.html</code> is
-  served at its folder: <code>guides/index.html</code> at <code>/guides/</code>. See
-  <a href="/authoring/links.html">Links</a>.
+  A page is served at a folder named after its file, <code>guides/build.html</code> at
+  <code>/guides/build/</code>, and <code>index.html</code> at its own folder:
+  <code>guides/index.html</code> at <code>/guides/</code>. See
+  <a href="/authoring/links/">Links</a>.
 </p>
 <p>
   <code>&lt;meta name="path" content="/start/"&gt;</code> serves the page at another URL,
-  independent of its file path: a path ending in <code>/</code> is built to that folder's
-  <code>index.html</code>, one ending in <code>.html</code> to that file. Two pages on one
-  URL fail the build.
+  independent of its file path: a path ending in <code>/</code> names that folder, and one
+  ending in <code>.html</code> the page that file would be, so
+  <code>/start.html</code> serves it at <code>/start/</code> too. Two pages on one URL
+  fail the build.
 </p>
 <p>
   On a site with <code>languages</code>, a file named <code>guide.es.html</code>, or one
   with <code>&lt;meta name="language" content="es"&gt;</code>, is the Spanish translation
-  of <code>guide.html</code>, served at <code>/es/guide.html</code>; see
-  <a href="/customization/translations.html">Translations</a>.
+  of <code>guide.html</code>, served at <code>/es/guide/</code>; see
+  <a href="/customization/translations/">Translations</a>.
 </p>
 
 <h2>Overriding without editing</h2>
 <p>
   Every field here can also be set from <code>htmlpress.yaml</code>, without touching the
-  file; see <a href="/customization/article-patches.html">Article Patches</a>.
+  file; see <a href="/customization/article-patches/">Article Patches</a>.
 </p>
 
 <h2>See also</h2>
 <ul>
   <li>
-    <a href="/customization/article-sections.html">Article Sections</a> — how folders
-    group pages in the navigation.
+    <a href="/customization/article-sections/">Article Sections</a> — how folders group
+    pages in the navigation.
   </li>
   <li>
-    <a href="/customization/article-patches.html">Article Patches</a> — set page metadata
-    from config.
+    <a href="/customization/article-patches/">Article Patches</a> — set page metadata from
+    config.
   </li>
 </ul>

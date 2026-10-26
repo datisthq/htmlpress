@@ -121,7 +121,7 @@
         Envuelve la página en <code>.htmlpress/layouts/&lt;name&gt;.html</code> en su
         lugar, para una página que quiere otro marco, como una página de inicio sin la
         barra lateral. Un layout que no existe hace fallar la compilación; consulta
-        <a href="/es/customization/overriding-escaping.html">Sobrescritura/Escape</a>.
+        <a href="/es/customization/overriding-escaping/">Sobrescritura/Escape</a>.
       </td>
     </tr>
     <tr>
@@ -133,9 +133,9 @@
       <td><code>&lt;meta name="icon"&gt;</code></td>
       <td>ninguno</td>
       <td>
-        Un <a href="/es/authoring/rich-elements.html">icono integrado</a> antes de una
-        entrada de primer nivel de la navegación, o del grupo de una carpeta para su
-        página índice; las páginas dentro de una carpeta no muestran ninguno. Un nombre
+        Un <a href="/es/authoring/rich-elements/">icono integrado</a> antes de una entrada
+        de primer nivel de la navegación, o del grupo de una carpeta para su página
+        índice; las páginas dentro de una carpeta no muestran ninguno. Un nombre
         desconocido hace fallar la compilación.
       </td>
     </tr>
@@ -201,39 +201,40 @@
 
 <h2>URL</h2>
 <p>
-  Una página se escribe en la misma ruta desde la que se leyó, e
-  <code>index.html</code> se sirve en su carpeta: <code>guides/index.html</code> en
-  <code>/guides/</code>. Consulta <a href="/es/authoring/links.html">Enlaces</a>.
+  Una página se sirve en una carpeta con el nombre de su archivo,
+  <code>guides/build.html</code> en <code>/guides/build/</code>, e
+  <code>index.html</code> en su propia carpeta: <code>guides/index.html</code> en
+  <code>/guides/</code>. Consulta <a href="/es/authoring/links/">Enlaces</a>.
 </p>
 <p>
   <code>&lt;meta name="path" content="/start/"&gt;</code> sirve la página en otra URL,
-  independiente de la ruta de su archivo: una ruta que termina en <code>/</code> se
-  compila al <code>index.html</code> de esa carpeta, y una que termina en
-  <code>.html</code> a ese archivo. Dos páginas en una misma URL hacen fallar la
-  compilación.
+  independiente de la ruta de su archivo: una ruta que termina en <code>/</code> nombra
+  esa carpeta, y una que termina en <code>.html</code> la página que sería ese archivo,
+  así que <code>/start.html</code> también la sirve en <code>/start/</code>. Dos páginas
+  en una misma URL hacen fallar la compilación.
 </p>
 <p>
   En un sitio con <code>languages</code>, un archivo llamado <code>guide.es.html</code>, o
   uno con <code>&lt;meta name="language" content="es"&gt;</code>, es la traducción al
-  español de <code>guide.html</code>, servida en <code>/es/guide.html</code>; consulta
-  <a href="/es/customization/translations.html">Traducciones</a>.
+  español de <code>guide.html</code>, servida en <code>/es/guide/</code>; consulta
+  <a href="/es/customization/translations/">Traducciones</a>.
 </p>
 
 <h2>Sobrescribir sin editar</h2>
 <p>
   Cada campo de esta página también se puede definir desde <code>htmlpress.yaml</code>,
   sin tocar el archivo; consulta
-  <a href="/es/customization/article-patches.html">Parches de artículos</a>.
+  <a href="/es/customization/article-patches/">Parches de artículos</a>.
 </p>
 
 <h2>Ver también</h2>
 <ul>
   <li>
-    <a href="/es/customization/article-sections.html">Secciones de artículos</a>: cómo las
+    <a href="/es/customization/article-sections/">Secciones de artículos</a>: cómo las
     carpetas agrupan las páginas en la navegación.
   </li>
   <li>
-    <a href="/es/customization/article-patches.html">Parches de artículos</a>: definir los
+    <a href="/es/customization/article-patches/">Parches de artículos</a>: definir los
     metadatos de una página desde la configuración.
   </li>
 </ul>

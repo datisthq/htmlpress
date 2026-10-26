@@ -28,9 +28,7 @@
     <p>
       Most projects only need to keep the latest docs plus the previous major. If old
       releases only need their notes, a
-      <a href="/customization/article-sections.html#changelog-sections"
-        >changelog section</a
-      >
+      <a href="/customization/article-sections/#changelog-sections">changelog section</a>
       is enough.
     </p>
 
@@ -68,7 +66,7 @@ sections:
     </p>
     <p>To warn readers on old pages, start each with a callout:</p>
     <pre><code class="language-html">&lt;htmlpress-callout type="warning"&gt;
-  &lt;p&gt;You are reading the docs for v1. &lt;a href="/getting-started.html"&gt;See the latest version&lt;/a&gt;.&lt;/p&gt;
+  &lt;p&gt;You are reading the docs for v1. &lt;a href="/getting-started/"&gt;See the latest version&lt;/a&gt;.&lt;/p&gt;
 &lt;/htmlpress-callout&gt;</code></pre>
     <p>Things to know:</p>
     <ul>
@@ -85,7 +83,7 @@ sections:
       build each branch as its own site and serve it from its own address: a subdomain
       (<code>v1.docs.example.com</code>) or a sub-path (<code>docs.example.com/v1/</code>)
       with
-      <a href="/deployment/github-pages.html#configure-base-for-project-sites"
+      <a href="/deployment/github-pages/#configure-base-for-project-sites"
         ><code>base</code></a
       >.
     </p>
@@ -99,8 +97,7 @@ banner: You are reading the v1 docs · &lt;a href="https://docs.example.com/"&gt
       <code>htmlpress start</code> and <code>preview</code> serve under the same base, so
       the branch previews exactly as it deploys. Link the deploys to each other with a
       <code>custom</code> section or a header
-      <a href="/customization/external-links.html">link</a>, which acts as a version
-      switcher:
+      <a href="/customization/external-links/">link</a>, which acts as a version switcher:
     </p>
     <pre data-title="htmlpress.yaml (main branch)"><code class="language-yaml">sections:
   - title: Docs
@@ -119,11 +116,11 @@ banner: You are reading the v1 docs · &lt;a href="https://docs.example.com/"&gt
     <h2>See also</h2>
     <ul>
       <li>
-        <a href="/customization/article-sections.html">Article Sections</a>: section
-        types, prefixes and matching.
+        <a href="/customization/article-sections/">Article Sections</a>: section types,
+        prefixes and matching.
       </li>
       <li>
-        <a href="/customization/site-metadata.html">Site Metadata</a>: the
+        <a href="/customization/site-metadata/">Site Metadata</a>: the
         <code>banner</code>, <code>title</code> and <code>site</code> fields used above.
       </li>
     </ul>

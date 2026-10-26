@@ -26,11 +26,10 @@
   "workers_dev": true,
   "assets": {
     "directory": ".htmlpress/build",
-    "html_handling": "none",
     "not_found_handling": "404-page",
   },
 }</code></pre>
-<p>Four fields do the heavy lifting:</p>
+<p>Three fields do the heavy lifting:</p>
 <table>
   <thead>
     <tr>
@@ -42,14 +41,6 @@
     <tr>
       <td><code>assets.directory</code></td>
       <td>Points Wrangler at the htmlpress build output. Every file is served as-is.</td>
-    </tr>
-    <tr>
-      <td><code>assets.html_handling</code></td>
-      <td>
-        Serves every file at its own path. The default redirects
-        <code>/guide.html</code> to <code>/guide</code>, away from the URLs htmlpress
-        links to and the Markdown rule below matches.
-      </td>
     </tr>
     <tr>
       <td><code>assets.not_found_handling</code></td>
@@ -131,9 +122,9 @@ jobs:
   AI agents ask for a page as Markdown by sending <code>Accept: text/markdown</code>.
   Static assets always answer with HTML, so add a URL Rewrite Rule to your zone that
   points those requests at the page's
-  <a href="/customization/ai-agents.html">Markdown copy</a>:
-  <code>guides/build.html</code> has <code>guides/build.md</code> beside it. URL Rewrite
-  Rules are available on every plan, including Free, and the site stays fully static.
+  <a href="/customization/ai-agents/">Markdown copy</a>: <code>/guides/build/</code> has
+  <code>/guides/build/index.md</code> beside its HTML. URL Rewrite Rules are available on
+  every plan, including Free, and the site stays fully static.
 </p>
 <p>
   In the dashboard, open your domain, go to
@@ -159,7 +150,7 @@ jobs:
       <td>Path</td>
       <td>
         Rewrite to → <strong>Dynamic</strong> →
-        <code>wildcard_replace(http.request.uri.path, "*.html", "${1}.md")</code>
+        <code>concat(http.request.uri.path, "index.md")</code>
       </td>
     </tr>
     <tr>
@@ -168,12 +159,9 @@ jobs:
     </tr>
   </tbody>
 </table>
-<pre><code>any(http.request.headers["accept"][*] contains "text/markdown") and ends_with(http.request.uri.path, ".html")</code></pre>
+<pre><code>any(http.request.headers["accept"][*] contains "text/markdown") and ends_with(http.request.uri.path, "/")</code></pre>
 <p>
-  Page URLs end in <code>.html</code>, so the rule only touches pages. For folder URLs
-  such as <code>/guides/</code>, add a second rule matching
-  <code>ends_with(http.request.uri.path, "/")</code> that rewrites to
-  <code>concat(http.request.uri.path, "index.md")</code>. Static assets serve
+  Page URLs end in <code>/</code>, so the rule only touches pages. Static assets serve
   <code>.md</code> files as <code>text/markdown</code>, so the response type needs no
   extra rule.
 </p>
@@ -187,11 +175,11 @@ jobs:
 <h2>See also</h2>
 <ul>
   <li>
-    <a href="/customization/ai-agents.html">AI Agents</a>: what the build publishes for
+    <a href="/customization/ai-agents/">AI Agents</a>: what the build publishes for
     agents.
   </li>
   <li>
-    <a href="/customization/site-metadata.html">Site Metadata</a>: <code>site</code>
+    <a href="/customization/site-metadata/">Site Metadata</a>: <code>site</code>
     powers absolute URLs and the sitemap.
   </li>
   <li><a href="/deployment/">Deployment</a>: back to the host index.</li>

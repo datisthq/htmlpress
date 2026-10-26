@@ -1,7 +1,7 @@
 use std::path::Path;
 
 use crate::actions::date::format::format_feed_date;
-use crate::actions::page::read::read_page;
+use crate::actions::page::read::{create_output_path, read_page};
 use crate::actions::page::render::render_page;
 use crate::actions::section::generate::list_posts;
 use crate::actions::site::describe::{describe_language, describe_site};
@@ -32,7 +32,10 @@ pub fn build_site(options: &BuildOptions) -> crate::Result<BuildReport> {
     for view in &views {
         for page in view.pages.iter().filter(|page| !page.untranslated) {
             let html = render_page(view, page, options.reload)?;
-            write_file(&options.output.join(&page.path), html.as_bytes())?;
+            write_file(
+                &options.output.join(create_output_path(&page.path)),
+                html.as_bytes(),
+            )?;
         }
     }
     if !site.pages.iter().any(|page| page.path == NOT_FOUND_PAGE) {

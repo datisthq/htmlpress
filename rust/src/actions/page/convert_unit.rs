@@ -42,7 +42,10 @@ fn reduces_components_to_plain_markdown() -> crate::Result<()> {
 #[test]
 fn puts_the_markdown_beside_the_page() {
     assert_eq!(create_markdown_path("index.html"), "index.md");
-    assert_eq!(create_markdown_path("guides/build.html"), "guides/build.md");
+    assert_eq!(
+        create_markdown_path("guides/build.html"),
+        "guides/build/index.md"
+    );
 }
 
 #[test]

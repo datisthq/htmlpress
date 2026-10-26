@@ -40,7 +40,7 @@ fn read_file(files: &[(String, Vec<u8>)], path: &str) -> Option<String> {
 fn writes_markdown_pages_and_llms() -> crate::Result<()> {
     let files = describe_site(&create_site()?)?;
     assert_eq!(
-        read_file(&files, "guides/build.md").as_deref(),
+        read_file(&files, "guides/build/index.md").as_deref(),
         Some("# Build\n\nRun it.\n")
     );
     assert!(read_file(&files, "404.md").is_none());
@@ -50,7 +50,7 @@ fn writes_markdown_pages_and_llms() -> crate::Result<()> {
             "# Docs\n\n> Docs for agents.\n\n",
             "## Pages\n\n- [Home](https://example.com/index.md)\n\n",
             "## Guides\n\n- [Guides](https://example.com/guides/index.md): How to.\n",
-            "- [Build](https://example.com/guides/build.md)\n",
+            "- [Build](https://example.com/guides/build/index.md)\n",
         ))
     );
     let headers = read_file(&files, "_headers").unwrap_or_default();

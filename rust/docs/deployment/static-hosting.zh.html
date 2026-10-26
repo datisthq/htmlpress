@@ -24,9 +24,10 @@
 
 <h2>预渲染与 SPA 回退</h2>
 <p>
-  每个页面都是一个真实的文件，写在其源文件对应的路径上：<code>guides/build.html</code> 在
-  <code>/guides/build.html</code> 提供，文件夹的 <code>index.html</code> 响应其
-  <code>/guides/</code> URL。没有客户端路由，因此任何托管平台都不需要 SPA 回退。
+  每个页面都是一个真实的文件，即以其源文件命名的文件夹中的一个 <code>index.html</code>：
+  <code>guides/build.html</code> 写入 <code>guides/build/index.html</code>，在
+  <code>/guides/build/</code> 提供，就像任何静态托管平台响应文件夹 URL
+  那样。没有客户端路由，因此任何托管平台都不需要 SPA 回退。
 </p>
 <p>
   值得配置的是未找到页面。每次构建都会在根目录写出一个
@@ -140,7 +141,7 @@ jobs:
 <h2>另请参阅</h2>
 <ul>
   <li>
-    <a href="/zh/customization/site-metadata.html">站点元数据</a>：<code>site</code>
+    <a href="/zh/customization/site-metadata/">站点元数据</a>：<code>site</code>
     用于生成绝对 URL 和 sitemap。
   </li>
   <li><a href="/zh/deployment/">部署</a>：返回托管平台索引。</li>

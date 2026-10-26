@@ -51,7 +51,12 @@ run from source: `cargo run --manifest-path rust/Cargo.toml -- build docs`.
    never read back and a repo-root project never walks `rust/target`. `select_paths`
    sorts them by `include` (pages, `**/*.html` when unset) and `exclude` (dropped); other
    files under a base, `.html` outside `include` too, are copied. Every path is served
-   without its base, so `Page.path` is the output path and `Page.source` the file's. Pages sort `index.html`
+   without its base, so `Page.path` is the page's path without it (`guides/build.html`) and `Page.source`
+   the file's. The nav, breadcrumbs and Markdown copies nest by `Page.path`; a page is
+   written to `create_output_path` (`guides/build/index.html`) and served at `create_url`
+   (`/guides/build/`), the root `404.html` excepted. `page/rebase` then makes relative URLs
+   root-relative from the source folder, since every page sits one folder deeper, and
+   turns a link naming a page's file into its URL (`list_links`). Pages sort `index.html`
    first, then by `<meta name="order">` (negatives last), then by path; `nav/build` nests
    them by folder for the sidebar and the pager.
    `scan_site` resolves `<htmlpress-include>` (`page/include`, through `path/contain`) in a

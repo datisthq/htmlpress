@@ -38,17 +38,15 @@ fn builds_a_blog_index_and_tag_pages() -> crate::Result<()> {
     assert_eq!(urls, ["/blog/", "/blog/tags/rust/", "/blog/tags/web/"]);
     let index = &generated[0].content;
     assert!(
-        index.find("/blog/new.html") < index.find("/blog/old.html"),
+        index.find("/blog/new/") < index.find("/blog/old/"),
         "{index}"
     );
     assert!(index.contains("<p><span>Oct 1, 2026</span><span>Ann</span></p>"));
     assert_eq!(generated[0].updated.as_deref(), Some("2026-10-01"));
     assert!(!index.contains("<htmlpress-badge"));
+    assert!(index.contains("<article><h2") && index.contains(r#"<a href="/blog/new/">"#));
     assert!(
-        index.contains("<article><h2") && index.contains(r#"<a href="/blog/new.html">"#)
-    );
-    assert!(
-        generated[2].content.contains("/blog/new.html")
+        generated[2].content.contains("/blog/new/")
             && !generated[2].content.contains("old")
     );
     assert!(generated[0].source.is_empty());

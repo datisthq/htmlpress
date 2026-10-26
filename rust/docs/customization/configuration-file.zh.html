@@ -110,7 +110,7 @@
           <td>
             添加到每个页面 head 中的 <code>meta</code>、<code>links</code> 和
             <code>scripts</code>；参见
-            <a href="/zh/customization/site-metadata.html">站点元数据</a>
+            <a href="/zh/customization/site-metadata/">站点元数据</a>
           </td>
         </tr>
         <tr>
@@ -118,7 +118,7 @@
           <td>无</td>
           <td>
             页眉或侧边栏中的链接；参见
-            <a href="/zh/customization/external-links.html">外部链接</a>
+            <a href="/zh/customization/external-links/">外部链接</a>
           </td>
         </tr>
         <tr>
@@ -126,7 +126,7 @@
           <td>无</td>
           <td>
             拥有独立导航的站点部分；参见
-            <a href="/zh/customization/article-sections.html">文章分区</a>
+            <a href="/zh/customization/article-sections/">文章分区</a>
           </td>
         </tr>
         <tr>
@@ -141,7 +141,7 @@
             <code>search</code>、<code>aiInput</code> 和
             <code>aiTrain</code>：自动化系统可以如何使用内容，写入
             <code>robots.txt</code>；参见
-            <a href="/zh/customization/ai-agents.html">AI 智能体</a>
+            <a href="/zh/customization/ai-agents/">AI 智能体</a>
           </td>
         </tr>
         <tr>
@@ -149,7 +149,7 @@
           <td><code>catppuccin-latte</code>, <code>catppuccin-mocha</code></td>
           <td>
             代码块主题；参见
-            <a href="/zh/customization/syntax-themes.html">语法主题</a>。
+            <a href="/zh/customization/syntax-themes/">语法主题</a>。
           </td>
         </tr>
         <tr>
@@ -157,7 +157,7 @@
           <td>无</td>
           <td>
             通过配置设置的页面元数据，以及作为页面发布的 <code>.md</code> 文件；参见
-            <a href="/zh/customization/article-patches.html">文章补丁</a>。
+            <a href="/zh/customization/article-patches/">文章补丁</a>。
           </td>
         </tr>
         <tr>
@@ -165,7 +165,7 @@
           <td>无</td>
           <td>
             一个 glob 或一个 <code>SKILL.md</code> 文件列表，路径相对于项目，作为<a
-              href="/zh/customization/ai-agents.html"
+              href="/zh/customization/ai-agents/"
               >智能体技能</a
             >发布
           </td>
@@ -175,7 +175,7 @@
           <td>一种，英语</td>
           <td>
             站点发布的语言，默认语言在前；参见
-            <a href="/zh/customization/translations.html">翻译</a>
+            <a href="/zh/customization/translations/">翻译</a>
           </td>
         </tr>
       </tbody>
@@ -198,7 +198,7 @@
       <code>include</code> 会替换默认值，所以要列出你需要的每个文件夹。每个 glob
       中第一个通配符之前的文件夹是它的基础目录：只读取基础目录下的文件，并在提供时去掉该基础目录，因此
       <code>docs/**/*.html</code> 会把 <code>docs/guide.html</code> 构建为
-      <code>/guide.html</code>。基础目录下的其他文件，包括被 <code>include</code> 排除的
+      <code>/guide/</code>。基础目录下的其他文件，包括被 <code>include</code> 排除的
       <code>.html</code> 文件，都按原样复制。
     </p>
     <p>
@@ -212,11 +212,9 @@
       设置 <code>base</code> 后，构建中的每个根相对 URL（位于
       <code>href</code>、<code>src</code>、<code>srcset</code>、<code>poster</code> 和
       <code>action</code> 中，无论在页面、布局还是配置的 HTML 中）都会加上它作为前缀：写
-      <code>/guide.html</code>，站点就会链接到 <code>/repo/guide.html</code>。相对 URL
-      和绝对 URL 保持不变，页面自身 CSS 中的 <code>url()</code> 也不受影响。<code
-        >start</code
-      >
-      和 <code>preview</code> 同样在基础路径下提供站点，并把
+      <code>/guide/</code>，站点就会链接到 <code>/repo/guide/</code>。相对 URL 和绝对 URL
+      保持不变，页面自身 CSS 中的 <code>url()</code> 也不受影响。<code>start</code> 和
+      <code>preview</code> 同样在基础路径下提供站点，并把
       <code>/</code> 重定向到那里；修改 <code>base</code> 后需重启 <code>start</code>。
     </p>
 
@@ -226,7 +224,7 @@
 title: Htmlpress
 description: Turn a folder of HTML pages into a site.
 logo: /logo.svg
-banner: 'Version 1 is out: &lt;a href="/changelog.html"&gt;read more&lt;/a&gt;'
+banner: 'Version 1 is out: &lt;a href="/changelog/"&gt;read more&lt;/a&gt;'
 include: docs/**/*.html
 exclude: docs/**/_*
 links:
@@ -247,28 +245,27 @@ edit: https://github.com/datisthq/htmlpress/edit/main/docs/</code></pre>
     <h2>下一步</h2>
     <ul>
       <li>
-        <a href="/zh/customization/site-metadata.html">站点元数据</a
+        <a href="/zh/customization/site-metadata/">站点元数据</a
         >：标题、描述、favicon、logo。
       </li>
       <li>
-        <a href="/zh/customization/article-sections.html">文章分区</a
+        <a href="/zh/customization/article-sections/">文章分区</a
         >：将站点划分为拥有独立导航的分区。
       </li>
       <li>
-        <a href="/zh/customization/external-links.html">外部链接</a>：页眉和侧边栏链接。
+        <a href="/zh/customization/external-links/">外部链接</a>：页眉和侧边栏链接。
       </li>
-      <li><a href="/zh/customization/syntax-themes.html">语法主题</a>：代码块的外观。</li>
+      <li><a href="/zh/customization/syntax-themes/">语法主题</a>：代码块的外观。</li>
       <li>
-        <a href="/zh/customization/article-patches.html">文章补丁</a
+        <a href="/zh/customization/article-patches/">文章补丁</a
         >：通过配置覆盖页面元数据。
       </li>
       <li>
-        <a href="/zh/customization/overriding-escaping.html">覆盖/弹出</a
+        <a href="/zh/customization/overriding-escaping/">覆盖/弹出</a
         >：替换任何内置的布局、样式表或组件。
       </li>
       <li>
-        <a href="/zh/customization/custom-routes.html">自定义路由</a
-        >：拥有独立布局的页面。
+        <a href="/zh/customization/custom-routes/">自定义路由</a>：拥有独立布局的页面。
       </li>
     </ul>
   </body>

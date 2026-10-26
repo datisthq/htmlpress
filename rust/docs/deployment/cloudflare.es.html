@@ -27,11 +27,10 @@
   "workers_dev": true,
   "assets": {
     "directory": ".htmlpress/build",
-    "html_handling": "none",
     "not_found_handling": "404-page",
   },
 }</code></pre>
-<p>Cuatro campos hacen el trabajo pesado:</p>
+<p>Tres campos hacen el trabajo pesado:</p>
 <table>
   <thead>
     <tr>
@@ -45,14 +44,6 @@
       <td>
         Apunta Wrangler a la salida de compilación de htmlpress. Cada archivo se sirve tal
         cual.
-      </td>
-    </tr>
-    <tr>
-      <td><code>assets.html_handling</code></td>
-      <td>
-        Sirve cada archivo en su propia ruta. El valor por defecto redirige
-        <code>/guide.html</code> a <code>/guide</code>, lejos de las URLs a las que enlaza
-        htmlpress y que coincide la regla de Markdown de más abajo.
       </td>
     </tr>
     <tr>
@@ -140,10 +131,10 @@ jobs:
   Los agentes de IA piden una página en Markdown enviando
   <code>Accept: text/markdown</code>. Los assets estáticos siempre responden con HTML, así
   que añade a tu zona una URL Rewrite Rule que dirija esas peticiones a la
-  <a href="/es/customization/ai-agents.html">copia en Markdown</a> de la página:
-  <code>guides/build.html</code> tiene <code>guides/build.md</code> a su lado. Las URL
-  Rewrite Rules están disponibles en todos los planes, incluido Free, y el sitio sigue
-  siendo totalmente estático.
+  <a href="/es/customization/ai-agents/">copia en Markdown</a> de la página:
+  <code>/guides/build/</code> tiene <code>/guides/build/index.md</code> junto a su HTML.
+  Las URL Rewrite Rules están disponibles en todos los planes, incluido Free, y el sitio
+  sigue siendo totalmente estático.
 </p>
 <p>
   En el panel, abre tu dominio, ve a
@@ -169,7 +160,7 @@ jobs:
       <td>Path</td>
       <td>
         Rewrite to → <strong>Dynamic</strong> →
-        <code>wildcard_replace(http.request.uri.path, "*.html", "${1}.md")</code>
+        <code>concat(http.request.uri.path, "index.md")</code>
       </td>
     </tr>
     <tr>
@@ -178,14 +169,12 @@ jobs:
     </tr>
   </tbody>
 </table>
-<pre><code>any(http.request.headers["accept"][*] contains "text/markdown") and ends_with(http.request.uri.path, ".html")</code></pre>
+<pre><code>any(http.request.headers["accept"][*] contains "text/markdown") and ends_with(http.request.uri.path, "/")</code></pre>
 <p>
-  Las URLs de página terminan en <code>.html</code>, así que la regla solo afecta a las
-  páginas. Para URLs de carpeta como <code>/guides/</code>, añade una segunda regla que
-  coincida con <code>ends_with(http.request.uri.path, "/")</code> y reescriba a
-  <code>concat(http.request.uri.path, "index.md")</code>. Los assets estáticos sirven los
-  archivos <code>.md</code> como <code>text/markdown</code>, así que el tipo de respuesta
-  no necesita ninguna regla adicional.
+  Las URLs de página terminan en <code>/</code>, así que la regla solo afecta a las
+  páginas. Los assets estáticos sirven los archivos <code>.md</code> como
+  <code>text/markdown</code>, así que el tipo de respuesta no necesita ninguna regla
+  adicional.
 </p>
 <htmlpress-callout type="warning">
   <p>
@@ -197,11 +186,11 @@ jobs:
 <h2>Ver también</h2>
 <ul>
   <li>
-    <a href="/es/customization/ai-agents.html">Agentes de IA</a>: lo que la compilación
+    <a href="/es/customization/ai-agents/">Agentes de IA</a>: lo que la compilación
     publica para los agentes.
   </li>
   <li>
-    <a href="/es/customization/site-metadata.html">Metadatos del sitio</a>:
+    <a href="/es/customization/site-metadata/">Metadatos del sitio</a>:
     <code>site</code> hace posibles las URLs absolutas y el sitemap.
   </li>
   <li><a href="/es/deployment/">Despliegue</a>: volver al índice de hosts.</li>

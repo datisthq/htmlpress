@@ -6,6 +6,7 @@ use htmd::{Element, HtmlToMarkdown};
 use lol_html::html_content::ContentType;
 use lol_html::{RewriteStrSettings, element, rewrite_str};
 
+use crate::actions::page::read::create_output_path;
 use crate::models::error::Error;
 use crate::models::page::Page;
 
@@ -52,9 +53,10 @@ pub(crate) fn convert_page(page: &Page) -> crate::Result<String> {
     Ok(format!("{}\n", parts.join("\n\n")))
 }
 
-/// Where a page's Markdown sits beside it: `guides/build.html` → `guides/build.md`.
+/// Where a page's Markdown sits beside it: `guides/build.html` → `guides/build/index.md`.
 pub(crate) fn create_markdown_path(path: &str) -> String {
-    let stem = path.strip_suffix(".html").unwrap_or(path);
+    let output = create_output_path(path);
+    let stem = output.strip_suffix(".html").unwrap_or(&output);
     format!("{stem}.md")
 }
 

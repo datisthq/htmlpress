@@ -10,6 +10,7 @@ use crate::actions::text::enrich::enrich_text;
 use crate::actions::text::math::render_math;
 use crate::models::error::Error;
 use crate::models::page::{Heading, Page, SourceAction};
+use crate::settings::NOT_FOUND_PAGE;
 
 /// Split one HTML source into a [`Page`]. `path` is relative to the project root. A full
 /// document and a bare fragment both work: the wrappers are dropped, the content kept.
@@ -528,9 +529,9 @@ fn read_flag(el: &lol_html::html_content::Element, name: &str) -> Result<bool, S
     }
 }
 
-/// The output path a `path` override builds a page to: `/intro/` → `intro/index.html`,
-/// `/intro.html` → `intro.html`. Anything else is an error, since a URL that is neither a
-/// folder nor an `.html` file could not be served as the page.
+/// The page path a `path` override stands for: `/intro/` → `intro/index.html`,
+/// `/intro.html` → `intro.html`, both served at `/intro/`. Anything else is an error,
+/// since a URL that is neither a folder nor an `.html` file could not name the page.
 pub(crate) fn create_route_path(route: &str) -> Result<String, String> {
     let Some(relative) = route.strip_prefix('/') else {
         return Err(format!("path must start with \"/\", got \"{route}\""));
@@ -550,12 +551,26 @@ pub(crate) fn create_route_path(route: &str) -> Result<String, String> {
     }
 }
 
+/// The folder URL a page is served at: `guides/build.html` → `/guides/build/`, and
+/// `guides/index.html` → `/guides/`. The 404 page keeps its file, where hosts look for it.
 pub(crate) fn create_url(path: &str) -> String {
-    match path.strip_suffix("index.html") {
+    let output = create_output_path(path);
+    match output.strip_suffix("index.html") {
         Some(folder) if folder.is_empty() || folder.ends_with('/') => {
             format!("/{folder}")
         }
-        _ => format!("/{path}"),
+        _ => format!("/{output}"),
+    }
+}
+
+/// The file a page is written to: `guides/build.html` → `guides/build/index.html`.
+pub(crate) fn create_output_path(path: &str) -> String {
+    let name = path.rsplit('/').next().unwrap_or(path);
+    match path.strip_suffix(".html") {
+        Some(stem) if name != "index.html" && path != NOT_FOUND_PAGE => {
+            format!("{stem}/index.html")
+        }
+        _ => path.to_owned(),
     }
 }
 

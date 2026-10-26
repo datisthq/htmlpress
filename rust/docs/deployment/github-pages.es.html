@@ -32,9 +32,9 @@
 <p>
   Si publicas bajo <code>https://&lt;user&gt;.github.io/&lt;repo&gt;/</code>, define
   <code>base</code> para que cada URL relativa a la raíz de la compilación reciba el
-  prefijo. Sigue escribiendo los enlaces sin él (<code>/guides/build.html</code>);
-  htmlpress lo añade. <code>htmlpress start</code> y <code>preview</code> sirven bajo la
-  misma base, así que el desarrollo coincide con producción:
+  prefijo. Sigue escribiendo los enlaces sin él (<code>/guides/build/</code>); htmlpress
+  lo añade. <code>htmlpress start</code> y <code>preview</code> sirven bajo la misma base,
+  así que el desarrollo coincide con producción:
 </p>
 <pre><code class="language-yaml">site: https://acme.github.io
 base: /my-docs/</code></pre>
@@ -135,7 +135,7 @@ jobs:
 <h2>Ver también</h2>
 <ul>
   <li>
-    <a href="/es/customization/site-metadata.html">Metadatos del sitio</a>:
+    <a href="/es/customization/site-metadata/">Metadatos del sitio</a>:
     <code>site</code> es necesario para las URLs absolutas del sitemap y las etiquetas
     Open Graph.
   </li>

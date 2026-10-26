@@ -221,7 +221,7 @@ fn answer_request(request: Request, output: &Path, base: &str, state: &Reload) {
         }
         _ => match error {
             Some(error) if is_page_path(path) => answer_error(request, base, &error),
-            _ => answer_file(request, output, path),
+            _ => answer_file(request, output, &url, path),
         },
     };
     if let Err(error) = result {
@@ -301,10 +301,26 @@ fn answer_missing(request: Request, output: &Path) -> std::io::Result<()> {
     request.respond(add_headers(response, "404.html"))
 }
 
-fn answer_file(request: Request, output: &Path, path: &str) -> std::io::Result<()> {
+fn answer_file(
+    request: Request,
+    output: &Path,
+    url: &str,
+    path: &str,
+) -> std::io::Result<()> {
     let Some(file) = resolve_file(output, path) else {
         return answer_missing(request, output);
     };
+    // As static hosts do: a page served at `/guide` would resolve its relative URLs a level up
+    if !path.ends_with('/')
+        && file.ends_with("index.html")
+        && !path.ends_with("index.html")
+    {
+        let (location, query) = url
+            .split_once('?')
+            .map_or((url, None), |(a, b)| (a, Some(b)));
+        let query = query.map(|query| format!("?{query}")).unwrap_or_default();
+        return answer_redirect(request, &format!("{location}/{query}"));
+    }
     match std::fs::File::open(&file) {
         Ok(handle) => {
             let name = file.to_string_lossy().into_owned();
