@@ -56,13 +56,28 @@
 </p>
 
 <h2>Themed Images</h2>
-<htmlpress-callout label="Coming soon">
-  <p>
-    An image shown only in the light or only in the dark theme. A
-    <code>&lt;picture&gt;</code> with a <code>prefers-color-scheme</code> source follows
-    the system setting today, but not the header's theme toggle.
-  </p>
-</htmlpress-callout>
+<p>
+  <code>data-theme="light"</code> or <code>data-theme="dark"</code> on an
+  <code>&lt;img&gt;</code> shows it in that theme only, following the header's theme
+  toggle as well as the system setting; Livemark's <code>#light</code> and
+  <code>#dark</code> endings on the <code>src</code> work too. Put the pair side by side:
+</p>
+<pre><code class="language-html">&lt;img src="/screenshots/docs.webp" alt="The docs" data-theme="light"&gt;
+&lt;img src="/screenshots/docs-dark.webp" alt="The docs" data-theme="dark"&gt;</code></pre>
+<p>Renders as (toggle the theme to switch):</p>
+<p>
+  <img
+    src="/screenshots/docs.webp"
+    alt="The docs site in light mode"
+    data-theme="light"
+  />
+  <img
+    src="/screenshots/docs-dark.webp"
+    alt="The docs site in dark mode"
+    data-theme="dark"
+  />
+</p>
+<p>The page's Markdown copy keeps only the light image.</p>
 
 <h2>Image Zooming</h2>
 <p>

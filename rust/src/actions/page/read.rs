@@ -116,7 +116,19 @@ fn read_facts(html: &str) -> Result<Facts, String> {
                 title: String::new(),
                 level: if el.tag_name() == "h2" { 2 } else { 3 },
             };
-            facts.borrow_mut().headings.push((heading, true));
+            // `data-toc="false"` keeps a heading off the table of contents; "only" keeps it
+            // there but off the page, which the theme collapses to nothing in place
+            let listed = match el.get_attribute("data-toc").as_deref().map(str::trim) {
+                None | Some("only" | "true") => true,
+                Some("false") => false,
+                Some(other) => {
+                    return Err(format!(
+                        "data-toc on a heading must be false or only, got \"{other}\""
+                    )
+                    .into());
+                }
+            };
+            facts.borrow_mut().headings.push((heading, listed));
             Ok(())
         }))
         .append_element_content_handler(text!("h2, h3", |chunk| {
@@ -347,6 +359,17 @@ fn read_content(html: &str, headings: &[(Heading, bool)]) -> Result<String, Stri
                 el.set_attribute("id", &heading.id)?;
             }
             index.set(index.get() + 1);
+            Ok(())
+        }))
+        // Livemark's `#light` and `#dark` image suffixes, as the attribute the theme reads
+        .append_element_content_handler(element!("img[src]", |el| {
+            let src = el.get_attribute("src").unwrap_or_default();
+            for theme in ["light", "dark"] {
+                if let Some(bare) = src.strip_suffix(&format!("#{theme}")) {
+                    el.set_attribute("src", bare)?;
+                    el.set_attribute("data-theme", theme)?;
+                }
+            }
             Ok(())
         }))
         .append_document_content_handler(doctype!(|doctype| {

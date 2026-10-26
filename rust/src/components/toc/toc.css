@@ -30,6 +30,15 @@
   a[data-level="3"] {
     padding-left: 1.5rem;
   }
+  /* One written in a page is a card in the flow, not the sidebar's list */
+  :scope[data-inline] {
+    margin: 0 0 1.5em;
+    padding: 1.25rem 1.5rem;
+    border: 1px solid var(--htmlpress-border);
+    border-radius: var(--htmlpress-radius);
+    background: var(--htmlpress-surface);
+    font-size: 0.9375rem;
+  }
   a[aria-current="true"] {
     border-left-color: var(--htmlpress-accent);
     color: var(--htmlpress-accent);

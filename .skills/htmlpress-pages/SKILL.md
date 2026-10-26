@@ -27,6 +27,9 @@ navigation and a theme, so a page carries content only: no `<nav>`, no site head
 - Other `<head>` tags (`<link>`, `<style>`, `<script>`) are kept and added after the theme.
 - `<h2>` and `<h3>` outside components make the page's table of contents; one without an
   `id` gets a slug of its text. Give a heading an `id` only when a link needs it fixed.
+- A heading takes `data-toc="false"` (shown, not in the TOC) or `data-toc="only"` (in the TOC,
+  not shown); `<htmlpress-toc level="2">` in a page renders its TOC inline, and an image
+  with `data-theme="light"` or `"dark"` shows in that theme only.
 - The navigation groups pages by top folder (`guides/…`), named by `guides/index.html`, whose title links to it.
 - Pages are written to the same path, so link between them with relative hrefs
   (`guides/build.html`). Images and other files are copied as-is.

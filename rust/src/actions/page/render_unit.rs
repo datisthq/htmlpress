@@ -498,3 +498,26 @@ fn colors_code_blocks_with_the_configured_themes() -> crate::Result<()> {
     assert!(!site.pages[1].content.contains("light-dark("));
     Ok(())
 }
+
+#[test]
+fn fills_an_inline_toc_written_in_the_page() -> crate::Result<()> {
+    let mut site = create_site()?;
+    site.pages[1] = read_page(
+        "guide.html",
+        "<title>Guide</title><htmlpress-toc level=\"2\"></htmlpress-toc><h2>One</h2><h3>Sub</h3>",
+    )?;
+    let html = render_page(&site, &site.pages[1], false)?;
+    assert!(html.contains(r##"<htmlpress-toc level="2" data-inline=""><p>On this page</p><ul><li><a href="#one" data-level="2">One</a></li></ul></htmlpress-toc>"##), "{html}");
+    site.pages[1] = read_page(
+        "guide.html",
+        "<title>Guide</title><htmlpress-toc></htmlpress-toc><p>No headings.</p>",
+    )?;
+    let html = render_page(&site, &site.pages[1], false)?;
+    assert!(!html.contains("data-inline"));
+    site.pages[1] = read_page(
+        "guide.html",
+        "<htmlpress-toc level=\"4\"></htmlpress-toc><h2>A</h2>",
+    )?;
+    assert!(render_page(&site, &site.pages[1], false).is_err());
+    Ok(())
+}

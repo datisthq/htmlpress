@@ -89,6 +89,11 @@ fn simplify_components(html: &str) -> Result<String, String> {
                 Ok(())
             }
         ))
+        // One image per spot: a dark-only twin would show twice in plain Markdown
+        .append_element_content_handler(element!("img[data-theme='dark']", |el| {
+            el.remove();
+            Ok(())
+        }))
         .append_element_content_handler(element!("pre[data-title]", |el| {
             let title = el.get_attribute("data-title").unwrap_or_default();
             el.before(

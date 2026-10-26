@@ -48,6 +48,7 @@ pub(crate) fn render_page(
         })
         .collect();
     let content = add_byline(&page.content, create_byline(page)).map_err(fail)?;
+    let content = fill_inline_tocs(&content, page).map_err(fail)?;
     let (light, dark) = site.config.read_code_themes();
     let content = highlight_code(&content, light, dark).map_err(fail)?;
     let content = add_titles(&content).map_err(fail)?;
@@ -734,6 +735,39 @@ fn create_byline(page: &Page) -> Option<String> {
     }
 }
 
+// A page's own <htmlpress-toc> goes in unparsed, so the layout's handler never fills it;
+// it is filled here, `level="2"` keeping only the <h2>s
+fn fill_inline_tocs(content: &str, page: &Page) -> Result<String, String> {
+    if !content.contains("<htmlpress-toc") {
+        return Ok(content.to_owned());
+    }
+    let settings = RewriteStrSettings::new().append_element_content_handler(element!(
+        "htmlpress-toc",
+        |el| {
+            let level = match el.get_attribute("level").as_deref().map(str::trim) {
+                None => 3,
+                Some("2") => 2,
+                Some("3") => 3,
+                Some(other) => {
+                    return Err(format!(
+                        "<htmlpress-toc level> must be 2 or 3, got \"{other}\""
+                    )
+                    .into());
+                }
+            };
+            match create_toc_up_to(page, level) {
+                Some(html) => {
+                    el.set_attribute("data-inline", "")?;
+                    el.set_inner_content(&html, ContentType::Html);
+                }
+                None => el.remove(),
+            }
+            Ok(())
+        }
+    ));
+    rewrite_str(content, settings).map_err(|error| error.to_string())
+}
+
 // Right after the first <h1>, where a reader looks for it; first without one
 fn add_byline(content: &str, byline: Option<String>) -> Result<String, String> {
     let Some(byline) = byline else {
@@ -755,11 +789,20 @@ fn add_byline(content: &str, byline: Option<String>) -> Result<String, String> {
 }
 
 fn create_toc(page: &Page) -> Option<String> {
-    if page.toc.is_empty() {
+    create_toc_up_to(page, 3)
+}
+
+fn create_toc_up_to(page: &Page, level: u8) -> Option<String> {
+    let headings: Vec<_> = page
+        .toc
+        .iter()
+        .filter(|heading| heading.level <= level)
+        .collect();
+    if headings.is_empty() {
         return None;
     }
     let mut html = String::from("<p>On this page</p><ul>");
-    for heading in &page.toc {
+    for heading in headings {
         let id = escape_html(&heading.id);
         let title = escape_html(&heading.title);
         let level = heading.level;

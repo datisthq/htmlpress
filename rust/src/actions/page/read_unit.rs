@@ -218,3 +218,36 @@ fn reads_the_navigation_and_source_metas() -> crate::Result<()> {
     }
     Ok(())
 }
+
+#[test]
+fn reads_heading_toc_flags_and_image_themes() -> crate::Result<()> {
+    let page = read_page(
+        "a.html",
+        "<h2 data-toc=\"false\">Hidden from toc</h2><h2 data-toc=\"only\">Toc only</h2>\
+         <h3>Normal</h3><img src=\"/a.png#dark\" alt=\"\"><img src=\"/b.png#light\" alt=\"\">",
+    )?;
+    let titles: Vec<&str> = page
+        .toc
+        .iter()
+        .map(|heading| heading.title.as_str())
+        .collect();
+    assert_eq!(titles, ["Toc only", "Normal"]);
+    assert!(
+        page.content
+            .contains("<h2 data-toc=\"false\" id=\"hidden-from-toc\">"),
+        "{}",
+        page.content
+    );
+    assert!(
+        page.content
+            .contains(r#"<img src="/a.png" alt="" data-theme="dark">"#),
+        "{}",
+        page.content
+    );
+    assert!(
+        page.content
+            .contains(r#"<img src="/b.png" alt="" data-theme="light">"#)
+    );
+    assert!(read_page("a.html", "<h2 data-toc=\"maybe\">A</h2>").is_err());
+    Ok(())
+}

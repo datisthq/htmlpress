@@ -369,3 +369,34 @@ pre[data-collapse][data-expanded] {
 .htmlpress-code > .htmlpress-expand:hover {
   color: var(--htmlpress-text);
 }
+
+/* A heading for the table of contents only: collapsed where it stands, not hidden, so
+   its link still scrolls here */
+:is(h2, h3)[data-toc="only"] {
+  height: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  clip-path: inset(50%);
+}
+
+/* An image for one theme only: the light one shows until the reader's or the toggle's
+   theme is dark */
+img[data-theme="dark"] {
+  display: none;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) img[data-theme="dark"] {
+    display: revert;
+  }
+  :root:not([data-theme="light"]) img[data-theme="light"] {
+    display: none;
+  }
+}
+:root[data-theme="dark"] img[data-theme="dark"] {
+  display: revert;
+}
+:root[data-theme="dark"] img[data-theme="light"] {
+  display: none;
+}

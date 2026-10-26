@@ -45,12 +45,14 @@
   steps or tabs component stay out of it, so a component's own headings never crowd the
   page's outline.
 </p>
-<htmlpress-callout label="Coming soon">
-  <p>
-    Hiding a single heading from the table of contents, and a heading listed there but not
-    shown on the page.
-  </p>
-</htmlpress-callout>
+<p>
+  <code>data-toc="false"</code> keeps a heading off the table of contents while it stays
+  on the page; <code>data-toc="only"</code> lists a heading there without showing it, a
+  landmark for a stretch of the page that has no visible title. Any other value fails the
+  build.
+</p>
+<pre><code class="language-html">&lt;h2 data-toc="false"&gt;Shown, not listed&lt;/h2&gt;
+&lt;h2 data-toc="only"&gt;Listed, not shown&lt;/h2&gt;</code></pre>
 
 <h2>Anchor Links on Hover</h2>
 <p>
@@ -59,9 +61,10 @@
 </p>
 
 <h2>Inline Table of Contents</h2>
-<htmlpress-callout label="Coming soon">
-  <p>
-    An element that inserts the page's table of contents anywhere in its content, with a
-    depth limit.
-  </p>
-</htmlpress-callout>
+<p>
+  An <code>&lt;htmlpress-toc&gt;</code> written in the page is filled with the page's
+  table of contents, framed as a card; <code>level="2"</code> keeps only the
+  <code>&lt;h2&gt;</code>s. A page without headings gets none.
+</p>
+<pre><code class="language-html">&lt;htmlpress-toc level="2"&gt;&lt;/htmlpress-toc&gt;</code></pre>
+<htmlpress-toc level="2"></htmlpress-toc>
