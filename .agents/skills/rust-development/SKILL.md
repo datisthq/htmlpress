@@ -163,6 +163,8 @@ in light, dark and phone width (**`change-verification`**).
 
 - A running `htmlpress start` serves the assets it was compiled with: rebuild and restart it
   after editing one, or copy the file into `<root>/.htmlpress/build/_htmlpress/` to preview
+- Fade text with a `color-mix(in srgb, … , <background>)`, never `opacity`: text under
+  opacity loses subpixel antialiasing and reads blurred next to Livemark's
 - Mix colors `in oklab`, never `in oklch`: mixing a hue with the neutral `--htmlpress-bg` in oklch
   swings the hue, and every callout tint comes out pink
 - The theme toggle's dark set is written twice (media query and `[data-theme="dark"]`);
