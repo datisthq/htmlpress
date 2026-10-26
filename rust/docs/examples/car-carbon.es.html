@@ -1,0 +1,800 @@
+<title>Calculadora de carbono del coche</title>
+<meta
+  name="description"
+  content="Una calculadora de escenarios: elige la red eléctrica de un país, indica cuánto y con qué eficiencia conduces, y compara el CO₂ de un coche eléctrico y uno de gasolina, con todas las redes del mundo en un gráfico."
+/>
+<meta name="order" content="12" />
+<meta name="icon" content="scale" />
+<style>
+  .cc {
+    --cc-ev: #1baf7a;
+    --cc-petrol: #e34948;
+    --cc-ink: var(--htmlpress-text);
+    --cc-soft: var(--htmlpress-muted);
+    --cc-grid: var(--htmlpress-border);
+    --cc-card: var(--htmlpress-surface);
+    margin-block: 1.5rem 2rem;
+    color: var(--cc-ink);
+    font-variant-numeric: tabular-nums;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) .cc {
+      --cc-ev: #199e70;
+      --cc-petrol: #e66767;
+    }
+  }
+  :root[data-theme="dark"] .cc {
+    --cc-ev: #199e70;
+    --cc-petrol: #e66767;
+  }
+  .cc-app {
+    overflow: hidden;
+    border: 1px solid var(--cc-grid);
+    border-radius: var(--htmlpress-radius);
+  }
+  .cc-top {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+    border-bottom: 1px solid var(--cc-grid);
+  }
+  @media (width < 48rem) {
+    .cc-top {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+  .cc-inputs {
+    display: grid;
+    gap: 1.1rem;
+    align-content: start;
+    padding: 1.25rem;
+    background: var(--cc-card);
+  }
+  .cc-field {
+    display: grid;
+    gap: 0.35rem;
+    font-size: 0.8125rem;
+    color: var(--cc-soft);
+  }
+  .cc-field > span {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: space-between;
+  }
+  .cc-field output {
+    white-space: nowrap;
+    font-weight: 700;
+    color: var(--cc-ink);
+  }
+  .cc-field input {
+    width: 100%;
+    margin: 0;
+    accent-color: var(--htmlpress-accent);
+  }
+  .cc-field select {
+    width: 100%;
+    padding: 0.45rem 0.6rem;
+    font: inherit;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--cc-ink);
+    background: var(--htmlpress-bg);
+    border: 1px solid var(--cc-grid);
+    border-radius: 0.5rem;
+  }
+  .cc-field small {
+    min-height: 1.2em;
+    font-size: 0.75rem;
+  }
+  .cc-field small button {
+    padding: 0;
+    font: inherit;
+    font-weight: 600;
+    color: var(--htmlpress-accent);
+    cursor: pointer;
+    background: none;
+    border: 0;
+  }
+  .cc-results {
+    display: grid;
+    gap: 1rem;
+    align-content: start;
+    padding: 1.25rem;
+  }
+  @media (width >= 48rem) {
+    .cc-results {
+      border-left: 1px solid var(--cc-grid);
+    }
+  }
+  @media (width < 48rem) {
+    .cc-results {
+      border-top: 1px solid var(--cc-grid);
+    }
+  }
+  .cc-verdict b {
+    display: block;
+    font-size: clamp(2.2rem, 7vw, 3.2rem);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+  .cc-verdict span {
+    display: block;
+    margin-top: 0.35rem;
+    font-size: 0.875rem;
+    color: var(--cc-soft);
+  }
+  .cc-bars {
+    display: grid;
+    gap: 0.6rem;
+  }
+  .cc-row {
+    display: grid;
+    grid-template-columns: 5.5rem minmax(0, 1fr) auto;
+    gap: 0.75rem;
+    align-items: center;
+    font-size: 0.8125rem;
+  }
+  .cc-row i {
+    height: 1.4rem;
+    min-width: 2px;
+    background: var(--cc-swatch);
+    border-radius: 0.3rem;
+    transition: width 0.2s;
+  }
+  .cc-row b {
+    min-width: 5.5rem;
+    text-align: right;
+  }
+  .cc-sentence {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.55;
+  }
+  .cc-sentence mark {
+    padding: 0 0.2em;
+    font-weight: 700;
+    color: inherit;
+    background: color-mix(in oklab, var(--htmlpress-accent) 22%, transparent);
+    border-radius: 0.25em;
+  }
+  .cc-share {
+    justify-self: start;
+    padding: 0.35rem 0.85rem;
+    font: inherit;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--cc-ink);
+    cursor: pointer;
+    background: var(--htmlpress-bg);
+    border: 1px solid var(--cc-grid);
+    border-radius: 999px;
+  }
+  .cc-chart-panel {
+    padding: 1rem 1.25rem 1.25rem;
+  }
+  .cc-head {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1rem;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 0.6rem;
+    font-size: 0.75rem;
+    color: var(--cc-soft);
+  }
+  .cc-head strong {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--cc-ink);
+  }
+  .cc-chart {
+    position: relative;
+    touch-action: pan-y;
+  }
+  .cc-chart svg {
+    display: block;
+    overflow: visible;
+  }
+  .cc-chart text {
+    font-size: 11px;
+    fill: var(--cc-soft);
+  }
+  .cc-chart .cc-label {
+    font-size: 11.5px;
+    font-weight: 600;
+    fill: var(--cc-ink);
+    paint-order: stroke;
+    stroke: var(--htmlpress-bg);
+    stroke-width: 3px;
+  }
+  .cc-col {
+    cursor: pointer;
+  }
+  .cc-tip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    padding: 0.45rem 0.65rem;
+    font-size: 0.8125rem;
+    line-height: 1.45;
+    white-space: nowrap;
+    pointer-events: none;
+    background: var(--htmlpress-bg);
+    border: 1px solid var(--cc-grid);
+    border-radius: 0.5rem;
+    box-shadow: var(--htmlpress-shadow);
+    opacity: 0;
+    transition: opacity 0.12s;
+  }
+  .cc-tip[data-on] {
+    opacity: 1;
+  }
+  .cc-tip span {
+    color: var(--cc-soft);
+  }
+</style>
+
+<h1>¿Eléctrico o gasolina? La calculadora de carbono</h1>
+<p>
+  Una calculadora de escenarios en una sola página HTML. Un coche eléctrico es tan limpio
+  como la red que lo carga, así que elige un país, indica cuánto y con qué eficiencia
+  conduces, y compara un año de CO₂ de cada coche. Arrastra el deslizador de la red para
+  imaginar una más limpia o más sucia, o haz clic en cualquier columna del gráfico para
+  tomar prestada la de otro país. Cada valor queda en la barra de direcciones, así que un
+  enlace copiado reabre exactamente el mismo escenario.
+</p>
+
+<h2>Calculadora</h2>
+<div class="cc">
+  <div class="cc-app">
+    <div class="cc-top">
+      <div class="cc-inputs">
+        <label class="cc-field">
+          <span>Dónde se carga el coche</span>
+          <select id="cc-country"></select>
+        </label>
+        <label class="cc-field">
+          <span>Intensidad de carbono de la red <output id="cc-grid-out"></output></span>
+          <input type="range" id="cc-grid" min="0" max="900" step="5" />
+          <small id="cc-grid-note"></small>
+        </label>
+        <label class="cc-field">
+          <span>Distancia al año <output id="cc-km-out"></output></span>
+          <input type="range" id="cc-km" min="1000" max="40000" step="500" />
+        </label>
+        <label class="cc-field">
+          <span>Coche eléctrico <output id="cc-ev-out"></output></span>
+          <input type="range" id="cc-ev" min="12" max="30" step="0.5" />
+        </label>
+        <label class="cc-field">
+          <span>Coche de gasolina <output id="cc-petrol-out"></output></span>
+          <input type="range" id="cc-petrol" min="3" max="14" step="0.1" />
+        </label>
+      </div>
+      <div class="cc-results" aria-live="polite">
+        <div class="cc-verdict">
+          <b id="cc-verdict"></b><span id="cc-verdict-label"></span>
+        </div>
+        <div class="cc-bars" id="cc-bars"></div>
+        <p class="cc-sentence" id="cc-sentence"></p>
+        <p class="cc-sentence" id="cc-breakeven"></p>
+        <button type="button" class="cc-share" id="cc-share">
+          Copiar enlace a este escenario
+        </button>
+      </div>
+    </div>
+    <section class="cc-chart-panel" aria-label="Todas las redes, el mismo coche">
+      <div class="cc-head">
+        <strong>Todas las redes, el mismo coche</strong>
+        <span
+          >Coche eléctrico, g de CO₂ por km · clic en una columna para usar esa red</span
+        >
+      </div>
+      <div class="cc-chart" id="cc-chart"></div>
+    </section>
+  </div>
+</div>
+
+<h2>Lo que muestra</h2>
+<p>
+  Con el coche por defecto, el eléctrico gana en todas las redes del gráfico, incluso en
+  la de Kazajistán, que quema carbón para la mayor parte de su electricidad. Lo que cambia
+  es la diferencia: cargado en Noruega o Francia, el eléctrico emite un pequeño porcentaje
+  de lo que emite el de gasolina; cargado en Sudáfrica o la India, cerca de tres cuartas
+  partes. Reduce el coche de gasolina a los 4 litros de un híbrido frugal y las redes más
+  sucias empiezan a perder, por eso la línea de equilibrio bajo el veredicto es la cifra
+  que conviene recordar.
+</p>
+<htmlpress-callout type="note">
+  <p>
+    La comparación solo cuenta la conducción, no la fabricación de los coches: fabricar
+    una batería añade emisiones iniciales que el eléctrico compensa en sus primeros años.
+    Las cifras de la red son medias de ciclo de vida, mientras que la de la gasolina solo
+    cuenta lo que sale del tubo de escape, no el refinado ni el transporte del
+    combustible, así que, en todo caso, el coche de gasolina sale favorecido.
+  </p>
+</htmlpress-callout>
+
+<h2>Cómo está hecho</h2>
+<ul>
+  <li>
+    <strong>Tres líneas de aritmética.</strong> Los g/km del eléctrico son los g/kWh de la
+    red × kWh/100 km, medidos en el enchufe para que cuenten las pérdidas de carga, ÷ 100;
+    los g/km de la gasolina son L/100 km × 2.348 g ÷ 100; la red de equilibrio es los g/km
+    de la gasolina divididos entre los kWh por km del eléctrico. Todo lo demás en la
+    página es presentación.
+  </li>
+  <li>
+    <strong>Los controles son nativos</strong>: un <code>&lt;select&gt;</code> y cuatro
+    <code>&lt;input type="range"&gt;</code>, así que el teclado, los lectores de pantalla
+    y el tacto vienen incluidos. Elegir un país restablece el deslizador de la red;
+    moverlo muestra un enlace para volver.
+  </li>
+  <li>
+    <strong>El escenario es la dirección.</strong> Cada cambio reescribe el hash, y el
+    botón de compartir copia <code>location.href</code> con la API del portapapeles.
+  </li>
+</ul>
+<p>
+  Fuentes: intensidad de carbono de la generación eléctrica, último año (2025, o 2024 para
+  Islandia, Indonesia y Arabia Saudí), de Ember y el Energy Institute, recopilada por
+  <a href="https://ourworldindata.org/grapher/carbon-intensity-electricity"
+    >Our World in Data</a
+  >; 8.887 g de CO₂ por galón de gasolina quemado, de la
+  <a
+    href="https://www.epa.gov/greenvehicles/greenhouse-gas-emissions-typical-passenger-vehicle"
+    >Agencia de Protección Ambiental de EE. UU.</a
+  >. Los consumos por defecto son valores típicos de un coche mediano, no datos: cámbialos
+  para que coincidan con el tuyo.
+</p>
+
+<script>
+  {
+    const t = {
+      locale: "es",
+      grams: value => `${value} g/kWh`,
+      km: value => `${value} km`,
+      kwh: value => `${value} kWh/100 km`,
+      litres: value => `${value} L/100 km`,
+      kg: value => `${value} kg`,
+      gkm: value => `${value} g/km`,
+      tonnes: value => `${value} t`,
+      ev: "Eléctrico",
+      petrol: "Gasolina",
+      note: (code, name, year) => `media de ${year} de ${t.of(code, name)}`,
+      of: (code, name) =>
+        code === "WLD"
+          ? "el mundo"
+          : `${{ EU: "la ", GBR: "el ", NLD: "los ", IND: "la " }[code] ?? ""}${name}`,
+      custom: (code, name, value, year) =>
+        `Tu red · la media de ${year} de ${t.of(code, name)} es ${value}. `,
+      reset: (code, name) => `Usar la de ${t.of(code, name)}`,
+      less: "menos CO₂ al año con el coche eléctrico",
+      more: "más CO₂ al año con el coche eléctrico",
+      sentence: (km, place, ev, petrol, saved, decade) =>
+        `Conduciendo <mark>${km}</mark> al año con ${place}, el coche eléctrico emite <mark>${ev}</mark> de CO₂ frente a <mark>${petrol}</mark> el de gasolina: <mark>${decade}</mark> ${saved} en diez años.`,
+      saved: "ahorradas",
+      added: "de más",
+      place: (code, name) => `la red de ${t.of(code, name)}`,
+      customPlace: "tu red",
+      breakeven: (kwh, grid) =>
+        `Un coche eléctrico que consume ${kwh} supera a este coche de gasolina en cualquier red por debajo de <mark>${grid}</mark>.`,
+      petrolLine: value => `Coche de gasolina: ${value}`,
+      chartLabel:
+        "Emisiones por km del coche eléctrico en la red de cada país, frente al coche de gasolina",
+      copy: "Copiar enlace a este escenario",
+      copied: "Enlace copiado",
+      names: {
+        WLD: "Mundo",
+        EU: "Unión Europea",
+        ARG: "Argentina",
+        AUS: "Australia",
+        AUT: "Austria",
+        BEL: "Bélgica",
+        BRA: "Brasil",
+        CAN: "Canadá",
+        CHL: "Chile",
+        CHN: "China",
+        COL: "Colombia",
+        CRI: "Costa Rica",
+        DNK: "Dinamarca",
+        EGY: "Egipto",
+        FRA: "Francia",
+        DEU: "Alemania",
+        ISL: "Islandia",
+        IND: "India",
+        IDN: "Indonesia",
+        IRN: "Irán",
+        ITA: "Italia",
+        JPN: "Japón",
+        KAZ: "Kazajistán",
+        KEN: "Kenia",
+        MYS: "Malasia",
+        MEX: "México",
+        MAR: "Marruecos",
+        NLD: "Países Bajos",
+        NZL: "Nueva Zelanda",
+        NGA: "Nigeria",
+        NOR: "Noruega",
+        PAK: "Pakistán",
+        PRY: "Paraguay",
+        PHL: "Filipinas",
+        POL: "Polonia",
+        PRT: "Portugal",
+        RUS: "Rusia",
+        SAU: "Arabia Saudí",
+        ZAF: "Sudáfrica",
+        KOR: "Corea del Sur",
+        ESP: "España",
+        SWE: "Suecia",
+        CHE: "Suiza",
+        THA: "Tailandia",
+        TUR: "Turquía",
+        GBR: "Reino Unido",
+        USA: "Estados Unidos",
+        URY: "Uruguay",
+        VNM: "Vietnam",
+      },
+    }
+    const petrolGramsPerLitre = 8887 / 3.78541
+    const grids = [
+      ["WLD", 458, 2025],
+      ["EU", 210, 2025],
+      ["ARG", 346, 2025],
+      ["AUS", 525, 2025],
+      ["AUT", 117, 2025],
+      ["BEL", 150, 2025],
+      ["BRA", 110, 2025],
+      ["CAN", 191, 2025],
+      ["CHL", 289, 2025],
+      ["CHN", 525, 2025],
+      ["COL", 187, 2025],
+      ["CRI", 24, 2025],
+      ["DNK", 114, 2025],
+      ["EGY", 563, 2025],
+      ["FRA", 41, 2025],
+      ["DEU", 330, 2025],
+      ["ISL", 28, 2024],
+      ["IND", 670, 2025],
+      ["IDN", 680, 2024],
+      ["IRN", 660, 2025],
+      ["ITA", 285, 2025],
+      ["JPN", 477, 2025],
+      ["KAZ", 805, 2025],
+      ["KEN", 95, 2025],
+      ["MYS", 602, 2025],
+      ["MEX", 474, 2025],
+      ["MAR", 596, 2025],
+      ["NLD", 254, 2025],
+      ["NZL", 93, 2025],
+      ["NGA", 456, 2025],
+      ["NOR", 28, 2025],
+      ["PAK", 347, 2025],
+      ["PRY", 25, 2025],
+      ["PHL", 588, 2025],
+      ["POL", 589, 2025],
+      ["PRT", 128, 2025],
+      ["RUS", 450, 2025],
+      ["SAU", 692, 2024],
+      ["ZAF", 699, 2025],
+      ["KOR", 417, 2025],
+      ["ESP", 154, 2025],
+      ["SWE", 35, 2025],
+      ["CHE", 39, 2025],
+      ["THA", 546, 2025],
+      ["TUR", 475, 2025],
+      ["GBR", 217, 2025],
+      ["USA", 384, 2025],
+      ["URY", 80, 2025],
+      ["VNM", 461, 2025],
+    ].map(([code, intensity, year]) => ({ code, intensity, year, name: t.names[code] }))
+    const byCode = new Map(grids.map(grid => [grid.code, grid]))
+    const defaults = { country: "WLD", km: 12000, ev: 18, petrol: 7 }
+    const state = { ...defaults, grid: byCode.get(defaults.country).intensity }
+    const NS = "http://www.w3.org/2000/svg"
+    const inputs = {
+      country: document.getElementById("cc-country"),
+      grid: document.getElementById("cc-grid"),
+      km: document.getElementById("cc-km"),
+      ev: document.getElementById("cc-ev"),
+      petrol: document.getElementById("cc-petrol"),
+    }
+    const chartHost = document.getElementById("cc-chart")
+
+    const el = (name, attrs, parent) => {
+      const node = document.createElementNS(NS, name)
+      for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, value)
+      parent?.append(node)
+      return node
+    }
+    const text = (content, attrs, parent) => {
+      const node = el("text", attrs, parent)
+      node.textContent = content
+      return node
+    }
+    const num = (value, digits = 0) =>
+      value.toLocaleString(t.locale, {
+        minimumFractionDigits: digits,
+        maximumFractionDigits: digits,
+      })
+    const evPerKm = grid => (grid * state.ev) / 100
+    const petrolPerKm = () => (state.petrol * petrolGramsPerLitre) / 100
+
+    const sorted = [...grids].sort((a, b) =>
+      a.code === "WLD"
+        ? -1
+        : b.code === "WLD"
+          ? 1
+          : a.name.localeCompare(b.name, t.locale),
+    )
+    for (const grid of sorted) inputs.country.add(new Option(grid.name, grid.code))
+
+    const readHash = () => {
+      const params = new URLSearchParams(location.hash.slice(1))
+      if (byCode.has(params.get("country"))) {
+        state.country = params.get("country")
+        state.grid = byCode.get(state.country).intensity
+      }
+      for (const key of ["grid", "km", "ev", "petrol"]) {
+        const value = Number(params.get(key))
+        const input = inputs[key]
+        if (params.has(key) && value >= Number(input.min) && value <= Number(input.max))
+          state[key] = value
+      }
+    }
+    const writeHash = () =>
+      history.replaceState(
+        null,
+        "",
+        `#country=${state.country}&grid=${state.grid}&km=${state.km}&ev=${state.ev}&petrol=${state.petrol}`,
+      )
+
+    const updateInputs = () => {
+      const country = byCode.get(state.country)
+      inputs.country.value = state.country
+      for (const key of ["grid", "km", "ev", "petrol"]) inputs[key].value = state[key]
+      document.getElementById("cc-grid-out").textContent = t.grams(num(state.grid))
+      document.getElementById("cc-km-out").textContent = t.km(num(state.km))
+      document.getElementById("cc-ev-out").textContent = t.kwh(num(state.ev, 1))
+      document.getElementById("cc-petrol-out").textContent = t.litres(
+        num(state.petrol, 1),
+      )
+      const note = document.getElementById("cc-grid-note")
+      note.replaceChildren()
+      if (state.grid === country.intensity) {
+        note.textContent = t.note(country.code, country.name, country.year)
+        return
+      }
+      note.append(
+        t.custom(
+          country.code,
+          country.name,
+          t.grams(num(country.intensity)),
+          country.year,
+        ),
+      )
+      const reset = document.createElement("button")
+      reset.type = "button"
+      reset.textContent = t.reset(country.code, country.name)
+      reset.addEventListener("click", () => {
+        state.grid = country.intensity
+        change()
+      })
+      note.append(reset)
+    }
+
+    const updateResults = () => {
+      const country = byCode.get(state.country)
+      const ev = (evPerKm(state.grid) * state.km) / 1000
+      const petrol = (petrolPerKm() * state.km) / 1000
+      const share = ev / petrol - 1
+      document.getElementById("cc-verdict").textContent =
+        `${share > 0 ? "+" : "−"}${num(Math.abs(share * 100))}%`
+      document.getElementById("cc-verdict-label").textContent =
+        share > 0 ? t.more : t.less
+      const bars = document.getElementById("cc-bars")
+      bars.replaceChildren()
+      const top = Math.max(ev, petrol)
+      for (const [label, value, swatch] of [
+        [t.ev, ev, "var(--cc-ev)"],
+        [t.petrol, petrol, "var(--cc-petrol)"],
+      ]) {
+        const row = document.createElement("div")
+        row.className = "cc-row"
+        row.innerHTML = `<span></span><i style="--cc-swatch:${swatch};width:${(value / top) * 100}%"></i><b></b>`
+        row.querySelector("span").textContent = label
+        row.querySelector("b").textContent = t.kg(num(value))
+        bars.append(row)
+      }
+      const place =
+        state.grid === country.intensity
+          ? t.place(country.code, country.name)
+          : t.customPlace
+      const decade = Math.abs(petrol - ev) * 10
+      document.getElementById("cc-sentence").innerHTML = t.sentence(
+        t.km(num(state.km)),
+        place,
+        t.kg(num(ev)),
+        t.kg(num(petrol)),
+        ev < petrol ? t.saved : t.added,
+        t.tonnes(num(decade / 1000, 1)),
+      )
+      const breakeven = (petrolPerKm() / state.ev) * 100
+      document.getElementById("cc-breakeven").innerHTML = t.breakeven(
+        t.kwh(num(state.ev, 1)),
+        t.grams(num(breakeven)),
+      )
+    }
+
+    const drawChart = () => {
+      const host = chartHost
+      host.replaceChildren()
+      const width = host.clientWidth
+      if (width < 120) return
+      const height = width < 520 ? 220 : 260
+      const m = { top: 22, right: 8, bottom: 8, left: 34 }
+      const columns = [...grids].sort((a, b) => a.intensity - b.intensity)
+      const petrol = petrolPerKm()
+      const top = Math.max(petrol, evPerKm(900), evPerKm(state.grid)) * 1.05
+      const band = (width - m.left - m.right) / columns.length
+      const y = value => m.top + (1 - value / top) * (height - m.top - m.bottom)
+      const svg = el(
+        "svg",
+        { width, height, role: "img", "aria-label": t.chartLabel },
+        host,
+      )
+      const step = top > 250 ? 100 : 50
+      for (let tick = 0; tick <= top; tick += step) {
+        el(
+          "line",
+          {
+            x1: m.left,
+            x2: width - m.right,
+            y1: y(tick),
+            y2: y(tick),
+            stroke: "var(--cc-grid)",
+          },
+          svg,
+        )
+        text(tick, { x: m.left - 6, y: y(tick) + 4, "text-anchor": "end" }, svg)
+      }
+      const tip = document.createElement("div")
+      tip.className = "cc-tip"
+      host.append(tip)
+      columns.forEach((grid, i) => {
+        const value = evPerKm(grid.intensity)
+        const selected = grid.code === state.country
+        const x = m.left + i * band
+        const column = el(
+          "rect",
+          {
+            x: x + band * 0.12,
+            y: y(value),
+            width: Math.max(1, band * 0.76),
+            height: Math.max(1, y(0) - y(value)),
+            rx: Math.min(3, band * 0.2),
+            fill: selected
+              ? "var(--htmlpress-accent)"
+              : value > petrol
+                ? "var(--cc-petrol)"
+                : "var(--cc-ev)",
+            opacity: selected ? 1 : 0.55,
+            class: "cc-col",
+          },
+          svg,
+        )
+        const hit = el(
+          "rect",
+          {
+            x,
+            y: m.top,
+            width: band,
+            height: y(0) - m.top,
+            fill: "transparent",
+            class: "cc-col",
+          },
+          svg,
+        )
+        hit.addEventListener("pointerenter", () => {
+          column.setAttribute("opacity", 1)
+          tip.innerHTML =
+            `<strong></strong><br>${t.grams(num(grid.intensity))}<br>` +
+            `<span>${t.ev}: ${t.gkm(num(value))}</span>`
+          tip.querySelector("strong").textContent = grid.name
+          const left = x + band + 8
+          tip.style.left = `${left + tip.offsetWidth > width ? Math.max(0, x - tip.offsetWidth - 8) : left}px`
+          tip.style.top = `${Math.max(0, y(value) - tip.offsetHeight - 6)}px`
+          tip.toggleAttribute("data-on", true)
+        })
+        hit.addEventListener("pointerleave", () => {
+          column.setAttribute("opacity", selected ? 1 : 0.55)
+          tip.toggleAttribute("data-on", false)
+        })
+        hit.addEventListener("click", () => {
+          state.country = grid.code
+          state.grid = grid.intensity
+          change()
+        })
+        if (selected)
+          text(
+            grid.name,
+            {
+              x: x + band / 2,
+              y: y(value) - 6,
+              "text-anchor":
+                i < columns.length / 4
+                  ? "start"
+                  : i > (columns.length * 3) / 4
+                    ? "end"
+                    : "middle",
+              class: "cc-label",
+            },
+            svg,
+          )
+      })
+      el(
+        "line",
+        {
+          x1: m.left,
+          x2: width - m.right,
+          y1: y(petrol),
+          y2: y(petrol),
+          stroke: "var(--cc-petrol)",
+          "stroke-width": 2,
+          "stroke-dasharray": "6 4",
+          "pointer-events": "none",
+        },
+        svg,
+      )
+      text(
+        t.petrolLine(t.gkm(num(petrol))),
+        { x: m.left + 4, y: y(petrol) - 6, class: "cc-label" },
+        svg,
+      )
+    }
+
+    const render = () => {
+      updateInputs()
+      updateResults()
+      drawChart()
+    }
+    const change = () => {
+      render()
+      writeHash()
+    }
+
+    inputs.country.addEventListener("change", () => {
+      state.country = inputs.country.value
+      state.grid = byCode.get(state.country).intensity
+      change()
+    })
+    for (const key of ["grid", "km", "ev", "petrol"]) {
+      inputs[key].addEventListener("input", () => {
+        state[key] = Number(inputs[key].value)
+        change()
+      })
+    }
+    const share = document.getElementById("cc-share")
+    share.addEventListener("click", async () => {
+      writeHash()
+      try {
+        await navigator.clipboard.writeText(location.href)
+        share.textContent = t.copied
+      } catch {
+        share.textContent = location.href
+      }
+      setTimeout(() => (share.textContent = t.copy), 2000)
+    })
+
+    readHash()
+    new ResizeObserver(([entry]) => {
+      if (String(entry.contentRect.width) !== chartHost.dataset.width) {
+        chartHost.dataset.width = entry.contentRect.width
+        drawChart()
+      }
+    }).observe(chartHost)
+    updateInputs()
+    updateResults()
+  }
+</script>

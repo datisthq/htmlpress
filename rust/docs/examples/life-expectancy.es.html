@@ -1,0 +1,1632 @@
+<title>Explorador de esperanza de vida</title>
+<meta
+  name="description"
+  content="Un panel enlazado de riqueza y salud en 67 países desde 1990: filtros por región, un deslizador de años con reproducción, un gráfico de burbujas, una línea de tendencia y una tabla ordenable que siguen una misma selección."
+/>
+<meta name="order" content="11" />
+<meta name="icon" content="layout-grid" />
+<style>
+  .lx {
+    --lx-r0: #eda100;
+    --lx-r1: #e34948;
+    --lx-r2: #2a78d6;
+    --lx-r3: #1baf7a;
+    --lx-r4: #6250d6;
+    --lx-r5: #e87ba4;
+    --lx-ink: var(--htmlpress-text);
+    --lx-soft: var(--htmlpress-muted);
+    --lx-grid: var(--htmlpress-border);
+    --lx-card: var(--htmlpress-surface);
+    margin-block: 1.5rem 2rem;
+    color: var(--lx-ink);
+    font-variant-numeric: tabular-nums;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) .lx {
+      --lx-r0: #c98500;
+      --lx-r1: #e66767;
+      --lx-r2: #3987e5;
+      --lx-r3: #199e70;
+      --lx-r4: #9085e9;
+      --lx-r5: #d55181;
+    }
+  }
+  :root[data-theme="dark"] .lx {
+    --lx-r0: #c98500;
+    --lx-r1: #e66767;
+    --lx-r2: #3987e5;
+    --lx-r3: #199e70;
+    --lx-r4: #9085e9;
+    --lx-r5: #d55181;
+  }
+  .lx-app {
+    overflow: hidden;
+    border: 1px solid var(--lx-grid);
+    border-radius: var(--htmlpress-radius);
+  }
+  .lx-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.5rem;
+    align-items: center;
+    padding: 0.9rem 1.25rem;
+    background: var(--lx-card);
+    border-bottom: 1px solid var(--lx-grid);
+  }
+  .lx-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .lx-chips button {
+    display: inline-flex;
+    gap: 0.4rem;
+    align-items: center;
+    padding: 0.25rem 0.7rem;
+    font: inherit;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--lx-soft);
+    cursor: pointer;
+    background: var(--htmlpress-bg);
+    border: 1px solid var(--lx-grid);
+    border-radius: 999px;
+  }
+  .lx-chips button[aria-pressed="true"] {
+    color: var(--lx-ink);
+    border-color: var(--lx-soft);
+  }
+  .lx-chips i {
+    width: 0.6rem;
+    height: 0.6rem;
+    background: var(--lx-swatch);
+    border-radius: 50%;
+    opacity: 0.35;
+  }
+  .lx-chips button[aria-pressed="true"] i {
+    opacity: 1;
+  }
+  .lx-time {
+    display: flex;
+    flex: 1 1 16rem;
+    gap: 0.6rem;
+    align-items: center;
+  }
+  .lx-time input {
+    flex: 1;
+    min-width: 5rem;
+    accent-color: var(--htmlpress-accent);
+  }
+  .lx-time output {
+    min-width: 2.5rem;
+    font-weight: 700;
+  }
+  .lx-play {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    color: var(--htmlpress-accent-text);
+    cursor: pointer;
+    background: var(--htmlpress-accent);
+    border: 0;
+    border-radius: 50%;
+  }
+  .lx-play svg {
+    width: 0.85rem;
+    height: 0.85rem;
+    fill: currentColor;
+  }
+  .lx-play[aria-pressed="true"] .lx-icon-play,
+  .lx-play[aria-pressed="false"] .lx-icon-pause {
+    display: none;
+  }
+  .lx-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+    border-bottom: 1px solid var(--lx-grid);
+  }
+  .lx-stats > div {
+    padding: 1rem 1.25rem;
+    border-right: 1px solid var(--lx-grid);
+  }
+  .lx-stats > div:last-child {
+    border-right: 0;
+  }
+  .lx-stats b {
+    display: block;
+    font-size: clamp(1.4rem, 4vw, 1.9rem);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+  .lx-stats span {
+    display: block;
+    margin-top: 0.3rem;
+    font-size: 0.75rem;
+    color: var(--lx-soft);
+  }
+  .lx-panels {
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    border-bottom: 1px solid var(--lx-grid);
+  }
+  .lx-panel {
+    min-width: 0;
+    padding: 1rem 1.25rem;
+  }
+  .lx-panel + .lx-panel {
+    border-left: 1px solid var(--lx-grid);
+  }
+  @media (width < 56rem) {
+    .lx-panels {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .lx-panel + .lx-panel {
+      border-top: 1px solid var(--lx-grid);
+      border-left: 0;
+    }
+  }
+  .lx-head {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1rem;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 0.6rem;
+    font-size: 0.75rem;
+    color: var(--lx-soft);
+  }
+  .lx-head strong {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--lx-ink);
+  }
+  .lx-legend {
+    display: flex;
+    gap: 1rem;
+  }
+  .lx-legend span {
+    display: inline-flex;
+    gap: 0.35rem;
+    align-items: center;
+  }
+  .lx-legend i {
+    width: 1rem;
+    border-top: 2.5px solid var(--lx-swatch);
+  }
+  .lx-legend .lx-dashed {
+    border-top: 2px dashed var(--lx-soft);
+  }
+  .lx-chart {
+    position: relative;
+    touch-action: pan-y;
+  }
+  .lx-chart svg {
+    display: block;
+    overflow: visible;
+  }
+  .lx-chart text {
+    font-size: 11px;
+    fill: var(--lx-soft);
+  }
+  .lx-chart .lx-label {
+    font-size: 11.5px;
+    font-weight: 600;
+    fill: var(--lx-ink);
+    pointer-events: none;
+    paint-order: stroke;
+    stroke: var(--htmlpress-bg);
+    stroke-width: 3px;
+  }
+  .lx-chart .lx-watermark {
+    font-size: 64px;
+    font-weight: 800;
+    fill: var(--lx-grid);
+  }
+  .lx-dot {
+    cursor: pointer;
+    fill-opacity: 0.75;
+    stroke: var(--htmlpress-bg);
+    transition: fill-opacity 0.15s;
+  }
+  .lx-dot.lx-on {
+    fill-opacity: 1;
+    stroke: var(--lx-ink);
+    stroke-width: 2;
+  }
+  .lx-app[data-hovering] .lx-dot:not(.lx-hot, .lx-on) {
+    fill-opacity: 0.2;
+  }
+  .lx-dot.lx-hot {
+    fill-opacity: 1;
+  }
+  .lx-empty {
+    display: grid;
+    place-items: center;
+    height: 12rem;
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--lx-soft);
+  }
+  .lx-tip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    padding: 0.45rem 0.65rem;
+    font-size: 0.8125rem;
+    line-height: 1.45;
+    white-space: nowrap;
+    pointer-events: none;
+    background: var(--htmlpress-bg);
+    border: 1px solid var(--lx-grid);
+    border-radius: 0.5rem;
+    box-shadow: var(--htmlpress-shadow);
+    opacity: 0;
+    transition: opacity 0.12s;
+  }
+  .lx-tip[data-on] {
+    opacity: 1;
+  }
+  .lx-tip span {
+    color: var(--lx-soft);
+  }
+  .lx-table {
+    max-height: 24rem;
+    overflow: auto;
+  }
+  .lx .lx-table table {
+    display: table;
+    width: 100%;
+    margin: 0;
+  }
+  .lx-table th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    padding: 0;
+    background: var(--lx-card);
+    box-shadow: inset 0 -1px var(--lx-grid);
+  }
+  .lx-table th button {
+    width: 100%;
+    height: 2.5rem;
+    padding: 0 0.75rem;
+    font: inherit;
+    font-weight: 600;
+    color: var(--lx-soft);
+    text-align: inherit;
+    cursor: pointer;
+    background: none;
+    border: 0;
+  }
+  .lx-table th[aria-sort] button {
+    color: var(--lx-ink);
+  }
+  .lx-table th[aria-sort="ascending"] button::after {
+    content: " ↑";
+  }
+  .lx-table th[aria-sort="descending"] button::after {
+    content: " ↓";
+  }
+  .lx-table td {
+    padding: 0.35rem 0.75rem;
+  }
+  .lx-table :is(th, td):not(:first-child) {
+    width: auto;
+    text-align: right;
+  }
+  .lx-table :is(th, td):nth-child(2) {
+    width: 40%;
+  }
+  .lx-table tr.lx-hot {
+    background: var(--lx-card);
+  }
+  .lx-table tr.lx-on {
+    box-shadow: inset 3px 0 var(--htmlpress-accent);
+  }
+  .lx-pick {
+    display: inline-flex;
+    gap: 0.5rem;
+    align-items: center;
+    padding: 0;
+    font: inherit;
+    font-weight: 600;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+    background: none;
+    border: 0;
+  }
+  .lx-pick i {
+    flex: none;
+    width: 0.6rem;
+    height: 0.6rem;
+    background: var(--lx-swatch);
+    border-radius: 50%;
+  }
+  .lx-bar {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    justify-content: flex-end;
+  }
+  .lx-bar i {
+    flex: 1;
+    max-width: 12rem;
+    height: 0.5rem;
+    background: linear-gradient(
+      to right,
+      var(--lx-swatch) var(--lx-fill),
+      color-mix(in oklab, var(--lx-grid) 60%, transparent) var(--lx-fill)
+    );
+    border-radius: 999px;
+  }
+  @media (width < 40rem) {
+    .lx-bar i {
+      display: none;
+    }
+  }
+  .lx-up {
+    color: var(--lx-r3);
+  }
+  .lx-down {
+    color: var(--lx-r1);
+  }
+</style>
+
+<h1>Explorador de esperanza de vida</h1>
+<p>
+  Un panel enlazado en una sola página HTML: 67 países, cada año de 1990 a 2023 y cuatro
+  vistas que siguen una misma selección. Elige regiones, arrastra o reproduce los años,
+  haz clic en una burbuja o una fila para seguir a un país, y en la línea de tendencia
+  para saltar a un año. La barra de direcciones se mantiene al día, así que un enlace a la
+  página la abre tal como la dejaste.
+</p>
+
+<h2>Explorador</h2>
+<div class="lx">
+  <div class="lx-app" id="lx-app">
+    <div class="lx-controls">
+      <div class="lx-chips" id="lx-chips" role="group" aria-label="Regiones"></div>
+      <div class="lx-time">
+        <button
+          type="button"
+          class="lx-play"
+          id="lx-play"
+          aria-pressed="false"
+          aria-label="Reproducir"
+        >
+          <svg class="lx-icon-play" viewBox="0 0 12 12" aria-hidden="true">
+            <path d="M3 1.5v9l7.5-4.5z" />
+          </svg>
+          <svg class="lx-icon-pause" viewBox="0 0 12 12" aria-hidden="true">
+            <path d="M2.5 1.5h2.5v9h-2.5zM7 1.5h2.5v9h-2.5z" />
+          </svg>
+        </button>
+        <input
+          type="range"
+          id="lx-year"
+          min="1990"
+          max="2023"
+          value="2023"
+          aria-label="Año"
+        />
+        <output for="lx-year" id="lx-year-out">2023</output>
+      </div>
+    </div>
+    <div class="lx-stats" aria-live="polite">
+      <div>
+        <b id="lx-avg">–</b><span>esperanza de vida media, ponderada por población</span>
+      </div>
+      <div><b id="lx-change">–</b><span id="lx-change-label">desde 1990</span></div>
+      <div><b id="lx-people">–</b><span>personas en los países mostrados</span></div>
+      <div>
+        <b id="lx-gap">–</b
+        ><span id="lx-gap-label">brecha entre el más alto y el más bajo</span>
+      </div>
+    </div>
+    <div class="lx-panels">
+      <section class="lx-panel" aria-label="Riqueza y salud">
+        <div class="lx-head">
+          <strong>Riqueza y salud</strong>
+          <span>Tamaño de la burbuja: población · clic para seguir a un país</span>
+        </div>
+        <div class="lx-chart" id="lx-scatter"></div>
+      </section>
+      <section class="lx-panel" aria-label="En el tiempo">
+        <div class="lx-head">
+          <strong id="lx-trend-title">En el tiempo</strong>
+          <span class="lx-legend" id="lx-legend"></span>
+        </div>
+        <div class="lx-chart" id="lx-trend"></div>
+      </section>
+    </div>
+    <div class="lx-table">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col"><button type="button" data-sort="name">País</button></th>
+            <th scope="col" aria-sort="descending">
+              <button type="button" data-sort="le">Esperanza de vida</button>
+            </th>
+            <th scope="col">
+              <button type="button" data-sort="gdp">PIB por persona</button>
+            </th>
+            <th scope="col">
+              <button type="button" data-sort="change">Desde 1990</button>
+            </th>
+          </tr>
+        </thead>
+        <tbody id="lx-rows"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<h2>Lo que muestra</h2>
+<p>
+  Reproduce los años desde 1990 y la nube se desplaza hacia arriba y a la derecha: casi
+  todos los países son a la vez más ricos y más longevos que antes. Las excepciones son
+  las historias. El sur de África se hunde durante los años noventa y principios de los
+  dos mil con la expansión del VIH, y luego se recupera más rápido que ningún otro lugar
+  cuando llega el tratamiento. Rusia y Ucrania caen después de 1991. Y 2020–2021 hace
+  bajar a la vez 57 de las 67 burbujas: la pandemia, visible como una única sacudida en
+  todo el gráfico.
+</p>
+
+<h2>Cómo está hecho</h2>
+<ul>
+  <li>
+    <strong>Un estado, cuatro vistas.</strong> Las regiones, el año, el país seguido y el
+    país bajo el puntero viven en un único objeto. Un cambio en los tres primeros lo
+    redibuja todo; pasar el puntero solo alterna clases, así que la burbuja, su fila y la
+    información emergente se iluminan juntas sin redibujar.
+  </li>
+  <li>
+    <strong>El estado es la dirección.</strong> Cada cambio escribe
+    <code>#year=…&amp;regions=…&amp;country=…</code> con
+    <code>history.replaceState</code>, y la página lo vuelve a leer al cargar: un enlace
+    compartido es una vista compartida, sin servidor.
+  </li>
+  <li>
+    <strong>Las medias están ponderadas.</strong> India cuenta más que Senegal en la cifra
+    principal, porque es una afirmación sobre personas, no sobre países.
+  </li>
+</ul>
+<p>
+  Fuentes: Perspectivas de la Población Mundial de la ONU (2024) para la esperanza de vida
+  y la población, y el PIB por persona en paridad de poder adquisitivo del Banco Mundial,
+  en dólares internacionales constantes de 2021, recopilados por Our World in Data:
+  <a href="https://ourworldindata.org/grapher/life-expectancy">esperanza de vida</a>,
+  <a href="https://ourworldindata.org/grapher/gdp-per-capita-worldbank">PIB per cápita</a
+  >, <a href="https://ourworldindata.org/grapher/population">población</a>. Los 67 países
+  son todos los de 15 millones de habitantes o más con una serie completa.
+</p>
+
+<script>
+  {
+    const t = {
+      locale: "es",
+      regions: ["África", "Asia", "Europa", "Norteamérica", "Sudamérica", "Oceanía"],
+      all: "Todas",
+      play: "Reproducir",
+      pause: "Pausa",
+      years: value => `${value} años`,
+      people: millions =>
+        `${(millions / 1000).toLocaleString("es", { maximumFractionDigits: 1 })} mil M`,
+      since: year => `desde ${year}`,
+      gap: (high, low) => `brecha, ${high} frente a ${low}`,
+      money: value => `${value} $`,
+      gdpAxis: "PIB por persona, $ int. (escala log.)",
+      leAxis: "Esperanza de vida, años",
+      scatterLabel: year => `Esperanza de vida frente a PIB por persona, ${year}`,
+      trendTitle: name => `${name} desde 1990`,
+      trendLabel: name => `Esperanza de vida de ${name} desde 1990, frente a la media`,
+      average: "Media de lo mostrado",
+      empty: "Elige una región para ver sus países.",
+      tipLe: "esperanza de vida",
+      tipGdp: "PIB por persona",
+      tipPop: "habitantes",
+      million: value =>
+        `${value.toLocaleString("es", { maximumFractionDigits: value < 100 ? 1 : 0 })} M`,
+      names: {
+        AGO: "Angola",
+        ARG: "Argentina",
+        AUS: "Australia",
+        BFA: "Burkina Faso",
+        BGD: "Bangladés",
+        BRA: "Brasil",
+        CAN: "Canadá",
+        CHL: "Chile",
+        CHN: "China",
+        CIV: "Costa de Marfil",
+        CMR: "Camerún",
+        COD: "RD del Congo",
+        COL: "Colombia",
+        DEU: "Alemania",
+        DZA: "Argelia",
+        ECU: "Ecuador",
+        EGY: "Egipto",
+        ESP: "España",
+        ETH: "Etiopía",
+        FRA: "Francia",
+        GBR: "Reino Unido",
+        GHA: "Ghana",
+        GTM: "Guatemala",
+        IDN: "Indonesia",
+        IND: "India",
+        IRN: "Irán",
+        IRQ: "Irak",
+        ITA: "Italia",
+        JPN: "Japón",
+        KAZ: "Kazajistán",
+        KEN: "Kenia",
+        KHM: "Camboya",
+        KOR: "Corea del Sur",
+        LKA: "Sri Lanka",
+        MAR: "Marruecos",
+        MDG: "Madagascar",
+        MEX: "México",
+        MLI: "Malí",
+        MMR: "Myanmar",
+        MOZ: "Mozambique",
+        MWI: "Malaui",
+        MYS: "Malasia",
+        NER: "Níger",
+        NGA: "Nigeria",
+        NLD: "Países Bajos",
+        NPL: "Nepal",
+        PAK: "Pakistán",
+        PER: "Perú",
+        PHL: "Filipinas",
+        POL: "Polonia",
+        ROU: "Rumanía",
+        RUS: "Rusia",
+        SAU: "Arabia Saudí",
+        SDN: "Sudán",
+        SEN: "Senegal",
+        TCD: "Chad",
+        THA: "Tailandia",
+        TUR: "Turquía",
+        TZA: "Tanzania",
+        UGA: "Uganda",
+        UKR: "Ucrania",
+        USA: "Estados Unidos",
+        UZB: "Uzbekistán",
+        VNM: "Vietnam",
+        ZAF: "Sudáfrica",
+        ZMB: "Zambia",
+        ZWE: "Zimbabue",
+      },
+    }
+    const firstYear = 1990
+    const lastYear = 2023
+    const data = [
+      [
+        "DZA",
+        0,
+        "677 677 677 678 673 677 682 689 693 701 706 710 716 719 725 728 731 733 736 739 741 744 746 748 750 752 753 754 756 757 733 752 761 763",
+        "11729 11315 11241 10744 10414 10588 10809 10726 11095 11292 11558 11743 12213 12835 13227 13738 13921 14115 14207 14104 14496 14642 14698 14778 15074 15240 15512 15428 15343 15199 14194 14497 14782 15159",
+        "254 260 266 273 279 285 290 296 301 305 309 313 318 322 326 331 336 342 348 355 362 369 376 384 392 400 409 417 425 433 440 448 455 462",
+      ],
+      [
+        "AGO",
+        0,
+        "419 438 423 422 436 461 464 467 455 458 465 470 479 502 511 521 530 542 553 562 572 581 589 597 604 610 616 621 626 631 631 630 642 646",
+        "8366 8170 7445 5482 5378 5982 6566 6808 6893 6815 6795 6847 7522 7517 8080 8893 9586 10435 11132 10930 11074 11035 11517 11623 11718 11390 10964 10565 10155 9713 8905 8720 8751 8598",
+        "116 120 124 128 132 137 142 147 152 157 162 167 173 179 186 193 200 208 216 224 233 242 252 262 272 282 292 302 313 324 335 345 356 367",
+      ],
+      [
+        "ARG",
+        4,
+        "716 720 721 723 727 729 731 734 734 737 739 742 743 743 749 752 753 748 754 756 757 761 758 758 763 766 761 765 768 768 759 739 758 774",
+        "17007 18296 19476 20791 21712 20820 21696 23172 23783 22715 22281 21066 18572 20005 21591 23262 24877 26851 27658 25747 28056 29426 28826 29228 28201 28669 27802 28335 27367 26630 23877 26300 27825 27230",
+        "328 332 337 342 346 351 355 359 364 368 372 376 380 384 388 392 396 400 404 409 413 417 422 426 430 435 439 443 447 450 452 453 454 455",
+      ],
+      [
+        "AUS",
+        5,
+        "770 775 775 780 779 783 783 786 790 793 796 800 801 804 807 811 813 812 814 817 820 821 823 826 825 826 828 827 833 832 837 836 828 839",
+        "36268 35671 35426 36533 37623 38653 39663 40774 42257 43899 45099 45428 46688 47581 49061 49997 50694 51663 52473 52408 52739 53257 54404 54895 55489 55880 56530 56882 57648 58049 57260 58327 60029 60685",
+        "171 174 175 177 179 181 183 185 187 189 191 194 196 198 200 203 206 210 214 218 221 225 229 232 236 239 243 247 251 255 257 260 262 265",
+      ],
+      [
+        "BGD",
+        1,
+        "558 538 566 571 576 582 589 597 604 612 620 628 636 643 649 655 660 665 670 675 680 685 690 695 700 705 711 716 721 726 714 711 743 747",
+        "2070 2101 2174 2235 2279 2352 2414 2476 2555 2624 2713 2804 2866 2959 3072 3232 3407 3609 3788 3942 4125 4352 4592 4823 5069 5353 5683 6006 6393 6838 7015 7441 7888 8242",
+        "1116 1138 1160 1181 1203 1226 1249 1272 1296 1321 1345 1368 1389 1410 1429 1447 1464 1480 1495 1509 1522 1536 1551 1565 1580 1594 1608 1622 1635 1649 1663 1677 1694 1715",
+      ],
+      [
+        "BRA",
+        4,
+        "659 662 665 669 673 677 681 685 688 692 696 700 704 709 714 718 723 727 731 735 738 740 743 746 748 751 751 754 756 758 745 730 749 758",
+        "12633 12547 12272 12669 13203 13550 13642 13897 13738 13602 14005 14016 14266 14259 14911 15221 15657 16441 17113 16939 18062 18628 18832 19242 19183 18357 17621 17724 17918 18019 17328 18076 18554 19080",
+        "1491 1517 1543 1568 1593 1617 1642 1667 1692 1716 1740 1763 1785 1806 1827 1847 1867 1886 1904 1921 1937 1953 1969 1985 2001 2017 2032 2047 2061 2075 2087 2096 2103 2111",
+      ],
+      [
+        "BFA",
+        0,
+        "493 493 494 494 495 496 497 496 502 505 508 512 514 520 526 533 538 544 552 558 563 570 575 579 583 588 592 596 600 602 605 600 607 611",
+        "1108 1178 1152 1163 1149 1184 1281 1327 1385 1445 1429 1477 1495 1562 1581 1665 1715 1732 1779 1779 1874 1940 2004 2057 2083 2102 2163 2232 2316 2392 2381 2486 2469 2486",
+        "92 94 96 99 101 104 107 109 112 116 119 123 127 131 135 139 144 148 153 157 162 167 172 177 182 188 193 199 204 210 215 220 225 230",
+      ],
+      [
+        "KHM",
+        1,
+        "552 556 557 560 562 566 568 573 579 586 595 605 614 623 633 641 649 655 661 667 673 679 684 688 691 694 696 698 700 701 701 693 705 707",
+        "2646 2731 2769 2715 1650 1673 1643 1595 1602 1775 1922 2032 2126 2310 2491 2782 3041 3308 3502 3588 3712 3922 4159 4419 4703 4969 5284 5632 6051 6449 6129 6226 6458 6695",
+        "74 77 81 86 92 100 108 116 121 123 125 127 129 131 132 134 136 138 141 143 145 147 149 152 154 156 159 161 163 165 167 170 172 174",
+      ],
+      [
+        "CMR",
+        0,
+        "543 542 541 539 535 533 532 531 530 532 533 536 539 543 546 549 553 557 561 565 570 575 582 587 591 597 603 608 612 617 617 611 624 637",
+        "4518 4221 3974 3556 3523 3527 3578 3642 3714 3780 3823 3885 3951 4055 4223 4200 4242 4303 4300 4287 4287 4308 4382 4474 4588 4699 4767 4798 4851 4882 4763 4794 4844 4875",
+        "113 117 120 124 127 131 134 138 141 145 149 153 157 162 166 171 176 180 186 191 197 202 208 214 221 228 235 241 248 255 262 269 276 284",
+      ],
+      [
+        "CAN",
+        3,
+        "774 776 779 777 779 780 783 785 787 789 792 794 796 797 800 801 805 805 807 811 813 815 817 818 818 819 820 819 819 823 817 820 812 826",
+        "40475 39139 39023 39622 40952 41618 41881 43241 44553 46465 48399 48774 49695 50140 51211 52357 53196 53762 53712 51552 52558 53681 54035 54712 55723 55661 55606 56612 57337 57584 54093 56995 58583 58088",
+        "278 282 285 288 291 295 298 301 303 306 309 312 315 318 321 324 328 331 334 338 342 346 349 353 356 360 364 368 373 378 382 385 388 393",
+      ],
+      [
+        "TCD",
+        0,
+        "451 466 468 470 471 475 476 478 478 479 479 483 484 486 487 489 487 492 495 498 501 504 508 511 511 513 516 519 524 530 531 531 545 551",
+        "1711 1791 1854 1526 1643 1591 1556 1588 1641 1574 1507 1627 1704 1879 2401 2706 2596 2613 2601 2475 2717 2741 2886 2864 2821 2823 2623 2496 2552 2605 2513 2435 2449 2434",
+        "60 62 65 66 68 71 74 77 79 82 85 88 91 95 99 103 107 111 115 119 123 128 132 137 142 146 151 156 162 167 172 178 185 193",
+      ],
+      [
+        "CHL",
+        4,
+        "737 741 744 747 750 753 756 758 763 767 771 776 778 779 783 785 785 787 788 789 791 792 792 796 797 800 803 806 806 803 793 789 792 812",
+        "10955 11610 12739 13380 13850 14912 15748 16688 17161 16900 17529 17875 18245 18907 19967 20923 21974 22884 23515 23019 24122 25372 26677 27298 27512 27818 27965 27900 28499 28228 26258 29107 29560 29600",
+        "134 137 139 141 143 145 147 149 151 153 155 157 159 160 162 163 165 167 168 170 172 174 175 177 179 180 183 186 189 192 194 195 196 197",
+      ],
+      [
+        "CHN",
+        1,
+        "682 686 691 695 698 704 708 712 716 720 723 727 730 734 737 741 744 748 748 753 757 759 762 765 767 770 772 772 777 779 780 781 782 780",
+        "1667 1798 2030 2287 2557 2808 3056 3306 3534 3774 4066 4372 4744 5192 5684 6298 7057 8014 8744 9519 10476 11405 12218 13081 13969 14857 15773 16758 17807 18821 19215 20843 21499 22687",
+        "11536 11708 11846 11973 12090 12201 12309 12411 12508 12602 12696 12787 12869 12945 13021 13100 13181 13258 13338 13425 13516 13603 13695 13790 13880 13961 14041 14124 14190 14235 14261 14264 14252 14226",
+      ],
+      [
+        "COL",
+        4,
+        "687 688 688 691 694 698 702 706 709 709 709 712 715 723 728 732 735 738 742 745 749 752 756 758 759 761 762 764 766 768 748 727 765 777",
+        "9999 9996 10196 10533 10928 11279 11303 11484 11344 10680 10813 10823 10925 11183 11608 11999 12637 13318 13591 13587 14037 14852 15279 15912 16480 16821 17003 16986 17104 17337 15862 17383 18459 18407",
+        "324 331 338 344 351 358 365 371 378 385 391 397 403 409 415 421 427 432 438 443 448 453 457 462 466 470 474 481 490 499 506 512 517 523",
+      ],
+      [
+        "CIV",
+        0,
+        "528 526 524 522 520 517 516 515 512 513 514 514 515 514 519 524 529 535 542 547 553 560 566 571 578 583 588 593 598 603 601 603 616 619",
+        "5256 5053 4843 4646 4502 4639 4807 5073 5093 4987 4838 4609 4369 4060 4089 4032 4049 4000 4097 4151 4339 4017 4234 4597 4908 5111 5321 5556 5670 5895 5788 6045 6272 6521",
+        "122 127 132 137 143 149 154 160 167 172 177 182 187 191 196 201 205 210 215 220 225 230 235 239 245 252 260 267 275 282 289 296 304 312",
+      ],
+      [
+        "COD",
+        0,
+        "485 489 493 496 499 504 494 505 497 501 519 522 524 530 535 540 545 550 554 558 564 569 574 578 582 587 591 595 599 602 604 600 610 619",
+        "2404 2129 1843 1538 1410 1362 1323 1228 1176 1089 981 931 929 953 988 1017 1036 1092 1138 1109 1167 1125 1182 1343 1393 1433 1389 1396 1432 1395 1361 1402 1484 1559",
+        "367 379 392 407 426 444 453 460 473 489 505 521 538 553 570 588 606 625 644 664 686 708 733 758 784 810 840 871 900 929 960 991 1024 1058",
+      ],
+      [
+        "ECU",
+        4,
+        "684 690 695 701 709 713 718 720 719 719 721 726 732 736 739 739 740 742 747 749 752 752 755 758 761 762 761 762 772 773 720 727 766 774",
+        "9105 9293 9291 9284 9494 9525 9509 9739 9877 9243 9183 9405 9698 9803 10291 10660 10933 10953 11475 11404 11666 12449 12961 13689 14065 13882 13587 14179 14084 13870 12440 13507 14187 14321",
+        "105 107 109 112 114 116 118 120 123 125 127 129 131 134 136 138 141 143 146 148 151 153 156 158 160 163 165 168 170 173 175 177 178 180",
+      ],
+      [
+        "EGY",
+        0,
+        "625 631 636 641 647 652 657 662 666 670 673 676 678 680 682 684 685 686 688 689 691 692 695 696 699 701 704 707 710 712 698 690 710 716",
+        "8007 7877 8035 8079 8221 8424 8662 8951 9245 9589 9982 10117 10144 10250 10452 10701 11212 11782 12392 12728 13129 13082 13077 13058 13136 13426 13727 14018 14488 15027 15309 15579 16360 16691",
+        "584 600 615 629 643 657 670 684 699 715 731 747 762 779 795 811 827 843 859 875 892 911 932 953 975 996 1016 1037 1057 1076 1093 1110 1126 1145",
+      ],
+      [
+        "ETH",
+        0,
+        "451 467 473 477 479 482 487 492 498 495 509 514 521 529 537 544 554 566 577 587 597 606 614 622 629 636 642 648 653 657 660 653 669 673",
+        "874 778 681 744 741 760 827 826 773 788 810 851 838 796 877 952 1025 1109 1194 1262 1381 1493 1577 1697 1821 1957 2085 2223 2311 2438 2517 2588 2656 2758",
+        "476 497 519 537 556 575 595 614 634 654 674 695 716 738 761 784 807 831 855 880 905 931 958 984 1011 1039 1067 1097 1127 1157 1189 1221 1254 1287",
+      ],
+      [
+        "FRA",
+        2,
+        "768 770 773 773 778 779 781 784 786 787 790 792 794 794 803 803 807 810 810 812 814 818 817 820 824 821 824 824 826 827 822 823 825 833",
+        "38656 38938 39332 39021 39801 40571 40991 41877 43163 44400 45922 46455 46611 46731 47720 48257 49223 50158 50068 48405 49130 50086 49936 50067 50327 50683 50984 51896 52561 53449 49311 52517 53674 54297",
+        "570 573 576 578 580 582 584 586 588 591 595 599 603 607 612 616 620 624 628 631 634 637 641 644 647 649 651 653 655 657 659 661 663 664",
+      ],
+      [
+        "DEU",
+        2,
+        "753 756 760 761 764 766 768 772 776 778 781 784 785 785 791 793 796 797 798 799 801 804 805 805 809 806 808 809 809 812 810 811 806 814",
+        "42355 44196 44744 44018 45005 45548 45888 46671 47642 48625 49956 50688 50487 50192 50786 51265 53307 54921 55514 52569 54826 57951 58110 58182 59203 59669 60505 61965 62481 62950 60300 62631 63778 63140",
+        "797 803 809 815 818 820 823 824 820 817 818 819 821 821 821 820 817 813 811 809 808 809 809 810 814 821 828 831 834 836 836 837 841 845",
+      ],
+      [
+        "GHA",
+        0,
+        "554 557 561 563 562 567 570 572 575 578 581 584 587 590 593 596 600 603 606 609 613 616 620 624 628 632 635 638 641 645 643 643 652 655",
+        "2786 2860 2898 2964 2989 3040 3106 3160 3229 3290 3327 3370 3426 3508 3607 3721 3858 3923 4175 4269 4496 5005 5340 5594 5619 5607 5666 5994 6235 6508 6413 6608 6728 6809",
+        "154 158 162 166 170 174 178 182 187 191 196 202 207 213 219 224 230 236 242 249 255 261 267 274 280 287 294 300 306 313 319 325 331 338",
+      ],
+      [
+        "GTM",
+        3,
+        "618 619 620 624 630 637 645 652 660 666 671 674 678 682 682 682 688 693 695 697 699 703 707 709 709 709 712 716 715 716 700 679 712 726",
+        "7595 7662 7822 7915 8018 8195 8222 8364 8560 8668 8770 8771 8902 8926 9004 9100 9386 9773 9890 9741 9825 10032 10127 10298 10554 10786 10873 11005 11192 11466 11097 11825 12144 12380",
+        "90 93 95 98 100 103 106 109 111 114 117 120 122 125 128 131 134 137 139 142 145 148 151 154 157 160 163 166 168 171 174 176 178 181",
+      ],
+      [
+        "IND",
+        1,
+        "586 590 594 598 602 606 610 614 619 623 627 632 636 641 645 649 654 658 662 667 672 676 681 685 689 693 697 701 704 707 702 673 717 720",
+        "2140 2116 2185 2241 2342 2469 2603 2656 2766 2954 3010 3097 3157 3347 3551 3770 4011 4254 4322 4595 4914 5099 5304 5567 5905 6302 6741 7116 7493 7702 7187 7819 8347 8871",
+        "8650 8839 9030 9221 9412 9603 9797 9991 10187 10382 10579 10779 10976 11168 11360 11547 11729 11907 12079 12255 12435 12612 12787 12958 13123 13280 13439 13597 13747 13890 14026 14142 14254 14381",
+      ],
+      [
+        "IDN",
+        1,
+        "632 637 642 649 650 653 655 658 659 660 663 666 670 671 655 675 677 679 681 683 684 686 689 691 693 695 697 700 701 703 688 675 709 711",
+        "4873 5118 5357 5609 5931 6313 6695 6897 5898 5856 6056 6191 6382 6599 6844 7141 7434 7802 8165 8435 8848 9275 9709 10122 10504 10894 11320 11773 12262 12758 12389 12757 13334 13890",
+        "1835 1868 1900 1933 1966 1999 2032 2065 2098 2130 2161 2191 2221 2250 2279 2309 2340 2371 2402 2432 2463 2495 2527 2559 2589 2618 2646 2673 2700 2725 2748 2768 2788 2812",
+      ],
+      [
+        "IRN",
+        1,
+        "641 662 667 670 675 679 683 686 692 697 702 706 711 705 720 724 729 733 737 740 744 747 750 753 756 759 762 764 766 769 741 738 768 777",
+        "9656 10592 10727 10532 10333 10465 11010 11026 11102 11164 11643 11739 12583 13519 13807 13936 14321 15237 15091 15055 15730 15948 15159 14735 15263 14842 15920 16168 15365 14841 15382 15884 16378 17045",
+        "584 600 612 614 615 622 629 636 645 654 664 675 680 688 703 718 734 746 755 765 774 784 794 804 815 826 838 850 861 871 877 885 895 906",
+      ],
+      [
+        "IRQ",
+        1,
+        "576 613 653 653 650 648 646 642 644 645 649 653 657 648 646 649 640 644 665 678 681 684 688 690 697 700 687 698 711 712 697 707 720 723",
+        "10735 3819 4916 6105 6045 5970 6419 7546 9872 11238 12702 12530 11144 6849 10211 10078 10569 10854 11512 11471 11817 12268 13357 13713 13537 13516 15016 14418 14456 14910 12828 12732 13433 13202",
+        "176 178 183 192 201 208 215 222 229 236 244 252 260 268 276 284 286 284 290 301 310 322 337 353 366 376 385 393 403 412 421 431 441 451",
+      ],
+      [
+        "ITA",
+        2,
+        "770 770 774 777 779 781 784 787 788 792 796 799 801 802 810 810 814 815 816 818 821 822 823 827 829 825 830 827 832 833 822 829 821 837",
+        "42657 43283 43614 43216 44137 45410 46008 46869 47701 48494 50353 51332 51369 51126 51495 51586 52304 52747 51806 48774 49302 49473 47796 46833 46826 47312 47988 48849 49356 49691 45505 49825 52333 52843",
+        "570 571 571 572 574 574 572 572 572 572 573 573 574 577 582 585 588 591 596 599 602 604 605 607 607 606 605 604 603 601 599 597 596 595",
+      ],
+      [
+        "JPN",
+        1,
+        "790 793 793 794 798 797 804 806 806 806 812 815 818 819 821 820 824 825 826 830 829 827 832 834 836 839 841 842 843 844 847 846 841 847",
+        "36138 37226 37403 37089 37353 38138 39222 39662 38853 38647 39732 39749 39690 40152 40987 41740 42359 43042 42519 40000 41647 41641 42395 43304 43754 44589 44927 45693 46133 46055 44213 45999 46819 47387",
+        "1234 1239 1244 1248 1253 1257 1260 1263 1265 1268 1270 1273 1275 1277 1278 1279 1280 1281 1282 1282 1282 1281 1279 1277 1275 1273 1272 1271 1269 1267 1263 1257 1250 1244",
+      ],
+      [
+        "KAZ",
+        1,
+        "657 654 650 645 641 637 635 633 633 635 638 641 644 648 650 654 657 662 668 675 683 691 699 707 714 720 725 730 734 737 712 701 735 744",
+        "16838 14878 14045 12796 11335 10600 10857 11299 11364 11816 12936 14612 15961 17345 18887 20566 22574 24351 24896 24901 26375 27946 28881 30177 30986 30894 30758 31524 32330 33298 32012 32946 33506 34703",
+        "172 173 173 173 170 167 164 160 156 155 155 156 157 157 159 160 161 163 164 166 168 171 173 176 178 181 184 187 189 192 195 197 200 203",
+      ],
+      [
+        "KEN",
+        0,
+        "583 578 571 567 561 559 556 555 556 559 561 565 568 574 579 585 591 594 600 605 609 613 615 617 620 623 625 627 628 629 616 612 635 636",
+        "4177 4102 3947 3845 3833 3890 3941 3853 3872 3848 3757 3778 3681 3674 3744 3845 3971 4116 4003 4012 4212 4307 4388 4443 4559 4680 4770 4847 5018 5172 5057 5339 5492 5692",
+        "229 236 244 251 259 266 273 281 289 297 306 316 326 337 347 358 369 380 392 404 416 428 439 450 461 471 481 492 502 512 522 532 543 553",
+      ],
+      [
+        "MDG",
+        0,
+        "521 526 529 537 542 548 555 561 568 574 580 587 592 597 602 607 611 615 620 623 626 629 630 632 633 634 634 634 635 635 627 625 631 636",
+        "1968 1790 1757 1740 1686 1661 1643 1649 1659 1681 1701 1749 1486 1585 1620 1648 1687 1732 1794 1673 1635 1615 1618 1611 1620 1628 1649 1670 1679 1708 1546 1577 1602 1630",
+        "121 124 128 132 136 141 145 150 155 160 165 170 175 181 186 192 197 203 209 215 222 228 235 241 248 254 261 268 275 282 290 297 304 312",
+      ],
+      [
+        "MWI",
+        0,
+        "436 435 436 436 438 438 440 442 443 451 462 472 482 496 511 525 537 547 557 567 578 589 599 608 617 623 632 639 645 650 652 648 660 674",
+        "1047 1104 994 1075 976 1141 1200 1221 1242 1250 1239 1150 1141 1176 1208 1215 1237 1318 1378 1450 1504 1533 1518 1556 1598 1598 1594 1613 1639 1687 1656 1688 1660 1649",
+        "95 98 101 103 102 102 104 106 108 110 113 116 119 122 125 128 132 136 140 144 148 153 157 162 166 171 176 180 185 190 195 200 206 211",
+      ],
+      [
+        "MYS",
+        1,
+        "710 712 715 717 719 720 721 723 724 724 727 731 735 737 740 744 747 750 752 753 754 755 756 755 753 753 754 755 757 759 761 739 754 767",
+        "12014 12795 13568 14534 15474 16569 17772 18605 16817 17429 18533 18186 18709 19329 20169 20768 21444 22305 22898 22107 23308 24116 25006 25736 26818 27700 28425 29552 30460 31301 29200 29823 32129 32858",
+        "178 183 188 193 198 203 209 214 219 224 230 235 241 247 253 258 264 270 276 281 287 292 297 302 307 312 318 324 329 334 339 343 347 351",
+      ],
+      [
+        "MLI",
+        0,
+        "465 469 472 476 479 483 485 491 496 501 506 513 520 526 533 538 543 548 552 556 560 564 567 571 575 579 583 586 589 592 589 591 600 604",
+        "1891 2088 1943 1985 2052 2022 2105 2143 2228 2269 2188 2458 2456 2612 2566 2546 2555 2516 2523 2576 2632 2623 2521 2529 2609 2687 2759 2816 2862 2916 2796 2796 2814 2861",
+        "92 94 96 98 100 102 104 106 109 112 116 119 123 127 131 135 140 145 149 154 159 165 170 175 180 186 192 198 204 211 217 224 231 238",
+      ],
+      [
+        "MEX",
+        3,
+        "690 694 697 700 703 707 711 715 718 722 726 729 731 733 734 736 737 738 737 736 737 739 741 743 744 744 744 743 743 745 704 697 740 751",
+        "17170 17512 17796 17971 18423 17028 17776 18738 19573 19793 20470 20078 19745 19701 20127 20277 20966 21102 20993 19386 20058 20458 20899 20805 21070 21409 21578 21778 21998 21704 19728 20783 21392 21865",
+        "828 844 860 877 893 909 925 940 956 971 986 1001 1015 1030 1044 1058 1073 1088 1104 1120 1136 1152 1168 1183 1198 1211 1223 1234 1246 1258 1268 1276 1286 1297",
+      ],
+      [
+        "MAR",
+        0,
+        "624 629 634 639 643 647 652 656 660 664 668 672 676 680 683 687 692 696 701 705 708 713 717 721 725 729 732 736 739 742 731 734 752 753",
+        "4419 4656 4483 4380 4771 4444 4916 4766 5034 5044 5100 5418 5544 5810 5996 6103 6489 6621 6902 7064 7211 7504 7629 7839 7952 8199 8142 8450 8612 8768 8055 8623 8690 8915",
+        "244 248 252 256 260 264 268 272 276 280 284 288 292 296 300 304 308 312 316 320 325 329 334 338 342 346 350 354 358 362 366 370 373 377",
+      ],
+      [
+        "MOZ",
+        0,
+        "443 447 451 457 461 465 471 478 482 488 495 503 509 514 519 523 527 533 538 544 550 557 565 572 580 587 595 601 608 613 614 603 630 636",
+        "548 564 511 549 546 525 563 612 661 722 712 786 843 883 934 970 1042 1095 1142 1179 1224 1276 1339 1386 1450 1513 1538 1532 1539 1529 1466 1457 1477 1513",
+        "131 134 136 141 150 160 165 169 173 177 181 185 190 194 198 203 208 213 218 224 230 236 243 251 258 265 273 282 290 299 308 317 327 336",
+      ],
+      [
+        "MMR",
+        1,
+        "572 574 577 580 583 587 592 595 599 601 604 606 609 612 614 617 620 624 564 631 635 639 643 646 650 653 656 659 662 665 666 656 665 669",
+        "775 759 821 859 911 962 1011 1055 1103 1209 1360 1498 1662 1874 2110 2378 2669 2968 3255 3578 3894 4079 4341 4667 5007 5314 5581 5878 6201 6563 5927 5178 5350 5364",
+        "398 404 410 415 421 426 432 437 443 448 453 458 462 467 471 474 478 481 484 487 490 494 498 503 507 511 515 519 523 526 530 534 538 541",
+      ],
+      [
+        "NPL",
+        1,
+        "548 556 567 576 586 593 600 608 615 620 626 633 635 642 647 653 659 662 664 666 668 671 674 676 678 674 684 687 690 693 691 684 701 704",
+        "1808 1874 1897 1917 2023 2044 2106 2166 2188 2243 2341 2414 2380 2439 2522 2580 2641 2709 2853 2962 3085 3177 3317 3427 3622 3745 3744 4072 4371 4608 4413 4546 4763 4861",
+        "195 200 206 212 217 222 227 232 237 241 245 249 253 257 260 263 266 268 270 272 273 275 275 276 277 278 280 280 281 284 290 295 297 297",
+      ],
+      [
+        "NLD",
+        2,
+        "770 772 774 770 775 776 776 779 780 780 781 783 784 787 792 795 798 803 804 807 808 811 811 813 817 815 816 817 818 821 814 814 819 822",
+        "43128 43833 44246 44491 45533 46720 48096 49882 51879 54134 56017 56887 56664 56453 57391 58422 60392 62602 63678 61030 61519 62318 61481 61281 62046 63081 64268 65666 66758 67848 64862 68574 71324 70199",
+        "150 152 153 154 155 156 156 157 158 159 161 162 163 164 164 165 165 165 166 167 168 169 169 170 170 171 172 173 174 175 176 177 179 181",
+      ],
+      [
+        "NER",
+        0,
+        "417 423 431 438 446 455 463 471 478 485 492 499 506 515 524 533 542 551 559 565 571 576 580 584 587 588 592 595 598 600 599 595 604 612",
+        "1420 1371 1355 1317 1299 1288 1247 1225 1302 1255 1198 1240 1256 1239 1199 1241 1268 1260 1308 1285 1344 1326 1412 1432 1472 1480 1488 1515 1565 1605 1622 1588 1725 1713",
+        "83 85 88 91 94 97 100 104 107 111 115 119 123 128 133 138 143 148 154 159 165 172 178 185 192 199 207 214 222 229 237 245 253 262",
+      ],
+      [
+        "NGA",
+        0,
+        "457 455 456 458 457 459 458 460 461 466 471 475 480 486 491 495 499 504 507 511 513 515 517 518 519 519 522 524 527 530 531 535 541 545",
+        "5424 5301 5403 5155 4929 4798 4870 4884 4881 4782 4889 5040 5655 5905 6275 6497 6703 6949 7216 7581 7963 8154 8266 8581 8885 8892 8535 8397 8363 8362 7664 7588 7752 7843",
+        "971 997 1024 1051 1079 1108 1138 1168 1198 1230 1264 1299 1335 1372 1411 1450 1491 1533 1576 1620 1666 1714 1762 1810 1859 1907 1954 2003 2049 2095 2140 2185 2232 2279",
+      ],
+      [
+        "PAK",
+        1,
+        "597 599 600 601 602 603 605 606 611 615 619 622 626 628 631 624 636 638 640 642 644 647 649 651 654 656 659 662 665 667 657 658 674 676",
+        "3200 3252 3404 3369 3396 3462 3526 3463 3454 3484 3532 3560 3564 3669 3860 4042 4186 4258 4233 4270 4229 4246 4292 4407 4520 4645 4887 5032 5255 5296 5135 5367 5526 5419",
+        "1162 1201 1235 1270 1307 1346 1386 1425 1465 1506 1549 1593 1632 1671 1713 1755 1797 1845 1895 1944 1992 2037 2077 2111 2143 2173 2201 2233 2269 2308 2350 2395 2437 2475",
+      ],
+      [
+        "PER",
+        4,
+        "640 642 650 657 665 672 678 683 687 693 698 703 708 713 714 720 723 727 727 726 729 733 740 746 753 757 760 760 760 763 738 716 768 777",
+        "6316 6322 6161 6354 6997 7371 7436 7773 7603 7584 7668 7611 7931 8173 8495 8949 9547 10285 11150 11203 12057 12725 13394 14050 14243 14541 14915 15067 15384 15461 13608 15286 15567 15342",
+        "220 225 229 234 239 243 248 253 257 262 266 270 273 276 279 281 283 285 287 289 291 293 296 298 301 305 309 313 319 324 328 332 335 338",
+      ],
+      [
+        "PHL",
+        1,
+        "644 646 654 657 660 663 667 670 672 675 678 678 679 680 683 684 682 685 686 686 689 691 692 693 693 695 695 700 698 697 701 667 695 698",
+        "4504 4378 4294 4283 4374 4477 4632 4759 4617 4651 4740 4778 4856 5003 5229 5387 5579 5840 5987 5965 6273 6388 6698 7017 7340 7692 8132 8584 9016 9452 8455 8858 9457 9899",
+        "629 644 659 675 690 705 722 739 758 778 796 814 831 847 864 880 895 911 927 944 963 982 1002 1021 1038 1053 1067 1081 1095 1108 1121 1131 1140 1149",
+      ],
+      [
+        "POL",
+        2,
+        "706 707 709 713 717 720 723 726 728 732 736 742 745 748 749 751 753 754 756 759 763 766 768 771 773 776 776 777 776 779 766 756 779 786",
+        "12821 11880 12141 12563 13200 14228 15083 16032 16767 17556 18566 18801 19167 19856 20879 21569 22921 24484 25554 26204 27112 28522 28953 29169 30335 31700 32675 34355 36500 38182 37853 41060 43405 43673",
+        "381 382 382 383 383 384 384 383 383 383 383 382 382 382 382 381 381 380 380 380 381 382 382 383 383 383 383 383 382 382 382 380 384 388",
+      ],
+      [
+        "ROU",
+        2,
+        "698 700 695 695 693 693 688 691 699 706 712 711 708 708 711 716 722 728 732 735 736 743 743 749 748 747 750 750 751 753 740 727 753 759",
+        "16317 14333 13195 13415 13963 14863 15489 14780 14510 14478 14854 15848 17062 17587 19532 20571 22355 24328 27040 25762 24903 26151 26767 26942 28156 29182 30189 32853 34829 36399 35284 37534 39257 40117",
+        "229 229 229 228 228 227 225 224 223 222 220 219 218 216 214 212 210 209 207 206 204 203 202 201 200 199 198 197 196 195 194 192 192 191",
+      ],
+      [
+        "RUS",
+        2,
+        "693 690 678 650 638 640 654 666 669 656 650 650 647 647 651 652 665 675 679 687 682 697 701 706 708 713 719 728 729 731 712 698 725 732",
+        "29644 28067 23965 21900 19153 18364 17700 17977 17053 18200 20105 21220 22320 24058 25894 27657 30023 32630 34342 31654 33064 34445 35741 36260 35853 35037 35005 35571 36537 37319 36376 38638 38215 39881",
+        "1490 1494 1489 1481 1482 1483 1481 1479 1476 1472 1467 1461 1459 1458 1452 1446 1441 1439 1438 1439 1439 1440 1443 1446 1449 1453 1458 1462 1464 1465 1464 1458 1456 1454",
+      ],
+      [
+        "SAU",
+        1,
+        "689 693 698 702 706 709 713 716 720 723 726 730 733 737 740 744 748 751 753 754 756 758 761 765 771 778 784 787 787 783 776 771 773 787",
+        "65197 67269 67184 64518 62404 60058 59613 58876 58307 55878 55962 53309 50372 52235 54197 54932 54374 53318 54408 51761 54912 58645 59472 57998 58872 58499 57308 57943 61359 62648 57421 62690 67179 64482",
+        "106 112 117 122 128 133 138 144 149 155 162 170 179 188 197 206 215 224 233 242 252 261 271 280 290 300 307 308 304 305 310 313 322 333",
+      ],
+      [
+        "SEN",
+        0,
+        "567 570 573 573 575 573 571 571 571 573 576 582 589 595 603 610 618 627 632 638 642 648 652 656 660 665 667 671 674 677 675 669 678 687",
+        "2923 2917 2874 2834 2758 2835 2822 2841 2939 3050 3093 3149 3075 3170 3240 3302 3301 3316 3360 3371 3404 3363 3405 3385 3484 3594 3710 3871 3998 4071 4018 4174 4229 4305",
+        "77 79 82 84 86 88 91 93 95 97 100 102 105 107 110 112 115 118 120 123 126 130 133 137 142 146 150 155 159 164 168 172 177 181",
+      ],
+      [
+        "ZAF",
+        0,
+        "629 630 628 626 621 616 611 605 599 592 584 572 556 542 540 539 542 549 560 574 589 606 617 624 632 641 647 654 657 661 652 620 655 661",
+        "10811 10459 10054 9977 10131 10319 10624 10770 10694 10832 11184 11387 11698 11923 12341 12862 13444 14016 14298 13911 14165 14434 14564 14681 14643 14542 14501 14574 14554 14353 13251 13682 13767 13695",
+        "407 417 424 433 440 445 451 457 462 467 472 476 480 485 490 495 500 505 511 517 523 530 538 547 556 567 573 576 586 596 606 615 624 632",
+      ],
+      [
+        "KOR",
+        1,
+        "710 714 722 727 729 734 740 745 750 756 762 769 772 775 780 784 790 794 800 806 807 812 813 818 824 825 829 833 833 837 837 839 827 843",
+        "14378 15784 16613 17596 19052 20698 22140 23311 22000 24382 26404 27441 29395 30142 31580 32886 34430 36257 37064 37176 39574 40719 41538 42710 43807 44849 46088 47537 48834 49791 49374 51718 53229 54029",
+        "441 444 447 449 451 454 456 459 462 465 468 470 473 475 477 479 480 482 484 485 488 491 496 501 505 510 513 515 516 518 519 518 518 517",
+      ],
+      [
+        "ESP",
+        2,
+        "770 771 776 777 781 782 783 789 789 789 794 797 798 797 803 803 810 810 813 816 820 822 822 827 828 826 830 830 831 835 822 830 824 837",
+        "31773 32499 32641 32137 32747 33502 34232 35312 36679 38141 39946 41224 41766 42223 42793 43571 44573 45301 44926 42852 42696 42272 41034 40595 41339 43054 44275 45446 46325 46896 41553 44252 46733 47323",
+        "391 392 394 397 399 401 402 404 406 408 410 412 418 425 432 440 447 455 462 466 468 470 470 469 467 467 467 469 471 474 477 477 478 479",
+      ],
+      [
+        "LKA",
+        1,
+        "692 691 696 700 702 697 698 699 701 704 712 718 723 724 680 731 728 730 726 703 745 747 752 755 758 760 761 762 765 767 769 763 773 775",
+        "4562 4736 4866 5114 5323 5523 5624 5872 6033 6176 6429 6230 6410 6741 7060 7453 7971 8454 8898 9156 9832 10618 11448 12250 12910 13330 13846 14572 14760 14637 13887 14316 13249 13065",
+        "164 165 167 170 173 176 179 182 186 189 193 196 198 200 201 202 204 205 206 208 209 210 212 214 215 217 219 221 223 224 226 227 228 230",
+      ],
+      [
+        "SDN",
+        0,
+        "555 556 560 561 570 574 576 581 583 586 589 593 593 583 568 572 604 614 613 627 630 632 634 634 640 644 647 651 655 658 651 645 657 663",
+        "2460 2592 2710 2777 2736 2825 2924 3380 3441 3459 3576 3702 3814 3947 4041 4152 4300 4416 4446 4188 4220 4468 4146 4130 4208 4159 4175 4061 3817 3626 3401 3249 3132 2181",
+        "220 225 229 234 240 247 252 258 265 271 278 285 292 299 306 313 320 328 336 346 354 361 369 378 388 400 413 427 442 455 468 481 494 500",
+      ],
+      [
+        "TZA",
+        0,
+        "520 518 514 512 511 510 511 512 518 524 532 541 549 559 568 577 585 593 599 605 611 616 623 628 634 639 644 650 655 660 668 661 669 670",
+        "1794 1786 1752 1718 1680 1686 1731 1756 1774 1811 1840 1900 1983 2060 2155 2253 2334 2424 2493 2561 2655 2780 2822 2925 3028 3111 3214 3318 3393 3485 3450 3493 3547 3621",
+        "261 268 275 283 294 304 309 316 324 333 343 352 361 371 381 392 403 414 426 436 448 460 474 488 504 520 538 557 574 592 610 628 647 666",
+      ],
+      [
+        "THA",
+        1,
+        "689 691 694 696 697 698 699 704 707 710 712 715 718 721 721 729 733 738 742 747 750 753 756 760 763 766 768 770 772 772 773 776 753 764",
+        "8703 9295 9888 10540 11216 11955 12458 11954 10898 11255 11624 11903 12514 13289 13999 14460 15053 15744 15894 15668 16732 16768 17872 18244 18327 18814 19373 20097 20882 21280 19950 20237 20768 21245",
+        "547 556 565 574 583 591 599 607 615 623 630 637 643 649 655 660 666 671 676 681 686 690 694 698 702 705 709 712 714 715 716 717 717 717",
+      ],
+      [
+        "TUR",
+        1,
+        "678 683 686 690 694 697 702 707 711 708 719 723 726 729 732 735 738 741 744 747 750 748 756 762 765 765 766 770 775 777 765 757 776 772",
+        "12184 12058 12451 13174 12343 13099 13827 14631 14704 14066 14857 13872 14588 15256 16584 17903 18972 19909 19840 18612 19897 21760 22518 24117 24889 25985 26490 28195 28780 28741 28977 32106 33521 35069",
+        "560 570 580 590 600 610 620 629 637 646 654 662 670 678 686 693 700 708 716 725 733 742 752 764 780 800 817 831 844 854 861 867 871 873",
+      ],
+      [
+        "UGA",
+        0,
+        "476 475 477 477 477 477 478 480 483 490 496 506 514 524 537 549 561 572 583 592 600 608 616 624 631 638 645 652 658 664 664 664 677 683",
+        "1080 1103 1103 1154 1187 1289 1368 1397 1422 1488 1487 1517 1599 1649 1709 1765 1899 1999 2110 2188 2245 2384 2405 2421 2471 2520 2554 2544 2614 2689 2678 2685 2725 2791",
+        "176 182 188 194 201 207 212 219 225 233 240 247 255 264 272 280 288 297 305 315 324 334 343 353 364 375 388 402 416 430 445 459 473 487",
+      ],
+      [
+        "UKR",
+        2,
+        "704 697 689 683 675 671 671 677 680 680 678 677 677 676 675 675 675 677 683 692 702 707 711 715 718 727 734 740 736 739 733 716 727 734",
+        "22816 20784 18672 16012 12411 10983 9970 9754 9646 9704 10364 11379 12093 13343 15021 15611 16902 18374 18884 16093 16812 17784 17849 17889 16979 15404 15857 16310 16979 17637 17093 17846 13787 15917",
+        "521 522 523 524 521 517 512 508 504 500 496 491 487 483 480 476 473 471 468 466 465 463 462 461 460 458 456 454 452 450 447 443 410 377",
+      ],
+      [
+        "GBR",
+        2,
+        "757 759 763 762 767 766 769 771 773 774 778 781 782 783 789 791 793 795 797 802 804 808 809 809 812 809 811 812 811 814 804 807 811 813",
+        "33531 32995 33332 34413 36026 37200 38076 39831 41005 42072 43818 44694 45265 46505 47317 48305 49001 50046 49629 46996 47683 47714 48100 48601 49763 50463 51168 52429 52983 53374 47931 51840 53980 53423",
+        "574 576 577 579 580 582 583 584 586 588 591 593 595 598 602 606 611 615 620 625 630 635 640 644 649 654 659 664 668 671 674 677 682 687",
+      ],
+      [
+        "USA",
+        3,
+        "754 755 758 756 757 759 762 765 767 767 768 769 770 771 775 775 778 780 781 785 787 787 788 788 789 787 787 786 788 789 770 764 780 793",
+        "44384 43748 44665 45293 46543 47227 48442 49991 51626 53481 55046 55024 55443 56505 58139 59612 60684 61314 60806 58722 59797 60253 61142 61967 63027 64368 65026 66164 67728 69121 67407 71441 72829 74352",
+        "2534 2565 2596 2626 2655 2682 2709 2735 2761 2788 2815 2843 2871 2899 2928 2957 2987 3018 3050 3080 3111 3141 3171 3201 3231 3261 3292 3322 3351 3378 3394 3402 3415 3435",
+      ],
+      [
+        "UZB",
+        1,
+        "658 655 652 649 647 647 648 650 652 653 655 659 664 669 672 675 679 685 690 695 698 701 704 707 710 713 716 717 720 721 715 717 721 724",
+        "4240 4119 3568 3407 3161 3071 3065 3169 3254 3346 3431 3531 3626 3734 3963 4186 4440 4793 5146 5472 5795 6171 6525 6933 7344 7792 8173 8413 8743 9169 9145 9706 10091 10514",
+        "205 210 215 220 225 229 234 238 241 245 248 251 254 257 260 264 267 271 275 279 284 288 293 297 302 307 313 318 324 330 336 342 349 357",
+      ],
+      [
+        "VNM",
+        1,
+        "690 693 696 700 704 709 713 717 723 726 727 730 731 732 731 732 733 734 735 735 736 737 738 738 739 740 740 740 741 742 754 741 745 746",
+        "2468 2561 2726 2890 3090 3328 3584 3820 3983 4119 4349 4570 4810 5090 5421 5776 6098 6419 6659 6914 7275 7653 7980 8324 8752 9248 9743 10291 10937 11629 11851 12049 12980 13535",
+        "655 669 683 696 709 720 732 742 753 763 772 780 788 796 803 811 822 836 852 865 875 885 895 906 917 928 940 952 962 972 981 989 997 1004",
+      ],
+      [
+        "ZMB",
+        0,
+        "482 474 470 467 463 461 458 457 457 459 466 474 485 496 505 516 527 537 548 559 569 578 587 594 601 607 611 616 621 629 634 624 653 663",
+        "2425 2365 2268 2366 2111 2120 2197 2223 2158 2198 2221 2269 2299 2384 2472 2564 2673 2796 2908 3066 3267 3336 3475 3535 3586 3577 3598 3613 3647 3592 3392 3503 3585 3673",
+        "78 80 82 84 86 88 90 92 95 97 100 103 106 110 113 117 121 126 130 135 140 144 149 154 159 164 169 174 180 185 191 196 202 207",
+      ],
+      [
+        "ZWE",
+        0,
+        "583 570 556 540 525 511 490 485 476 464 460 445 459 454 460 466 471 476 485 497 519 539 554 568 581 590 598 603 609 611 615 601 624 628",
+        "6083 6254 5532 5509 6011 5965 6474 6524 6582 6424 6170 6217 5610 4602 4288 4005 3819 3632 2954 3299 3885 4359 5004 5032 5081 5103 5070 5234 5415 4994 4528 4827 5037 5218",
+        "101 104 107 109 109 110 112 114 116 118 119 120 121 122 124 125 126 128 130 131 134 136 138 140 142 144 146 148 150 153 155 158 161 163",
+      ],
+    ]
+    const series = (values, scale) => values.split(" ").map(value => value / scale)
+    const countries = data.map(([code, region, le, gdp, pop]) => ({
+      code,
+      region,
+      name: t.names[code],
+      le: series(le, 10),
+      gdp: series(gdp, 1),
+      pop: series(pop, 10),
+    }))
+    const byCode = new Map(countries.map(country => [country.code, country]))
+    const allRegions = t.regions.map((_, i) => i)
+    const state = {
+      regions: new Set(allRegions),
+      year: lastYear,
+      country: "IND",
+      hover: null,
+      sort: { key: "le", dir: -1 },
+    }
+    const NS = "http://www.w3.org/2000/svg"
+    const app = document.getElementById("lx-app")
+    const scatterHost = document.getElementById("lx-scatter")
+    const trendHost = document.getElementById("lx-trend")
+    const yearInput = document.getElementById("lx-year")
+    const playButton = document.getElementById("lx-play")
+
+    const el = (name, attrs, parent) => {
+      const node = document.createElementNS(NS, name)
+      for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, value)
+      parent?.append(node)
+      return node
+    }
+    const text = (content, attrs, parent) => {
+      const node = el("text", attrs, parent)
+      node.textContent = content
+      return node
+    }
+    const num = (value, digits = 0) =>
+      value.toLocaleString(t.locale, {
+        minimumFractionDigits: digits,
+        maximumFractionDigits: digits,
+      })
+    const signed = (value, digits = 1) =>
+      `${value >= 0 ? "+" : "−"}${num(Math.abs(value), digits)}`
+    const color = country => `var(--lx-r${country.region})`
+    const shown = () => countries.filter(country => state.regions.has(country.region))
+    const weighted = (list, i) => {
+      let sum = 0
+      let weight = 0
+      for (const country of list) {
+        sum += country.le[i] * country.pop[i]
+        weight += country.pop[i]
+      }
+      return weight ? sum / weight : NaN
+    }
+
+    const readHash = () => {
+      const params = new URLSearchParams(location.hash.slice(1))
+      const year = Number(params.get("year"))
+      if (year >= firstYear && year <= lastYear) state.year = year
+      const regions = params.get("regions")
+      if (regions !== null)
+        state.regions = new Set(
+          regions
+            .split(",")
+            .filter(Boolean)
+            .map(Number)
+            .filter(i => allRegions.includes(i)),
+        )
+      if (byCode.has(params.get("country"))) state.country = params.get("country")
+    }
+    const writeHash = () => {
+      const regions = [...state.regions].sort().join(",")
+      history.replaceState(
+        null,
+        "",
+        `#year=${state.year}&regions=${regions}&country=${state.country}`,
+      )
+    }
+
+    const chips = document.getElementById("lx-chips")
+    const chipAll = document.createElement("button")
+    chipAll.type = "button"
+    chipAll.textContent = t.all
+    chips.append(chipAll)
+    const chipButtons = t.regions.map((label, i) => {
+      const button = document.createElement("button")
+      button.type = "button"
+      button.innerHTML = `<i style="--lx-swatch:var(--lx-r${i})"></i>`
+      button.append(label)
+      chips.append(button)
+      button.addEventListener("click", () => {
+        if (state.regions.size === allRegions.length) state.regions = new Set([i])
+        else if (state.regions.has(i)) state.regions.delete(i)
+        else state.regions.add(i)
+        change()
+      })
+      return button
+    })
+    chipAll.addEventListener("click", () => {
+      state.regions = new Set(allRegions)
+      change()
+    })
+
+    const updateControls = () => {
+      chipAll.setAttribute(
+        "aria-pressed",
+        String(state.regions.size === allRegions.length),
+      )
+      chipButtons.forEach((button, i) =>
+        button.setAttribute("aria-pressed", String(state.regions.has(i))),
+      )
+      yearInput.value = state.year
+      document.getElementById("lx-year-out").textContent = state.year
+    }
+
+    const updateStats = () => {
+      const list = shown()
+      const i = state.year - firstYear
+      const set = (id, value) => (document.getElementById(id).textContent = value)
+      document.getElementById("lx-change-label").textContent = t.since(firstYear)
+      if (!list.length) {
+        for (const id of ["lx-avg", "lx-change", "lx-people", "lx-gap"]) set(id, "–")
+        return
+      }
+      const avg = weighted(list, i)
+      set("lx-avg", t.years(num(avg, 1)))
+      set("lx-change", t.years(signed(avg - weighted(list, 0))))
+      const people = list.reduce((sum, country) => sum + country.pop[i], 0)
+      set("lx-people", t.people(people))
+      const sorted = [...list].sort((a, b) => b.le[i] - a.le[i])
+      const high = sorted[0]
+      const low = sorted[sorted.length - 1]
+      set("lx-gap", t.years(num(high.le[i] - low.le[i], 1)))
+      set("lx-gap-label", t.gap(high.name, low.name))
+    }
+
+    const tipFor = (host, html, x, y, width) => {
+      let tip = host.querySelector(".lx-tip")
+      if (!tip) {
+        tip = document.createElement("div")
+        tip.className = "lx-tip"
+        host.append(tip)
+      }
+      tip.innerHTML = html
+      const left = x + 14
+      tip.style.left = `${left + tip.offsetWidth > width ? Math.max(0, x - tip.offsetWidth - 14) : left}px`
+      tip.style.top = `${Math.max(0, y - tip.offsetHeight / 2)}px`
+      tip.toggleAttribute("data-on", true)
+    }
+    const hideTip = host =>
+      host.querySelector(".lx-tip")?.toggleAttribute("data-on", false)
+    const countryTip = (country, i) =>
+      `<strong>${country.name}</strong> ${state.year}<br>` +
+      `${t.years(num(country.le[i], 1))} <span>${t.tipLe}</span><br>` +
+      `${t.money(num(country.gdp[i]))} <span>${t.tipGdp}</span><br>` +
+      `${t.million(country.pop[i])} <span>${t.tipPop}</span>`
+
+    const drawScatter = () => {
+      const host = scatterHost
+      host.replaceChildren()
+      const width = host.clientWidth
+      if (width < 120) return
+      const list = shown()
+      if (!list.length) {
+        const empty = document.createElement("p")
+        empty.className = "lx-empty"
+        empty.textContent = t.empty
+        host.append(empty)
+        return
+      }
+      const narrow = width < 520
+      const height = narrow ? 300 : 380
+      const m = { top: 12, right: 14, bottom: 34, left: 30 }
+      const x = value =>
+        m.left + (Math.log(value / 500) / Math.log(200)) * (width - m.left - m.right)
+      const y = value => m.top + ((90 - value) / 50) * (height - m.top - m.bottom)
+      const radius = pop => Math.max(2.5, Math.sqrt(pop / 1430) * (narrow ? 22 : 34))
+      const i = state.year - firstYear
+      const svg = el(
+        "svg",
+        { width, height, role: "img", "aria-label": t.scatterLabel(state.year) },
+        host,
+      )
+      text(
+        state.year,
+        {
+          x: width - m.right,
+          y: height - m.bottom - 10,
+          "text-anchor": "end",
+          class: "lx-watermark",
+        },
+        svg,
+      )
+      for (const tick of [40, 50, 60, 70, 80, 90]) {
+        el(
+          "line",
+          {
+            x1: m.left,
+            x2: width - m.right,
+            y1: y(tick),
+            y2: y(tick),
+            stroke: "var(--lx-grid)",
+          },
+          svg,
+        )
+        text(tick, { x: m.left - 6, y: y(tick) + 4, "text-anchor": "end" }, svg)
+      }
+      const ticks = narrow
+        ? [1000, 10000, 100000]
+        : [500, 1000, 2000, 5000, 10000, 20000, 50000, 100000]
+      for (const tick of ticks) {
+        el(
+          "line",
+          {
+            x1: x(tick),
+            x2: x(tick),
+            y1: m.top,
+            y2: height - m.bottom,
+            stroke: "var(--lx-grid)",
+            "stroke-dasharray": "2 3",
+          },
+          svg,
+        )
+        text(
+          tick >= 1000 ? `${num(tick / 1000)}k` : tick,
+          {
+            x: x(tick),
+            y: height - m.bottom + 15,
+            "text-anchor": tick === 500 ? "start" : tick === 100000 ? "end" : "middle",
+          },
+          svg,
+        )
+      }
+      text(t.gdpAxis, { x: width - m.right, y: height - 2, "text-anchor": "end" }, svg)
+      text(t.leAxis, { x: m.left + 4, y: m.top + 12 }, svg)
+
+      const sorted = [...list].sort((a, b) => b.pop[i] - a.pop[i])
+      for (const country of sorted) {
+        const dot = el(
+          "circle",
+          {
+            cx: x(country.gdp[i]),
+            cy: y(country.le[i]),
+            r: radius(country.pop[i]),
+            fill: color(country),
+            class: `lx-dot${country.code === state.country ? " lx-on" : ""}`,
+            "data-code": country.code,
+          },
+          svg,
+        )
+        dot.addEventListener("pointerenter", () => hover(country.code))
+        dot.addEventListener("pointerleave", () => hover(null))
+        dot.addEventListener("click", () => select(country.code))
+      }
+      for (const country of sorted) {
+        const labelled =
+          country.code === state.country || (width >= 400 && country.pop[i] >= 250)
+        if (!labelled) continue
+        text(
+          country.name,
+          {
+            x: x(country.gdp[i]),
+            y: y(country.le[i]) - radius(country.pop[i]) - 4,
+            "text-anchor": "middle",
+            class: "lx-label",
+          },
+          svg,
+        )
+      }
+    }
+
+    const drawTrend = () => {
+      const host = trendHost
+      host.replaceChildren()
+      const country = byCode.get(state.country)
+      document.getElementById("lx-trend-title").textContent = t.trendTitle(country.name)
+      document.getElementById("lx-legend").innerHTML =
+        `<span><i style="--lx-swatch:${color(country)}"></i>${country.name}</span>` +
+        `<span><i class="lx-dashed"></i>${t.average}</span>`
+      const width = host.clientWidth
+      if (width < 120) return
+      const height = width < 520 ? 220 : 300
+      const m = { top: 12, right: 12, bottom: 24, left: 30 }
+      const list = shown()
+      const years = country.le.map((_, i) => firstYear + i)
+      const average = years.map((_, i) => weighted(list, i))
+      const values = [...country.le, ...average.filter(Number.isFinite)]
+      const low = Math.floor((Math.min(...values) - 1) / 5) * 5
+      const high = Math.ceil((Math.max(...values) + 1) / 5) * 5
+      const x = year =>
+        m.left +
+        ((year - firstYear) / (lastYear - firstYear)) * (width - m.left - m.right)
+      const y = value =>
+        m.top + ((high - value) / (high - low)) * (height - m.top - m.bottom)
+      const svg = el(
+        "svg",
+        { width, height, role: "img", "aria-label": t.trendLabel(country.name) },
+        host,
+      )
+      const step = high - low > 25 ? 10 : 5
+      for (let tick = low; tick <= high; tick += step) {
+        el(
+          "line",
+          {
+            x1: m.left,
+            x2: width - m.right,
+            y1: y(tick),
+            y2: y(tick),
+            stroke: "var(--lx-grid)",
+          },
+          svg,
+        )
+        text(tick, { x: m.left - 6, y: y(tick) + 4, "text-anchor": "end" }, svg)
+      }
+      for (const year of [1990, 2000, 2010, 2023]) {
+        text(
+          year,
+          {
+            x: x(year),
+            y: height - 6,
+            "text-anchor":
+              year === lastYear ? "end" : year === firstYear ? "start" : "middle",
+          },
+          svg,
+        )
+      }
+      el(
+        "line",
+        {
+          x1: x(state.year),
+          x2: x(state.year),
+          y1: m.top,
+          y2: height - m.bottom,
+          stroke: "var(--htmlpress-accent)",
+          "stroke-width": 1.5,
+        },
+        svg,
+      )
+      const path = series =>
+        series
+          .map((value, i) =>
+            Number.isFinite(value) ? `${x(years[i])},${y(value)}` : null,
+          )
+          .filter(Boolean)
+          .join("L")
+      if (list.length)
+        el(
+          "path",
+          {
+            d: `M${path(average)}`,
+            fill: "none",
+            stroke: "var(--lx-soft)",
+            "stroke-width": 2,
+            "stroke-dasharray": "5 4",
+          },
+          svg,
+        )
+      el(
+        "path",
+        {
+          d: `M${path(country.le)}`,
+          fill: "none",
+          stroke: color(country),
+          "stroke-width": 2.5,
+          "stroke-linejoin": "round",
+          "stroke-linecap": "round",
+        },
+        svg,
+      )
+      const i = state.year - firstYear
+      el(
+        "circle",
+        {
+          cx: x(state.year),
+          cy: y(country.le[i]),
+          r: 4.5,
+          fill: color(country),
+          stroke: "var(--htmlpress-bg)",
+          "stroke-width": 2,
+        },
+        svg,
+      )
+
+      const hit = el(
+        "rect",
+        {
+          x: m.left,
+          y: 0,
+          width: width - m.left - m.right,
+          height,
+          fill: "transparent",
+          style: "cursor:pointer",
+        },
+        svg,
+      )
+      const yearAt = event => {
+        const px = event.clientX - svg.getBoundingClientRect().left
+        const share = (px - m.left) / (width - m.left - m.right)
+        return Math.max(
+          firstYear,
+          Math.min(lastYear, Math.round(firstYear + share * (lastYear - firstYear))),
+        )
+      }
+      const show = event => {
+        const year = yearAt(event)
+        const at = year - firstYear
+        tipFor(
+          host,
+          `<strong>${year}</strong><br>${country.name}: ${t.years(num(country.le[at], 1))}` +
+            (Number.isFinite(average[at])
+              ? `<br><span>${t.average}: ${t.years(num(average[at], 1))}</span>`
+              : ""),
+          x(year),
+          y(country.le[at]),
+          width,
+        )
+      }
+      hit.addEventListener("pointermove", show)
+      hit.addEventListener("pointerleave", () => hideTip(host))
+      hit.addEventListener("click", event => {
+        stop()
+        state.year = yearAt(event)
+        change()
+      })
+    }
+
+    const sortValue = (country, i) =>
+      ({
+        name: country.name,
+        le: country.le[i],
+        gdp: country.gdp[i],
+        change: country.le[i] - country.le[0],
+      })[state.sort.key]
+    const drawTable = () => {
+      const i = state.year - firstYear
+      const rows = shown().sort((a, b) => {
+        const left = sortValue(a, i)
+        const right = sortValue(b, i)
+        const order =
+          typeof left === "string" ? left.localeCompare(right, t.locale) : left - right
+        return order * state.sort.dir
+      })
+      const tbody = document.getElementById("lx-rows")
+      tbody.replaceChildren()
+      for (const country of rows) {
+        const row = tbody.insertRow()
+        row.dataset.code = country.code
+        row.style.setProperty("--lx-swatch", color(country))
+        if (country.code === state.country) row.className = "lx-on"
+        const pick = document.createElement("button")
+        pick.type = "button"
+        pick.className = "lx-pick"
+        pick.innerHTML = "<i></i>"
+        pick.append(country.name)
+        pick.addEventListener("click", () => select(country.code))
+        row.insertCell().append(pick)
+        const fill = Math.max(0, Math.min(100, ((country.le[i] - 40) / 50) * 100))
+        row.insertCell().innerHTML = `<span class="lx-bar"><i style="--lx-fill:${fill}%"></i>${num(country.le[i], 1)}</span>`
+        row.insertCell().textContent = t.money(num(country.gdp[i]))
+        const delta = country.le[i] - country.le[0]
+        const cell = row.insertCell()
+        cell.textContent = signed(delta)
+        cell.className = delta >= 0 ? "lx-up" : "lx-down"
+        row.addEventListener("pointerenter", () => hover(country.code))
+        row.addEventListener("pointerleave", () => hover(null))
+      }
+      for (const th of app.querySelectorAll("th")) {
+        const key = th.querySelector("button").dataset.sort
+        if (key === state.sort.key)
+          th.setAttribute("aria-sort", state.sort.dir > 0 ? "ascending" : "descending")
+        else th.removeAttribute("aria-sort")
+      }
+    }
+    for (const button of app.querySelectorAll("th button")) {
+      button.addEventListener("click", () => {
+        const key = button.dataset.sort
+        state.sort =
+          state.sort.key === key
+            ? { key, dir: -state.sort.dir }
+            : { key, dir: key === "name" ? 1 : -1 }
+        drawTable()
+      })
+    }
+
+    const hover = code => {
+      state.hover = code
+      app.toggleAttribute("data-hovering", Boolean(code))
+      for (const node of app.querySelectorAll("[data-code]"))
+        node.classList.toggle("lx-hot", node.dataset.code === code)
+      const dot = code && scatterHost.querySelector(`circle[data-code="${code}"]`)
+      if (!dot) return hideTip(scatterHost)
+      dot.parentNode.append(dot)
+      tipFor(
+        scatterHost,
+        countryTip(byCode.get(code), state.year - firstYear),
+        Number(dot.getAttribute("cx")) + Number(dot.getAttribute("r")) - 10,
+        Number(dot.getAttribute("cy")),
+        scatterHost.clientWidth,
+      )
+    }
+    const select = code => {
+      state.country = code
+      change()
+    }
+
+    const render = () => {
+      updateControls()
+      updateStats()
+      drawScatter()
+      drawTrend()
+      drawTable()
+      if (state.hover) hover(state.hover)
+    }
+    const change = () => {
+      render()
+      writeHash()
+    }
+
+    let timer = 0
+    const stop = () => {
+      clearInterval(timer)
+      timer = 0
+      playButton.setAttribute("aria-pressed", "false")
+      playButton.setAttribute("aria-label", t.play)
+    }
+    playButton.addEventListener("click", () => {
+      if (timer) return stop()
+      if (state.year === lastYear) state.year = firstYear
+      playButton.setAttribute("aria-pressed", "true")
+      playButton.setAttribute("aria-label", t.pause)
+      change()
+      timer = setInterval(() => {
+        state.year += 1
+        change()
+        if (state.year >= lastYear) stop()
+      }, 400)
+    })
+    yearInput.addEventListener("input", () => {
+      stop()
+      state.year = Number(yearInput.value)
+      change()
+    })
+
+    readHash()
+    playButton.setAttribute("aria-label", t.play)
+    for (const host of [scatterHost, trendHost]) {
+      new ResizeObserver(([entry]) => {
+        if (String(entry.contentRect.width) !== host.dataset.width) {
+          host.dataset.width = entry.contentRect.width
+          render()
+        }
+      }).observe(host)
+    }
+  }
+</script>
