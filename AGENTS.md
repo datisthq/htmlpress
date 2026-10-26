@@ -50,7 +50,7 @@ Repo skills live in `.agents/skills/` (reached by Claude Code through the `.clau
 | `rust-development`     | working in `rust/` — layout, cargo commands, the page pipeline, dev server |
 | `worktree-workflow`    | starting, running and landing a `.worktrees/<name>` branch                 |
 
-Shipped skills live in `.skills/` and teach coding agents to **use** htmlpress; they are linked from the docs site. Read the matching one before changing the behaviour it describes, and update it in the same commit:
+Shipped skills live in `.skills/` and teach coding agents to **use** htmlpress; they are published on the docs site and in the npm and PyPI packages. Read the matching one before changing the behaviour it describes, and update it in the same commit:
 
 | skill                     | when                                                               |
 | ------------------------- | ------------------------------------------------------------------ |
@@ -109,6 +109,6 @@ Dot-directories hold non-package code: `.agents/` repo skills, `.skills/` shippe
 Conventional Commits drive [release-please](https://github.com/googleapis/release-please): a `feat` or `fix` landing on `main` opens a Release PR, and merging that PR cuts the version, tags it and publishes. Merging is the gate — nothing ships without it.
 
 - **One version for everything.** The repo is one release-please component at `.` (`release-type: simple`, `version.txt`), tagged `vX.Y.Z` with one root `CHANGELOG.md`; `rust/Cargo.toml` and `typescript/package.json` are its `extra-files`, and the wheel takes the crate's version through maturin. The manifest holds the current version and release-please maintains it — never hand-edit it
-- **IMPORTANT: only changes to what an installer gets use `feat` or `fix`** — `rust/src/`, the `[package]` and `[dependencies]` tables of `rust/Cargo.toml`, `typescript/actions/`, `typescript/entrypoints/`, `typescript/settings.ts`, the `bin` and `files` of `typescript/package.json`, `python/pyproject.toml`. Everything else MUST be `chore` or `docs`: CI and workflows, release config, dependencies, tooling, `AGENTS.md`, `.agents/skills/`, the READMEs, the docs site, the shipped `.skills/` (linked from the site, not in any package)
+- **IMPORTANT: only changes to what an installer gets use `feat` or `fix`** — `rust/src/`, the `[package]` and `[dependencies]` tables of `rust/Cargo.toml`, `typescript/actions/`, `typescript/entrypoints/`, `typescript/settings.ts`, the `bin` and `files` of `typescript/package.json`, `python/pyproject.toml`, the shipped `.skills/`. Everything else MUST be `chore` or `docs`: CI and workflows, release config, dependencies, tooling, `AGENTS.md`, `.agents/skills/`, the READMEs, the docs site
 - This is not a style preference. release-please reads the commit type: a `fix:` on a workflow file cuts a release and burns a version number on a change no consumer can observe. Version numbers can never be reused
 - When in doubt, ask whether the change alters what someone installing the package gets. If it does not, it is `chore`

@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "uvx maturin@1.15.0 build --release --out build",
+    "build": "bash scripts/copy-skills.sh && uvx maturin@1.15.0 build --release --out build",
     "release": "uv publish build/*"
   }
 }

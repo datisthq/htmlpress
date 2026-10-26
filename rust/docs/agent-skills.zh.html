@@ -62,14 +62,22 @@
 </p>
 
 <h2>从软件包安装</h2>
-<htmlpress-callout type="info" label="即将推出">
-  <p>
-    这些技能尚未打包进 npm、PyPI 或 crates.io
-    的软件包中。在此之前，请从网站安装，或从仓库的
-    <a href="https://github.com/datisthq/htmlpress/tree/main/.skills">.skills/</a>
-    中复制。
-  </p>
-</htmlpress-callout>
+<p>
+  这些技能也随 npm 和 PyPI 软件包一起发布。从软件包安装可让它们与 lockfile 中的 htmlpress
+  版本保持一致，而网站始终提供最新版本：
+</p>
+<htmlpress-tabs sync="package">
+  <section title="npm">
+    <pre><code class="language-sh">npx skills add ./node_modules/gethtmlpress/skills</code></pre>
+  </section>
+  <section title="PyPI">
+    <pre><code class="language-sh">npx skills add .venv/share/htmlpress/skills</code></pre>
+  </section>
+</htmlpress-tabs>
+<p>
+  Python 软件包将它们安装到环境的 <code>share/htmlpress/skills</code>；使用
+  <code>cargo install</code> 时，请从网站安装。
+</p>
 
 <h2>使用技能</h2>
 <p>

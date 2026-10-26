@@ -55,6 +55,7 @@ const main = join(COMPILE, PACKAGE_NAME)
 mkdirSync(main, { recursive: true })
 cpSync(join(ROOT, "build"), join(main, "build"), { recursive: true })
 for (const file of ["README.md", "LICENSE.md"]) cpSync(join(ROOT, file), join(main, file))
+cpSync(join(ROOT, "..", ".skills"), join(main, "skills"), { recursive: true })
 const { scripts, devDependencies, ...published } = manifest
 writeJson(join(main, "package.json"), {
   ...published,

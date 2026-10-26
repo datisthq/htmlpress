@@ -92,6 +92,9 @@ jobs:
           if [[ "${{ matrix.platform }}" == win32-* ]]; then name=htmlpress.exe; fi
           mkdir -p "binaries/${{ matrix.platform }}"
           cp "rust/target/${{ matrix.target }}/release/$name" "binaries/${{ matrix.platform }}/$name"
+      - name: Stage Skills
+        shell: bash
+        run: python/scripts/copy-skills.sh
       - name: Build Wheel
         uses: PyO3/maturin-action@e83996d129638aa358a18fbd1dfb82f0b0fb5d3b # v1.51.0
         with:

@@ -21,7 +21,8 @@
     "htmlpress": "./build/entrypoints/main.js"
   },
   "files": [
-    "build"
+    "build",
+    "skills"
   ],
   "type": "module",
   "sideEffects": false,

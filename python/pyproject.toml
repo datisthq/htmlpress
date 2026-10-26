@@ -30,3 +30,5 @@ build-backend = "maturin"
 [tool.maturin]
 bindings = "bin"
 manifest-path = "../rust/Cargo.toml"
+# scripts/copy-skills.sh fills it; never committed
+data = "htmlpress.data"

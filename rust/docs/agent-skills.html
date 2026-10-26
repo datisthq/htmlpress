@@ -76,14 +76,24 @@
 </p>
 
 <h2>Install from the package</h2>
-<htmlpress-callout type="info" label="Coming soon">
-  <p>
-    The skills are not yet bundled in the npm, PyPI or crates.io packages. Until it is,
-    install them from the website, or copy them from
-    <a href="https://github.com/datisthq/htmlpress/tree/main/.skills">.skills/</a> in the
-    repository.
-  </p>
-</htmlpress-callout>
+<p>
+  The skills also ship inside the npm and PyPI packages. Installing them from there keeps
+  them matched to the htmlpress version in your lockfile, while the website always serves
+  the latest release:
+</p>
+<htmlpress-tabs sync="package">
+  <section title="npm">
+    <pre><code class="language-sh">npx skills add ./node_modules/gethtmlpress/skills</code></pre>
+  </section>
+  <section title="PyPI">
+    <pre><code class="language-sh">npx skills add .venv/share/htmlpress/skills</code></pre>
+  </section>
+</htmlpress-tabs>
+<p>
+  A Python package installs them under the environment's
+  <code>share/htmlpress/skills</code>; with <code>cargo install</code>, install them from
+  the website.
+</p>
 
 <h2>Use them</h2>
 <p>

@@ -19,6 +19,8 @@ One binary, three registries, one version. Nothing here may change what the bina
   package with `optionalDependencies` pinned to its own version. Those pins are written at pack
   time, never kept in `typescript/package.json`: a pin to an unpublished version would break
   `pnpm install` in this workspace.
+- The main package also carries `.skills/` as `skills/`, copied by `scripts/pack.ts`, so
+  `npx skills add ./node_modules/gethtmlpress/skills` installs the version in the lockfile.
 - `scripts/release.ts` publishes platform packages before the main one and skips any version
   already on the registry, so rerunning a half-failed release finishes it.
 - Never a `postinstall` download: pnpm 10+ blocks lifecycle scripts by default, and it breaks
@@ -33,7 +35,11 @@ One binary, three registries, one version. Nothing here may change what the bina
 
 `python/pyproject.toml` is the whole package: maturin with `bindings = "bin"` and
 `manifest-path = "../rust/Cargo.toml"`, `dynamic = ["version"]` so the wheel takes the crate's
-version. A wheel holds only the binary under `.data/scripts/`. CI builds one wheel per target
+version. A wheel holds the binary under `.data/scripts/` and the skills under
+`.data/data/share/htmlpress/skills/`, installed to `<venv>/share/htmlpress/skills`. maturin
+reads them from `python/htmlpress.data/` (`data` in `pyproject.toml`), which
+`python/scripts/copy-skills.sh` stages and git ignores: the local build and the release
+workflow's Stage Skills step both run it, and a wheel built without it ships no skills. CI builds one wheel per target
 with `PyO3/maturin-action`; no sdist is published, since the crate sits outside `python/`.
 Check locally: `pnpm -C python build`, then `uvx --from python/build/<wheel> htmlpress --version`.
 

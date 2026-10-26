@@ -77,3 +77,4 @@ tmuxp.yaml
 .vitest/
 /.playwright-mcp/
 .worktrees/
+python/htmlpress.data/
