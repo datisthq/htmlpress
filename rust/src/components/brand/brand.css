@@ -23,7 +23,7 @@
     height: 1.625rem;
   }
   a:has(small) img {
-    margin-bottom: 0.3125rem;
+    margin-bottom: 0.25rem;
   }
   span {
     display: flex;
