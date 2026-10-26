@@ -15,8 +15,8 @@ use crate::models::page::Page;
 use crate::models::site::Site;
 use crate::settings::{ASSETS_DIR, NOT_FOUND_PAGE, RELOAD_PATH};
 
-/// Wrap one page of the site in its layout, filling its `<head>`, swapping each project
-/// component's `.html` in for its tag, and filling every `htmlpress-*` layout element.
+/// Wrap one page of the site in its layout, filling its `<head>`, each project
+/// component's tag with its `.html`, and every `htmlpress-*` layout element.
 pub(crate) fn render_page(
     site: &Site,
     page: &Page,
@@ -55,7 +55,7 @@ pub(crate) fn render_page(
     );
     for (tag, html) in &fragments {
         settings = settings.append_element_content_handler(element!(tag, |el| {
-            el.replace(html, ContentType::Html);
+            el.set_inner_content(html, ContentType::Html);
             Ok(())
         }));
     }
@@ -156,7 +156,7 @@ fn swap_components(content: &str, fragments: &[(&str, &str)]) -> Result<String, 
     let mut settings = RewriteStrSettings::new();
     for (tag, html) in fragments {
         settings = settings.append_element_content_handler(element!(tag, |el| {
-            el.replace(html, ContentType::Html);
+            el.set_inner_content(html, ContentType::Html);
             Ok(())
         }));
     }

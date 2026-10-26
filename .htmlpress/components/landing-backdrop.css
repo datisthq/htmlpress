@@ -1,6 +1,5 @@
-/* Drifting vertical strata, two light scans crossing them in turn, and a soft blob.
-   The markup is pasted in for the tag, so the scope is the class it carries. */
-@scope (.landing-backdrop) {
+/* Drifting vertical strata, two light scans crossing them in turn, and a soft blob */
+@scope (landing-backdrop) {
   :scope {
     position: absolute;
     inset: 0;

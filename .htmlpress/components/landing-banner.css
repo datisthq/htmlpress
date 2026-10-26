@@ -1,5 +1,4 @@
-/* The markup is pasted in for the tag, so the scope is the class it carries */
-@scope (.landing-banner) {
+@scope (landing-banner) {
   :scope {
     display: block;
     background: var(--htmlpress-text);

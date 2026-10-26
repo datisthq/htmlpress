@@ -1,5 +1,8 @@
-@scope (.landing-footer) {
+@scope (landing-footer) {
   :scope {
+    display: block;
+  }
+  footer {
     border-top: 1px solid var(--htmlpress-border);
     background: var(--htmlpress-surface);
     display: flex;

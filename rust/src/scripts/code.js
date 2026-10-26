@@ -1,7 +1,7 @@
 // Every code block gets a copy button and every h2/h3 with an id a link to itself.
 
 function addCopyButtons() {
-  for (const pre of document.querySelectorAll(".htmlpress-content pre")) {
+  for (const pre of document.querySelectorAll("htmlpress-page > main pre")) {
     if (pre.parentElement?.classList.contains("htmlpress-code")) continue
     if (pre.closest("htmlpress-mermaid")) continue
     const box = document.createElement("div")
@@ -20,7 +20,9 @@ function addCopyButtons() {
 }
 
 function addHeadingAnchors() {
-  for (const heading of document.querySelectorAll(".htmlpress-content :is(h2, h3)[id]")) {
+  for (const heading of document.querySelectorAll(
+    "htmlpress-page > main :is(h2, h3)[id]",
+  )) {
     if (heading.querySelector(".htmlpress-anchor")) continue
     const anchor = document.createElement("a")
     anchor.className = "htmlpress-anchor"

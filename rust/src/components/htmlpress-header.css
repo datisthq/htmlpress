@@ -1,0 +1,36 @@
+@scope (htmlpress-header) {
+  :scope {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    height: 4rem;
+    padding: 0 1.5rem;
+    border-bottom: 1px solid var(--htmlpress-border);
+    background: color-mix(in oklab, var(--htmlpress-bg) 85%, transparent);
+    backdrop-filter: blur(8px);
+  }
+  :scope htmlpress-brand,
+  :scope htmlpress-nav-toggle {
+    display: none;
+  }
+  :scope htmlpress-theme-toggle {
+    margin-left: auto;
+  }
+
+  @media (max-width: 56rem) {
+    :scope {
+      gap: 1rem;
+      padding: 0 1rem 0 0.5rem;
+    }
+    :scope htmlpress-brand {
+      display: block;
+      flex-shrink: 0;
+    }
+    :scope htmlpress-nav-toggle:defined {
+      display: block;
+    }
+  }
+}

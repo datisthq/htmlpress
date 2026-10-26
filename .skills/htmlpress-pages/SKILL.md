@@ -105,10 +105,15 @@ Put block content (`<p>`, `<h3>`, `<pre>`) inside a component, not bare text.
     missing one fails the build.
   - `styles/tokens.css`, `layout.css`, `content.css` are the global theme;
     `components/<tag>.css` and `.js` one component each, its CSS inside `@scope (<tag>)`.
-  - A new tag adds a component: `components/site-footer.html` replaces every
-    `<site-footer>` at build time; its `.css`/`.js` load where the tag appears, and since
-    the tag is gone, its CSS scopes to a class on the pasted markup. The
-    `htmlpress-` prefix is reserved, and a file that replaces nothing fails the build.
+    The layout's frame is elements too, never classes: `<htmlpress-shell>`,
+    `-sidebar`, `-main`, `-header`, `-page`, `-aside`, `-skip`.
+  - A new tag adds a component: `components/site-footer.html` fills every
+    `<site-footer>` at build time; the tag stays, so its `.css` scopes to the tag
+    (`:scope { display: block }` when it should be a box) and its `.css`/`.js` load where
+    the tag appears. The `htmlpress-` prefix is reserved, and a file that replaces
+    nothing fails the build.
+  - To restyle a component from an outer one, beat its `:scope`: write
+    `:scope htmlpress-header`, not a bare `htmlpress-header`, which loses on specificity.
 
 ## Checking the result
 

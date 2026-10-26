@@ -6,7 +6,7 @@
 <meta name="layout" content="landing" />
 
 <landing-hero>
-  <landing-backdrop></landing-backdrop>
+  <landing-backdrop aria-hidden="true"></landing-backdrop>
   <section>
     <div>
       <hgroup>
@@ -152,9 +152,9 @@
             <strong>Written in plain HTML</strong>.htmlpress/layouts/landing.html
           </figcaption>
           <landing-code syntax="html">
-            <pre><code>&lt;header class="htmlpress-header"&gt;
+            <pre><code>&lt;htmlpress-header role="banner"&gt;
   &lt;htmlpress-brand&gt;&lt;/htmlpress-brand&gt;
-&lt;/header&gt;</code></pre>
+&lt;/htmlpress-header&gt;</code></pre>
           </landing-code>
         </figure>
       </section>

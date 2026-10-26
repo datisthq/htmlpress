@@ -3,35 +3,35 @@
   <head>
   </head>
   <body>
-    <a class="htmlpress-skip" href="#content">Skip to content</a>
-    <div class="htmlpress-shell">
-      <aside class="htmlpress-sidebar" id="htmlpress-sidebar">
+    <htmlpress-skip><a href="#content">Skip to content</a></htmlpress-skip>
+    <htmlpress-shell>
+      <htmlpress-sidebar id="htmlpress-sidebar" role="complementary">
         <htmlpress-brand></htmlpress-brand>
         <htmlpress-nav></htmlpress-nav>
-      </aside>
-      <div class="htmlpress-main">
+      </htmlpress-sidebar>
+      <htmlpress-main>
         <htmlpress-banner></htmlpress-banner>
-        <header class="htmlpress-header">
+        <htmlpress-header role="banner">
           <htmlpress-nav-toggle></htmlpress-nav-toggle>
           <htmlpress-brand></htmlpress-brand>
           <htmlpress-links></htmlpress-links>
           <htmlpress-theme-toggle></htmlpress-theme-toggle>
-        </header>
-        <div class="htmlpress-page">
-          <main id="content" class="htmlpress-content">
+        </htmlpress-header>
+        <htmlpress-page>
+          <main id="content">
             <htmlpress-breadcrumbs></htmlpress-breadcrumbs>
             <htmlpress-content></htmlpress-content>
             <htmlpress-pager></htmlpress-pager>
           </main>
-          <aside class="htmlpress-aside">
+          <htmlpress-aside role="complementary">
             <htmlpress-edit></htmlpress-edit>
             <htmlpress-toolbar></htmlpress-toolbar>
             <htmlpress-toc></htmlpress-toc>
-          </aside>
-        </div>
+          </htmlpress-aside>
+        </htmlpress-page>
         <htmlpress-footer></htmlpress-footer>
-      </div>
-    </div>
+      </htmlpress-main>
+    </htmlpress-shell>
     <htmlpress-back-to-top></htmlpress-back-to-top>
   </body>
 </html>

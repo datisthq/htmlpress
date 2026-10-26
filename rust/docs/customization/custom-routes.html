@@ -28,10 +28,10 @@
 
 &lt;!-- .htmlpress/layouts/landing.html --&gt;
 &lt;body&gt;
-  &lt;header class="htmlpress-header"&gt;
+  &lt;htmlpress-header role="banner"&gt;
     &lt;htmlpress-brand&gt;&lt;/htmlpress-brand&gt;
     &lt;htmlpress-theme-toggle&gt;&lt;/htmlpress-theme-toggle&gt;
-  &lt;/header&gt;
+  &lt;/htmlpress-header&gt;
   &lt;main&gt;&lt;htmlpress-content&gt;&lt;/htmlpress-content&gt;&lt;/main&gt;
 &lt;/body&gt;</code></pre>
     <p>
@@ -104,6 +104,14 @@
         </tr>
       </tbody>
     </table>
+    <p>
+      The frame around them is elements too, never classes:
+      <code>&lt;htmlpress-shell&gt;</code>, <code>&lt;htmlpress-sidebar&gt;</code>,
+      <code>&lt;htmlpress-main&gt;</code>, <code>&lt;htmlpress-header&gt;</code>,
+      <code>&lt;htmlpress-page&gt;</code>, <code>&lt;htmlpress-aside&gt;</code> and
+      <code>&lt;htmlpress-skip&gt;</code>; see
+      <a href="/authoring/rich-elements.html#layout">Layout</a>.
+    </p>
     <p>
       Htmlpress fills the layout's <code>&lt;head&gt;</code> the same way for every
       layout, so the theme, the site's metadata and the page's own head tags are always

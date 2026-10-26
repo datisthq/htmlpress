@@ -62,8 +62,9 @@ run from source: `cargo run --manifest-path rust/Cargo.toml -- build docs`.
    text is only complete there; the asset loader then sees the `htmlpress-tabs` tag
 3. `render_page` runs lol_html over the layout, which is plain HTML: `layout.html`, or
    `layouts/<name>.html` for a page with `<meta name="layout">` (`scan_site` fails a page
-   naming a missing one). The page's own project component tags are swapped first, since
-   its content goes in unparsed, but the tags it links CSS for are read before the swap. It
+   naming a missing one). The page's own project component tags are filled first, since
+   its content goes in unparsed, but the tags it links CSS for are read before that; a
+   project component keeps its tag, so its CSS scopes to it. It
    fills `<head>` and
    swaps each layout element (`htmlpress-content`, `htmlpress-nav`, `htmlpress-toc`, `htmlpress-pager`, …) for markup
    built from the site. Inserted markup is never re-parsed, so a page's own `htmlpress-*` tags
@@ -121,9 +122,10 @@ in light, dark and phone width (**`change-verification`**).
 - Inside `@scope`, a bare `ul` ties the global `ul` on specificity and wins on scope
   proximity, but a global `li + li` still beats a scoped `li`: match the global selector's
   weight when a component resets it
-- `styles/layout.css` only places components (`.htmlpress-header htmlpress-brand`); one
-  that sets `display` on its own `:scope` beats a layout rule hiding it unless the layout
-  rule carries a class
+- The layout's frame is components too (`htmlpress-shell`, `-header`, `-page`, …), each
+  placing what it holds; `styles/layout.css` keeps only globals. A child that sets
+  `display` on its own `:scope` beats a container's bare `htmlpress-brand`: write
+  `:scope htmlpress-brand`, and an outer scope overriding the container needs one more type
 
 - A running `htmlpress start` serves the assets it was compiled with: rebuild and restart it
   after editing one, or copy the file into `<root>/.htmlpress/build/_htmlpress/` to preview

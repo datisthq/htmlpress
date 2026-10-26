@@ -8,7 +8,7 @@ hint.setAttribute("role", "tooltip")
 hint.hidden = true
 
 function addHints() {
-  const content = document.querySelector(".htmlpress-content")
+  const content = document.querySelector("htmlpress-page > main")
   if (!content) return
   for (const abbr of content.querySelectorAll("abbr[title]")) {
     const title = abbr.title

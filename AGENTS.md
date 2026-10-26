@@ -10,7 +10,7 @@ Htmlpress turns a folder of HTML pages into a site: one layout, one theme, a nav
 - **project** — a folder htmlpress builds: HTML pages, other files copied as-is, an optional `htmlpress.yaml`, and `.htmlpress/` holding the build output and escapes
 - **page** — an `.html` file in a project, read by `rust/src/actions/page/read.rs` into title, order, head and content
 - **escape** — a project file under `.htmlpress/` at a built-in asset's path (`ASSETS` in `rust/src/settings.rs`), replacing it: `layout.html`, `styles/*.css`, `scripts/*.js`, `components/<tag>.{css,js}`; beside escapes a project may add its own `components/<tag>.{html,css,js}` and `layouts/<name>.html`, which a page picks with `<meta name="layout">`
-- **component** — a custom element tag with up to three files, `components/<tag>.{html,css,js}`: its CSS scoped with `@scope (<tag>)`, its JS defining only that element, linked only on pages that use the tag; a project's own tag adds one, and its `.html` replaces the tag at build time
+- **component** — a custom element tag with up to three files, `components/<tag>.{html,css,js}`: its CSS scoped with `@scope (<tag>)`, its JS defining only that element, linked only on pages that use the tag; a project's own tag adds one, and its `.html` fills the tag at build time
 - **docs site** — this repo's own htmlpress project: the root's `htmlpress.yaml` and `.htmlpress/`, its pages in `rust/docs/` (`include: rust/docs/**/*.html`), built by `pnpm build:docs` and deployed to htmlpress.dev
 
 ## Rules

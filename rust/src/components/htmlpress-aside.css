@@ -1,0 +1,22 @@
+@scope (htmlpress-aside) {
+  :scope {
+    display: block;
+    position: sticky;
+    top: 6.5rem;
+    align-self: start;
+    max-height: calc(100dvh - 8rem);
+    overflow-y: auto;
+    font-size: 0.875rem;
+    line-height: 1.43;
+    scrollbar-width: none;
+  }
+  :scope:not(:has(> *)) {
+    display: none;
+  }
+
+  @media (max-width: 80rem) {
+    :scope {
+      display: none;
+    }
+  }
+}

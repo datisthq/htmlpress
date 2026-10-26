@@ -150,6 +150,7 @@ fn links_only_the_components_a_page_uses() -> crate::Result<()> {
         r#"<script type="module" src="/_htmlpress/components/htmlpress-tabs.js">"#
     ));
     assert!(html.contains(r#"href="/_htmlpress/components/htmlpress-nav.css""#));
+    assert!(html.contains(r#"href="/_htmlpress/components/htmlpress-header.css""#));
     assert!(html.contains(r#"src="/_htmlpress/scripts/code.js""#));
     assert!(
         !html.contains("htmlpress-callout.css") && !html.contains("htmlpress-zoom.js")
@@ -158,7 +159,7 @@ fn links_only_the_components_a_page_uses() -> crate::Result<()> {
 }
 
 #[test]
-fn swaps_a_project_component_in_for_its_tag() -> crate::Result<()> {
+fn fills_a_project_component_tag_with_its_html() -> crate::Result<()> {
     let mut site = create_site()?;
     let footer = "<footer><htmlpress-badge>v1</htmlpress-badge></footer>";
     site.assets
@@ -187,12 +188,12 @@ fn swaps_a_project_component_in_for_its_tag() -> crate::Result<()> {
     site.assets
         .insert("layout.html".to_owned(), layout.to_owned());
     let html = render_page(&site, &site.pages[0], false)?;
-    assert!(html.contains("<b>Mine</b><h1>Home</h1><footer>"));
+    assert!(html.contains("<htmlpress-brand><b>Mine</b></htmlpress-brand><h1>Home</h1>"));
+    assert!(html.contains("<site-footer><footer>"));
     assert_eq!(html.matches("<footer>").count(), 2);
     assert!(html.contains("href=\"/_htmlpress/components/site-header.css\""));
     assert!(html.contains("href=\"/_htmlpress/components/site-footer.css\""));
     assert!(html.contains("href=\"/_htmlpress/components/htmlpress-badge.css\""));
-    assert!(!html.contains("<site-footer>") && !html.contains("<htmlpress-brand>"));
     Ok(())
 }
 

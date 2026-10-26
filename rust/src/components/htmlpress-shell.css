@@ -1,0 +1,13 @@
+@scope (htmlpress-shell) {
+  :scope {
+    display: grid;
+    grid-template-columns: var(--htmlpress-nav-width) minmax(0, 1fr);
+    min-height: 100dvh;
+  }
+
+  @media (max-width: 56rem) {
+    :scope {
+      display: block;
+    }
+  }
+}

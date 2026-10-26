@@ -7,11 +7,11 @@
     --landing-violet: oklch(0.55 0.22 293);
     display: block;
   }
-  .htmlpress-header htmlpress-brand {
+  :scope htmlpress-header htmlpress-brand {
     display: block;
     flex-shrink: 0;
   }
-  .htmlpress-header {
+  :scope htmlpress-header {
     padding-inline: max(var(--landing-gutter), calc((100% - var(--landing-width)) / 2));
   }
   main {

@@ -91,7 +91,7 @@
       <dd>
         The global theme, joined into one <code>theme.css</code> on every page:
         <code>tokens.css</code> (the <code>--htmlpress-*</code> values),
-        <code>layout.css</code> (the chrome around the page) and
+        <code>layout.css</code> (the page's globals) and
         <code>content.css</code> (headings, prose, tables, code).
       </dd>
       <dt><code>scripts/code.js</code></dt>
@@ -100,9 +100,9 @@
       <dd>The hover hint on abbreviations and footnote references.</dd>
       <dt><code>components/&lt;tag&gt;.css</code> and <code>.js</code></dt>
       <dd>
-        One component each. Its styles sit in <code>@scope (&lt;tag&gt;)</code>, so they
-        never reach outside it, and its script defines only that element. A page links
-        only the components it uses.
+        One component each, the elements of the layout's frame included. Its styles sit in
+        <code>@scope (&lt;tag&gt;)</code>, so they never reach outside it, and its script
+        defines only that element. A page links only the components it uses.
       </dd>
     </dl>
     <p>
@@ -133,15 +133,16 @@ $ htmlpress escape htmlpress-tabs -r docs  # in another project folder</code></p
     <h2>Example: custom footer</h2>
     <p>
       A file under <code>components/</code> with a new tag adds a component of your own.
-      Its <code>.html</code> replaces every <code>&lt;tag&gt;</code> in the layout and the
+      Its <code>.html</code> fills every <code>&lt;tag&gt;</code> in the layout and the
       pages at build time; its <code>.css</code> and <code>.js</code> load wherever the
       tag appears.
     </p>
     <pre><code>&lt;!-- .htmlpress/components/site-footer.html --&gt;
-&lt;footer class="site-footer"&gt;&lt;p&gt;Built by my team · 2026&lt;/p&gt;&lt;/footer&gt;
+&lt;footer&gt;&lt;p&gt;Built by my team · 2026&lt;/p&gt;&lt;/footer&gt;
 
 /* .htmlpress/components/site-footer.css */
-@scope (.site-footer) {
+@scope (site-footer) {
+  :scope { display: block; }
   p { color: var(--htmlpress-muted); }
 }</code></pre>
     <p>
@@ -182,11 +183,12 @@ $ htmlpress escape htmlpress-tabs -r docs  # in another project folder</code></p
 
     <h3>Scoping a component's styles</h3>
     <p>
-      A component's tag is gone once its <code>.html</code> replaces it, so the
-      <code>.css</code> of a component with an <code>.html</code> scopes to a class on
-      that markup, <code>@scope (.site-footer)</code>, not to the tag. A component without
-      an <code>.html</code> keeps its tag in the page and scopes to it,
-      <code>@scope (site-footer)</code>.
+      A component's tag stays around the markup its <code>.html</code> fills it with,
+      keeping its attributes, so its <code>.css</code> scopes to the tag,
+      <code>@scope (site-footer)</code>, with or without an <code>.html</code>. A custom
+      element is inline until its CSS says otherwise. To restyle a component from another
+      one, beat its <code>:scope</code>: <code>:scope htmlpress-header</code>, not a bare
+      <code>htmlpress-header</code>.
     </p>
 
     <h2>What you can't override this way</h2>
@@ -196,8 +198,9 @@ $ htmlpress escape htmlpress-tabs -r docs  # in another project folder</code></p
         <code>&lt;htmlpress-nav&gt;</code>, <code>&lt;htmlpress-toc&gt;</code>,
         <code>&lt;htmlpress-pager&gt;</code> and the other layout elements is built from
         the site, so only their <code>.css</code> and <code>.js</code> can be escaped. A
-        <code>components/htmlpress-brand.html</code> replaces one with your own static
-        HTML.
+        <code>components/htmlpress-brand.html</code> fills one with your own static HTML;
+        its built-in <code>.css</code> still applies to the tag, so escape that too to
+        restyle it.
       </li>
       <li>
         <strong>Pages with a different layout</strong>: use

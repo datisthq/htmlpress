@@ -102,7 +102,7 @@ pie title Languages
 <h2>Included Documents</h2>
 <p>
   A project component shares markup between pages. A file at
-  <code>.htmlpress/components/&lt;tag&gt;.html</code> replaces every
+  <code>.htmlpress/components/&lt;tag&gt;.html</code> fills every
   <code>&lt;tag&gt;</code> in every page at build time:
 </p>
 <htmlpress-file-tree>
@@ -123,15 +123,15 @@ pie title Languages
   </ul>
 </htmlpress-file-tree>
 <pre><code>&lt;!-- .htmlpress/components/site-disclaimer.html --&gt;
-&lt;aside class="site-disclaimer"&gt;&lt;p&gt;Provided as-is, without warranty.&lt;/p&gt;&lt;/aside&gt;
+&lt;aside&gt;&lt;p&gt;Provided as-is, without warranty.&lt;/p&gt;&lt;/aside&gt;
 
 &lt;!-- guide.html --&gt;
 &lt;site-disclaimer&gt;&lt;/site-disclaimer&gt;</code></pre>
 <ul>
   <li>
     Its <code>.css</code> and <code>.js</code> load only on pages where the tag appears;
-    since the tag itself is gone after the build, its CSS scopes to a class on the pasted
-    markup.
+    the tag stays around the pasted markup, so its CSS scopes to the tag,
+    <code>@scope (site-disclaimer)</code>.
   </li>
   <li>
     The <code>htmlpress-</code> prefix is reserved, and a component file that replaces

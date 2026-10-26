@@ -1,0 +1,6 @@
+@scope (htmlpress-main) {
+  :scope {
+    display: block;
+    min-width: 0;
+  }
+}
