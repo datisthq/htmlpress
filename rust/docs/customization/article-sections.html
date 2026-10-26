@@ -22,8 +22,10 @@
         sidebar by folder.
       </li>
       <li><strong>Custom</strong>: just a tab, leading to a URL.</li>
-      <li><strong>Blog</strong>: date-sorted posts with tags (coming soon).</li>
-      <li><strong>Changelog</strong>: one page per released version (coming soon).</li>
+      <li>
+        <strong>Blog</strong>: dated posts, newest first, with tag pages and an RSS feed.
+      </li>
+      <li><strong>Changelog</strong>: one page per version of a Markdown changelog.</li>
     </ul>
 
     <h2>Basic usage</h2>
@@ -111,6 +113,16 @@ sections:
           <td>the site's <code>description</code></td>
           <td>The description for the section's pages without one of their own.</td>
         </tr>
+        <tr>
+          <td><code>source</code></td>
+          <td>none, required for <code>changelog</code></td>
+          <td>The Markdown changelog to split, relative to the project.</td>
+        </tr>
+        <tr>
+          <td><code>version</code></td>
+          <td><code>false</code></td>
+          <td>For a <code>changelog</code>: show the latest version beside the title.</td>
+        </tr>
       </tbody>
     </table>
     <p>
@@ -166,20 +178,43 @@ sections:
   url: https://blog.example.com</code></pre>
 
     <h2>Blog sections</h2>
-    <htmlpress-callout label="Coming soon"
-      ><p>
-        Blog sections will sort pages by date, newest first, and generate an index and one
-        page per tag.
-      </p></htmlpress-callout
-    >
+    <p>
+      A <code>blog</code> section's pages are posts: dated by
+      <code>&lt;meta name="date"&gt;</code>, signed by
+      <code>&lt;meta name="author"&gt;</code> and tagged by
+      <code>&lt;meta name="keywords"&gt;</code>. The sidebar and the previous and next
+      links list them newest first, and the build adds:
+    </p>
+    <ul>
+      <li>
+        an index at the prefix listing every post, unless the section has its own
+        <code>index.html</code>;
+      </li>
+      <li>a page per tag at <code>tags/&lt;tag&gt;/</code> under the prefix;</li>
+      <li>
+        an RSS feed at <code>rss.xml</code> under the prefix, linked from every page's
+        head, when <code>site</code> is set, since a feed links absolutely.
+      </li>
+    </ul>
+    <pre><code>- title: Blog
+  type: blog
+  prefix: /blog/</code></pre>
 
     <h2>Changelog sections</h2>
-    <htmlpress-callout label="Coming soon"
-      ><p>
-        Changelog sections will split a <code>CHANGELOG.md</code> into one page per
-        version, with the latest version shown beside the section's title.
-      </p></htmlpress-callout
-    >
+    <p>
+      A <code>changelog</code> section splits its <code>source</code> at each
+      <code>##</code> heading into a page per version at
+      <code>&lt;version&gt;/</code> under the prefix, newest first as the file lists them,
+      plus an index listing them. A release-please heading,
+      <code>## [0.2.0](…) (2026-10-01)</code>, gives the version and its date; the
+      release's <code>###</code> headings become its sections. With
+      <code>version: true</code> the tab shows the latest version.
+    </p>
+    <pre><code>- title: Changelog
+  type: changelog
+  prefix: /changelog/
+  source: CHANGELOG.md
+  version: true</code></pre>
 
     <h2>Ordering and matching</h2>
     <p>

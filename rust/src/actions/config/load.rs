@@ -78,7 +78,11 @@ fn check_sections(config: &Config) -> Option<String> {
     for section in &config.sections {
         let title = &section.title;
         match (section.kind, &section.prefix, &section.url) {
-            (SectionKind::Article, Some(prefix), _) => {
+            (
+                SectionKind::Article | SectionKind::Blog | SectionKind::Changelog,
+                Some(prefix),
+                _,
+            ) => {
                 if !prefix.starts_with('/') || !prefix.ends_with('/') {
                     return Some(format!(
                         "section \"{title}\": prefix must start and end with \"/\", \
@@ -86,13 +90,22 @@ fn check_sections(config: &Config) -> Option<String> {
                     ));
                 }
             }
-            (SectionKind::Article, None, _) => {
+            (
+                SectionKind::Article | SectionKind::Blog | SectionKind::Changelog,
+                None,
+                _,
+            ) => {
                 return Some(format!("section \"{title}\" needs a prefix"));
             }
             (SectionKind::Custom, _, None) => {
                 return Some(format!("section \"{title}\" of type custom needs a url"));
             }
             (SectionKind::Custom, _, Some(_)) => {}
+        }
+        if section.kind == SectionKind::Changelog && section.source.is_none() {
+            return Some(format!(
+                "section \"{title}\" of type changelog needs a source"
+            ));
         }
     }
     None

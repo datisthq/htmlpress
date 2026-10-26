@@ -60,12 +60,35 @@
         <code>&lt;script&gt;</code> is added to the layout's head, after the theme.
       </td>
     </tr>
+    <tr>
+      <td><code>&lt;meta name="date"&gt;</code></td>
+      <td>none</td>
+      <td>
+        When the page was published, <code>YYYY-MM-DD</code> (a timestamp is cut to its
+        date; anything else is an error). Shown under the title, and it sorts a blog.
+      </td>
+    </tr>
+    <tr>
+      <td><code>&lt;meta name="author"&gt;</code></td>
+      <td>none</td>
+      <td>An author shown under the title; repeat the tag for several.</td>
+    </tr>
+    <tr>
+      <td><code>&lt;meta name="keywords"&gt;</code></td>
+      <td>none</td>
+      <td>Comma-separated tags; in a blog each gets a page listing its posts.</td>
+    </tr>
   </tbody>
 </table>
+<p>
+  The line under the page's <code>&lt;h1&gt;</code> also says when its file last changed,
+  from <code>git log</code>, when the project is in a git repository; the same date is the
+  page's <code>&lt;lastmod&gt;</code> in <code>sitemap.xml</code>.
+</p>
 <htmlpress-callout label="Coming soon">
   <p>
-    A short navigation label, an icon, authors, a date and tags for a page will come as
-    further <code>&lt;meta&gt;</code> tags.
+    A short navigation label and an icon for a page will come as further
+    <code>&lt;meta&gt;</code> tags.
   </p>
 </htmlpress-callout>
 

@@ -109,6 +109,12 @@ pub struct Section {
     pub prefix: Option<String>,
     /// Where a `custom` section leads.
     pub url: Option<String>,
+    /// The Markdown changelog a `changelog` section splits into one page per version,
+    /// relative to the project, such as `CHANGELOG.md`.
+    pub source: Option<String>,
+    /// Show the latest version beside a `changelog` section's title.
+    #[serde(default)]
+    pub version: bool,
     #[serde(default)]
     pub position: Position,
     /// Replaces the site title in the brand while one of its pages is open.
@@ -125,6 +131,10 @@ pub struct Section {
 pub enum SectionKind {
     #[default]
     Article,
+    /// Dated posts, newest first, with tag pages and an RSS feed.
+    Blog,
+    /// One page per version of a Markdown changelog.
+    Changelog,
     Custom,
 }
 

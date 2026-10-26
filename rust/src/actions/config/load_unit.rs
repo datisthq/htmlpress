@@ -103,7 +103,7 @@ fn reads_sections_and_rejects_incomplete_ones() -> crate::Result<()> {
         "sections:\n  - title: Docs\n",
         "sections:\n  - title: Docs\n    prefix: /docs\n",
         "sections:\n  - title: Blog\n    type: custom\n",
-        "sections:\n  - title: Blog\n    type: blog\n    prefix: /blog/\n",
+        "sections:\n  - title: Blog\n    type: wiki\n    prefix: /blog/\n",
     ] {
         write(text)?;
         assert!(
@@ -130,5 +130,27 @@ fn rejects_an_unknown_icon() -> crate::Result<()> {
         .err()
         .map(|error| error.to_string());
     assert!(error.is_some_and(|message| message.contains("no built-in icon \"githb\"")));
+    Ok(())
+}
+
+#[test]
+fn requires_a_source_for_a_changelog() -> crate::Result<()> {
+    let root = tempfile::tempdir().map_err(Error::io("tempdir"))?;
+    let path = root.path().join(CONFIG_FILE);
+    std::fs::write(
+        &path,
+        "sections:\n  - title: Log\n    type: changelog\n    prefix: /log/\n",
+    )
+    .map_err(Error::io("write"))?;
+    assert!(matches!(
+        load_config(root.path()),
+        Err(Error::Config { .. })
+    ));
+    std::fs::write(
+        &path,
+        "sections:\n  - title: News\n    type: blog\n    prefix: /blog/\n",
+    )
+    .map_err(Error::io("write"))?;
+    assert!(load_config(root.path()).is_ok());
     Ok(())
 }

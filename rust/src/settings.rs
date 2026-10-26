@@ -54,6 +54,7 @@ pub const ASSETS: &[Asset] = &[
     asset!("components/banner/banner.css"),
     asset!("components/brand/brand.css"),
     asset!("components/breadcrumbs/breadcrumbs.css"),
+    asset!("components/byline/byline.css"),
     asset!("components/button/button.css"),
     asset!("components/callout/callout.css"),
     asset!("components/card/card.css"),

@@ -14,6 +14,14 @@ pub struct Page {
     pub title: String,
     /// `<meta name="description">`.
     pub description: Option<String>,
+    /// `<meta name="date">`: when the page was published, `YYYY-MM-DD`.
+    pub date: Option<String>,
+    /// Each `<meta name="author">`.
+    pub authors: Vec<String>,
+    /// `<meta name="keywords">`, split at commas: a blog post's tags.
+    pub tags: Vec<String>,
+    /// When the source last changed, from git, `YYYY-MM-DD`.
+    pub updated: Option<String>,
     /// `<meta name="image">`: the social preview image's URL.
     pub image: Option<String>,
     /// `<meta name="order">`: lower comes first in the navigation.

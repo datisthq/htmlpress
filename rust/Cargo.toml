@@ -23,6 +23,7 @@ glob = "0.3.4"
 htmd = "0.5.6"
 lol_html = "3.0.2"
 notify = "8.2.0"
+pulldown-cmark = { version = "0.13.4", default-features = false, features = ["html"] }
 serde = { version = "1.0.229", features = ["derive"] }
 serde-saphyr = { version = "2.0.0", default-features = false, features = ["deserialize"] }
 serde_json = "1.0.154"

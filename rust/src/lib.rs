@@ -7,11 +7,20 @@ mod actions {
         pub(crate) mod escape;
         pub(crate) mod list;
     }
+    pub(crate) mod changelog {
+        pub(crate) mod split;
+    }
     pub(crate) mod config {
         pub(crate) mod load;
     }
     pub(crate) mod path {
         pub(crate) mod select;
+    }
+    pub(crate) mod date {
+        pub(crate) mod format;
+    }
+    pub(crate) mod git {
+        pub(crate) mod read;
     }
     pub(crate) mod icon {
         pub(crate) mod render;
@@ -30,6 +39,7 @@ mod actions {
     }
     pub(crate) mod section {
         pub(crate) mod find;
+        pub(crate) mod generate;
     }
     pub(crate) mod site {
         pub(crate) mod build;

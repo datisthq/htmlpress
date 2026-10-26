@@ -5,10 +5,12 @@ use std::fmt::Write;
 use lol_html::html_content::ContentType;
 use lol_html::{RewriteStrSettings, element, rewrite_str};
 
+use crate::actions::date::format::format_date;
 use crate::actions::icon::render::render_icon;
 use crate::actions::page::convert::create_markdown_path;
 use crate::actions::page::prefix::prefix_urls;
 use crate::actions::section::find::{find_section, is_custom_current};
+use crate::actions::section::generate::list_posts;
 use crate::actions::site::index::SEARCH_INDEX;
 use crate::models::asset::{create_component_path, read_component_path};
 use crate::models::config::{Link, Position, Section, SectionKind};
@@ -42,8 +44,9 @@ pub(crate) fn render_page(
             (extension == "html").then_some((tag, html.as_str()))
         })
         .collect();
-    let content = swap_components(&page.content, &fragments).map_err(fail)?;
-    let tags = list_tags(&[layout, &page.content], &fragments).map_err(fail)?;
+    let content = add_byline(&page.content, create_byline(page)).map_err(fail)?;
+    let tags = list_tags(&[layout, &content], &fragments).map_err(fail)?;
+    let content = swap_components(&content, &fragments).map_err(fail)?;
     let head = create_head(site, page, &tags, reload);
     let nav = create_nav(site, page);
     let replaced = |tag: &str| fragments.iter().any(|(name, _)| *name == tag);
@@ -252,6 +255,20 @@ fn create_head(
             "<link rel=\"alternate\" type=\"text/markdown\" href=\"/{href}\">"
         );
     }
+    // A feed's items link absolutely, so a blog has one only with `site`
+    if site.config.read_origin().is_some() {
+        let blogs = (site.config.sections.iter())
+            .filter(|section| section.kind == SectionKind::Blog);
+        for section in blogs {
+            let prefix = escape_html(section.prefix.as_deref().unwrap_or_default());
+            let title = escape_html(&section.title);
+            let _ = writeln!(
+                head,
+                "<link rel=\"alternate\" type=\"application/rss+xml\" title=\"{title}\" \
+                 href=\"{prefix}rss.xml\">"
+            );
+        }
+    }
     if let Some(favicon) = site.config.favicon.as_ref().or(site.config.logo.as_ref()) {
         let favicon = escape_html(favicon);
         let _ = writeln!(head, "<link rel=\"icon\" href=\"{favicon}\">");
@@ -430,9 +447,16 @@ fn create_nav(site: &Site, page: &Page) -> String {
         .and_then(|section| section.prefix.as_deref())
         .map_or("", |prefix| prefix.trim_start_matches('/'));
     let mut groups: Vec<(Option<&str>, Vec<&Page>)> = vec![];
+    // A blog's posts and a changelog's versions are one list, each version being a folder
+    let flat = (read_section(site, page)).is_some_and(|section| {
+        matches!(section.kind, SectionKind::Blog | SectionKind::Changelog)
+    });
     for item in list_pages(site, page) {
         let relative = item.path.strip_prefix(prefix).unwrap_or(&item.path);
-        let folder = relative.split_once('/').map(|(folder, _)| folder);
+        let folder = match flat {
+            true => None,
+            false => relative.split_once('/').map(|(folder, _)| folder),
+        };
         match groups.iter_mut().find(|(key, _)| *key == folder) {
             Some((_, items)) => items.push(item),
             None => groups.push((folder, vec![item])),
@@ -480,13 +504,28 @@ fn create_nav(site: &Site, page: &Page) -> String {
 }
 
 // Only the pages of the open page's section, so each section reads as a site of its own
+// A blog lists its index, then its posts newest first, and no tag page; a changelog its
+// index, then its versions in the file's order
 fn list_pages<'a>(site: &'a Site, page: &Page) -> Vec<&'a Page> {
     let sections = &site.config.sections;
     let section = find_section(sections, &page.url);
-    (site.pages.iter())
+    let pages: Vec<&Page> = (site.pages.iter())
         .filter(|item| item.path != NOT_FOUND_PAGE)
         .filter(|item| find_section(sections, &item.url) == section)
-        .collect()
+        .collect();
+    let Some(section) = section.and_then(|index| sections.get(index)) else {
+        return pages;
+    };
+    let prefix = section.prefix.as_deref().unwrap_or_default();
+    let index = pages.iter().copied().filter(|item| item.url == prefix);
+    match section.kind {
+        SectionKind::Blog => index.chain(list_posts(prefix, &pages)).collect(),
+        SectionKind::Changelog => {
+            let versions = pages.iter().copied().filter(|item| item.url != prefix);
+            index.chain(versions).collect()
+        }
+        SectionKind::Article | SectionKind::Custom => pages,
+    }
 }
 
 fn create_list(items: &[&Page], page: &Page) -> String {
@@ -564,7 +603,7 @@ fn create_section_link(site: &Site, page: &Page, index: usize) -> String {
             let current = is_custom_current(&url, &page.url);
             (url, current)
         }
-        SectionKind::Article => {
+        SectionKind::Article | SectionKind::Blog | SectionKind::Changelog => {
             let prefix = section.prefix.clone().unwrap_or_default();
             let first = (site.pages.iter())
                 .filter(|item| item.path != NOT_FOUND_PAGE)
@@ -582,7 +621,25 @@ fn create_section_link(site: &Site, page: &Page, index: usize) -> String {
     };
     let (href, title) = (escape_html(&href), escape_html(&section.title));
     let icon = create_icon(section.icon.as_deref());
-    format!("<a href=\"{href}\" data-section{current}>{icon}{title}</a>")
+    let version = match section.kind == SectionKind::Changelog && section.version {
+        true => read_latest(site, index).map_or(String::new(), |version| {
+            format!(" <small>{}</small>", escape_html(version))
+        }),
+        false => String::new(),
+    };
+    format!("<a href=\"{href}\" data-section{current}>{icon}{title}{version}</a>")
+}
+
+// The changelog lists its newest version first, which its generated pages keep as order 0
+fn read_latest(site: &Site, index: usize) -> Option<&str> {
+    let sections = &site.config.sections;
+    let prefix = sections.get(index)?.prefix.as_deref()?;
+    (site.pages.iter())
+        .filter(|page| {
+            find_section(sections, &page.url) == Some(index) && page.url != prefix
+        })
+        .min_by_key(|page| page.order.unwrap_or(i64::MAX))
+        .map(|page| page.title.as_str())
 }
 
 fn create_pager(site: &Site, page: &Page) -> Option<String> {
@@ -608,6 +665,61 @@ fn create_pager(site: &Site, page: &Page) -> Option<String> {
     }
     html.push_str("</nav>");
     Some(html)
+}
+
+// Authors, published and updated dates, as one line under the page's title
+fn create_byline(page: &Page) -> Option<String> {
+    let mut parts = vec![];
+    if !page.authors.is_empty() {
+        let icon = create_icon(Some("user"));
+        parts.push(format!(
+            "<span>{icon}{}</span>",
+            escape_html(&page.authors.join(", "))
+        ));
+    }
+    if let Some(date) = &page.date {
+        let (icon, date) = (create_icon(Some("calendar")), escape_html(date));
+        let shown = escape_html(&format_date(&date));
+        parts.push(format!(
+            "<span>{icon}Published <time datetime=\"{date}\">{shown}</time></span>"
+        ));
+    }
+    if let Some(date) = &page.updated
+        && page.date.as_ref() != Some(date)
+    {
+        let (icon, date) = (create_icon(Some("history")), escape_html(date));
+        let shown = escape_html(&format_date(&date));
+        parts.push(format!(
+            "<span>{icon}Updated <time datetime=\"{date}\">{shown}</time></span>"
+        ));
+    }
+    match parts.is_empty() {
+        true => None,
+        false => Some(format!(
+            "<htmlpress-byline>{}</htmlpress-byline>",
+            parts.concat()
+        )),
+    }
+}
+
+// Right after the first <h1>, where a reader looks for it; first without one
+fn add_byline(content: &str, byline: Option<String>) -> Result<String, String> {
+    let Some(byline) = byline else {
+        return Ok(content.to_owned());
+    };
+    let placed = std::cell::Cell::new(false);
+    let settings =
+        RewriteStrSettings::new().append_element_content_handler(element!("h1", |el| {
+            if !placed.replace(true) {
+                el.after(&byline, ContentType::Html);
+            }
+            Ok(())
+        }));
+    let html = rewrite_str(content, settings).map_err(|error| error.to_string())?;
+    match placed.get() {
+        true => Ok(html),
+        false => Ok(format!("{byline}{html}")),
+    }
 }
 
 fn create_toc(page: &Page) -> Option<String> {
@@ -640,6 +752,10 @@ fn create_toolbar(page: &Page) -> Option<String> {
 }
 
 fn create_edit(site: &Site, page: &Page) -> Option<String> {
+    // A page a section built itself has no source of its own to edit
+    if page.source.is_empty() {
+        return None;
+    }
     let url = escape_html(&format!("{}{}", site.config.edit.as_ref()?, page.source));
     Some(format!("<a href=\"{url}\">Edit this page</a>"))
 }

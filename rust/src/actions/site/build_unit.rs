@@ -302,3 +302,67 @@ fn builds_only_included_pages_and_leaves_excluded_files_out() -> crate::Result<(
     assert!(!read("index.html").unwrap_or_default().contains("drafts"));
     Ok(())
 }
+
+#[test]
+fn builds_a_blog_and_a_changelog() -> crate::Result<()> {
+    let root = tempfile::tempdir().map_err(Error::io("tempdir"))?;
+    let root = root.path();
+    write_source(
+        root,
+        "htmlpress.yaml",
+        concat!(
+            "site: https://x.dev\n",
+            "sections:\n",
+            "  - title: Docs\n",
+            "    prefix: /\n",
+            "  - title: Blog\n",
+            "    type: blog\n",
+            "    prefix: /blog/\n",
+            "  - title: Changelog\n",
+            "    type: changelog\n",
+            "    prefix: /changelog/\n",
+            "    source: CHANGELOG.md\n",
+            "    version: true\n",
+        ),
+    )?;
+    write_source(root, "index.html", "<h1>Home</h1>")?;
+    write_source(
+        root,
+        "blog/hello.html",
+        "<title>Hello</title><meta name=\"date\" content=\"2026-10-01\">\
+         <meta name=\"keywords\" content=\"news\"><meta name=\"description\" content=\"First.\"><h1>Hello</h1>",
+    )?;
+    write_source(
+        root,
+        "CHANGELOG.md",
+        "# Changelog\n\n## 0.2.0 (2026-10-02)\n\n* b\n\n## 0.1.0\n\n* a\n",
+    )?;
+    let options = BuildOptions::new(root);
+    let read = |path: &str| {
+        std::fs::read_to_string(options.output.join(path)).unwrap_or_default()
+    };
+
+    build_site(&options)?;
+    let feed = read("blog/rss.xml");
+    assert!(
+        feed.contains("<link>https://x.dev/blog/hello.html</link>"),
+        "{feed}"
+    );
+    assert!(feed.contains("<pubDate>Thu, 01 Oct 2026 00:00:00 +0000</pubDate>"));
+    assert!(read("blog/index.html").contains("href=\"/blog/hello.html\""));
+    assert!(read("blog/tags/news/index.html").contains("Tagged “news”"));
+    let version = read("changelog/0-2-0/index.html");
+    assert!(version.contains("<h1>0.2.0</h1>"));
+    assert!(
+        version.contains("Changelog <small>0.2.0</small>"),
+        "{version}"
+    );
+    assert!(!version.contains("<summary>0.2.0</summary>"), "{version}");
+    let nav = version.find("href=\"/changelog/\"").unwrap_or(usize::MAX);
+    assert!(nav < version.find("href=\"/changelog/0-1-0/\"").unwrap_or(0));
+    assert!(read("index.html").contains("type=\"application/rss+xml\""));
+    assert!(read("sitemap.xml").contains(
+        "<loc>https://x.dev/blog/hello.html</loc><lastmod>2026-10-01</lastmod>"
+    ));
+    Ok(())
+}

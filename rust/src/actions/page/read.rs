@@ -35,6 +35,10 @@ pub fn read_page(path: &str, html: &str) -> crate::Result<Page> {
         url: create_url(path),
         title,
         description: facts.description,
+        date: facts.date,
+        authors: facts.authors,
+        tags: facts.tags,
+        updated: None,
         image: facts.image,
         order: facts.order,
         layout: facts.layout,
@@ -49,6 +53,9 @@ struct Facts {
     title: String,
     heading: String,
     description: Option<String>,
+    date: Option<String>,
+    authors: Vec<String>,
+    tags: Vec<String>,
     image: Option<String>,
     order: Option<i64>,
     layout: Option<String>,
@@ -107,6 +114,29 @@ fn read_facts(html: &str) -> Result<Facts, String> {
     settings = settings
         .append_element_content_handler(element!("meta[name='description']", |el| {
             facts.borrow_mut().description = el.get_attribute("content");
+            Ok(())
+        }))
+        .append_element_content_handler(element!("meta[name='date']", |el| {
+            let date = el.get_attribute("content").unwrap_or_default();
+            facts.borrow_mut().date = Some(read_date(&date).ok_or_else(|| {
+                format!("<meta name=\"date\"> must be a YYYY-MM-DD date, got \"{date}\"")
+            })?);
+            Ok(())
+        }))
+        .append_element_content_handler(element!("meta[name='author']", |el| {
+            let author = el.get_attribute("content").unwrap_or_default();
+            if !author.trim().is_empty() {
+                facts.borrow_mut().authors.push(author.trim().to_owned());
+            }
+            Ok(())
+        }))
+        .append_element_content_handler(element!("meta[name='keywords']", |el| {
+            let keywords = el.get_attribute("content").unwrap_or_default();
+            facts.borrow_mut().tags = (keywords.split(','))
+                .map(str::trim)
+                .filter(|tag| !tag.is_empty())
+                .map(str::to_owned)
+                .collect();
             Ok(())
         }))
         .append_element_content_handler(element!("meta[name='image']", |el| {
@@ -346,6 +376,17 @@ pub(crate) fn is_layout_name(name: &str) -> bool {
         && name
             .chars()
             .all(|char| char.is_ascii_lowercase() || char.is_ascii_digit() || char == '-')
+}
+
+/// The `YYYY-MM-DD` a date starts with, so a full timestamp is accepted too; None when
+/// it does not start with one.
+pub(crate) fn read_date(text: &str) -> Option<String> {
+    let date = text.trim().get(..10)?;
+    let parts: Vec<&str> = date.split('-').collect();
+    let valid = matches!(parts.as_slice(), [year, month, day]
+        if year.len() == 4 && month.len() == 2 && day.len() == 2
+            && parts.iter().all(|part| part.chars().all(|char| char.is_ascii_digit())));
+    valid.then(|| date.to_owned())
 }
 
 pub(crate) fn create_url(path: &str) -> String {

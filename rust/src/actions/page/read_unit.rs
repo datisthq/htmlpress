@@ -171,3 +171,18 @@ fn fills_inline_icons_and_refuses_unknown_ones() -> crate::Result<()> {
     assert!(error.is_some_and(|error| error.to_string().contains("no such icon")));
     Ok(())
 }
+
+#[test]
+fn reads_the_date_authors_and_tags() -> crate::Result<()> {
+    let page = read_page(
+        "post.html",
+        "<title>Post</title><meta name=\"date\" content=\"2026-10-01T09:00:00Z\">\
+         <meta name=\"author\" content=\"Ann\"><meta name=\"author\" content=\"Bo\">\
+         <meta name=\"keywords\" content=\"rust, , web \">",
+    )?;
+    assert_eq!(page.date.as_deref(), Some("2026-10-01"));
+    assert_eq!(page.authors, ["Ann", "Bo"]);
+    assert_eq!(page.tags, ["rust", "web"]);
+    assert!(read_page("a.html", "<meta name=\"date\" content=\"Oct 1\">").is_err());
+    Ok(())
+}

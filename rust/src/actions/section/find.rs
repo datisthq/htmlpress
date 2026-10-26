@@ -1,10 +1,10 @@
 use crate::models::config::{Section, SectionKind};
 
-/// The index of the `article` section owning a page's URL: the one whose prefix is the
+/// The index of the section owning a page's URL, any kind but `custom`: the one whose prefix is the
 /// longest that URL starts with. None when no section owns it.
 pub(crate) fn find_section(sections: &[Section], url: &str) -> Option<usize> {
     (sections.iter().enumerate())
-        .filter(|(_, section)| section.kind == SectionKind::Article)
+        .filter(|(_, section)| section.kind != SectionKind::Custom)
         .filter_map(|(index, section)| Some((index, section.prefix.as_deref()?)))
         .filter(|(_, prefix)| url.starts_with(prefix))
         .max_by_key(|(_, prefix)| prefix.len())

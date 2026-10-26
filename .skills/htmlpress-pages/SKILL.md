@@ -79,8 +79,9 @@ Put block content (`<p>`, `<h3>`, `<pre>`) inside a component, not bare text.
   such as `/repo/`; root-relative URLs get it as a prefix, so write them without it), `title`,
   `description`, `logo` and `favicon` (URLs), `banner` (HTML), `links` (each `title`,
   `url`, `position: header | sidebar`, optional `icon` and `prefix` to show it only
-  under one folder), `sections` (each `title` and `prefix`, or
-  `type: custom` and `url`; optional `icon`, `position`, `siteTitle`, `siteLink`,
+  under one folder), `sections` (each `title` and `prefix`, with
+  `type: blog` for dated posts with tag pages and RSS, `type: changelog` plus `source` for
+  a page per version of a Markdown changelog, or `type: custom` and `url`; optional `icon`, `position`, `siteTitle`, `siteLink`,
   `siteDescription`: the sidebar and pager then show only the open section's pages), `head` (`meta`, `links`, `scripts`: lists of
   attribute maps; a script's `children` is its source), `contentSignals` (`search`,
   `aiInput`, `aiTrain` for `robots.txt`), `include` (globs of the `.html` files that become pages, default `**/*.html`; only files
@@ -89,7 +90,9 @@ Put block content (`<p>`, `<h3>`, `<pre>`) inside a component, not bare text.
   there are copied as-is), `exclude` (globs left out of the build), `skills` (globs of
   `SKILL.md` files to publish for agents) and `edit` (URL prefix for an "Edit this page" link). An unknown key is an
   error.
-- `<meta name="image" content="/cover.png">` in a page is its social preview image.
+- `<meta name="image" content="/cover.png">` in a page is its social preview image;
+  `<meta name="date" content="YYYY-MM-DD">`, `<meta name="author">` (repeatable) and
+  `<meta name="keywords" content="a, b">` date, sign and tag it (a blog post's metadata).
 - A build writes `robots.txt`, with `site` a `sitemap.xml`, and for agents a Markdown copy
   of each page (`a.html` → `a.md`), `llms.txt`, the skills under `.well-known/agent-skills/`
   and `_headers`; a project file of the same name wins (`_headers` is extended instead).

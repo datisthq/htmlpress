@@ -399,3 +399,29 @@ fn shows_a_prefixed_link_only_under_its_folder() -> crate::Result<()> {
     assert!(!guide.contains("issues.x"));
     Ok(())
 }
+
+#[test]
+fn puts_the_byline_under_the_title() -> crate::Result<()> {
+    let mut site = create_site()?;
+    let mut page = read_page(
+        "post.html",
+        "<title>Post</title><meta name=\"date\" content=\"2026-10-01\">\
+         <meta name=\"author\" content=\"Ann\"><h1>Post</h1><p>Hi.</p>",
+    )?;
+    page.updated = Some("2026-10-20".to_owned());
+    site.pages.push(page);
+    let html = render_page(&site, &site.pages[4], false)?;
+    let title = html.find("<h1>Post</h1>").unwrap_or(usize::MAX);
+    let byline = html.find("<htmlpress-byline>").unwrap_or(0);
+    assert!(title < byline, "{html}");
+    assert!(
+        html.contains("Published <time datetime=\"2026-10-01\">October 1, 2026</time>")
+    );
+    assert!(
+        html.contains("Updated <time datetime=\"2026-10-20\">October 20, 2026</time>")
+    );
+    assert!(html.contains("components/byline/byline.css"));
+    let home = render_page(&site, &site.pages[0], false)?;
+    assert!(!home.contains("<htmlpress-byline>"));
+    Ok(())
+}

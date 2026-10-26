@@ -1,12 +1,16 @@
 use std::path::Path;
 
+use crate::actions::date::format::format_feed_date;
 use crate::actions::page::read::read_page;
 use crate::actions::page::render::render_page;
+use crate::actions::section::generate::list_posts;
 use crate::actions::site::describe::describe_site;
 use crate::actions::site::index::{SEARCH_INDEX, index_site};
 use crate::actions::site::scan::scan_site;
 use crate::models::build::{BuildOptions, BuildReport};
+use crate::models::config::SectionKind;
 use crate::models::error::Error;
+use crate::models::page::Page;
 use crate::models::site::Site;
 use crate::settings::{ASSETS_DIR, NOT_FOUND, NOT_FOUND_PAGE, RELOAD, THEME_STYLES};
 
@@ -65,6 +69,11 @@ pub fn build_site(options: &BuildOptions) -> crate::Result<BuildReport> {
             create_robots(&site).as_bytes(),
         )?;
     }
+    for (path, feed) in create_feeds(&site) {
+        if !shipped(&path) {
+            write_file(&options.output.join(&path), feed.as_bytes())?;
+        }
+    }
     if let Some(sitemap) = create_sitemap(&site)
         && !shipped("sitemap.xml")
     {
@@ -94,6 +103,62 @@ fn create_robots(site: &Site) -> String {
     robots
 }
 
+// RSS items link absolutely, so a blog gets a feed only with `site`
+fn create_feeds(site: &Site) -> Vec<(String, String)> {
+    let Some(origin) = site.config.read_origin() else {
+        return vec![];
+    };
+    let escape = |text: &str| {
+        text.replace('&', "&amp;")
+            .replace('<', "&lt;")
+            .replace('>', "&gt;")
+    };
+    let pages: Vec<&Page> = site.pages.iter().collect();
+    let blogs =
+        (site.config.sections.iter()).filter(|section| section.kind == SectionKind::Blog);
+    let mut feeds = vec![];
+    for section in blogs {
+        let prefix = section.prefix.as_deref().unwrap_or_default();
+        let link = format!("{origin}{prefix}");
+        let mut feed = format!(
+            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
+             <rss version=\"2.0\" xmlns:atom=\"http://www.w3.org/2005/Atom\">\n<channel>\n\
+             <title>{}</title>\n<link>{}</link>\n<description>{}</description>\n\
+             <atom:link href=\"{}rss.xml\" rel=\"self\" type=\"application/rss+xml\"/>\n",
+            escape(&section.title),
+            escape(&link),
+            escape(
+                section
+                    .site_description
+                    .as_ref()
+                    .or(site.config.description.as_ref())
+                    .map_or("", String::as_str)
+            ),
+            escape(&link),
+        );
+        for post in list_posts(prefix, &pages) {
+            let url = escape(&format!("{origin}{}", post.url));
+            feed.push_str(&format!(
+                "<item>\n<title>{}</title>\n<link>{url}</link>\n<guid>{url}</guid>\n",
+                escape(&post.title)
+            ));
+            if let Some(date) = post.date.as_deref().and_then(format_feed_date) {
+                feed.push_str(&format!("<pubDate>{date}</pubDate>\n"));
+            }
+            if let Some(description) = &post.description {
+                feed.push_str(&format!(
+                    "<description>{}</description>\n",
+                    escape(description)
+                ));
+            }
+            feed.push_str("</item>\n");
+        }
+        feed.push_str("</channel>\n</rss>\n");
+        feeds.push((format!("{}rss.xml", prefix.trim_start_matches('/')), feed));
+    }
+    feeds
+}
+
 // A sitemap lists absolute URLs only, so a project without `site` gets none.
 fn create_sitemap(site: &Site) -> Option<String> {
     let origin = site.config.read_origin()?;
@@ -105,7 +170,10 @@ fn create_sitemap(site: &Site) -> Option<String> {
         let url = format!("{origin}{}", page.url)
             .replace('&', "&amp;")
             .replace('<', "&lt;");
-        sitemap.push_str(&format!("  <url><loc>{url}</loc></url>\n"));
+        let lastmod = page.updated.as_ref().or(page.date.as_ref());
+        let lastmod =
+            lastmod.map_or(String::new(), |date| format!("<lastmod>{date}</lastmod>"));
+        sitemap.push_str(&format!("  <url><loc>{url}</loc>{lastmod}</url>\n"));
     }
     sitemap.push_str("</urlset>\n");
     Some(sitemap)

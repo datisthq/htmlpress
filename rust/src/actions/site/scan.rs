@@ -2,8 +2,10 @@ use std::collections::BTreeMap;
 use std::path::Path;
 
 use crate::actions::config::load::load_config;
+use crate::actions::git::read::read_dates;
 use crate::actions::page::read::{is_layout_name, read_page};
 use crate::actions::path::select::{read_bases, select_paths};
+use crate::actions::section::generate::generate_pages;
 use crate::actions::skill::load::load_skills;
 use crate::models::asset::{COMPONENT_PREFIX, read_component_path};
 use crate::models::error::Error;
@@ -53,6 +55,14 @@ pub fn scan_site(root: &Path) -> crate::Result<Site> {
         });
     }
     let files = selection.files;
+    // Before the generated pages join: a changelog's versions share its source file, whose
+    // last change says nothing about when one version was written
+    let dates = read_dates(root);
+    for page in &mut pages {
+        page.updated = dates.get(&page.source).cloned();
+    }
+    let generated = generate_pages(root, &config, &pages)?;
+    pages.extend(generated);
     pages.sort_by(|a, b| {
         let rank =
             |page: &crate::Page| (page.url != "/", page.order.is_none(), page.order);
