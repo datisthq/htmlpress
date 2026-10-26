@@ -13,7 +13,7 @@ One binary, three registries, one version. Nothing here may change what the bina
   (`typescript/actions/binary/resolve.ts`) for a path and runs it with inherited stdio,
   passing the exit code and any signal through.
 - `resolveBinary` takes `HTMLPRESS_BINARY` first (a cargo build, an unsupported platform),
-  else resolves `gethtmlpress-<platform>-<arch>/bin/<binary>` from the installed packages.
+  else resolves `@htmlpress/<platform>-<arch>/bin/<binary>` from the installed packages.
 - `PLATFORMS` in `typescript/settings.ts` is the single list. `scripts/pack.ts` reads it to lay
   out `typescript/compile/`: one platform package per entry (`os`, `cpu`, `bin/`) and the main
   package with `optionalDependencies` pinned to its own version. Those pins are written at pack

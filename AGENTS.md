@@ -6,7 +6,7 @@ Htmlpress turns a folder of HTML pages into a site: one layout, one theme, a nav
 
 - **binary** — the `htmlpress` executable `rust/` compiles; the only place behaviour lives
 - **wrapper** — a package that only delivers the binary: `typescript/` for npm, `python/` for PyPI. A wrapper never reimplements a command
-- **platform package** — `gethtmlpress-<os>-<arch>`, one per entry in `PLATFORMS` (`typescript/settings.ts`), each carrying one binary; the main `gethtmlpress` package pins them all as `optionalDependencies` at its own version
+- **platform package** — `@htmlpress/<os>-<arch>`, one per entry in `PLATFORMS` (`typescript/settings.ts`), each carrying one binary; the main `gethtmlpress` package pins them all as `optionalDependencies` at its own version
 - **project** — a folder htmlpress builds: HTML pages, other files copied as-is, an optional `htmlpress.yaml`, and `.htmlpress/` holding the build output and escapes
 - **page** — an `.html` file in a project, read by `rust/src/actions/page/read.rs` into title, order, head and content
 - **escape** — a project file under `.htmlpress/` at a built-in asset's path (`ASSETS` in `rust/src/settings.rs`), replacing it: `layout.html`, `styles/*.css`, `scripts/*.js`, `components/<name>/<name>.{css,js}`; beside escapes a project may add its own `components/<name>/<name>.{html,css,js}` and `layouts/<name>.html`, which a page picks with `<meta name="layout">`

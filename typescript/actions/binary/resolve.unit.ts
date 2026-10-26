@@ -9,7 +9,7 @@ describe("resolveBinary", () => {
       env: {},
       resolvePackage: specifier => `/node_modules/${specifier}`,
     })
-    expect(binary).toBe("/node_modules/gethtmlpress-linux-x64/bin/htmlpress")
+    expect(binary).toBe("/node_modules/@htmlpress/linux-x64/bin/htmlpress")
   })
 
   it("adds .exe on Windows", () => {
@@ -19,7 +19,7 @@ describe("resolveBinary", () => {
       env: {},
       resolvePackage: specifier => specifier,
     })
-    expect(binary).toBe("gethtmlpress-win32-arm64/bin/htmlpress.exe")
+    expect(binary).toBe("@htmlpress/win32-arm64/bin/htmlpress.exe")
   })
 
   it("prefers the env override", () => {
@@ -53,6 +53,6 @@ describe("resolveBinary", () => {
           throw new Error("Cannot find module")
         },
       })
-    expect(run).toThrow(/gethtmlpress-darwin-arm64 is not installed/)
+    expect(run).toThrow(/@htmlpress\/darwin-arm64 is not installed/)
   })
 })

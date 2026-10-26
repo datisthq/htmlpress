@@ -25,5 +25,5 @@ export const PLATFORMS: Record<string, Platform> = {
 
 function createPlatform(key: string, target: string): Platform {
   const binary = key.startsWith("win32") ? "htmlpress.exe" : "htmlpress"
-  return { packageName: `${PACKAGE_NAME}-${key}`, target, binary }
+  return { packageName: `@htmlpress/${key}`, target, binary }
 }
