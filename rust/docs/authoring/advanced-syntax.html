@@ -34,7 +34,7 @@
   <code>&lt;style&gt;</code> and <code>&lt;script&gt;</code> are kept and added to the
   layout's head, after the theme:
 </p>
-<pre><code>&lt;title&gt;Version&lt;/title&gt;
+<pre><code class="language-html">&lt;title&gt;Version&lt;/title&gt;
 &lt;script type="module"&gt;
   document.querySelector("#version").textContent = "2.0.0"
 &lt;/script&gt;
@@ -53,7 +53,7 @@
     natively.
   </p>
 </htmlpress-callout>
-<pre><code>&lt;math&gt;&lt;mi&gt;E&lt;/mi&gt;&lt;mo&gt;=&lt;/mo&gt;&lt;mi&gt;m&lt;/mi&gt;&lt;msup&gt;&lt;mi&gt;c&lt;/mi&gt;&lt;mn&gt;2&lt;/mn&gt;&lt;/msup&gt;&lt;/math&gt;</code></pre>
+<pre><code class="language-html">&lt;math&gt;&lt;mi&gt;E&lt;/mi&gt;&lt;mo&gt;=&lt;/mo&gt;&lt;mi&gt;m&lt;/mi&gt;&lt;msup&gt;&lt;mi&gt;c&lt;/mi&gt;&lt;mn&gt;2&lt;/mn&gt;&lt;/msup&gt;&lt;/math&gt;</code></pre>
 <p>
   Renders as:
   <math>
@@ -72,7 +72,7 @@
   source. The library loads from jsDelivr only on a page that has a diagram; offline, the
   source shows instead.
 </p>
-<pre><code>&lt;htmlpress-mermaid&gt;
+<pre><code class="language-html">&lt;htmlpress-mermaid&gt;
   &lt;pre&gt;flowchart LR
   pages[HTML pages] --&amp;gt; build[htmlpress build] --&amp;gt; site[Static site]&lt;/pre&gt;
 &lt;/htmlpress-mermaid&gt;</code></pre>
@@ -82,7 +82,7 @@
 flowchart LR
   pages[HTML pages] --&gt; build[htmlpress build] --&gt; site[Static site]</pre>
 </htmlpress-mermaid>
-<pre><code>&lt;htmlpress-mermaid&gt;
+<pre><code class="language-html">&lt;htmlpress-mermaid&gt;
   &lt;pre&gt;pie title Languages
   "Rust" : 45
   "TypeScript" : 30
@@ -127,7 +127,7 @@ pie title Languages
     <li>guide.html</li>
   </ul>
 </htmlpress-file-tree>
-<pre><code>&lt;!-- .htmlpress/components/disclaimer/disclaimer.html --&gt;
+<pre><code class="language-html">&lt;!-- .htmlpress/components/disclaimer/disclaimer.html --&gt;
 &lt;aside&gt;&lt;p&gt;Provided as-is, without warranty.&lt;/p&gt;&lt;/aside&gt;
 
 &lt;!-- guide.html --&gt;

@@ -11,7 +11,10 @@ function addCopyButtons() {
     button.type = "button"
     button.textContent = "Copy"
     button.addEventListener("click", async () => {
-      await navigator.clipboard.writeText(pre.textContent ?? "")
+      // Line numbers are part of the text but not of the code
+      const code = pre.cloneNode(true)
+      code.querySelectorAll(".giallo-ln").forEach(number => number.remove())
+      await navigator.clipboard.writeText(code.textContent ?? "")
       button.textContent = "Copied"
       setTimeout(() => (button.textContent = "Copy"), 2000)
     })

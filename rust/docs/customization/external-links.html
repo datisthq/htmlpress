@@ -13,7 +13,7 @@
     </p>
 
     <h2>Basic usage</h2>
-    <pre><code>include: docs/**/*.html
+    <pre><code class="language-yaml">include: docs/**/*.html
 links:
   - title: GitHub
     url: https://github.com/acme/docs</code></pre>
@@ -70,7 +70,7 @@ links:
       By default, links render in <code>&lt;htmlpress-links&gt;</code> in the header,
       between the site title and the theme toggle.
     </p>
-    <pre><code>links:
+    <pre><code class="language-yaml">links:
   - title: GitHub
     url: https://github.com/acme/docs
   - title: Docs
@@ -81,7 +81,7 @@ links:
       Set <code>position: sidebar</code> to render inside the left sidebar, at the end of
       <code>&lt;htmlpress-nav&gt;</code>, below the pages.
     </p>
-    <pre><code>links:
+    <pre><code class="language-yaml">links:
   - title: Chat
     url: https://discord.gg/example
     position: sidebar</code></pre>
@@ -90,7 +90,7 @@ links:
       URL is followed by each page's source path, and the link renders in
       <code>&lt;htmlpress-edit&gt;</code> beside the page.
     </p>
-    <pre><code>edit: https://github.com/acme/docs/edit/main/</code></pre>
+    <pre><code class="language-yaml">edit: https://github.com/acme/docs/edit/main/</code></pre>
 
     <h2>Scoping a link to a section</h2>
     <p>
@@ -98,7 +98,7 @@ links:
       per-section shortcut such as "Report issue". Like a section's prefix, it starts and
       ends with <code>/</code>.
     </p>
-    <pre><code>links:
+    <pre><code class="language-yaml">links:
   - title: Report an API issue
     url: https://github.com/acme/api/issues
     prefix: /api/</code></pre>

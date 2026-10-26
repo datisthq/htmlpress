@@ -83,13 +83,13 @@ npx gethtmlpress --version</code></pre>
         </p>
       </section>
       <section title="PyPI">
-        <pre><code>pip install htmlpress
+        <pre><code class="language-sh">pip install htmlpress
 # or run it without installing
 uvx htmlpress --version</code></pre>
         <p>The wheel for your platform carries the binary; no Python code runs.</p>
       </section>
       <section title="Cargo">
-        <pre><code>cargo install htmlpress</code></pre>
+        <pre><code class="language-sh">cargo install htmlpress</code></pre>
         <p>Builds from source with the Rust toolchain, 1.88 or newer.</p>
       </section>
     </htmlpress-tabs>
@@ -145,7 +145,7 @@ uvx htmlpress --version</code></pre>
       Configuration is optional. To set the site's metadata, create
       <code>htmlpress.yaml</code> at the root of your project:
     </p>
-    <pre><code>title: My docs
+    <pre><code class="language-yaml">title: My docs
 description: Documentation for my project
 include: docs/**/*.html</code></pre>
     <p>
@@ -170,7 +170,7 @@ include: docs/**/*.html</code></pre>
       </ul>
     </htmlpress-file-tree>
     <p>Each page sets its title, description and order in tags a fragment may carry:</p>
-    <pre><code>&lt;title&gt;Getting Started&lt;/title&gt;
+    <pre><code class="language-html">&lt;title&gt;Getting Started&lt;/title&gt;
 &lt;meta name="description" content="Set up the project in five minutes." /&gt;
 &lt;meta name="order" content="1" /&gt;
 
@@ -181,7 +181,7 @@ include: docs/**/*.html</code></pre>
     </p>
 
     <h3>Run</h3>
-    <pre><code>htmlpress start    # dev server with live reload at http://localhost:8000
+    <pre><code class="language-sh">htmlpress start    # dev server with live reload at http://localhost:8000
 htmlpress build    # production build to .htmlpress/build/
 htmlpress preview  # serve the production build locally
 htmlpress clear    # remove .htmlpress/build/</code></pre>
@@ -238,7 +238,7 @@ htmlpress clear    # remove .htmlpress/build/</code></pre>
       <code>-o</code> picks another folder; one that would hold the project, or a visible
       folder inside it, is refused, since its pages would be read back as sources.
     </p>
-    <pre><code>$ htmlpress build docs
+    <pre><code class="language-sh">$ htmlpress build docs
 built 6 pages and 0 files into docs/.htmlpress/build</code></pre>
 
     <h3><code>htmlpress start [root]</code></h3>
@@ -257,7 +257,7 @@ built 6 pages and 0 files into docs/.htmlpress/build</code></pre>
       it, and <code>/</code> leads there; restart after changing <code>base</code>.
       <code>--out</code> / <code>-o</code> works as for <code>build</code>.
     </p>
-    <pre><code>$ htmlpress start docs --host
+    <pre><code class="language-sh">$ htmlpress start docs --host
 serving http://localhost:8000
 network http://192.168.1.107:8000</code></pre>
 
@@ -283,7 +283,7 @@ network http://192.168.1.107:8000</code></pre>
       <code>.</code>). It refuses to overwrite a file; see
       <a href="/customization/overriding-escaping.html">Overriding/Escaping</a>.
     </p>
-    <pre><code>$ htmlpress escape htmlpress-tabs
+    <pre><code class="language-sh">$ htmlpress escape htmlpress-tabs
 escaped .htmlpress/components/tabs/tabs.css
 escaped .htmlpress/components/tabs/tabs.js</code></pre>
 
@@ -293,7 +293,7 @@ escaped .htmlpress/components/tabs/tabs.js</code></pre>
       speaks JSON. <code>--json</code> prints the result as JSON, and with a value it also
       takes the input as JSON:
     </p>
-    <pre><code>$ htmlpress build docs --json
+    <pre><code class="language-sh">$ htmlpress build docs --json
 {
   "output": "docs/.htmlpress/build",
   "pages": 6,

@@ -7,29 +7,34 @@
   </head>
   <body>
     <h1>Syntax Themes</h1>
-    <htmlpress-callout label="Coming soon"
-      ><p>
-        Htmlpress does not highlight code yet. Syntax highlighting will color
-        <code>&lt;pre&gt;&lt;code&gt;</code> blocks at build time, with a light and a dark
-        theme that follow the visitor's theme.
-      </p></htmlpress-callout
-    >
     <p>
-      Today a code block is styled by the theme alone:
-      <code>styles/content.css</code> sets its font, background and border from the
-      <code>--htmlpress-*</code> tokens, in light and dark, and
-      <code>scripts/code.js</code> adds a copy button.
+      Code blocks with a <code>language-*</code> class are highlighted at build time by
+      <a href="https://github.com/getzola/giallo">giallo</a>, which runs VS Code's
+      TextMate grammars and themes and gives the same output as Shiki. Each token carries
+      both themes' colors through CSS <code>light-dark()</code>, so the theme toggle
+      switches code too, with no script and no flash.
     </p>
 
     <h2>Configuration</h2>
+    <p>The defaults are Livemark's:</p>
+    <pre><code class="language-yaml">codeThemeLight: catppuccin-latte
+codeThemeDark: catppuccin-mocha</code></pre>
     <p>
-      Light and dark theme keys in <code>htmlpress.yaml</code> will pick the themes. Until
-      then, restyle code blocks by escaping <code>styles/content.css</code> or overriding
-      the tokens it reads in <code>styles/tokens.css</code>.
+      Any of the ~60 built-in themes works; see them on the
+      <a href="https://textmate-grammars-themes.netlify.app">Shiki playground</a>. An
+      unknown name fails the build. The block's frame, background and font still come from
+      <code>styles/content.css</code>.
     </p>
 
     <h2>Popular pairings</h2>
-    <p>A list of light and dark theme pairs that read well together will go here.</p>
+    <ul>
+      <li><code>catppuccin-latte</code> / <code>catppuccin-mocha</code> (the default)</li>
+      <li><code>github-light</code> / <code>github-dark</code></li>
+      <li><code>one-light</code> / <code>one-dark-pro</code></li>
+      <li><code>solarized-light</code> / <code>solarized-dark</code></li>
+      <li><code>rose-pine-dawn</code> / <code>rose-pine</code></li>
+      <li><code>vitesse-light</code> / <code>vitesse-dark</code></li>
+    </ul>
 
     <h2>A note on accessibility</h2>
     <p>

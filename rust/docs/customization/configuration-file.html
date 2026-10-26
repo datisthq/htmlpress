@@ -28,7 +28,7 @@
       Every key is optional, so a project needs no config at all. The smallest useful one
       names the site:
     </p>
-    <pre><code>title: My docs</code></pre>
+    <pre><code class="language-yaml">title: My docs</code></pre>
     <p>
       An empty <code>htmlpress.yaml</code> is the same as none. Without one, every
       <code>.html</code> file under the project (default
@@ -139,6 +139,14 @@
           </td>
         </tr>
         <tr>
+          <td><code>codeThemeLight</code>, <code>codeThemeDark</code></td>
+          <td><code>catppuccin-latte</code>, <code>catppuccin-mocha</code></td>
+          <td>
+            The code block themes; see
+            <a href="/customization/syntax-themes.html">Syntax Themes</a>.
+          </td>
+        </tr>
+        <tr>
           <td><code>patches</code></td>
           <td>none</td>
           <td>
@@ -192,7 +200,7 @@
 
     <h2>Worked example</h2>
     <p>Most real sites end up looking something like this:</p>
-    <pre><code>site: https://htmlpress.dev
+    <pre><code class="language-yaml">site: https://htmlpress.dev
 title: Htmlpress
 description: Turn a folder of HTML pages into a site.
 logo: /logo.svg

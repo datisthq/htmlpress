@@ -455,3 +455,20 @@ fn lists_a_folder_with_only_its_index_as_one_page() -> crate::Result<()> {
     assert!(html.contains("<summary>API</summary>"));
     Ok(())
 }
+
+#[test]
+fn colors_code_blocks_with_the_configured_themes() -> crate::Result<()> {
+    let mut site = create_site()?;
+    site.pages[1] = read_page(
+        "guide.html",
+        "<pre><code class=\"language-js\">let a = 1</code></pre>",
+    )?;
+    let html = render_page(&site, &site.pages[1], false)?;
+    assert!(html.contains("light-dark(#8839EF, #CBA6F7)"), "{html}");
+    site.config.code_theme_light = Some("github-light".to_owned());
+    site.config.code_theme_dark = Some("github-dark".to_owned());
+    let html = render_page(&site, &site.pages[1], false)?;
+    assert!(!html.contains("#8839EF") && html.contains("light-dark("));
+    assert!(!site.pages[1].content.contains("light-dark("));
+    Ok(())
+}

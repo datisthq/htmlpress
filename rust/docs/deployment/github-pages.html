@@ -20,7 +20,7 @@
 </ul>
 
 <h2>Build the site</h2>
-<pre><code>htmlpress build</code></pre>
+<pre><code class="language-sh">htmlpress build</code></pre>
 <p>Output lands in <code>.htmlpress/build/</code>.</p>
 
 <h2>Configure <code>base</code> for project sites</h2>
@@ -31,7 +31,7 @@
   <code>htmlpress start</code> and <code>preview</code> serve under the same base, so dev
   matches production:
 </p>
-<pre><code>site: https://acme.github.io
+<pre><code class="language-yaml">site: https://acme.github.io
 base: /my-docs/</code></pre>
 <p>For user/org sites at the root, omit <code>base</code> entirely.</p>
 <htmlpress-callout type="success" label="Tip">
@@ -47,7 +47,7 @@ base: /my-docs/</code></pre>
   The simplest one-shot deploy uses the
   <a href="https://www.npmjs.com/package/gh-pages"><code>gh-pages</code></a> package:
 </p>
-<pre><code>htmlpress build
+<pre><code class="language-sh">htmlpress build
 npx gh-pages -d .htmlpress/build --nojekyll --dotfiles</code></pre>
 <p>
   This pushes the build to the <code>gh-pages</code> branch. In your repo settings, set
@@ -66,7 +66,7 @@ npx gh-pages -d .htmlpress/build --nojekyll --dotfiles</code></pre>
 <p>
   The official Pages actions are the cleanest path: no extra branch, no service tokens.
 </p>
-<pre><code>name: deploy
+<pre><code class="language-yaml">name: deploy
 
 on:
   push:

@@ -134,7 +134,7 @@
       <code>htmlpress escape</code> copies a default into <code>.htmlpress/</code> to
       start from. Name a file by its path, or a component by its tag for all of its files:
     </p>
-    <pre><code>$ htmlpress escape                       # list every file, marking the escaped ones
+    <pre><code class="language-sh">$ htmlpress escape                       # list every file, marking the escaped ones
 $ htmlpress escape htmlpress-tabs        # its .css and .js
 $ htmlpress escape layout.html styles/tokens.css
 $ htmlpress escape htmlpress-tabs -r docs  # in another project folder</code></pre>
@@ -156,7 +156,7 @@ $ htmlpress escape htmlpress-tabs -r docs  # in another project folder</code></p
       Its <code>.html</code> fills every such tag in the layout and the pages at build
       time; its <code>.css</code> and <code>.js</code> load wherever the tag appears.
     </p>
-    <pre><code>&lt;!-- .htmlpress/components/credits/credits.html --&gt;
+    <pre><code class="language-html">&lt;!-- .htmlpress/components/credits/credits.html --&gt;
 &lt;footer&gt;&lt;p&gt;Built by my team · 2026&lt;/p&gt;&lt;/footer&gt;
 
 /* .htmlpress/components/credits/credits.css */
@@ -171,7 +171,7 @@ $ htmlpress escape htmlpress-tabs -r docs  # in another project folder</code></p
     </p>
 
     <h2>Example: retheme buttons</h2>
-    <pre><code>$ htmlpress escape components/button/button.css</code></pre>
+    <pre><code class="language-sh">$ htmlpress escape components/button/button.css</code></pre>
     <p>
       Edit <code>.htmlpress/components/button/button.css</code> to change button styling
       everywhere: every page that uses <code>&lt;htmlpress-button&gt;</code> links your
@@ -179,7 +179,7 @@ $ htmlpress escape htmlpress-tabs -r docs  # in another project folder</code></p
     </p>
 
     <h2>Example: tweak a token</h2>
-    <pre><code>$ htmlpress escape styles/tokens.css</code></pre>
+    <pre><code class="language-sh">$ htmlpress escape styles/tokens.css</code></pre>
     <p>
       Edit the <code>:root</code> block in <code>.htmlpress/styles/tokens.css</code> to
       rebrand:

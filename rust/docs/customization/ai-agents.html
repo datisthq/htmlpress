@@ -91,7 +91,7 @@
       <a href="https://contentsignals.org/">Content Signals</a> line in
       <code>robots.txt</code>. All three signals default to <code>true</code>:
     </p>
-    <pre><code>contentSignals:
+    <pre><code class="language-yaml">contentSignals:
   search: true # build a search index and show links to your pages
   aiInput: true # feed pages to a model answering a question in real time
   aiTrain: false # train or fine-tune models on your content</code></pre>
@@ -107,7 +107,7 @@
       <code>skills</code> at their <code>SKILL.md</code> files, one glob or a list,
       relative to the project:
     </p>
-    <pre><code>skills: .skills/*/SKILL.md</code></pre>
+    <pre><code class="language-yaml">skills: .skills/*/SKILL.md</code></pre>
     <p>
       Each matched skill is published at
       <code>/.well-known/agent-skills/&lt;name&gt;/SKILL.md</code> and listed in

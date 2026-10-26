@@ -16,7 +16,7 @@
   Reference images from your project; every file that is not a page is copied to the
   output at the same path:
 </p>
-<pre><code>&lt;img src="/screenshots/docs.webp" alt="An htmlpress docs page"&gt;</code></pre>
+<pre><code class="language-html">&lt;img src="/screenshots/docs.webp" alt="An htmlpress docs page"&gt;</code></pre>
 <p>Renders as:</p>
 <figure>
   <img
@@ -30,7 +30,7 @@
 
 <h2>External Images</h2>
 <p>Reference images from external URLs:</p>
-<pre><code>&lt;img src="https://picsum.photos/seed/htmlpress/800/300" alt="Placeholder"&gt;</code></pre>
+<pre><code class="language-html">&lt;img src="https://picsum.photos/seed/htmlpress/800/300" alt="Placeholder"&gt;</code></pre>
 <p>Renders as:</p>
 <p>
   <img
@@ -43,7 +43,7 @@
 
 <h2>Base64 Images</h2>
 <p>Embed small images directly using data URIs:</p>
-<pre><code>&lt;img src="data:image/png;base64,iVBORw0KGgo…" alt="banner"&gt;</code></pre>
+<pre><code class="language-html">&lt;img src="data:image/png;base64,iVBORw0KGgo…" alt="banner"&gt;</code></pre>
 <p>Renders as:</p>
 <p>
   <img
@@ -68,7 +68,7 @@
   An image inside <code>&lt;htmlpress-zoom&gt;</code> opens full screen on click; a click
   anywhere closes it. It works with internal, external and base64 images alike.
 </p>
-<pre><code>&lt;htmlpress-zoom&gt;&lt;img src="screenshot.png" alt="The docs site"&gt;&lt;/htmlpress-zoom&gt;</code></pre>
+<pre><code class="language-html">&lt;htmlpress-zoom&gt;&lt;img src="screenshot.png" alt="The docs site"&gt;&lt;/htmlpress-zoom&gt;</code></pre>
 <p>Renders as (click it):</p>
 <htmlpress-zoom>
   <img
@@ -85,7 +85,7 @@
   <code>watch</code>, <code>youtu.be</code>, <code>embed</code>, <code>shorts</code> or
   <code>live</code> URL); without the script it stays a link:
 </p>
-<pre><code>&lt;htmlpress-youtube&gt;
+<pre><code class="language-html">&lt;htmlpress-youtube&gt;
   &lt;a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"&gt;The video&lt;/a&gt;
 &lt;/htmlpress-youtube&gt;</code></pre>
 <p>Renders as:</p>
@@ -98,7 +98,7 @@
   A link inside <code>&lt;htmlpress-soundcloud&gt;</code> becomes the track's player;
   without the script it stays a link:
 </p>
-<pre><code>&lt;htmlpress-soundcloud&gt;
+<pre><code class="language-html">&lt;htmlpress-soundcloud&gt;
   &lt;a href="https://soundcloud.com/flume/never-be-like-you-feat-kai"&gt;The track&lt;/a&gt;
 &lt;/htmlpress-soundcloud&gt;</code></pre>
 <p>Renders as:</p>

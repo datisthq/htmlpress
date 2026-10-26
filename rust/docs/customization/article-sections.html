@@ -29,7 +29,7 @@
     </ul>
 
     <h2>Basic usage</h2>
-    <pre><code>site: https://example.com
+    <pre><code class="language-yaml">site: https://example.com
 sections:
   - title: Guide
     prefix: /
@@ -134,7 +134,7 @@ sections:
 
     <h2>Article sections</h2>
     <p>Plain docs, and the default: you can omit <code>type</code> entirely.</p>
-    <pre><code>- title: Guide
+    <pre><code class="language-yaml">- title: Guide
   prefix: /guide/</code></pre>
     <p>
       Inside a section, the sidebar groups its pages by top folder. Pages at the root come
@@ -173,7 +173,7 @@ sections:
       >
       only on the home page); an external URL never is.
     </p>
-    <pre><code>- title: Blog
+    <pre><code class="language-yaml">- title: Blog
   type: custom
   url: https://blog.example.com</code></pre>
 
@@ -196,7 +196,7 @@ sections:
         head, when <code>site</code> is set, since a feed links absolutely.
       </li>
     </ul>
-    <pre><code>- title: Blog
+    <pre><code class="language-yaml">- title: Blog
   type: blog
   prefix: /blog/</code></pre>
 
@@ -210,7 +210,7 @@ sections:
       release's <code>###</code> headings become its sections. With
       <code>version: true</code> the tab shows the latest version.
     </p>
-    <pre><code>- title: Changelog
+    <pre><code class="language-yaml">- title: Changelog
   type: changelog
   prefix: /changelog/
   source: CHANGELOG.md

@@ -1,5 +1,6 @@
 use std::path::Path;
 
+use crate::actions::code::highlight::has_theme;
 use crate::actions::icon::render::{list_icons, render_icon};
 use crate::models::config::{Config, SectionKind};
 use crate::models::error::Error;
@@ -34,6 +35,15 @@ pub fn load_config(root: &Path) -> crate::Result<Config> {
         return Err(Error::Config {
             path,
             message: format!("base must start with \"/\", got \"{base}\""),
+        });
+    }
+    let (light, dark) = config.read_code_themes();
+    if let Some(theme) = [light, dark].into_iter().find(|theme| !has_theme(theme)) {
+        return Err(Error::Config {
+            path,
+            message: format!(
+                "no built-in code theme \"{theme}\"; see https://textmate-grammars-themes.netlify.app"
+            ),
         });
     }
     if let Some(message) = check_icons(&config) {

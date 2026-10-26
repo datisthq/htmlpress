@@ -154,3 +154,20 @@ fn requires_a_source_for_a_changelog() -> crate::Result<()> {
     assert!(load_config(root.path()).is_ok());
     Ok(())
 }
+
+#[test]
+fn rejects_an_unknown_code_theme() -> crate::Result<()> {
+    let root = tempfile::tempdir().map_err(Error::io("tempdir"))?;
+    let path = root.path().join(CONFIG_FILE);
+    std::fs::write(&path, "codeThemeDark: github-dark\n").map_err(Error::io("write"))?;
+    assert_eq!(
+        load_config(root.path())?.read_code_themes(),
+        ("catppuccin-latte", "github-dark")
+    );
+    std::fs::write(&path, "codeThemeLight: nope\n").map_err(Error::io("write"))?;
+    assert!(matches!(
+        load_config(root.path()),
+        Err(Error::Config { .. })
+    ));
+    Ok(())
+}

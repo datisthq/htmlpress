@@ -14,7 +14,7 @@
 </p>
 
 <h2>Build the site</h2>
-<pre><code>htmlpress build</code></pre>
+<pre><code class="language-sh">htmlpress build</code></pre>
 <p>Output lands in <code>.htmlpress/build/</code>.</p>
 
 <h2>Configure <code>netlify.toml</code></h2>
@@ -36,7 +36,7 @@ publish = ".htmlpress/build"</code></pre>
 
 <h2>Deploy with the CLI</h2>
 <p>For one-shot or scripted deploys:</p>
-<pre><code>htmlpress build
+<pre><code class="language-sh">htmlpress build
 netlify deploy --prod --dir=.htmlpress/build</code></pre>
 <p>
   The first run prompts for <code>netlify login</code> and links the directory to a site.
@@ -47,7 +47,7 @@ netlify deploy --prod --dir=.htmlpress/build</code></pre>
   Netlify's git integration is usually enough, but a workflow gives you test-before-deploy
   gating:
 </p>
-<pre><code>name: deploy
+<pre><code class="language-yaml">name: deploy
 
 on:
   push:

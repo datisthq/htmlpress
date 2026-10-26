@@ -13,7 +13,7 @@
 </p>
 
 <h2>Build the site</h2>
-<pre><code>htmlpress build</code></pre>
+<pre><code class="language-sh">htmlpress build</code></pre>
 <p>
   Output lands in <code>.htmlpress/build/</code>. Treat that directory as your document
   root. <code>htmlpress preview</code> serves the same build locally, the way a host will.
@@ -110,7 +110,7 @@ ErrorDocument 404 /404.html</code></pre>
 
 <h2>Deploy with GitHub Actions</h2>
 <p>A minimal nginx/SSH example:</p>
-<pre><code>name: deploy
+<pre><code class="language-yaml">name: deploy
 
 on:
   push:

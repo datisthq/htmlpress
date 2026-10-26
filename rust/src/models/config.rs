@@ -43,6 +43,10 @@ pub struct Config {
     /// Page metadata set from the config, for files whose `<head>` should not carry it,
     /// such as a `README.md` published as a page.
     pub patches: Vec<Patch>,
+    /// The theme code blocks take in light mode, a Shiki theme name; `catppuccin-latte`.
+    pub code_theme_light: Option<String>,
+    /// The theme code blocks take in dark mode; `catppuccin-mocha`.
+    pub code_theme_dark: Option<String>,
     /// Globs of `SKILL.md` files, relative to the project, published for agents under
     /// `.well-known/agent-skills/`; one pattern or a list.
     #[serde(deserialize_with = "read_patterns")]
@@ -75,6 +79,19 @@ impl Config {
             true => String::new(),
             false => format!("/{base}"),
         }
+    }
+
+    /// The light and dark code themes, Livemark's defaults when unset.
+    pub(crate) fn read_code_themes(&self) -> (&str, &str) {
+        let light = self
+            .code_theme_light
+            .as_deref()
+            .unwrap_or("catppuccin-latte");
+        let dark = self
+            .code_theme_dark
+            .as_deref()
+            .unwrap_or("catppuccin-mocha");
+        (light, dark)
     }
 
     /// `site` and the base, without a trailing slash: what a page's URL follows to be

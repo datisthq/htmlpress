@@ -13,25 +13,38 @@
   <code>&amp;</code>. Tabs of code blocks are covered under
   <a href="/authoring/rich-elements.html#code-tabs">Code Tabs</a>.
 </p>
-<pre><code>&lt;pre&gt;&lt;code&gt;const greeting = "&amp;lt;hello&amp;gt;"&lt;/code&gt;&lt;/pre&gt;</code></pre>
+<pre><code class="language-html">&lt;pre&gt;&lt;code&gt;const greeting = "&amp;lt;hello&amp;gt;"&lt;/code&gt;&lt;/pre&gt;</code></pre>
 <p>Renders as:</p>
 <pre><code>const greeting = "&lt;hello&gt;"</code></pre>
-<htmlpress-callout label="Coming soon">
-  <p>Syntax highlighting for code blocks.</p>
-</htmlpress-callout>
+<h2>Syntax Highlighting</h2>
+<p>
+  A <code>language-*</code> class on the <code>&lt;code&gt;</code> colors the block at
+  build time with VS Code's TextMate grammars, the same output as Shiki, in a light and a
+  dark theme that follow the reader's (see
+  <a href="/customization/syntax-themes.html">Syntax Themes</a>). Over 220 languages are
+  built in, with their usual aliases (<code>ts</code>, <code>sh</code>, <code>yml</code>);
+  an unknown one, or a block holding markup of its own, stays plain.
+</p>
+<pre><code class="language-html">&lt;pre&gt;&lt;code class="language-rust"&gt;fn main() {
+    println!("hello");
+}&lt;/code&gt;&lt;/pre&gt;</code></pre>
+<p>Renders as:</p>
+<pre><code class="language-rust">fn main() {
+    println!("hello");
+}</code></pre>
 
 <h2>Titles</h2>
 <p>
   A <code>&lt;figure&gt;</code> with a <code>&lt;figcaption&gt;</code> names a block in
   plain HTML:
 </p>
-<pre><code>&lt;figure&gt;
+<pre><code class="language-html">&lt;figure&gt;
   &lt;pre&gt;&lt;code&gt;title: Htmlpress&lt;/code&gt;&lt;/pre&gt;
   &lt;figcaption&gt;htmlpress.yaml&lt;/figcaption&gt;
 &lt;/figure&gt;</code></pre>
 <p>Renders as:</p>
 <figure>
-  <pre><code>title: Htmlpress</code></pre>
+  <pre><code class="language-yaml">title: Htmlpress</code></pre>
   <figcaption>htmlpress.yaml</figcaption>
 </figure>
 <htmlpress-callout label="Coming soon">
@@ -39,13 +52,14 @@
 </htmlpress-callout>
 
 <h2>Line Highlighting</h2>
-<htmlpress-callout label="Coming soon">
-  <p>
-    Highlighting chosen lines of a code block. Inside a
-    <a href="#terminal">terminal</a>, <code>&lt;mark&gt;</code> already colors output
-    yellow.
-  </p>
-</htmlpress-callout>
+<p>
+  <code>data-lines</code> on a highlighted block marks lines, counted from 1: single lines
+  and ranges, comma-separated.
+</p>
+<pre><code class="language-html">&lt;pre&gt;&lt;code class="language-js" data-lines="2"&gt;…&lt;/code&gt;&lt;/pre&gt;</code></pre>
+<pre><code class="language-js" data-lines="2">const a = 1
+const b = 2
+const c = 3</code></pre>
 
 <h2>Word Highlighting</h2>
 <htmlpress-callout label="Coming soon">
@@ -53,9 +67,13 @@
 </htmlpress-callout>
 
 <h2>Line Numbers</h2>
-<htmlpress-callout label="Coming soon">
-  <p>Line numbers beside a code block, optionally starting from a given line.</p>
-</htmlpress-callout>
+<p>
+  <code>data-line-numbers</code> on a highlighted block numbers its lines;
+  <code>data-line-numbers="10"</code> starts from 10. The copy button leaves the numbers
+  out.
+</p>
+<pre><code class="language-js" data-line-numbers="10">const a = 1
+const b = 2</code></pre>
 
 <h2>Diff Lines</h2>
 <htmlpress-callout label="Coming soon">
@@ -81,7 +99,7 @@
   A <code>&lt;details&gt;</code> around a long block hides it behind its
   <code>&lt;summary&gt;</code>:
 </p>
-<pre><code>&lt;details&gt;
+<pre><code class="language-html">&lt;details&gt;
   &lt;summary&gt;The full config&lt;/summary&gt;
   &lt;pre&gt;&lt;code&gt;…&lt;/code&gt;&lt;/pre&gt;
 &lt;/details&gt;</code></pre>
@@ -105,7 +123,7 @@
   <code>&lt;htmlpress-package-tabs&gt;</code> and the build turns it into tabs for npm,
   pnpm, yarn and bun, synced across the site. Other lines stay as written.
 </p>
-<pre><code>&lt;htmlpress-package-tabs&gt;
+<pre><code class="language-html">&lt;htmlpress-package-tabs&gt;
   &lt;pre&gt;&lt;code&gt;npm install --save-dev gethtmlpress&lt;/code&gt;&lt;/pre&gt;
 &lt;/htmlpress-package-tabs&gt;</code></pre>
 <p>Renders as:</p>
@@ -121,7 +139,7 @@
   <code>&lt;samp&gt;</code> plain output, and <code>&lt;ins&gt;</code>,
   <code>&lt;del&gt;</code> and <code>&lt;mark&gt;</code> green, red and yellow output.
 </p>
-<pre><code>&lt;htmlpress-terminal title="zsh"&gt;
+<pre><code class="language-html">&lt;htmlpress-terminal title="zsh"&gt;
   &lt;pre&gt;&lt;kbd&gt;htmlpress build docs&lt;/kbd&gt;
 &lt;samp&gt;built 7 pages…&lt;/samp&gt;
 &lt;ins&gt;✓ ready&lt;/ins&gt;&lt;/pre&gt;

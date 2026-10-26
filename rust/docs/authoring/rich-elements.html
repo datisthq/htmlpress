@@ -20,7 +20,7 @@
   <code>&lt;thead&gt;</code> in <code>&lt;htmlpress-table&gt;</code> and a click on any
   header sorts by it:
 </p>
-<pre><code>&lt;htmlpress-table&gt;
+<pre><code class="language-html">&lt;htmlpress-table&gt;
   &lt;table&gt;
     &lt;thead&gt;&lt;tr&gt;&lt;th&gt;Language&lt;/th&gt;&lt;th&gt;Year&lt;/th&gt;&lt;th&gt;Typing&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
     &lt;tbody&gt;&lt;tr&gt;&lt;td&gt;TypeScript&lt;/td&gt;&lt;td&gt;2012&lt;/td&gt;&lt;td&gt;Static&lt;/td&gt;&lt;/tr&gt;…&lt;/tbody&gt;
@@ -67,7 +67,7 @@
   default), <code>success</code>, <code>warning</code> or <code>danger</code>, and
   <code>label</code> replaces the heading the type gives:
 </p>
-<pre><code>&lt;htmlpress-callout&gt;&lt;p&gt;This is a note.&lt;/p&gt;&lt;/htmlpress-callout&gt;
+<pre><code class="language-html">&lt;htmlpress-callout&gt;&lt;p&gt;This is a note.&lt;/p&gt;&lt;/htmlpress-callout&gt;
 
 &lt;htmlpress-callout type="warning" label="Breaking Change"&gt;
   &lt;p&gt;This API has been removed in v2.&lt;/p&gt;
@@ -86,7 +86,7 @@
 
 <h2>Expandable</h2>
 <p>No component needed: the theme styles a plain <code>&lt;details&gt;</code>.</p>
-<pre><code>&lt;details&gt;
+<pre><code class="language-html">&lt;details&gt;
   &lt;summary&gt;Click to expand&lt;/summary&gt;
   &lt;p&gt;Hidden content here with &lt;strong&gt;HTML&lt;/strong&gt; support.&lt;/p&gt;
 &lt;/details&gt;</code></pre>
@@ -98,7 +98,7 @@
 <p>You can nest any HTML inside, including code blocks, lists and callouts:</p>
 <details>
   <summary>Configuration example</summary>
-  <pre><code>site: https://htmlpress.dev
+  <pre><code class="language-yaml">site: https://htmlpress.dev
 title: Htmlpress</code></pre>
 </details>
 
@@ -107,7 +107,7 @@ title: Htmlpress</code></pre>
   Tabs that hold only code blocks join into one framed block. Each
   <code>&lt;section&gt;</code> is a tab, named by its <code>title</code>:
 </p>
-<pre><code>&lt;htmlpress-tabs sync="lang"&gt;
+<pre><code class="language-html">&lt;htmlpress-tabs sync="lang"&gt;
   &lt;section title="JavaScript"&gt;&lt;pre&gt;&lt;code&gt;console.log("hello")&lt;/code&gt;&lt;/pre&gt;&lt;/section&gt;
   &lt;section title="Python"&gt;&lt;pre&gt;&lt;code&gt;print("hello")&lt;/code&gt;&lt;/pre&gt;&lt;/section&gt;
 &lt;/htmlpress-tabs&gt;</code></pre>
@@ -136,7 +136,7 @@ title: Htmlpress</code></pre>
   switches to the matching tab, and the choice is remembered across pages in
   <code>localStorage</code>.
 </p>
-<pre><code>&lt;htmlpress-tabs sync="channel"&gt;
+<pre><code class="language-html">&lt;htmlpress-tabs sync="channel"&gt;
   &lt;section title="cargo"&gt;&lt;p&gt;From crates.io, built on your machine.&lt;/p&gt;&lt;/section&gt;
   &lt;section title="npm"&gt;&lt;p&gt;A prebuilt binary per platform.&lt;/p&gt;&lt;/section&gt;
   &lt;section title="pip"&gt;&lt;p&gt;A binary wheel.&lt;/p&gt;&lt;/section&gt;
@@ -144,13 +144,13 @@ title: Htmlpress</code></pre>
 <p>Renders as (both groups share <code>sync="channel"</code>; switch one):</p>
 <htmlpress-tabs sync="channel">
   <section title="cargo">
-    <pre><code>cargo install htmlpress</code></pre>
+    <pre><code class="language-sh">cargo install htmlpress</code></pre>
   </section>
   <section title="npm">
     <pre><code>npm install -g gethtmlpress</code></pre>
   </section>
   <section title="pip">
-    <pre><code>pip install htmlpress</code></pre>
+    <pre><code class="language-sh">pip install htmlpress</code></pre>
   </section>
 </htmlpress-tabs>
 <htmlpress-tabs sync="channel">
@@ -165,7 +165,7 @@ title: Htmlpress</code></pre>
   guide, one step per <code>&lt;li&gt;</code>, each led by an <code>&lt;h3&gt;</code>.
   Those headings stay out of the page's table of contents.
 </p>
-<pre><code>&lt;htmlpress-steps&gt;
+<pre><code class="language-html">&lt;htmlpress-steps&gt;
   &lt;ol&gt;
     &lt;li&gt;&lt;h3&gt;Install&lt;/h3&gt;&lt;p&gt;…&lt;/p&gt;&lt;/li&gt;
     &lt;li&gt;&lt;h3&gt;Write a page&lt;/h3&gt;&lt;p&gt;…&lt;/p&gt;&lt;/li&gt;
@@ -195,7 +195,7 @@ title: Htmlpress</code></pre>
   <code>cols</code> fixes their number from 2 to 4, and narrow screens fall back to one. A
   link in a card's heading makes the whole card clickable.
 </p>
-<pre><code>&lt;htmlpress-grid cols="2"&gt;
+<pre><code class="language-html">&lt;htmlpress-grid cols="2"&gt;
   &lt;htmlpress-card&gt;
     &lt;h3&gt;&lt;a href="/introduction.html"&gt;Getting Started&lt;/a&gt;&lt;/h3&gt;
     &lt;p&gt;Learn how to set up your first project.&lt;/p&gt;
@@ -229,7 +229,7 @@ title: Htmlpress</code></pre>
   <code>warning</code>, <code>danger</code> or <code>neutral</code>; without it, the
   accent.
 </p>
-<pre><code>&lt;htmlpress-badge&gt;New&lt;/htmlpress-badge&gt;
+<pre><code class="language-html">&lt;htmlpress-badge&gt;New&lt;/htmlpress-badge&gt;
 &lt;htmlpress-badge type="success"&gt;Stable&lt;/htmlpress-badge&gt;</code></pre>
 <p>
   Renders as:
@@ -246,7 +246,7 @@ title: Htmlpress</code></pre>
   A link inside <code>&lt;htmlpress-button&gt;</code> is a call to action;
   <code>type="secondary"</code> makes it quieter.
 </p>
-<pre><code>&lt;htmlpress-button&gt;&lt;a href="/introduction.html"&gt;Get Started&lt;/a&gt;&lt;/htmlpress-button&gt;
+<pre><code class="language-html">&lt;htmlpress-button&gt;&lt;a href="/introduction.html"&gt;Get Started&lt;/a&gt;&lt;/htmlpress-button&gt;
 &lt;htmlpress-button type="secondary"&gt;&lt;a href="…"&gt;GitHub&lt;/a&gt;&lt;/htmlpress-button&gt;</code></pre>
 <p>Renders as:</p>
 <p>
@@ -263,7 +263,7 @@ title: Htmlpress</code></pre>
   same names go in the <code>icon</code> of a link or a section. An unknown name fails the
   build. These are the 113 built in:
 </p>
-<pre><code>&lt;htmlpress-icon name="rocket"&gt;&lt;/htmlpress-icon&gt; Get started</code></pre>
+<pre><code class="language-html">&lt;htmlpress-icon name="rocket"&gt;&lt;/htmlpress-icon&gt; Get started</code></pre>
 <htmlpress-grid cols="4">
   <p><htmlpress-icon name="activity"></htmlpress-icon> activity</p>
   <p><htmlpress-icon name="archive"></htmlpress-icon> archive</p>
@@ -387,7 +387,7 @@ title: Htmlpress</code></pre>
   A nested list inside <code>&lt;htmlpress-file-tree&gt;</code>; an item holding a list is
   a folder.
 </p>
-<pre><code>&lt;htmlpress-file-tree&gt;
+<pre><code class="language-html">&lt;htmlpress-file-tree&gt;
   &lt;ul&gt;
     &lt;li&gt;docs&lt;ul&gt;&lt;li&gt;index.html&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;
     &lt;li&gt;htmlpress.yaml&lt;/li&gt;
@@ -416,7 +416,7 @@ title: Htmlpress</code></pre>
 <p>
   <code>&lt;htmlpress-grid&gt;</code> lays out any children side by side, not only cards:
 </p>
-<pre><code>&lt;htmlpress-grid cols="2"&gt;
+<pre><code class="language-html">&lt;htmlpress-grid cols="2"&gt;
   &lt;div&gt;&lt;p&gt;&lt;strong&gt;Left column&lt;/strong&gt; with content.&lt;/p&gt;&lt;/div&gt;
   &lt;div&gt;&lt;p&gt;&lt;strong&gt;Right column&lt;/strong&gt; with more content.&lt;/p&gt;&lt;/div&gt;
 &lt;/htmlpress-grid&gt;</code></pre>

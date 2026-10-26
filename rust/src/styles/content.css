@@ -245,3 +245,17 @@ abbr[data-title] {
 .htmlpress-hint > :last-child {
   margin-bottom: 0;
 }
+
+/* Lines of a highlighted code block, so a highlighted line's background spans the block */
+pre code .giallo-l {
+  display: inline-block;
+  width: 100%;
+  min-height: 1lh;
+}
+pre code .giallo-ln {
+  display: inline-block;
+  min-width: 2ch;
+  margin-right: 1.25rem;
+  text-align: right;
+  user-select: none;
+}

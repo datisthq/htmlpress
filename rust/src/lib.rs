@@ -10,6 +10,9 @@ mod actions {
     pub(crate) mod changelog {
         pub(crate) mod split;
     }
+    pub(crate) mod code {
+        pub(crate) mod highlight;
+    }
     pub(crate) mod config {
         pub(crate) mod load;
     }

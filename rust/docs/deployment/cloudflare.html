@@ -14,7 +14,7 @@
 </p>
 
 <h2>Build the site</h2>
-<pre><code>htmlpress build</code></pre>
+<pre><code class="language-sh">htmlpress build</code></pre>
 <p>Output lands in <code>.htmlpress/build/</code>.</p>
 
 <h2>Configure <code>wrangler.jsonc</code></h2>
@@ -65,7 +65,7 @@
 </table>
 
 <h2>Deploy from your machine</h2>
-<pre><code>htmlpress build
+<pre><code class="language-sh">htmlpress build
 npx wrangler deploy</code></pre>
 <p>
   The first run prompts for <code>wrangler login</code> to authorize against your
@@ -73,7 +73,7 @@ npx wrangler deploy</code></pre>
 </p>
 
 <h2>Deploy with GitHub Actions</h2>
-<pre><code>name: deploy
+<pre><code class="language-yaml">name: deploy
 
 on:
   push:
