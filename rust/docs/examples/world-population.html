@@ -5,7 +5,6 @@
 />
 <meta name="order" content="1" />
 <meta name="icon" content="users" />
-<meta name="toc" content="false" />
 <style>
   .pop {
     --pop-asia: #2a78d6;
@@ -39,8 +38,8 @@
     --pop-namerica: #d55181;
   }
   .pop-hero {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    display: flex;
+    flex-wrap: wrap;
     gap: 1px;
     overflow: hidden;
     border: 1px solid var(--pop-grid);
@@ -48,6 +47,7 @@
     background: var(--pop-grid);
   }
   .pop-hero > div {
+    flex: 1 1 11rem;
     padding: 1.25rem 1.25rem 1.1rem;
     background: var(--pop-card);
   }
@@ -86,8 +86,16 @@
     justify-content: space-between;
     margin-bottom: 0.75rem;
   }
-  .pop-panel > header strong {
+  .pop h2 {
+    margin: 0;
     font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: 0;
+    color: var(--pop-ink);
+  }
+  .pop > h2 {
+    margin-bottom: 0.75rem;
   }
   .pop-panel > header span {
     font-size: 0.8125rem;
@@ -236,6 +244,7 @@
 </p>
 
 <div class="pop">
+  <h2 id="pop-glance">At a glance</h2>
   <div class="pop-hero">
     <div>
       <b>8.23<small>bn</small></b>
@@ -253,8 +262,8 @@
 
   <section class="pop-panel" aria-labelledby="pop-regions-title">
     <header>
-      <strong id="pop-regions-title">Population by region, billions</strong>
-      <span>1950–2100 · hover for values</span>
+      <h2 id="pop-regions-title">Population by region</h2>
+      <span>billions, 1950–2100 · hover for values</span>
     </header>
     <ul class="pop-legend">
       <li><i style="background: var(--pop-asia)"></i>Asia</li>
@@ -273,7 +282,7 @@
   <div class="pop-columns">
     <section class="pop-panel" aria-labelledby="pop-billions-title">
       <header>
-        <strong id="pop-billions-title">Years to add each billion</strong>
+        <h2 id="pop-billions-title">Years to add each billion</h2>
       </header>
       <ol class="pop-billions">
         <li style="--years: 122"><b>2 bn</b><time>1927</time><span>122</span></li>
@@ -297,7 +306,7 @@
 
     <section class="pop-panel" aria-labelledby="pop-long-title">
       <header>
-        <strong id="pop-long-title">The last 12,000 years</strong>
+        <h2 id="pop-long-title">The last 12,000 years</h2>
         <span>billions</span>
       </header>
       <div class="pop-chart" id="pop-long"></div>
@@ -333,8 +342,8 @@
 <h2>How it's built</h2>
 <ul>
   <li>
-    <strong>Hero numbers</strong> are a CSS grid whose 1px gap shows the border color
-    through, so the tiles get hairline dividers without a single border rule.
+    <strong>Hero numbers</strong> are a wrapping flex row whose 1px gap shows the border
+    color through, so the tiles get hairline dividers without a single border rule.
   </li>
   <li>
     <strong>The stacked area</strong> is computed in the browser: each region's band is a

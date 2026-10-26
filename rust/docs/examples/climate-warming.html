@@ -5,7 +5,6 @@
 />
 <meta name="order" content="2" />
 <meta name="icon" content="activity" />
-<meta name="toc" content="false" />
 <style>
   .cw {
     --cw-cold: #1c5cab;
@@ -105,8 +104,13 @@
     justify-content: space-between;
     margin-bottom: 0.75rem;
   }
-  .cw-panel > header strong {
+  .cw-panel > header h3 {
+    margin: 0;
     font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: 0;
+    color: var(--htmlpress-text);
   }
   .cw-panel > header span {
     font-size: 0.8125rem;
@@ -200,6 +204,7 @@
 </p>
 
 <div class="cw">
+  <h2>Warming stripes</h2>
   <div
     class="cw-stripes"
     id="cw-stripes"
@@ -214,6 +219,7 @@
     1980s, they only go one way.
   </p>
 
+  <h2>Three numbers</h2>
   <div class="cw-kpis">
     <div>
       <b>+1.53 °C</b>
@@ -238,8 +244,8 @@
 
   <section class="cw-panel" aria-labelledby="cw-record-title">
     <header>
-      <strong id="cw-record-title">Global temperature anomaly, °C</strong>
-      <span>relative to 1861–1890 · hover for values</span>
+      <h3 id="cw-record-title">Temperature anomaly</h3>
+      <span>°C, relative to 1861–1890 · hover for values</span>
     </header>
     <ul class="cw-legend">
       <li><i></i>Annual</li>
@@ -262,8 +268,8 @@
 
   <section class="cw-panel" aria-labelledby="cw-co2-title">
     <header>
-      <strong id="cw-co2-title">Atmospheric CO₂ over 800,000 years, ppm</strong>
-      <span>ice cores, then direct measurement</span>
+      <h3 id="cw-co2-title">CO₂ over 800,000 years</h3>
+      <span>ppm · ice cores, then direct measurement</span>
     </header>
     <div class="cw-chart" id="cw-co2"></div>
   </section>

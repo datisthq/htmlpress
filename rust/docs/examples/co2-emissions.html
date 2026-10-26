@@ -5,7 +5,6 @@
 />
 <meta name="order" content="4" />
 <meta name="icon" content="cloud" />
-<meta name="toc" content="false" />
 <style>
   .co2 {
     --co2-china: #2a78d6;
@@ -59,9 +58,17 @@
     justify-content: space-between;
     margin-bottom: 1rem;
   }
-  .co2-panel > header strong {
-    display: block;
+  .co2 h2 {
+    margin: 0;
     font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: 0;
+    color: var(--htmlpress-text);
+    scroll-margin-top: 5rem;
+  }
+  .co2 > h2 {
+    margin-top: 1.75rem;
   }
   .co2-panel > header span {
     font-size: 0.8125rem;
@@ -229,7 +236,7 @@
     gap: 0.75rem;
   }
   .co2-caption {
-    margin: 1.5rem 0 0.6rem;
+    margin: 0.25rem 0 0.75rem;
     font-size: 0.8125rem;
     color: var(--co2-soft);
   }
@@ -281,7 +288,7 @@
   <section class="co2-panel" aria-labelledby="co2-tree-title">
     <header>
       <div>
-        <strong id="co2-tree-title">Share of world CO₂ emissions, 2024</strong>
+        <h2 id="co2-tree-title">Share of world emissions, 2024</h2>
         <span>fossil fuels and industry · tile area is the share · hover a tile</span>
       </div>
     </header>
@@ -291,7 +298,7 @@
   <section class="co2-panel" aria-labelledby="co2-bars-title">
     <header>
       <div>
-        <strong id="co2-bars-title">The 16 largest emitters, ranked</strong>
+        <h2 id="co2-bars-title">Total vs per person</h2>
         <span id="co2-bars-unit">billion tonnes of CO₂ a year</span>
       </div>
       <div class="co2-toggle" role="group" aria-label="Measure">
@@ -309,7 +316,8 @@
     </ul>
   </section>
 
-  <p class="co2-caption">Rank among the 16, total → per person:</p>
+  <h2 id="co2-flip-title">How the ranking flips</h2>
+  <p class="co2-caption">Rank among the 16 largest emitters, total → per person:</p>
   <div class="co2-flip">
     <div style="--co2-fill: var(--co2-china)">
       <strong>China</strong>

@@ -5,7 +5,6 @@
 />
 <meta name="order" content="3" />
 <meta name="icon" content="zap" />
-<meta name="toc" content="false" />
 <style>
   .nrg {
     --nrg-coal: #6250d6;
@@ -55,9 +54,14 @@
     font-size: 0.8125rem;
     color: var(--nrg-soft);
   }
-  .nrg-bar strong {
+  .nrg :is(h2, h3) {
+    margin: 0;
     font-size: 0.9375rem;
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: 0;
     color: var(--nrg-ink);
+    scroll-margin-top: 5rem;
   }
   .nrg-live {
     display: inline-flex;
@@ -151,9 +155,6 @@
     align-items: baseline;
     justify-content: space-between;
     margin-bottom: 0.6rem;
-  }
-  .nrg-card > header strong {
-    font-size: 0.9375rem;
   }
   .nrg-card > header span {
     font-size: 0.75rem;
@@ -272,7 +273,7 @@
 
 <div class="nrg">
   <div class="nrg-bar">
-    <strong>Global power generation · share by source</strong>
+    <h2 id="nrg-glance">Generation at a glance</h2>
     <span class="nrg-live">Ember yearly data · 2000–2025</span>
   </div>
 
@@ -304,7 +305,7 @@
 
     <section class="nrg-card nrg-wide" aria-labelledby="nrg-mix-title">
       <header>
-        <strong id="nrg-mix-title">Share of electricity by source</strong>
+        <h2 id="nrg-mix-title">Share by source, 2000–2025</h2>
         <span>% of generation · hover a year</span>
       </header>
       <ul class="nrg-legend" id="nrg-legend"></ul>
@@ -313,7 +314,7 @@
 
     <section class="nrg-card nrg-side" aria-labelledby="nrg-donut-title">
       <header>
-        <strong id="nrg-donut-title">The 2025 mix</strong>
+        <h2 id="nrg-donut-title">The 2025 mix</h2>
         <span>hover a slice</span>
       </header>
       <div class="nrg-chart" id="nrg-donut"></div>
@@ -324,7 +325,7 @@
 
     <section class="nrg-card nrg-table" aria-labelledby="nrg-table-title">
       <header>
-        <strong id="nrg-table-title">By source</strong>
+        <h2 id="nrg-table-title">Change by source</h2>
         <span>% of generation · click a header to sort</span>
       </header>
       <htmlpress-table>

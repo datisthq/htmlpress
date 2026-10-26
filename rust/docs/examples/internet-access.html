@@ -5,7 +5,6 @@
 />
 <meta name="order" content="6" />
 <meta name="icon" content="globe" />
-<meta name="toc" content="false" />
 <style>
   .net {
     --net-then: #184f95;
@@ -84,13 +83,17 @@
     line-height: 1.35;
     color: var(--net-soft);
   }
-  .net-sheet h3 {
+  .net-sheet h2 {
     margin: 1.75rem 0 0.25rem;
     font-size: 0.8125rem;
+    font-weight: 600;
+    line-height: 1.5;
+    color: var(--net-ink);
+    scroll-margin-top: 5rem;
     text-transform: uppercase;
     letter-spacing: 0.06em;
   }
-  .net-sheet h3 + p {
+  .net-sheet h2 + p {
     margin: 0 0 1rem;
     font-size: 0.8125rem;
     color: var(--net-soft);
@@ -286,7 +289,7 @@
       </li>
     </ul>
 
-    <h3>Then and now</h3>
+    <h2>Then and now</h2>
     <p>Each figure is a tenth of the world's people.</p>
     <div class="net-people">
       <div>
@@ -313,7 +316,7 @@
       </div>
     </div>
 
-    <h3>By region</h3>
+    <h2>By region</h2>
     <p>Each square is one percent of the region's people · hover a chart.</p>
     <ul class="net-legend">
       <li><i style="background: var(--net-then)"></i>Online in 2005</li>
@@ -322,7 +325,7 @@
     </ul>
     <ul class="net-waffles" id="net-regions"></ul>
 
-    <h3>By income group</h3>
+    <h2>By income group</h2>
     <p>World Bank income classification.</p>
     <ul class="net-waffles" id="net-incomes"></ul>
 

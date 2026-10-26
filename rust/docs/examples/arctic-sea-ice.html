@@ -5,7 +5,6 @@
 />
 <meta name="order" content="5" />
 <meta name="icon" content="compass" />
-<meta name="toc" content="false" />
 <style>
   .si {
     --si-min: #eb6834;
@@ -107,6 +106,14 @@
     padding: 1.25rem;
     border: 1px solid var(--si-grid);
     border-radius: var(--htmlpress-radius);
+  }
+  .si-figure > h3 {
+    margin: 0 0 0.75rem;
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: 0;
+    color: var(--htmlpress-text);
   }
   .si-figure figcaption {
     margin-top: 0.75rem;
@@ -275,15 +282,14 @@
     </li>
   </ol>
 
+  <h2>Figures</h2>
   <figure class="si-figure">
+    <h3 id="si-fig-trend">September extent and its trend</h3>
     <ul class="si-legend">
       <li><i style="--swatch: var(--si-min)"></i>September extent</li>
       <li>
-        <i data-line style="--swatch: var(--si-ink)"></i>Least-squares trend, −<span
-          data-si="slope-min"
-          >0.74</span
-        >
-        M km² per decade
+        <i data-line style="--swatch: var(--si-ink)"></i>
+        <span>Trend, &minus;<span data-si="slope-min">0.74</span> M km² per decade</span>
       </li>
     </ul>
     <div class="si-chart" id="si-scatter"></div>
@@ -295,6 +301,7 @@
   </figure>
 
   <figure class="si-figure">
+    <h3 id="si-fig-lowest">The ten lowest Septembers</h3>
     <ol class="si-rank" id="si-rank"></ol>
     <figcaption>
       <b>Figure 2.</b> The ten lowest September extents on record, ranked. Orange bars are
@@ -303,6 +310,7 @@
   </figure>
 
   <figure class="si-figure">
+    <h3 id="si-fig-range">Winter maximum and summer minimum</h3>
     <ul class="si-legend">
       <li><i style="--swatch: var(--si-max)"></i>March maximum</li>
       <li><i style="--swatch: var(--si-min)"></i>September minimum</li>

@@ -5,7 +5,6 @@
 />
 <meta name="order" content="10" />
 <meta name="icon" content="lightbulb" />
-<meta name="toc" content="false" />
 <style>
   .sp {
     --sp-line: #2a78d6;
@@ -174,6 +173,7 @@
   precomputed: the page carries fifty prices and does the arithmetic as you move.
 </p>
 
+<h2>Price explorer</h2>
 <div class="sp">
   <div class="sp-app">
     <div class="sp-controls">
@@ -207,22 +207,6 @@
       </p>
     </div>
   </div>
-
-  <details>
-    <summary>Data table</summary>
-    <htmlpress-table>
-      <table id="sp-table">
-        <thead>
-          <tr>
-            <th>Year</th>
-            <th>Price, $/W</th>
-            <th>Change on year</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </htmlpress-table>
-  </details>
 </div>
 
 <h2>Why a log scale</h2>
@@ -234,6 +218,23 @@
   law: module prices tend to drop by about a fifth each time the world's cumulative
   shipments double.
 </p>
+
+<h2>Data</h2>
+<details>
+  <summary>Data table</summary>
+  <htmlpress-table>
+    <table id="sp-table">
+      <thead>
+        <tr>
+          <th>Year</th>
+          <th>Price, $/W</th>
+          <th>Change on year</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </htmlpress-table>
+</details>
 
 <h2>How it's built</h2>
 <ul>

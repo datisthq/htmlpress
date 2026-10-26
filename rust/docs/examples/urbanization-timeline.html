@@ -5,7 +5,6 @@
 />
 <meta name="order" content="9" />
 <meta name="icon" content="house" />
-<meta name="toc" content="false" />
 <style>
   .urb {
     --urb-urban: #2a78d6;
@@ -132,6 +131,13 @@
     justify-content: space-between;
     margin-bottom: 0.5rem;
     font-size: 0.875rem;
+  }
+  .urb-regions header h3 {
+    margin: 0;
+    font-size: inherit;
+    font-weight: 600;
+    line-height: inherit;
+    color: var(--urb-ink);
   }
   .urb-regions header span {
     color: var(--urb-soft);
@@ -302,8 +308,9 @@
   ordered list with a pseudo-element for its spine.
 </p>
 
+<h2 id="urb-explorer-title">One hundred people</h2>
 <div class="urb">
-  <section class="urb-explorer" aria-label="Urban share explorer">
+  <section class="urb-explorer" aria-labelledby="urb-explorer-title">
     <div>
       <p class="urb-year"><output id="urb-year">2025</output><span>world</span></p>
       <p class="urb-share" aria-live="polite">
@@ -337,7 +344,7 @@
     </div>
     <div class="urb-regions">
       <header>
-        <strong id="urb-regions-title">Urban share by region</strong>
+        <h3 id="urb-regions-title">Urban share by region</h3>
         <span id="urb-regions-year">2025</span>
       </header>
       <div class="urb-chart" id="urb-regions"></div>
@@ -347,11 +354,12 @@
     </div>
   </section>
 
+  <h2>Milestones</h2>
   <ol class="urb-timeline">
     <li>
       <time>1950</time>
       <div>
-        <h3>Fewer than three in ten</h3>
+        <h3 data-toc="false">Fewer than three in ten</h3>
         <p>
           28.8% of the world lives in towns and cities. Europe and Oceania already have
           urban majorities; in Africa and Asia it is about one person in seven.
@@ -364,7 +372,7 @@
     <li>
       <time>1960</time>
       <div>
-        <h3>South America tips urban</h3>
+        <h3 data-toc="false">South America tips urban</h3>
         <p>
           51.1% of South Americans live in cities by 1960, up from 43.8% a decade earlier.
           By 2025 the share reaches 85.5%, the highest of any region.
@@ -377,7 +385,7 @@
     <li>
       <time>1960s</time>
       <div>
-        <h3>Asia stalls</h3>
+        <h3 data-toc="false">Asia stalls</h3>
         <p>
           Asia's urban share barely moves for a decade, from 22.5% in 1960 to 23.6% in
           1970, as China sends millions of urban youth to the countryside.
@@ -390,7 +398,7 @@
     <li>
       <time>1975</time>
       <div>
-        <h3>Oceania peaks</h3>
+        <h3 data-toc="false">Oceania peaks</h3>
         <p>
           Oceania's urban share tops out at 72.0% and drifts down after it, to 67.6% in
           2025: the one region where the countryside has outgrown the cities for half a
@@ -404,7 +412,7 @@
     <li data-key>
       <time>2007</time>
       <div>
-        <h3>The urban majority</h3>
+        <h3 data-toc="false">The urban majority</h3>
         <p>
           For the first time, more people live in cities than in the countryside: 50.4% of
           the world, up from 49.9% the year before.
@@ -417,7 +425,7 @@
     <li>
       <time>2017</time>
       <div>
-        <h3>Asia crosses half</h3>
+        <h3 data-toc="false">Asia crosses half</h3>
         <p>
           Home to more than half the world's people, Asia becomes majority urban, at 50.2%
           in 2017 after tripling its share since 1950.
@@ -430,7 +438,7 @@
     <li data-key>
       <time>2025</time>
       <div>
-        <h3>57.8% and climbing</h3>
+        <h3 data-toc="false">57.8% and climbing</h3>
         <p>
           Africa, at 46.4%, is the last major region with a rural majority, and its share
           rose faster than any other region's over the last five years, by 2.1 points.
@@ -442,6 +450,7 @@
     </li>
   </ol>
 
+  <h2>Data</h2>
   <details>
     <summary>Data table</summary>
     <htmlpress-table>
