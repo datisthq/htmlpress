@@ -101,7 +101,8 @@ under `--json` stdout carries only the result. Flags, defaults and output fields
 
 ## Assets
 
-`src/assets/` compiles into the binary, and every file there is an escapable asset listed in
+`src/layout.html`, `src/styles/`, `src/scripts/` and `src/components/` compile into the binary at
+the paths a project's `.htmlpress/` escapes them under, and every file there is an escapable asset listed in
 `ASSETS` (a unit test fails on one missing). `styles/` joins, in `THEME_STYLES` order, into the
 global `theme.css`; `components/<tag>.css` and `.js` are served one file each, and
 `render_page` links only those whose tag the layout, the page or a project component's

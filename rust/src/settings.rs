@@ -24,16 +24,16 @@ pub const NOT_FOUND_PAGE: &str = "404.html";
 
 /// The page a project without its own `404.html` gets; never escaped, since a project
 /// replaces it with a page of the same name.
-pub const NOT_FOUND: &str = include_str!("assets/404.html");
+pub const NOT_FOUND: &str = include_str!("404.html");
 
 /// The dev server's reload script; never escaped.
-pub const RELOAD: &str = include_str!("assets/reload.js");
+pub const RELOAD: &str = include_str!("reload.js");
 
 macro_rules! asset {
     ($path:literal) => {
         Asset {
             path: $path,
-            content: include_str!(concat!("assets/", $path)),
+            content: include_str!($path),
         }
     };
 }

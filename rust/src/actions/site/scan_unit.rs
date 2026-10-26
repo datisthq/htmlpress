@@ -142,7 +142,7 @@ fn rejects_a_page_whose_layout_is_missing() -> crate::Result<()> {
 
 #[test]
 fn registers_every_built_in_asset_file() -> crate::Result<()> {
-    let assets = Path::new(env!("CARGO_MANIFEST_DIR")).join("src/assets");
+    let assets = Path::new(env!("CARGO_MANIFEST_DIR")).join("src");
     let mut paths = vec!["layout.html".to_owned()];
     for folder in ["styles", "scripts", "components"] {
         let entries =

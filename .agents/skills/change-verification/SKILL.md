@@ -37,7 +37,7 @@ Pick the **highest** rung the diff reaches, and run everything that rung lists.
 1. **Markdown, copy, a docs page.** `vp fmt --check` on Markdown files. For `AGENTS.md`,
    `README.md`, `CONTRIBUTING.md` or a skill, add the docs guard. For a page under `rust/docs/`, run
    `pnpm build:docs`: a page htmlpress cannot read fails there.
-2. **Theme, components, layout** — anything under `rust/src/assets/`. `cargo test page::render`,
+2. **Theme, components, layout** — `rust/src/layout.html`, `404.html` or anything under `rust/src/styles/`, `scripts/` or `components/`. `cargo test page::render`,
    then **look at it**: `pnpm start` (from a worktree, `--port 0`), open the page in Claude in
    Chrome or Playwright, in light and dark and at a phone width. No test renders CSS.
 3. **Logic** — an action, model or command. `pnpm -C rust check:lint` and `cargo test` on the

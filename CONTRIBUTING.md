@@ -28,7 +28,7 @@ htmlpress/
 │   │   ├── actions/     #   asset/escape + list, config/load, package/convert, path/select, page/convert + prefix + read + render, skill/load, site/…
 │   │   ├── commands/    #   the `build`, `start`, `preview`, `clear` and `escape` commands
 │   │   ├── models/      #   Asset, Config, Page, Site, BuildOptions, Error
-│   │   ├── assets/      #   layout, styles, scripts, components, reload — compiled in
+│   │   ├── components/  #   built-in components, compiled in, like styles/ and scripts/
 │   │   ├── program.rs   #   the CLI
 │   │   └── lib.rs       #   the library façade
 │   ├── tests/           #   CLI integration tests

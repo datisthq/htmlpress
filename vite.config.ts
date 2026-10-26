@@ -8,7 +8,7 @@ export default defineConfig({
     printWidth: 90,
     arrowParens: "avoid",
     // The layout is a minijinja template, not HTML a formatter can reflow safely
-    ignorePatterns: [...ignorePatterns, "**/CHANGELOG.md", "rust/src/assets/layout.html"],
+    ignorePatterns: [...ignorePatterns, "**/CHANGELOG.md", "rust/src/layout.html"],
     // Docs code snippets may run to 100 columns, the width the docs guard allows
     overrides: [{ files: ["**/*.md"], options: { printWidth: 100 } }],
   },
