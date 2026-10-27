@@ -1,5 +1,38 @@
 # Changelog
 
+## [0.2.0](https://github.com/datisthq/htmlpress/compare/v0.1.0...v0.2.0) (2026-10-27)
+
+
+### Features
+
+* add a breadcrumbs config key and page meta to hide the folder trail ([e5fcde2](https://github.com/datisthq/htmlpress/commit/e5fcde249de5e0dd6e0ccf188a1a5634bf75040e))
+* add a keyboard shortcuts menu and move sidebar, next and previous to M, L and H ([0a434a1](https://github.com/datisthq/htmlpress/commit/0a434a19ea585700f331bd194a573b17a50828a6))
+* add N and P shortcuts for the next and previous page ([1ebc263](https://github.com/datisthq/htmlpress/commit/1ebc263a82a6772fe28a637d25e097efeef76d7f))
+* close the audit's Livemark gaps ([2613d0d](https://github.com/datisthq/htmlpress/commit/2613d0d804cd3e581794f67b3a6262599ad86094))
+* list every shortcut in the header menu, disabling the ones a page lacks ([04bf18a](https://github.com/datisthq/htmlpress/commit/04bf18a2ba3ffbf6c4facd48bab2d1b71927b846))
+* move back to top to U and add D to scroll to the bottom ([0f9019b](https://github.com/datisthq/htmlpress/commit/0f9019b3ebfe6de8e34309fc933651e791b9a427))
+* open the theme, language and section pickers in a bottom sheet on a phone ([45994c5](https://github.com/datisthq/htmlpress/commit/45994c5f5398a4b66345c2e1f4699057ab4f0ded))
+* serve every page at its own folder URL, like Livemark ([4b37005](https://github.com/datisthq/htmlpress/commit/4b37005b59c94e3142b2d71c0861842f107043de))
+* title the language and theme dropdowns ([6fd5161](https://github.com/datisthq/htmlpress/commit/6fd51616630759025e1a159c19a0b69c66bc4e84))
+
+
+### Bug Fixes
+
+* align the header search icon with the aside's left edge, as livemark does ([7e2beae](https://github.com/datisthq/htmlpress/commit/7e2beae79219d730ad04de0616b1ba366e58c8b4))
+* clear the cyan tap highlight Android paints over tapped links and buttons ([565898e](https://github.com/datisthq/htmlpress/commit/565898e20803f80ef39ec956f2d7dfe908cded80))
+* **deps:** bump fireargs to 0.3.1 ([f209b20](https://github.com/datisthq/htmlpress/commit/f209b20f6375bf40d40e7e3474a38330900250f6))
+* hoist fragment head tags, place folders by their index order, print start --json ([e7a66f4](https://github.com/datisthq/htmlpress/commit/e7a66f4d5aecc67984881cc9bb6c9019768fa3cb))
+* lead the brand to the home of the page's language ([97bcb9d](https://github.com/datisthq/htmlpress/commit/97bcb9d883d8acf7ca9df53602b6f413caa31c5e))
+* let content take the full width when the sidebar is collapsed ([63b46c9](https://github.com/datisthq/htmlpress/commit/63b46c9977fb8548a9aa9236131d40fd6cd4d34e))
+* narrow the header search field ([9fc6e59](https://github.com/datisthq/htmlpress/commit/9fc6e59dcb266f717c885f16baa7c4f1733b54c3))
+* narrow the header search field back to 10rem ([139819d](https://github.com/datisthq/htmlpress/commit/139819d9d734d0deb7b13e49c6fa47efc3035507))
+* narrow the header search field further ([eba4473](https://github.com/datisthq/htmlpress/commit/eba447326d27f414cacf46d6bfc016aead9f797e))
+* narrow the header search field to 10rem ([4d154ad](https://github.com/datisthq/htmlpress/commit/4d154ad5722588a0b08e46cd38e92182fdd09f30))
+* narrow the header search field to 8rem ([358cc11](https://github.com/datisthq/htmlpress/commit/358cc118c906f13b94b70969bed63b26bcf7eeaf))
+* scroll a wide table inside the content column instead of spilling under the table of contents ([70b49ca](https://github.com/datisthq/htmlpress/commit/70b49cabc20b201bec7c147534f506155245b059))
+* widen the header search field back to 10rem ([a1fc336](https://github.com/datisthq/htmlpress/commit/a1fc3368210a1848a09d333a63480a49c707257f))
+* widen the header search field to 12rem ([544b87d](https://github.com/datisthq/htmlpress/commit/544b87dfd42a2a9c7dbc142c5469c1031c3e6df5))
+
 ## 0.1.0 (2026-10-26)
 
 
