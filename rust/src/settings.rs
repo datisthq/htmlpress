@@ -96,6 +96,7 @@ pub const ASSETS: &[Asset] = &[
     asset!("components/nav/nav.js"),
     asset!("components/page/page.css"),
     asset!("components/pager/pager.css"),
+    asset!("components/pager/pager.js"),
     asset!("components/sheet/sheet.css"),
     asset!("components/sheet/sheet.js"),
     asset!("components/shell/shell.css"),
