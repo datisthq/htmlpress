@@ -62,14 +62,14 @@
           <img
             src="/screenshots/docs.webp"
             data-scheme="light"
-            alt="An htmlpress docs page with the navigation, a code block and the table of contents"
+            alt="An htmlpress docs page with diff lines in a highlighted code block, the navigation and the table of contents"
             width="1440"
             height="900"
           />
           <img
             src="/screenshots/docs-dark.webp"
             data-scheme="dark"
-            alt="An htmlpress docs page with the navigation, a code block and the table of contents"
+            alt="An htmlpress docs page with diff lines in a highlighted code block, the navigation and the table of contents"
             width="1440"
             height="900"
             loading="lazy"
@@ -86,12 +86,51 @@
             <path d="M16 17H8" />
           </svg>
           <figcaption>
-            <strong>Written in plain HTML</strong>rust/docs/authoring/frontmatter.html
+            <strong>Written in plain HTML</strong>rust/docs/authoring/code-blocks.html
           </figcaption>
           <htmlpress-landing-code syntax="html">
-            <pre><code class="language-html">&lt;title&gt;Pages&lt;/title&gt;
-&lt;meta name="order" content="2" /&gt;
-&lt;h1&gt;Pages&lt;/h1&gt;</code></pre>
+            <pre><code class="language-html">&lt;pre&gt;&lt;code class="language-js"
+  data-remove="1" data-add="2"&gt;
+…&lt;/code&gt;&lt;/pre&gt;</code></pre>
+          </htmlpress-landing-code>
+        </figure>
+      </section>
+      <section title="Search">
+        <div>
+          <img
+            src="/screenshots/search.webp"
+            data-scheme="light"
+            alt="The htmlpress search dialog with matches for deploy across the docs"
+            width="1440"
+            height="900"
+            loading="lazy"
+          />
+          <img
+            src="/screenshots/search-dark.webp"
+            data-scheme="dark"
+            alt="The htmlpress search dialog with matches for deploy across the docs"
+            width="1440"
+            height="900"
+            loading="lazy"
+          />
+        </div>
+        <figure>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"
+            />
+            <path d="M14 2v5a1 1 0 0 0 1 1h5" />
+            <path d="M10 9H8" />
+            <path d="M16 13H8" />
+            <path d="M16 17H8" />
+          </svg>
+          <figcaption>
+            <strong>Indexed at build time</strong>rust/docs/deployment/index.html
+          </figcaption>
+          <htmlpress-landing-code syntax="html">
+            <pre><code class="language-html">&lt;h1&gt;Deployment&lt;/h1&gt;
+&lt;p&gt;&lt;code&gt;htmlpress build&lt;/code&gt;
+  produces a fully static site…&lt;/p&gt;</code></pre>
           </htmlpress-landing-code>
         </figure>
       </section>
@@ -100,7 +139,7 @@
           <img
             src="/screenshots/components.webp"
             data-scheme="light"
-            alt="The htmlpress components page with callouts in four colors"
+            alt="The htmlpress rich elements page with info, success, warning and danger callouts"
             width="1440"
             height="900"
             loading="lazy"
@@ -108,7 +147,7 @@
           <img
             src="/screenshots/components-dark.webp"
             data-scheme="dark"
-            alt="The htmlpress components page with callouts in four colors"
+            alt="The htmlpress rich elements page with info, success, warning and danger callouts"
             width="1440"
             height="900"
             loading="lazy"
@@ -134,20 +173,20 @@
           </htmlpress-landing-code>
         </figure>
       </section>
-      <section title="Escaping">
+      <section title="Examples">
         <div>
           <img
-            src="/screenshots/escaping.webp"
+            src="/screenshots/examples.webp"
             data-scheme="light"
-            alt="The htmlpress escaping page with a file tree of the .htmlpress folder"
+            alt="An electricity dashboard built as one htmlpress page, with KPI tiles, a stacked column chart and a donut"
             width="1440"
             height="900"
             loading="lazy"
           />
           <img
-            src="/screenshots/escaping-dark.webp"
+            src="/screenshots/examples-dark.webp"
             data-scheme="dark"
-            alt="The htmlpress escaping page with a file tree of the .htmlpress folder"
+            alt="An electricity dashboard built as one htmlpress page, with KPI tiles, a stacked column chart and a donut"
             width="1440"
             height="900"
             loading="lazy"
@@ -164,12 +203,13 @@
             <path d="M16 17H8" />
           </svg>
           <figcaption>
-            <strong>Written in plain HTML</strong>.htmlpress/layouts/landing.html
+            <strong>One page, its own look</strong
+            >rust/docs/examples/energy-dashboard.html
           </figcaption>
           <htmlpress-landing-code syntax="html">
-            <pre><code class="language-html">&lt;htmlpress-header role="banner"&gt;
-  &lt;htmlpress-brand&gt;&lt;/htmlpress-brand&gt;
-&lt;/htmlpress-header&gt;</code></pre>
+            <pre><code class="language-html">&lt;title&gt;Electricity dashboard&lt;/title&gt;
+&lt;style&gt;.nrg { … }&lt;/style&gt;
+&lt;div class="nrg"&gt;…&lt;/div&gt;</code></pre>
           </htmlpress-landing-code>
         </figure>
       </section>
@@ -194,27 +234,9 @@
         </div>
         <div>
           <img
-            src="/screenshots/mobile-page.webp"
-            data-scheme="light"
-            alt="An htmlpress docs page on a phone"
-            width="780"
-            height="1688"
-            loading="lazy"
-          />
-          <img
-            src="/screenshots/mobile-page-dark.webp"
-            data-scheme="dark"
-            alt="An htmlpress docs page on a phone"
-            width="780"
-            height="1688"
-            loading="lazy"
-          />
-        </div>
-        <div>
-          <img
             src="/screenshots/mobile-steps.webp"
             data-scheme="light"
-            alt="Steps and a badge on a phone"
+            alt="Numbered steps and a code block on a phone"
             width="780"
             height="1688"
             loading="lazy"
@@ -222,7 +244,25 @@
           <img
             src="/screenshots/mobile-steps-dark.webp"
             data-scheme="dark"
-            alt="Steps and a badge on a phone"
+            alt="Numbered steps and a code block on a phone"
+            width="780"
+            height="1688"
+            loading="lazy"
+          />
+        </div>
+        <div>
+          <img
+            src="/screenshots/mobile-sheet.webp"
+            data-scheme="light"
+            alt="The language picker open as a bottom sheet over a dashboard on a phone"
+            width="780"
+            height="1688"
+            loading="lazy"
+          />
+          <img
+            src="/screenshots/mobile-sheet-dark.webp"
+            data-scheme="dark"
+            alt="The language picker open as a bottom sheet over a dashboard on a phone"
             width="780"
             height="1688"
             loading="lazy"
@@ -368,22 +408,19 @@ htmlpress.yaml</code></pre>
           </svg>
           <h3>Components where HTML has none</h3>
           <p>
-            Callouts, tabs, steps, cards, file trees, badges, sortable tables and zoomable
-            images, as light-DOM custom elements.
+            Callouts, tabs, steps, cards, file trees, badges, icons, sortable tables,
+            Mermaid diagrams and zoomable images, as light-DOM custom elements.
           </p></htmlpress-card
         >
         <htmlpress-card
           ><svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M13 5h8" />
-            <path d="M13 12h8" />
-            <path d="M13 19h8" />
-            <path d="m3 17 2 2 4-4" />
-            <path d="m3 7 2 2 4-4" />
+            <polyline points="16 18 22 12 16 6" />
+            <polyline points="8 6 2 12 8 18" />
           </svg>
-          <h3>Readable before the script</h3>
+          <h3>Highlighted code</h3>
           <p>
-            Every component leaves plain HTML in place, so a page reads well before any
-            script loads, and to any agent that fetches it.
+            Highlighted at build time in over 220 languages, with titles, tabs, diff,
+            focus and line marks, in a light and a dark theme.
           </p></htmlpress-card
         >
         <htmlpress-card
@@ -400,12 +437,35 @@ htmlpress.yaml</code></pre>
         >
         <htmlpress-card
           ><svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m21 21-4.34-4.34" />
+            <circle cx="11" cy="11" r="8" />
+          </svg>
+          <h3>Search built in</h3>
+          <p>
+            A full-text index written at build time and opened with <kbd>S</kbd>; the page
+            a result opens highlights the match.
+          </p></htmlpress-card
+        >
+        <htmlpress-card
+          ><svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 11a9 9 0 0 1 9 9" />
+            <path d="M4 4a16 16 0 0 1 16 16" />
+            <circle cx="5" cy="19" r="1" />
+          </svg>
+          <h3>Docs, blog and changelog</h3>
+          <p>
+            Split a site into sections with their own tab and sidebar: dated posts with an
+            RSS feed, or a page per release from a <code>CHANGELOG.md</code>.
+          </p></htmlpress-card
+        >
+        <htmlpress-card
+          ><svg viewBox="0 0 24 24" aria-hidden="true">
             <rect width="14" height="20" x="5" y="2" rx="2" ry="2" />
             <path d="M12 18h.01" />
           </svg>
           <h3>At home on a phone</h3>
           <p>
-            The navigation turns into a drawer, the table of contents steps aside, and
+            The navigation turns into a drawer, the pickers into bottom sheets, and
             nothing scrolls sideways.
           </p></htmlpress-card
         >
@@ -419,6 +479,21 @@ htmlpress.yaml</code></pre>
           <p>
             A dark theme from the system or the toggle, and every color, font and width a
             <code>--htmlpress-*</code> token.
+          </p></htmlpress-card
+        >
+        <htmlpress-card
+          ><svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m5 8 6 6" />
+            <path d="m4 14 6-6 2-3" />
+            <path d="M2 5h12" />
+            <path d="M7 2h1" />
+            <path d="m22 22-5-10-5 10" />
+            <path d="M14 18h6" />
+          </svg>
+          <h3>Every language</h3>
+          <p>
+            Translate a page beside its source as <code>page.es.html</code>: each language
+            gets its own prefix, navigation, search and UI strings.
           </p></htmlpress-card
         >
         <htmlpress-card

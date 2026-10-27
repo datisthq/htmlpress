@@ -62,14 +62,14 @@
           <img
             src="/screenshots/docs.webp"
             data-scheme="light"
-            alt="Una página de documentación de htmlpress con la navegación, un bloque de código y la tabla de contenidos"
+            alt="Una página de documentación de htmlpress con líneas de diff en un bloque de código resaltado, la navegación y la tabla de contenidos"
             width="1440"
             height="900"
           />
           <img
             src="/screenshots/docs-dark.webp"
             data-scheme="dark"
-            alt="Una página de documentación de htmlpress con la navegación, un bloque de código y la tabla de contenidos"
+            alt="Una página de documentación de htmlpress con líneas de diff en un bloque de código resaltado, la navegación y la tabla de contenidos"
             width="1440"
             height="900"
             loading="lazy"
@@ -86,12 +86,51 @@
             <path d="M16 17H8" />
           </svg>
           <figcaption>
-            <strong>Escrito en HTML sencillo</strong>rust/docs/authoring/frontmatter.html
+            <strong>Escrito en HTML sencillo</strong>rust/docs/authoring/code-blocks.html
           </figcaption>
           <htmlpress-landing-code syntax="html">
-            <pre><code class="language-html">&lt;title&gt;Pages&lt;/title&gt;
-&lt;meta name="order" content="2" /&gt;
-&lt;h1&gt;Pages&lt;/h1&gt;</code></pre>
+            <pre><code class="language-html">&lt;pre&gt;&lt;code class="language-js"
+  data-remove="1" data-add="2"&gt;
+…&lt;/code&gt;&lt;/pre&gt;</code></pre>
+          </htmlpress-landing-code>
+        </figure>
+      </section>
+      <section title="Búsqueda">
+        <div>
+          <img
+            src="/screenshots/search.webp"
+            data-scheme="light"
+            alt="El buscador de htmlpress con resultados para deploy en toda la documentación"
+            width="1440"
+            height="900"
+            loading="lazy"
+          />
+          <img
+            src="/screenshots/search-dark.webp"
+            data-scheme="dark"
+            alt="El buscador de htmlpress con resultados para deploy en toda la documentación"
+            width="1440"
+            height="900"
+            loading="lazy"
+          />
+        </div>
+        <figure>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"
+            />
+            <path d="M14 2v5a1 1 0 0 0 1 1h5" />
+            <path d="M10 9H8" />
+            <path d="M16 13H8" />
+            <path d="M16 17H8" />
+          </svg>
+          <figcaption>
+            <strong>Indexado al construir</strong>rust/docs/deployment/index.html
+          </figcaption>
+          <htmlpress-landing-code syntax="html">
+            <pre><code class="language-html">&lt;h1&gt;Deployment&lt;/h1&gt;
+&lt;p&gt;&lt;code&gt;htmlpress build&lt;/code&gt;
+  produces a fully static site…&lt;/p&gt;</code></pre>
           </htmlpress-landing-code>
         </figure>
       </section>
@@ -100,7 +139,7 @@
           <img
             src="/screenshots/components.webp"
             data-scheme="light"
-            alt="La página de componentes de htmlpress con avisos en cuatro colores"
+            alt="La página de elementos enriquecidos de htmlpress con avisos de información, éxito, advertencia y peligro"
             width="1440"
             height="900"
             loading="lazy"
@@ -108,7 +147,7 @@
           <img
             src="/screenshots/components-dark.webp"
             data-scheme="dark"
-            alt="La página de componentes de htmlpress con avisos en cuatro colores"
+            alt="La página de elementos enriquecidos de htmlpress con avisos de información, éxito, advertencia y peligro"
             width="1440"
             height="900"
             loading="lazy"
@@ -135,20 +174,20 @@
           </htmlpress-landing-code>
         </figure>
       </section>
-      <section title="Escape">
+      <section title="Ejemplos">
         <div>
           <img
-            src="/screenshots/escaping.webp"
+            src="/screenshots/examples.webp"
             data-scheme="light"
-            alt="La página de escape de htmlpress con un árbol de archivos de la carpeta .htmlpress"
+            alt="Un panel de electricidad hecho como una sola página de htmlpress, con indicadores, un gráfico de columnas apiladas y un anillo"
             width="1440"
             height="900"
             loading="lazy"
           />
           <img
-            src="/screenshots/escaping-dark.webp"
+            src="/screenshots/examples-dark.webp"
             data-scheme="dark"
-            alt="La página de escape de htmlpress con un árbol de archivos de la carpeta .htmlpress"
+            alt="Un panel de electricidad hecho como una sola página de htmlpress, con indicadores, un gráfico de columnas apiladas y un anillo"
             width="1440"
             height="900"
             loading="lazy"
@@ -165,12 +204,13 @@
             <path d="M16 17H8" />
           </svg>
           <figcaption>
-            <strong>Escrito en HTML sencillo</strong>.htmlpress/layouts/landing.html
+            <strong>Una página, su propio estilo</strong
+            >rust/docs/examples/energy-dashboard.html
           </figcaption>
           <htmlpress-landing-code syntax="html">
-            <pre><code class="language-html">&lt;htmlpress-header role="banner"&gt;
-  &lt;htmlpress-brand&gt;&lt;/htmlpress-brand&gt;
-&lt;/htmlpress-header&gt;</code></pre>
+            <pre><code class="language-html">&lt;title&gt;Electricity dashboard&lt;/title&gt;
+&lt;style&gt;.nrg { … }&lt;/style&gt;
+&lt;div class="nrg"&gt;…&lt;/div&gt;</code></pre>
           </htmlpress-landing-code>
         </figure>
       </section>
@@ -195,27 +235,9 @@
         </div>
         <div>
           <img
-            src="/screenshots/mobile-page.webp"
-            data-scheme="light"
-            alt="Una página de documentación de htmlpress en un teléfono"
-            width="780"
-            height="1688"
-            loading="lazy"
-          />
-          <img
-            src="/screenshots/mobile-page-dark.webp"
-            data-scheme="dark"
-            alt="Una página de documentación de htmlpress en un teléfono"
-            width="780"
-            height="1688"
-            loading="lazy"
-          />
-        </div>
-        <div>
-          <img
             src="/screenshots/mobile-steps.webp"
             data-scheme="light"
-            alt="Pasos y una insignia en un teléfono"
+            alt="Pasos numerados y un bloque de código en un teléfono"
             width="780"
             height="1688"
             loading="lazy"
@@ -223,7 +245,25 @@
           <img
             src="/screenshots/mobile-steps-dark.webp"
             data-scheme="dark"
-            alt="Pasos y una insignia en un teléfono"
+            alt="Pasos numerados y un bloque de código en un teléfono"
+            width="780"
+            height="1688"
+            loading="lazy"
+          />
+        </div>
+        <div>
+          <img
+            src="/screenshots/mobile-sheet.webp"
+            data-scheme="light"
+            alt="El selector de idioma abierto como hoja inferior sobre un panel en un teléfono"
+            width="780"
+            height="1688"
+            loading="lazy"
+          />
+          <img
+            src="/screenshots/mobile-sheet-dark.webp"
+            data-scheme="dark"
+            alt="El selector de idioma abierto como hoja inferior sobre un panel en un teléfono"
             width="780"
             height="1688"
             loading="lazy"
@@ -372,22 +412,20 @@ htmlpress.yaml</code></pre>
           </svg>
           <h3>Componentes donde HTML no los tiene</h3>
           <p>
-            Avisos, pestañas, pasos, tarjetas, árboles de archivos, insignias, tablas
-            ordenables e imágenes ampliables, como elementos personalizados en light DOM.
+            Avisos, pestañas, pasos, tarjetas, árboles de archivos, insignias, iconos,
+            tablas ordenables, diagramas Mermaid e imágenes ampliables, como elementos
+            personalizados en light DOM.
           </p></htmlpress-card
         >
         <htmlpress-card
           ><svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M13 5h8" />
-            <path d="M13 12h8" />
-            <path d="M13 19h8" />
-            <path d="m3 17 2 2 4-4" />
-            <path d="m3 7 2 2 4-4" />
+            <polyline points="16 18 22 12 16 6" />
+            <polyline points="8 6 2 12 8 18" />
           </svg>
-          <h3>Legible antes del script</h3>
+          <h3>Código resaltado</h3>
           <p>
-            Cada componente deja HTML sencillo en su sitio, así que una página se lee bien
-            antes de que cargue ningún script, y para cualquier agente que la descargue.
+            Resaltado al construir en más de 220 lenguajes, con títulos, pestañas, diff,
+            foco y marcas de línea, en un tema claro y otro oscuro.
           </p></htmlpress-card
         >
         <htmlpress-card
@@ -404,13 +442,37 @@ htmlpress.yaml</code></pre>
         >
         <htmlpress-card
           ><svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m21 21-4.34-4.34" />
+            <circle cx="11" cy="11" r="8" />
+          </svg>
+          <h3>Búsqueda incluida</h3>
+          <p>
+            Un índice de texto completo escrito al construir y abierto con <kbd>S</kbd>;
+            la página que abre un resultado resalta la coincidencia.
+          </p></htmlpress-card
+        >
+        <htmlpress-card
+          ><svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 11a9 9 0 0 1 9 9" />
+            <path d="M4 4a16 16 0 0 1 16 16" />
+            <circle cx="5" cy="19" r="1" />
+          </svg>
+          <h3>Documentación, blog y registro de cambios</h3>
+          <p>
+            Divide un sitio en secciones con su propia pestaña y barra lateral: entradas
+            fechadas con un feed RSS, o una página por versión desde un
+            <code>CHANGELOG.md</code>.
+          </p></htmlpress-card
+        >
+        <htmlpress-card
+          ><svg viewBox="0 0 24 24" aria-hidden="true">
             <rect width="14" height="20" x="5" y="2" rx="2" ry="2" />
             <path d="M12 18h.01" />
           </svg>
           <h3>Cómoda en un teléfono</h3>
           <p>
-            La navegación se convierte en un panel lateral, la tabla de contenidos se
-            aparta y nada se desplaza en horizontal.
+            La navegación se convierte en un panel lateral, los selectores en hojas
+            inferiores y nada se desplaza en horizontal.
           </p></htmlpress-card
         >
         <htmlpress-card
@@ -423,6 +485,21 @@ htmlpress.yaml</code></pre>
           <p>
             Un tema oscuro según el sistema o el interruptor, y cada color, fuente y ancho
             es un token <code>--htmlpress-*</code>.
+          </p></htmlpress-card
+        >
+        <htmlpress-card
+          ><svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m5 8 6 6" />
+            <path d="m4 14 6-6 2-3" />
+            <path d="M2 5h12" />
+            <path d="M7 2h1" />
+            <path d="m22 22-5-10-5 10" />
+            <path d="M14 18h6" />
+          </svg>
+          <h3>En cada idioma</h3>
+          <p>
+            Traduce una página junto a su original como <code>page.es.html</code>: cada
+            idioma tiene su prefijo, navegación, búsqueda y textos de interfaz.
           </p></htmlpress-card
         >
         <htmlpress-card
