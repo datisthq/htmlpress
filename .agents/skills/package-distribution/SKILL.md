@@ -42,7 +42,8 @@ reads them from the `htmlpress.data` folder beside `pyproject.toml` (its `data` 
 workflow's Stage Skills step both run it, and a wheel built without it ships no skills. CI builds one wheel per target
 with `PyO3/maturin-action`; no sdist is published, since the crate sits outside `python/`. The
 static musl wheels are retagged `manylinux_2_17` as well (Tag Manylinux), or pip on a glibc
-Linux finds no wheel at all.
+Linux finds no wheel at all. maturin builds those wheels in Docker as root, so the step
+chowns `python/build` first; without it `wheel tags --remove` fails with a PermissionError.
 Check locally: `pnpm -C python build`, then `uvx --from python/build/<wheel> htmlpress --version`.
 
 ## crates.io: `htmlpress`
@@ -70,6 +71,11 @@ and `crates` jobs. Adding a platform means four edits in one commit: a `PLATFORM
 row with the same key and target, the platform table in `rust/docs/introduction.html` and
 the `PLATFORMS` list in `rust/docs/install.sh`. The pack
 script refuses to run while any platform's binary is missing.
+
+A run that failed after release-please tagged cannot be fixed by a re-run: it reuses the old
+workflow file and `release_created` stays false on later pushes. Delete the GitHub release and
+tag, relabel the merged Release PR `autorelease: pending`, then push the fix to `main`;
+release-please re-creates the release and the fixed workflow publishes it.
 
 ## Versions
 

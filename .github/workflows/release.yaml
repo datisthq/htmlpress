@@ -111,6 +111,7 @@ jobs:
         shell: bash
         run: |
           target=${{ matrix.target }}
+          sudo chown -R "$(id -u):$(id -g)" python/build
           pipx run wheel tags --platform-tag "+manylinux_2_17_${target%%-*}" --remove python/build/*.whl
       - name: Upload Binary
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
