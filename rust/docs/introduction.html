@@ -78,6 +78,16 @@
 
     <h3>Install</h3>
     <htmlpress-tabs sync="channel">
+      <section title="Script">
+        <pre><code class="language-sh">curl -fsSL https://htmlpress.dev/install.sh | sh</code></pre>
+        <p>
+          Downloads the binary for your platform from the
+          <a href="https://github.com/datisthq/htmlpress/releases">GitHub releases</a>,
+          checks its SHA-256 and puts it in <code>~/.local/bin</code>. Set
+          <code>HTMLPRESS_VERSION</code> to pin a version and
+          <code>HTMLPRESS_INSTALL_DIR</code> to install elsewhere.
+        </p>
+      </section>
       <section title="npm">
         <pre><code>npm install --global gethtmlpress
 # or run it without installing

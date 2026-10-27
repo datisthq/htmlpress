@@ -80,6 +80,15 @@
 
     <h3>安装</h3>
     <htmlpress-tabs sync="channel">
+      <section title="Script">
+        <pre><code class="language-sh">curl -fsSL https://htmlpress.dev/install.sh | sh</code></pre>
+        <p>
+          从 <a href="https://github.com/datisthq/htmlpress/releases">GitHub releases</a>
+          下载适用于你所在平台的二进制文件，校验其 SHA-256 后放入
+          <code>~/.local/bin</code>。设置 <code>HTMLPRESS_VERSION</code> 可固定版本，设置
+          <code>HTMLPRESS_INSTALL_DIR</code> 可安装到其他目录。
+        </p>
+      </section>
       <section title="npm">
         <pre><code>npm install --global gethtmlpress
 # or run it without installing

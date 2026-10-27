@@ -4,11 +4,12 @@ Turn a folder of HTML pages into a site: one layout, one theme, a navigation and
 live-reloading dev server — made for coding agents, which write plain semantic HTML better
 than any templating language.
 
-| Channel   | Package                                                      | Install                             |
-| --------- | ------------------------------------------------------------ | ----------------------------------- |
-| npm       | [`gethtmlpress`](https://www.npmjs.com/package/gethtmlpress) | `npm install --global gethtmlpress` |
-| PyPI      | [`htmlpress`](https://pypi.org/project/htmlpress/)           | `pip install htmlpress`             |
-| crates.io | [`htmlpress`](https://crates.io/crates/htmlpress)            | `cargo install htmlpress`           |
+| Channel   | Package                                                           | Install                                             |
+| --------- | ----------------------------------------------------------------- | --------------------------------------------------- |
+| Script    | [GitHub releases](https://github.com/datisthq/htmlpress/releases) | `curl -fsSL https://htmlpress.dev/install.sh \| sh` |
+| npm       | [`gethtmlpress`](https://www.npmjs.com/package/gethtmlpress)      | `npm install --global gethtmlpress`                 |
+| PyPI      | [`htmlpress`](https://pypi.org/project/htmlpress/)                | `pip install htmlpress`                             |
+| crates.io | [`htmlpress`](https://crates.io/crates/htmlpress)                 | `cargo install htmlpress`                           |
 
 Every channel ships the same Rust binary at the same version. The docs live at
 [htmlpress.dev](https://htmlpress.dev), built with htmlpress from `docs/`. This repository holds

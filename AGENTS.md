@@ -1,6 +1,6 @@
 # htmlpress
 
-Htmlpress turns a folder of HTML pages into a site: one layout, one theme, a navigation and a live-reloading dev server, made for coding agents. It is one Rust binary in `rust/`, shipped three ways: crates.io (`cargo install htmlpress`), npm (`gethtmlpress` in `typescript/`, a shim plus one prebuilt binary per platform) and PyPI (`htmlpress` in `python/`, binary wheels built by maturin). The repo root holds the tooling shared across them and htmlpress' own docs site, written in HTML under `rust/docs/` and built by htmlpress itself.
+Htmlpress turns a folder of HTML pages into a site: one layout, one theme, a navigation and a live-reloading dev server, made for coding agents. It is one Rust binary in `rust/`, shipped three ways plus a script: crates.io (`cargo install htmlpress`), npm (`gethtmlpress` in `typescript/`, a shim plus one prebuilt binary per platform) and PyPI (`htmlpress` in `python/`, binary wheels built by maturin), with the same binaries attached to each GitHub release as `htmlpress-<os>-<arch>-<version>` archives that `rust/docs/install.sh` (served at htmlpress.dev/install.sh) downloads. The repo root holds the tooling shared across them and htmlpress' own docs site, written in HTML under `rust/docs/` and built by htmlpress itself.
 
 ## Terminology
 

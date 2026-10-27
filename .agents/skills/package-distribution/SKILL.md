@@ -5,7 +5,7 @@ description: Use when touching how htmlpress ships — the npm wrapper and its p
 
 # Package distribution
 
-One binary, three registries, one version. Nothing here may change what the binary does.
+One binary, three registries plus GitHub releases, one version. Nothing here may change what the binary does.
 
 ## npm: `gethtmlpress`
 
@@ -51,12 +51,24 @@ Check locally: `pnpm -C python build`, then `uvx --from python/build/<wheel> htm
 embedded assets), `README.md` and `LICENSE.md`; an asset outside `src/` would compile here and
 fail for `cargo install`.
 
+## GitHub releases and `install.sh`
+
+The `github` job packs each `binaries` artifact as `htmlpress-<os>-<arch>-<version>.tar.gz`
+(`.zip` on Windows) with a `.sha256` beside it and attaches them to the release-please release.
+`<os>` is `linux`, `macos` or `windows`, not the npm `darwin`/`win32`. `rust/docs/install.sh`,
+served at `https://htmlpress.dev/install.sh`, builds the same names from the latest release's
+tag, verifies the checksum and installs to `~/.local/bin`: renaming an asset, or adding a
+platform without adding it to the script's `PLATFORMS`, breaks every curl install.
+Check locally by running the Pack Binaries script on a `binaries/<platform>/` folder and the
+script with a `curl` stub on `PATH` that serves those files.
+
 ## The release workflow
 
 `.github/workflows/release.yaml`: release-please → a `binaries` matrix (one job per platform:
-`cargo build --release --target`, the wheel, both uploaded as artifacts) → `npm`, `pypi` and
-`crates` jobs. Adding a platform means three edits in one commit: a `PLATFORMS` entry, a matrix
-row with the same key and target, and the platform table in `rust/docs/introduction.html`. The pack
+`cargo build --release --target`, the wheel, both uploaded as artifacts) → `github`, `npm`, `pypi`
+and `crates` jobs. Adding a platform means four edits in one commit: a `PLATFORMS` entry, a matrix
+row with the same key and target, the platform table in `rust/docs/introduction.html` and
+the `PLATFORMS` list in `rust/docs/install.sh`. The pack
 script refuses to run while any platform's binary is missing.
 
 ## Versions
