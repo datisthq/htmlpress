@@ -5,7 +5,7 @@ class HtmlpressBackToTop extends HTMLElement {
     const link = document.createElement("a")
     link.href = "#"
     link.setAttribute("aria-label", readMessages()["nav.backToTop"] ?? "Back to top")
-    link.setAttribute("aria-keyshortcuts", "B")
+    link.setAttribute("aria-keyshortcuts", "U")
     link.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true">${ICON}</svg>`
     link.addEventListener("click", event => {
       event.preventDefault()
@@ -16,7 +16,7 @@ class HtmlpressBackToTop extends HTMLElement {
     addEventListener("scroll", update, { passive: true })
     update()
     document.addEventListener("keydown", event => {
-      if (isShortcut(event, "b")) scrollToTop()
+      if (isShortcut(event, "u")) scrollToTop()
     })
   }
 }

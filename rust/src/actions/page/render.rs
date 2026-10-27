@@ -568,7 +568,8 @@ fn create_shortcuts(language: &SiteLanguage) -> String {
         ("M", "sidebar", true),
         ("J", "scrollDown", false),
         ("K", "scrollUp", false),
-        ("B", "top", false),
+        ("U", "top", false),
+        ("D", "bottom", false),
         ("L", "next", true),
         ("H", "previous", true),
     ] {
