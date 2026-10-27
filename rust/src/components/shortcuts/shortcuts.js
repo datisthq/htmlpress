@@ -1,5 +1,5 @@
-// Livemark's shortcuts menu: lists the keys this page answers to, read as it opens, and a
-// row presses its key
+// Livemark's shortcuts menu: lists every key, disabling the ones this page does not answer
+// to as it opens, and a row presses its key
 class HtmlpressShortcuts extends HTMLElement {
   connectedCallback() {
     const details = this.querySelector(":scope > details")
@@ -8,7 +8,7 @@ class HtmlpressShortcuts extends HTMLElement {
     details.addEventListener("toggle", () => {
       if (!details.open) return
       for (const button of details.querySelectorAll("[data-key]")) {
-        button.parentElement.hidden =
+        button.disabled =
           button.hasAttribute("data-targeted") && !isAnnounced(button.dataset.key)
       }
     })

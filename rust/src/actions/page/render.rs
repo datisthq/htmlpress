@@ -554,7 +554,7 @@ fn create_nav_toggle(language: &SiteLanguage) -> String {
     )
 }
 
-// Every key the layout answers to; the script hides a `data-targeted` one unless a visible
+// Every key the layout answers to; the script disables a `data-targeted` one unless a visible
 // control on the page announces it with `aria-keyshortcuts`
 fn create_shortcuts(language: &SiteLanguage) -> String {
     let label = escape_html(language.read_message("shortcuts.title"));

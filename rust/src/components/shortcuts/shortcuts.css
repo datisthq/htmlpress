@@ -86,8 +86,12 @@
     white-space: nowrap;
     cursor: pointer;
   }
-  button:hover {
+  button:hover:enabled {
     background: var(--htmlpress-surface);
+  }
+  button:disabled {
+    opacity: 0.5;
+    cursor: default;
   }
   span {
     flex: 1;
