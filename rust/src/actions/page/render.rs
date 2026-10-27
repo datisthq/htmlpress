@@ -529,7 +529,7 @@ fn create_theme_toggle(language: &SiteLanguage) -> String {
     let label = escape_html(language.read_message("theme.change"));
     let mut html = format!(
         "<details><summary aria-label=\"{label}\" aria-keyshortcuts=\"T\" \
-         title=\"{label}\">{SUN_ICON}{MOON_ICON}{SYSTEM_ICON}</summary><ul>"
+         title=\"{label}\">{SUN_ICON}{MOON_ICON}{SYSTEM_ICON}</summary><div><p>{label}</p><ul>"
     );
     for (choice, icon) in [
         ("light", SUN_ICON),
@@ -542,7 +542,7 @@ fn create_theme_toggle(language: &SiteLanguage) -> String {
             "<li><button type=\"button\" data-choice=\"{choice}\">{icon}<span>{name}</span></button></li>"
         );
     }
-    html.push_str("</ul></details>");
+    html.push_str("</ul></div></details>");
     html
 }
 
@@ -642,7 +642,7 @@ fn create_language_picker(site: &Site, page: &Page) -> Option<String> {
     let label = escape_html(current.read_message("language.choose"));
     let icon = create_icon(Some("languages"));
     let mut html = format!(
-        "<details><summary aria-label=\"{label}\" title=\"{label}\">{icon}</summary><ul>"
+        "<details><summary aria-label=\"{label}\" title=\"{label}\">{icon}</summary><div><p>{label}</p><ul>"
     );
     for language in &site.languages {
         let url = (versions.and_then(|versions| versions.get(&language.code)))
@@ -666,7 +666,7 @@ fn create_language_picker(site: &Site, page: &Page) -> Option<String> {
             escape_html(&language.label),
         );
     }
-    html.push_str("</ul></details>");
+    html.push_str("</ul></div></details>");
     Some(html)
 }
 
