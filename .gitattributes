@@ -1,1 +1,4 @@
 * text=auto eol=lf
+
+# Docs pages and site templates are content, not source; keep them off GitHub's language bar.
+*.html linguist-detectable=false
