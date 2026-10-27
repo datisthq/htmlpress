@@ -5,7 +5,6 @@
     color: var(--htmlpress-banner-text);
   }
   p {
-    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -27,13 +26,7 @@
     color: inherit;
     text-underline-offset: 0.25em;
   }
-  /* The whole strip is one click target, so the arrow moves from anywhere on it */
-  a::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-  }
-  p:hover a {
+  a:hover {
     text-decoration: none;
   }
   svg[aria-hidden] {
@@ -46,7 +39,7 @@
     stroke-linejoin: round;
     transition: translate 0.2s;
   }
-  p:hover svg {
+  a:hover svg {
     translate: 0.125rem 0;
   }
   @media (max-width: 40rem) {
