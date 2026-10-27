@@ -34,8 +34,35 @@
   :scope htmlpress-search ~ htmlpress-theme-toggle {
     margin-left: 0.25rem;
   }
-  :scope :is(htmlpress-search, htmlpress-theme-toggle) ~ htmlpress-language {
+  :scope :is(htmlpress-search, htmlpress-theme-toggle) ~ htmlpress-language,
+  :scope
+    :is(htmlpress-search, htmlpress-theme-toggle, htmlpress-language)
+    ~ htmlpress-shortcuts {
     margin-left: 0.25rem;
+  }
+
+  /* Once the aside shows, the search icon meets its left edge: the aside's 14rem, the
+     page's 2.5rem padding and the search's own padding and border, less this padding
+     and the 2.25rem each control after the search takes */
+  @media (width > 80rem) {
+    :scope {
+      --header-language: 0rem;
+      --header-shortcuts: 0rem;
+    }
+    :scope:has(> htmlpress-language) {
+      --header-language: 2.25rem;
+    }
+    :scope:has(> htmlpress-shortcuts) {
+      --header-shortcuts: 2.25rem;
+    }
+    :scope htmlpress-search {
+      width: calc(
+        16.875rem + 1px - 2.25rem - var(--header-language) - var(--header-shortcuts)
+      );
+    }
+    :scope htmlpress-search > button {
+      width: 100%;
+    }
   }
 
   /* Livemark's phone header: the brand, then search, theme, language and the menu at
@@ -59,7 +86,10 @@
       margin-right: 0;
     }
     :scope htmlpress-search ~ htmlpress-theme-toggle,
-    :scope :is(htmlpress-search, htmlpress-theme-toggle) ~ htmlpress-language {
+    :scope :is(htmlpress-search, htmlpress-theme-toggle) ~ htmlpress-language,
+    :scope
+      :is(htmlpress-search, htmlpress-theme-toggle, htmlpress-language)
+      ~ htmlpress-shortcuts {
       margin-left: 0;
     }
   }
