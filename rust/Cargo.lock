@@ -457,9 +457,9 @@ checksum = "1c66915cc5391097de7a2b0b972e8505aa33c0df401fd3a6811dbdb32881ba48"
 
 [[package]]
 name = "fireargs"
-version = "0.3.0"
+version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bda9533e0b9ba0a3376f74f53a31ab600a8501e1446df986a80d3ab9151b0407"
+checksum = "e3b0550e54c4a5425539a99bfee6c059ea26956d3b5441d1675de3fe404329d6"
 dependencies = [
  "clap",
  "fireargs-macros",
@@ -468,13 +468,14 @@ dependencies = [
  "schemars",
  "serde",
  "serde_json",
+ "serde_path_to_error",
 ]
 
 [[package]]
 name = "fireargs-macros"
-version = "0.3.0"
+version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7b9c9b8ffff7815685908690f0a481ec5652df5e1019adfda19dc3fd0090ba96"
+checksum = "e3e15a43cc441dce13d245418de526df712d1e073870d2c05498258f57d3e80a"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -629,7 +630,7 @@ dependencies = [
 
 [[package]]
 name = "htmlpress"
-version = "0.0.0"
+version = "0.1.0"
 dependencies = [
  "emojis",
  "fireargs",
@@ -1633,6 +1634,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "serde_path_to_error"
+version = "0.1.20"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "10a9ff822e371bb5403e391ecd83e182e0e77ba7f6fe0160b795797109d1b457"
+dependencies = [
+ "itoa",
+ "serde",
+ "serde_core",
+]
+
+[[package]]
 name = "servo_arc"
 version = "0.4.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1781,7 +1793,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "32497e9a4c7b38532efcdebeef879707aa9f794296a4f0244f6f69e9bc8574bd"
 dependencies = [
  "fastrand",
- "getrandom 0.3.4",
+ "getrandom 0.4.3",
  "once_cell",
  "rustix",
  "windows-sys 0.61.2",
