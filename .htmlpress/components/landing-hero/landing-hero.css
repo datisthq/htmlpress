@@ -68,9 +68,10 @@
     width: max-content;
     gap: 0.25rem;
     margin: 1.5rem 0 0;
-    padding: 0.75rem 1.5rem;
+    padding: 0.75rem 1.25rem;
     border: 1px solid var(--htmlpress-border);
-    border-radius: 9999px;
+    /* The visible corner of the 2.5rem-tall pill buttons above */
+    border-radius: 1.25rem;
     background: color-mix(in oklab, var(--htmlpress-bg) 50%, transparent);
     backdrop-filter: blur(8px);
     list-style: none;
