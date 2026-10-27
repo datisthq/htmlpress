@@ -40,7 +40,9 @@ version. A wheel holds the binary under `.data/scripts/` and the skills under
 reads them from the `htmlpress.data` folder beside `pyproject.toml` (its `data` key), which
 `python/scripts/copy-skills.sh` stages and git ignores: the local build and the release
 workflow's Stage Skills step both run it, and a wheel built without it ships no skills. CI builds one wheel per target
-with `PyO3/maturin-action`; no sdist is published, since the crate sits outside `python/`.
+with `PyO3/maturin-action`; no sdist is published, since the crate sits outside `python/`. The
+static musl wheels are retagged `manylinux_2_17` as well (Tag Manylinux), or pip on a glibc
+Linux finds no wheel at all.
 Check locally: `pnpm -C python build`, then `uvx --from python/build/<wheel> htmlpress --version`.
 
 ## crates.io: `htmlpress`

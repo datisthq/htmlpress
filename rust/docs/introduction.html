@@ -306,6 +306,11 @@ escaped .htmlpress/components/tabs/tabs.js</code></pre>
 }
 $ htmlpress build --json '{"root":"docs","out":"dist"}'</code></pre>
     <p>
+      <code>htmlpress start --json</code> and <code>preview --json</code> never return, so
+      they print <code>{"url": "…", "network": []}</code> as one line once the server
+      listens.
+    </p>
+    <p>
       <code>htmlpress --llms</code> prints every command's input and output schema as an
       MCP-shaped tool list, so an agent learns the CLI without reading this page.
     </p>

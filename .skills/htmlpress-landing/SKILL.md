@@ -93,7 +93,8 @@ project has something real to say in; three strong ones beat seven thin ones.
 
 ## Rules of thumb
 
-- Links are root-relative (`/introduction.html`); `base` is added at build time.
+- Links are root-relative (`/introduction/`, or the file, `/introduction.html`); `base` is added
+  at build time.
 - Keep the landing out of the sidebar (`sidebar` false) but give it a real `<title>` and
   `description`: it is the site's social preview.
 - Every component must read well with its JS off: the slides are already in the HTML.

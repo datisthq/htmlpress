@@ -311,6 +311,11 @@ escaped .htmlpress/components/tabs/tabs.js</code></pre>
 }
 $ htmlpress build --json '{"root":"docs","out":"dist"}'</code></pre>
     <p>
+      <code>htmlpress start --json</code> 和 <code>preview --json</code>
+      不会结束，因此服务器开始监听时会以一行打印
+      <code>{"url": "…", "network": []}</code>。
+    </p>
+    <p>
       <code>htmlpress --llms</code> 会以 MCP
       风格的工具列表打印每条命令的输入和输出模式，这样智能体无需阅读本页就能学会使用该
       CLI。

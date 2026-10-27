@@ -21,24 +21,41 @@ pub(crate) struct StartInput {
 }
 
 #[fireargs::output]
-pub(crate) struct StartOutput {}
+pub(crate) struct StartOutput {
+    /// The local URL, printed as one JSON line under --json once the server listens.
+    url: String,
+    /// The network URLs, with --host.
+    network: Vec<String>,
+}
 
 pub(crate) fn create_start_command() -> fireargs::Command<StartInput, StartOutput> {
     fireargs::command()
         .description("Serve the project with live reload, rebuilding on every change.")
-        .handler(async |input: StartInput, _| {
+        .handler(async |input: StartInput, context| {
             let mut options = BuildOptions::new(&input.root);
             if let Some(out) = input.out {
                 options.output = PathBuf::from(out);
             }
-            // stderr, not stdout: under --json stdout carries only the result
             let host = input.host.as_deref();
             serve_site(&options, host, input.port, |urls| {
+                // The server never returns, so --json gets its result as soon as it listens
+                if context.json {
+                    let output = StartOutput {
+                        url: urls.first().cloned().unwrap_or_default(),
+                        network: urls.iter().skip(1).cloned().collect(),
+                    };
+                    if let Ok(line) = serde_json::to_string(&output) {
+                        println!("{line}");
+                    }
+                }
                 for (index, url) in urls.iter().enumerate() {
                     let label = if index == 0 { "serving" } else { "network" };
                     eprintln!("{label} {url}");
                 }
             })?;
-            Ok(StartOutput {})
+            Ok(StartOutput {
+                url: String::new(),
+                network: vec![],
+            })
         })
 }

@@ -1,9 +1,12 @@
+use std::collections::HashMap;
+
 use crate::models::nav::NavNode;
 use crate::models::page::Page;
 
 /// Nest pages, already in navigation order, by their folders below `prefix`: a folder's
 /// `index.html` is its entry, and a folder without one is an entry named by its path.
-/// An entry keeps the position of the first page under it. Flat keeps every page at the top.
+/// An entry keeps the position of the first page under it, or its index page's when that
+/// page sets an order. Flat keeps every page at the top.
 pub(crate) fn build_nav<'a>(
     pages: &[&'a Page],
     prefix: &str,
@@ -22,7 +25,26 @@ pub(crate) fn build_nav<'a>(
         let index = file == "index.html" && !folders.is_empty();
         insert_page(&mut roots, prefix, &folders, page, index);
     }
+    let ranks = (pages.iter().enumerate())
+        .map(|(rank, page)| (std::ptr::from_ref::<Page>(page), rank))
+        .collect();
+    sort_nodes(&mut roots, &ranks);
     roots
+}
+
+fn sort_nodes(nodes: &mut [NavNode<'_>], ranks: &HashMap<*const Page, usize>) {
+    for node in nodes.iter_mut() {
+        sort_nodes(&mut node.children, ranks);
+    }
+    nodes.sort_by_cached_key(|node| {
+        let rank = |page: &Page| ranks.get(&std::ptr::from_ref(page)).copied();
+        match node.page {
+            Some(page) if page.order.is_some() => rank(page),
+            _ => (NavNode::flatten(std::slice::from_ref(node)).into_iter())
+                .filter_map(rank)
+                .min(),
+        }
+    });
 }
 
 fn insert_page<'a>(

@@ -10,7 +10,7 @@ use tiny_http::{Header, Request, Response, Server};
 use crate::actions::config::load::load_config;
 use crate::actions::path::select::read_bases;
 use crate::actions::site::build::build_site;
-use crate::models::build::BuildOptions;
+use crate::models::build::{BuildOptions, format_count};
 use crate::models::error::Error;
 use crate::settings::{
     CACHE_DIR, CONFIG_FILE, PORTS, PROJECT_DIR, RELOAD, RELOAD_PATH, RELOAD_SCRIPT,
@@ -113,7 +113,7 @@ fn report_build(options: &BuildOptions, state: &Reload, rebuilt: bool) {
     let error = match build_site(options) {
         Ok(report) => {
             let verb = if rebuilt { "rebuilt" } else { "built" };
-            eprintln!("{verb} {} pages", report.pages);
+            eprintln!("{verb} {}", format_count(report.pages, "page"));
             None
         }
         Err(error) => {

@@ -108,3 +108,36 @@ fn groups_llms_by_section() -> crate::Result<()> {
     assert!(llms.ends_with("## Other\n\n- [Home](https://example.com/index.md)\n"));
     Ok(())
 }
+
+#[test]
+fn groups_llms_as_the_navigation_nests_pages() -> crate::Result<()> {
+    let mut site = create_site()?;
+    // As `sort_pages` leaves them: the folder's own page after its ordered child
+    site.pages = vec![
+        read_page("index.html", "<h1>Home</h1>")?,
+        read_page(
+            "guides/build.html",
+            "<title>Build</title><meta name=\"order\" content=\"1\">",
+        )?,
+        read_page(
+            "first.html",
+            "<title>First</title><meta name=\"order\" content=\"1\"><meta name=\"path\" content=\"/start/\">",
+        )?,
+        read_page(
+            "guides/index.html",
+            "<title>Guides</title><meta name=\"order\" content=\"2\">",
+        )?,
+    ];
+    let files = describe_site(&site)?;
+    assert_eq!(
+        read_file(&files, "llms.txt").as_deref(),
+        Some(concat!(
+            "# Docs\n\n> Docs for agents.\n\n",
+            "## Pages\n\n- [Home](https://example.com/index.md)\n",
+            "- [First](https://example.com/start/index.md)\n\n",
+            "## Guides\n\n- [Guides](https://example.com/guides/index.md)\n",
+            "- [Build](https://example.com/guides/build/index.md)\n",
+        ))
+    );
+    Ok(())
+}

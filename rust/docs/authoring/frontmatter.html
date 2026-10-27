@@ -59,7 +59,8 @@
       <td>none</td>
       <td>
         Kept: a page's own <code>&lt;link&gt;</code>, <code>&lt;style&gt;</code> or
-        <code>&lt;script&gt;</code> is added to the layout's head, after the theme.
+        <code>&lt;script&gt;</code> is added to the layout's head, after the theme. A page
+        without a <code>&lt;head&gt;</code> gives the ones before its first content.
       </td>
     </tr>
     <tr>
@@ -173,7 +174,8 @@
 </ul>
 <p>
   The order places a page among its siblings: pages nest under their folder's
-  <code>index.html</code>, and a folder sits where its first page would.
+  <code>index.html</code>, and a folder sits where that page's <code>order</code> puts it,
+  or, when it sets none, where its first page would.
 </p>
 <p>
   An <code>order</code> that is not an integer fails the build. A <code>404.html</code> at

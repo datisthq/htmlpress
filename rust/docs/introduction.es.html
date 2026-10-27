@@ -324,6 +324,11 @@ escaped .htmlpress/components/tabs/tabs.js</code></pre>
 }
 $ htmlpress build --json '{"root":"docs","out":"dist"}'</code></pre>
     <p>
+      <code>htmlpress start --json</code> y <code>preview --json</code> nunca terminan,
+      así que imprimen <code>{"url": "…", "network": []}</code> en una línea en cuanto el
+      servidor escucha.
+    </p>
+    <p>
       <code>htmlpress --llms</code> imprime el esquema de entrada y salida de cada comando
       como una lista de herramientas con forma de MCP, para que un agente aprenda la CLI
       sin leer esta página.

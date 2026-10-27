@@ -33,9 +33,7 @@ pub(crate) fn render_math(html: &str) -> Result<String, String> {
             };
             let mathml = converter
                 .convert_with_local_state(latex.trim(), display)
-                .map_err(|error| {
-                    format!("<htmlpress-math> \"{}\": {error}", latex.trim())
-                })?;
+                .map_err(|error| format!("math \"{}\": {error}", latex.trim()))?;
             el.set_attribute("data-latex", latex.trim())?;
             el.set_inner_content(&mathml.mathml, ContentType::Html);
             Ok(())

@@ -64,7 +64,8 @@
       <td>
         Se conserva: los <code>&lt;link&gt;</code>, <code>&lt;style&gt;</code> o
         <code>&lt;script&gt;</code> propios de una página se añaden al head del layout,
-        después del tema.
+        después del tema. Una página sin <code>&lt;head&gt;</code> aporta los que van
+        antes de su primer contenido.
       </td>
     </tr>
     <tr>
@@ -189,8 +190,8 @@
 </ul>
 <p>
   El orden sitúa una página entre sus hermanas: las páginas se anidan bajo el
-  <code>index.html</code> de su carpeta, y una carpeta se coloca donde iría su primera
-  página.
+  <code>index.html</code> de su carpeta, y una carpeta se coloca donde la sitúa el
+  <code>order</code> de esa página o, si no lo tiene, donde iría su primera página.
 </p>
 <p>
   Un <code>order</code> que no es un entero hace fallar la compilación. Un

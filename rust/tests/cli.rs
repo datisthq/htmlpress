@@ -266,3 +266,28 @@ fn redirects_home_and_points_changelog_copies_at_the_default() -> TestResult {
     assert!(!sitemap.contains("https://acme.dev/es/changelog/"));
     Ok(())
 }
+
+#[test]
+fn prints_the_url_as_json_once_serving() -> TestResult {
+    let root = tempfile::tempdir()?;
+    write_page(root.path(), "index.html", "<h1>Home</h1>")?;
+    let path = root.path().to_string_lossy().into_owned();
+    for command in ["start", "preview"] {
+        let mut child = std::process::Command::new(env!("CARGO_BIN_EXE_htmlpress"))
+            .args([command, &path, "--port", "0", "--json"])
+            .stdout(std::process::Stdio::piped())
+            .stderr(std::process::Stdio::null())
+            .spawn()?;
+        let mut line = String::new();
+        if let Some(stdout) = child.stdout.take() {
+            std::io::BufRead::read_line(&mut std::io::BufReader::new(stdout), &mut line)?;
+        }
+        child.kill()?;
+        child.wait()?;
+        let output: serde_json::Value = serde_json::from_str(&line)?;
+        let url = output["url"].as_str().unwrap_or_default();
+        assert!(url.starts_with("http://localhost:"), "{command}: {line}");
+        assert_eq!(output["network"], serde_json::json!([]));
+    }
+    Ok(())
+}

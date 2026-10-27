@@ -55,7 +55,8 @@
       <td>无</td>
       <td>
         保留：页面自己的 <code>&lt;link&gt;</code>、<code>&lt;style&gt;</code> 或
-        <code>&lt;script&gt;</code> 会添加到布局的 head 中，位于主题之后。
+        <code>&lt;script&gt;</code> 会添加到布局的 head 中，位于主题之后。没有
+        <code>&lt;head&gt;</code> 的页面，取其第一段内容之前的这些标签。
       </td>
     </tr>
     <tr>
@@ -165,7 +166,8 @@
 </ul>
 <p>
   order 决定页面在同级页面中的位置：页面嵌套在其文件夹的
-  <code>index.html</code> 之下，而文件夹位于其第一个页面应在的位置。
+  <code>index.html</code> 之下；文件夹位于该页面的 <code>order</code>
+  所指定的位置，未设置时则位于其第一个页面应在的位置。
 </p>
 <p>
   非整数的 <code>order</code> 会导致构建失败。根目录下的 <code>404.html</code>

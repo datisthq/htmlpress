@@ -49,7 +49,12 @@ pub fn scan_site(root: &Path) -> crate::Result<Site> {
     })?;
     // stderr, not stdout: under --json stdout carries only the result
     for pattern in &selection.unused {
-        eprintln!("warning: {CONFIG_FILE}: \"{pattern}\" matches no file");
+        match config.include.is_empty() && !config.exclude.contains(pattern) {
+            true => {
+                eprintln!("warning: no file matches the default include \"{pattern}\"")
+            }
+            false => eprintln!("warning: {CONFIG_FILE}: \"{pattern}\" matches no file"),
+        }
     }
     let mut pages = vec![];
     for (path, source) in &selection.pages {

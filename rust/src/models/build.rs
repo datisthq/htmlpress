@@ -23,6 +23,14 @@ impl BuildOptions {
     }
 }
 
+/// A count and its noun, singular for one: `1 page`, `2 pages`.
+pub fn format_count(count: usize, noun: &str) -> String {
+    match count {
+        1 => format!("1 {noun}"),
+        _ => format!("{count} {noun}s"),
+    }
+}
+
 /// What a build wrote.
 #[derive(Debug, Clone, PartialEq)]
 pub struct BuildReport {

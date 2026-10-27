@@ -2,7 +2,8 @@ use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 
 use lol_html::html_content::ContentType;
-use lol_html::{RewriteStrSettings, doctype, element, rewrite_str, text};
+use lol_html::html_content::Element;
+use lol_html::{RewriteStrSettings, doc_text, doctype, element, rewrite_str, text};
 
 use crate::actions::icon::render::{list_icons, render_icon};
 use crate::actions::package::convert::{MANAGERS, convert_command};
@@ -20,7 +21,8 @@ pub fn read_page(path: &str, html: &str) -> crate::Result<Page> {
     let html = &render_math(html).map_err(Error::page(path))?;
     let facts = read_facts(html).map_err(Error::page(path))?;
     let headings = create_ids(facts.headings);
-    let content = read_content(html, &headings).map_err(Error::page(path))?;
+    let content =
+        read_content(html, &headings, facts.has_head).map_err(Error::page(path))?;
     let toc = headings
         .into_iter()
         .filter(|(_, listed)| *listed)
@@ -28,7 +30,7 @@ pub fn read_page(path: &str, html: &str) -> crate::Result<Page> {
         .collect();
     let head = match facts.has_head {
         true => read_head(html).map_err(Error::page(path))?,
-        false => String::new(),
+        false => read_fragment_head(html).map_err(Error::page(path))?,
     };
     let output = match &facts.route {
         Some(route) => create_route_path(route).map_err(Error::page(path))?,
@@ -338,8 +340,13 @@ const UNLISTED_HEADINGS: &[&str] = &[
     "htmlpress-tabs h4",
 ];
 
-fn read_content(html: &str, headings: &[(Heading, bool)]) -> Result<String, String> {
+fn read_content(
+    html: &str,
+    headings: &[(Heading, bool)],
+    has_head: bool,
+) -> Result<String, String> {
     let index = Cell::new(0);
+    let lead = Rc::new(Lead::default());
     let commands = Rc::new(RefCell::new(String::new()));
     let mut settings = RewriteStrSettings::new()
         // Expanded here, not in the browser, so the tabs component and the copy buttons
@@ -414,6 +421,20 @@ fn read_content(html: &str, headings: &[(Heading, bool)]) -> Result<String, Stri
             el.remove_and_keep_content();
             Ok(())
         }));
+    if !has_head {
+        let text_lead = lead.clone();
+        settings = settings
+            .append_element_content_handler(element!("*", |el| {
+                if read_lead(el, &lead)? {
+                    el.remove();
+                }
+                Ok(())
+            }))
+            .append_document_content_handler(doc_text!(move |chunk| {
+                read_lead_text(chunk.as_str(), &text_lead);
+                Ok(())
+            }));
+    }
     // A fragment carries its title and metas without a <head>; they are read, not shown
     for selector in OWNED_BY_LAYOUT {
         settings = settings.append_element_content_handler(element!(selector, |el| {
@@ -475,12 +496,81 @@ fn read_head(html: &str) -> Result<String, String> {
         }));
     }
     let head = rewrite_str(html, settings).map_err(|error| error.to_string())?;
-    Ok(head
-        .lines()
+    Ok(join_lines(&head))
+}
+
+// A browser parses the head tags a fragment starts with into <head>, so they go there
+fn read_fragment_head(html: &str) -> Result<String, String> {
+    let lead = Rc::new(Lead::default());
+    let text_lead = lead.clone();
+    let mut settings = RewriteStrSettings::new()
+        .append_element_content_handler(element!("*", |el| {
+            if !read_lead(el, &lead)? {
+                el.remove();
+            }
+            Ok(())
+        }))
+        .append_document_content_handler(doc_text!(move |chunk| {
+            if !read_lead_text(chunk.as_str(), &text_lead) {
+                chunk.remove();
+            }
+            Ok(())
+        }));
+    for selector in OWNED_BY_LAYOUT {
+        settings = settings.append_element_content_handler(element!(selector, |el| {
+            el.remove();
+            Ok(())
+        }));
+    }
+    let head = rewrite_str(html, settings).map_err(|error| error.to_string())?;
+    Ok(join_lines(&head))
+}
+
+const HEAD_TAGS: &[&str] = &["title", "meta", "link", "style", "script", "base"];
+
+#[derive(Default)]
+struct Lead {
+    started: Cell<bool>,
+    inside: Rc<Cell<bool>>,
+}
+
+// Whether an element still belongs to the fragment's leading head tags
+fn read_lead(
+    el: &mut Element<'_, '_>,
+    lead: &Lead,
+) -> Result<bool, Box<dyn std::error::Error + Send + Sync>> {
+    if lead.started.get() {
+        return Ok(false);
+    }
+    if !HEAD_TAGS.contains(&el.tag_name().as_str()) {
+        lead.started.set(true);
+        return Ok(false);
+    }
+    if el.can_have_content() {
+        lead.inside.set(true);
+        let inside = lead.inside.clone();
+        el.on_end_tag(Box::new(move |_| {
+            inside.set(false);
+            Ok(())
+        }))?;
+    }
+    Ok(true)
+}
+
+// Whether a text chunk still belongs to the leading head tags: their own text or blanks
+fn read_lead_text(text: &str, lead: &Lead) -> bool {
+    if !lead.started.get() && !lead.inside.get() && !text.trim().is_empty() {
+        lead.started.set(true);
+    }
+    !lead.started.get()
+}
+
+fn join_lines(html: &str) -> String {
+    html.lines()
         .map(str::trim)
         .filter(|line| !line.is_empty())
         .collect::<Vec<_>>()
-        .join("\n"))
+        .join("\n")
 }
 
 fn create_package_tabs(commands: &str) -> String {

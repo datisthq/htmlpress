@@ -65,9 +65,10 @@ run from source: `cargo run --manifest-path rust/Cargo.toml -- build docs`.
 2. `read_page` first runs `text/enrich` (`$…$` math, auto links and emoji shortcodes, on whole text
    nodes outside links, code and `data-literal`), then `text/math` (every `<htmlpress-math>` to
    MathML with math-core, the LaTeX kept in `data-latex`), then lol_html over the source three times — facts (title, first `<h1>`, metas,
-   whether a `<head>` exists), content (wrappers and layout-owned tags removed) and, only when a
-   `<head>` exists, the extra head tags. lol_html builds no tree and adds no implied `<head>` or
-   `<body>`: a fragment stays a fragment, which is why the head pass is skipped without one.
+   whether a `<head>` exists), content (wrappers and layout-owned tags removed) and the extra
+   head tags. lol_html builds no tree and adds no implied `<head>` or `<body>`, so for a
+   fragment both passes split at its first content (`read_lead`): the head tags before it
+   go to the head, as a browser would parse them, and leave the content.
    The content pass also expands `htmlpress-package-tabs` into `htmlpress-tabs`: its text
    is collected, removed, and the sections are written from an end-tag handler, since the
    text is only complete there; the asset loader then sees the `htmlpress-tabs` tag

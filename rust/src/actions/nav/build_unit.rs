@@ -76,3 +76,30 @@ fn keeps_every_page_at_the_top_when_flat() -> crate::Result<()> {
     );
     Ok(())
 }
+
+#[test]
+fn places_a_folder_by_its_index_order_over_its_pages() -> crate::Result<()> {
+    let page = |path: &str, order: i64| {
+        let html =
+            format!("<title>{path}</title><meta name=\"order\" content=\"{order}\">");
+        read_page(path, &html)
+    };
+    // As `sort_pages` leaves them: the folder's own page sorts after the other order 1
+    let pages = [
+        read_page("index.html", "<title>Home</title>")?,
+        page("guides/build.html", 1)?,
+        page("zeta.html", 1)?,
+        page("guides/index.html", 2)?,
+    ];
+    let pages: Vec<&Page> = pages.iter().collect();
+    let nav = build_nav(&pages, "", false);
+    assert_eq!(
+        list_paths(&nav),
+        [
+            "index.html",
+            "zeta.html",
+            "guides/index.html[guides/build.html]"
+        ]
+    );
+    Ok(())
+}

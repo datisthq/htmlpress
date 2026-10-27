@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 
 use crate::actions::site::build::build_site;
-use crate::models::build::BuildOptions;
+use crate::models::build::{BuildOptions, format_count};
 
 #[fireargs::input]
 pub(crate) struct BuildInput {
@@ -40,8 +40,10 @@ pub(crate) fn create_build_command() -> fireargs::Command<BuildInput, BuildOutpu
         })
         .render(|output, _| {
             format!(
-                "built {} pages and {} files into {}",
-                output.pages, output.files, output.output
+                "built {} and {} into {}",
+                format_count(output.pages as usize, "page"),
+                format_count(output.files as usize, "file"),
+                output.output
             )
         })
 }

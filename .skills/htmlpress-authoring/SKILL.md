@@ -35,9 +35,10 @@ The config keys are in `htmlpress-configuration`; a different look in `htmlpress
 - `<meta name="order" content="N">` (an integer) sorts the navigation, lower first.
   `index.html` always comes first; unordered pages follow by path, then negative orders
   (`-1` pins a page last).
-- Other `<head>` tags (`<link>`, `<style>`, `<script>`) are kept and added after the theme.
+- Other `<head>` tags (`<link>`, `<style>`, `<script>`) are kept and added after the theme; a
+  fragment's are the ones before its first content, as a browser reads them.
 - The navigation nests pages by folder at any depth (`guides/cli/…` inside `guides/…`), each
-  group named by its `index.html`, whose title links to it.
+  group named by its `index.html`, whose title links to it and whose `order` places the folder.
 - Each page is served at its own folder URL: `guides/build.html` at `/guides/build/`,
   `guides/index.html` at `/guides/`. Link to the page file (`guides/build.html`, relative or
   root-relative) or to its URL: a link naming a page's file becomes its URL. Images and other
@@ -71,7 +72,8 @@ A file that cannot carry metas, such as a `README.md`, gets them from `patches` 
 With `languages` in the config, a translation is `page.<code>.html` beside `page.html`, or a
 file with `<meta name="language" content="<code>">`. It pairs with the original by URL below the
 language prefix, so a renamed one needs the same `<meta name="path">`. Untranslated pages stay
-listed in every language with a badge and link to the original.
+listed in every language with a badge and link to the original. Without a translated home,
+`/<code>/` redirects to the language's first page.
 
 ## Headings
 
@@ -140,6 +142,7 @@ component, not bare text.
 ```sh
 htmlpress build <root> --json   # {"output": "...", "pages": N, "files": N}; errors on stderr
 htmlpress start <root>          # http://localhost:8000 (or the next free port to 8009); --host for the network
+htmlpress start <root> --json   # {"url": "...", "network": []} on one line once serving
 htmlpress --llms                # every command's input and output schema
 ```
 

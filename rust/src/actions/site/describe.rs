@@ -1,8 +1,10 @@
 use sha2::{Digest, Sha256};
 
+use crate::actions::nav::build::build_nav;
 use crate::actions::page::convert::{convert_page, create_markdown_path};
 use crate::actions::section::find::find_section;
 use crate::models::error::Error;
+use crate::models::nav::NavNode;
 use crate::models::page::Page;
 use crate::models::site::Site;
 use crate::settings::NOT_FOUND_PAGE;
@@ -76,33 +78,21 @@ fn create_llms(site: &Site, pages: &[&Page], folder: &str) -> String {
 }
 
 // By section, in the config's order with "Other" last, when the site has sections; else
-// as the navigation groups them: root pages first, then each top folder under its index
-// page's title
+// as the navigation nests them
 fn group_pages<'a>(
     site: &'a Site,
     pages: &[&'a Page],
     folder: &str,
 ) -> Vec<(&'a str, Vec<&'a Page>)> {
     let sections = &site.config.sections;
+    if sections.is_empty() {
+        return group_folders(pages, folder);
+    }
     let mut groups: Vec<(usize, &str, Vec<&Page>)> = vec![];
     for page in pages {
-        let relative = page.path.strip_prefix(folder).unwrap_or(&page.path);
-        let (rank, title) = match (sections.is_empty(), relative.split_once('/')) {
-            (false, _) => match find_section(sections, &page.url) {
-                Some(index) => (index, sections[index].title.text()),
-                None => (sections.len(), "Other"),
-            },
-            (true, Some((folder, _))) => {
-                let index = format!(
-                    "{}{folder}/index.html",
-                    page.path.strip_suffix(relative).unwrap_or_default()
-                );
-                let title = (site.pages.iter())
-                    .find(|page| page.path == index)
-                    .map_or(folder, |page| page.title.as_str());
-                (groups.len(), title)
-            }
-            (true, None) => (0, "Pages"),
+        let (rank, title) = match find_section(sections, &page.url) {
+            Some(index) => (index, sections[index].title.text()),
+            None => (sections.len(), "Other"),
         };
         match groups.iter_mut().find(|(_, name, _)| *name == title) {
             Some((_, _, items)) => items.push(page),
@@ -114,6 +104,27 @@ fn group_pages<'a>(
         .into_iter()
         .map(|(_, title, items)| (title, items))
         .collect()
+}
+
+// The top pages first, then each top folder under its index page's title, else its name
+fn group_folders<'a>(pages: &[&'a Page], folder: &str) -> Vec<(&'a str, Vec<&'a Page>)> {
+    let mut groups = vec![("Pages", vec![])];
+    for node in build_nav(pages, folder, false) {
+        let items = NavNode::flatten(std::slice::from_ref(&node));
+        let Some(first) = items.first() else {
+            continue;
+        };
+        if node.children.is_empty() {
+            groups[0].1.extend(items);
+            continue;
+        }
+        let relative = first.path.strip_prefix(folder).unwrap_or(&first.path);
+        let name = relative.split('/').next().unwrap_or(relative);
+        let title = node.page.map_or(name, |page| page.title.as_str());
+        groups.push((title, items));
+    }
+    groups.retain(|(_, items)| !items.is_empty());
+    groups
 }
 
 fn create_skills_index(site: &Site) -> crate::Result<String> {

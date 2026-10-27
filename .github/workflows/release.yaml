@@ -102,6 +102,14 @@ jobs:
           manylinux: ${{ matrix.wheel || 'auto' }}
           working-directory: python
           args: --release --out build
+      # The binary is static, so the musl wheel runs on glibc too; without a manylinux
+      # tag pip refuses it there, and no sdist exists to fall back on
+      - name: Tag Manylinux
+        if: contains(matrix.target, 'musl')
+        shell: bash
+        run: |
+          target=${{ matrix.target }}
+          pipx run wheel tags --platform-tag "+manylinux_2_17_${target%%-*}" --remove python/build/*.whl
       - name: Upload Binary
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:

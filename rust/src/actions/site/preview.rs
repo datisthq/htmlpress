@@ -3,7 +3,7 @@ use std::sync::Arc;
 use crate::actions::config::load::load_config;
 use crate::actions::site::build::build_site;
 use crate::actions::site::serve::{Reload, add_base, answer_requests, open_server};
-use crate::models::build::BuildOptions;
+use crate::models::build::{BuildOptions, format_count};
 
 /// Build the project for production and serve the output, with no watching or reloading.
 /// `host` and `port` default as for `serve_site`. Calls `on_ready` with the URLs once
@@ -18,7 +18,8 @@ pub fn preview_site(
         reload: false,
         ..options.clone()
     };
-    build_site(&options)?;
+    let report = build_site(&options)?;
+    eprintln!("built {}", format_count(report.pages, "page"));
     let (server, urls) = open_server(host, port)?;
     let base = load_config(&options.root)?.read_base();
     on_ready(&add_base(urls, &base));

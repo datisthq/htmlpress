@@ -54,6 +54,27 @@ fn keeps_a_fragments_title_and_metas_out_of_the_content() -> crate::Result<()> {
 }
 
 #[test]
+fn moves_a_fragments_leading_head_tags_into_the_head() -> crate::Result<()> {
+    let html = "<title>Post</title>\n<meta name=\"date\" content=\"2026-01-01\">\n\
+                <meta name=\"author\" content=\"Ann\">\n<meta name=\"robots\" content=\"noindex\">\n\
+                <link rel=\"stylesheet\" href=\"x.css\">\n<style>p { color: red }</style>\n\
+                <script>let a = 1 < 2</script>\n\
+                <h1>Post</h1>\n<p>Body.</p>\n<style>em {}</style>\n<meta name=\"x\" content=\"y\">";
+    let page = read_page("post.html", html)?;
+    assert_eq!(
+        page.head,
+        "<meta name=\"date\" content=\"2026-01-01\">\n<meta name=\"author\" content=\"Ann\">\n\
+         <meta name=\"robots\" content=\"noindex\">\n<link rel=\"stylesheet\" href=\"x.css\">\n\
+         <style>p { color: red }</style>\n<script>let a = 1 < 2</script>"
+    );
+    assert_eq!(
+        page.content,
+        "<h1>Post</h1>\n<p>Body.</p>\n<style>em {}</style>\n<meta name=\"x\" content=\"y\">"
+    );
+    Ok(())
+}
+
+#[test]
 fn reads_the_layout_and_keeps_it_out_of_the_content() -> crate::Result<()> {
     let html = "<meta name=\"layout\" content=\"landing\">\n<p>Hi.</p>";
     let page = read_page("index.html", html)?;
