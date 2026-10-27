@@ -201,6 +201,15 @@ pub(crate) fn render_page(
             }
         ));
     }
+    if !replaced("htmlpress-shortcuts") {
+        settings = settings.append_element_content_handler(element!(
+            "htmlpress-shortcuts",
+            |el| {
+                el.set_inner_content(&create_shortcuts(language), ContentType::Html);
+                Ok(())
+            }
+        ));
+    }
     if !replaced("htmlpress-toolbar") {
         settings = settings.append_element_content_handler(element!(
             "htmlpress-toolbar",
@@ -481,6 +490,7 @@ const SEARCH_ICON: &str = r#"<svg viewBox="0 0 24 24" aria-hidden="true"><path d
 const SUN_ICON: &str = r#"<svg viewBox="0 0 24 24" data-icon="light" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>"#;
 const MOON_ICON: &str = r#"<svg viewBox="0 0 24 24" data-icon="dark" aria-hidden="true"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>"#;
 const SYSTEM_ICON: &str = r#"<svg viewBox="0 0 24 24" data-icon="system" aria-hidden="true"><path d="M12 8a2.83 2.83 0 0 0 4 4 4 4 0 1 1-4-4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M6.3 17.7l-1.4 1.4M19.1 4.9l-1.4 1.4"/></svg>"#;
+const KEYBOARD_ICON: &str = r#"<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 8h.01M12 12h.01M14 8h.01M16 12h.01M18 8h.01M6 8h.01M7 16h10M8 12h.01"/><rect width="20" height="16" x="2" y="4" rx="2"/></svg>"#;
 const MENU_ICON: &str = r#"<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>"#;
 
 // A page is prerendered while a link to it is hovered, as Livemark preloads its routes, so
@@ -540,8 +550,38 @@ fn create_nav_toggle(language: &SiteLanguage) -> String {
     let label = escape_html(language.read_message("nav.toggleSidebar"));
     format!(
         "<button type=\"button\" aria-label=\"{label}\" \
-         aria-controls=\"htmlpress-sidebar\" aria-keyshortcuts=\"L\">{MENU_ICON}</button>"
+         aria-controls=\"htmlpress-sidebar\" aria-keyshortcuts=\"M\">{MENU_ICON}</button>"
     )
+}
+
+// Every key the layout answers to; the script hides a `data-targeted` one unless a visible
+// control on the page announces it with `aria-keyshortcuts`
+fn create_shortcuts(language: &SiteLanguage) -> String {
+    let label = escape_html(language.read_message("shortcuts.title"));
+    let mut html = format!(
+        "<details><summary aria-label=\"{label}\" title=\"{label}\">{KEYBOARD_ICON}</summary>\
+         <div><p>{label}</p><ul>"
+    );
+    for (key, name, targeted) in [
+        ("S", "search", true),
+        ("T", "theme", true),
+        ("M", "sidebar", true),
+        ("J", "scrollDown", false),
+        ("K", "scrollUp", false),
+        ("B", "top", false),
+        ("L", "next", true),
+        ("H", "previous", true),
+    ] {
+        let name = escape_html(language.read_message(&format!("shortcuts.{name}")));
+        let targeted = if targeted { " data-targeted" } else { "" };
+        let _ = write!(
+            html,
+            "<li><button type=\"button\" data-key=\"{key}\"{targeted}><span>{name}</span>\
+             <kbd>{key}</kbd></button></li>"
+        );
+    }
+    html.push_str("</ul></div></details>");
+    html
 }
 
 // The strings the components' scripts write, which they read from here and fall back to

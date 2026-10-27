@@ -1,4 +1,4 @@
-const KEYS = { prev: "p", next: "n" }
+const KEYS = { prev: "h", next: "l" }
 
 class HtmlpressPager extends HTMLElement {
   connectedCallback() {

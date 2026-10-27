@@ -100,6 +100,8 @@ pub const ASSETS: &[Asset] = &[
     asset!("components/sheet/sheet.css"),
     asset!("components/sheet/sheet.js"),
     asset!("components/shell/shell.css"),
+    asset!("components/shortcuts/shortcuts.css"),
+    asset!("components/shortcuts/shortcuts.js"),
     asset!("components/search/search.css"),
     asset!("components/search/search.js"),
     asset!("components/sidebar/sidebar.css"),

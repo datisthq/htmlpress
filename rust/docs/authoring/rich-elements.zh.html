@@ -526,6 +526,11 @@ title: Htmlpress</code></pre>
     语言选择器，链接到本页面的各语言版本，以下拉菜单显示，在手机上则以底部面板显示；仅在启用了
     <a href="/zh/customization/translations/">翻译</a>的站点上显示。
   </dd>
+  <dt><code>&lt;htmlpress-shortcuts&gt;</code></dt>
+  <dd>
+    页眉中的键盘快捷键菜单，需要脚本，只列出本页面可用的按键，例如只有存在下一页时才列出
+    <kbd>L</kbd>；点击某一行也会触发该按键。宽度小于 56rem 时隐藏，因为没有键盘可用。
+  </dd>
   <dt><code>&lt;htmlpress-skip&gt;</code></dt>
   <dd>“跳到正文”链接，仅在获得焦点时显示。</dd>
 </dl>
@@ -541,11 +546,11 @@ title: Htmlpress</code></pre>
   <code>&lt;htmlpress-theme-toggle&gt;</code
   >（浅色、深色和系统选择的菜单，以下拉菜单显示，在手机上则以底部面板显示）和
   <code>&lt;htmlpress-back-to-top&gt;</code> 由脚本在浏览器中构建。它们的快捷键与 Livemark
-  一致：<kbd>L</kbd> 切换侧边栏，<kbd>T</kbd> 在浅色和深色之间切换，
+  一致：<kbd>M</kbd> 切换侧边栏，<kbd>T</kbd> 在浅色和深色之间切换，
   <kbd>B</kbd> 返回顶部，而 <kbd>J</kbd> 和
   <kbd>K</kbd> 可在任何页面上向下和向上滚动。页面上有
-  <code>&lt;htmlpress-pager&gt;</code> 时，<kbd>N</kbd> 和
-  <kbd>P</kbd> 前往下一页和上一页。在输入框中输入时，这些快捷键都不会触发。
+  <code>&lt;htmlpress-pager&gt;</code> 时，<kbd>L</kbd> 和
+  <kbd>H</kbd> 前往下一页和上一页。在输入框中输入时，这些快捷键都不会触发。
 </p>
 <p>
   手机上的每个底部面板（目录、主题、语言和侧边栏的栏目选择）都是同一个由脚本添加到 body 的

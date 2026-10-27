@@ -33,7 +33,7 @@ class HtmlpressNavToggle extends HTMLElement {
     })
     document.addEventListener("keydown", event => {
       if (event.key === "Escape") toggle(false)
-      if (isShortcut(event, "l")) flip()
+      if (isShortcut(event, "m")) flip()
     })
     PHONE.addEventListener("change", update)
     update()
@@ -46,7 +46,7 @@ function createButton(label, icon) {
   button.type = "button"
   button.setAttribute("aria-label", label)
   button.setAttribute("aria-controls", "htmlpress-sidebar")
-  button.setAttribute("aria-keyshortcuts", "L")
+  button.setAttribute("aria-keyshortcuts", "M")
   button.innerHTML = createIcon(icon)
   return button
 }

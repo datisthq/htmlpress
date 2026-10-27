@@ -713,7 +713,10 @@ fn builds_the_header_buttons_into_the_page() -> crate::Result<()> {
         html.contains("<span>Search...</span><kbd>S</kbd></button></htmlpress-search>")
     );
     assert!(html.contains(r#"data-icon="system""#));
-    assert!(html.contains(r#"aria-controls="htmlpress-sidebar" aria-keyshortcuts="L""#));
+    assert!(html.contains(r#"aria-controls="htmlpress-sidebar" aria-keyshortcuts="M""#));
+    assert!(html.contains(
+        r#"<button type="button" data-key="L" data-targeted><span>Next page</span><kbd>L</kbd>"#
+    ));
     assert!(html.contains("root.dataset.scripted"));
     Ok(())
 }
