@@ -64,12 +64,13 @@
     line-height: 1.625;
   }
   ul {
-    display: inline-grid;
+    display: grid;
+    width: max-content;
     gap: 0.25rem;
     margin: 1.5rem 0 0;
-    padding: 0.5rem 1rem;
+    padding: 0.5rem 1.25rem;
     border: 1px solid var(--htmlpress-border);
-    border-radius: 0.5rem;
+    border-radius: 9999px;
     background: color-mix(in oklab, var(--htmlpress-bg) 50%, transparent);
     backdrop-filter: blur(8px);
     list-style: none;
@@ -78,13 +79,17 @@
     margin: 0;
     color: var(--htmlpress-muted);
     font-family: var(--htmlpress-mono);
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
     line-height: 1.25rem;
+    white-space: nowrap;
   }
   li::before {
     content: "$ ";
     color: var(--htmlpress-accent);
     user-select: none;
+  }
+  samp {
+    font: inherit;
   }
   b {
     color: var(--htmlpress-text);
