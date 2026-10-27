@@ -59,19 +59,19 @@
       </ul>
     </div>
     <htmlpress-landing-carousel>
-      <section title="Documentación">
+      <section title="Crear">
         <div>
           <img
-            src="/screenshots/docs.webp"
+            src="/screenshots/author.webp"
             data-scheme="light"
-            alt="Una página de documentación de htmlpress con líneas de diff en un bloque de código resaltado, la navegación y la tabla de contenidos"
+            alt="Un panel de electricidad hecho como una sola página de htmlpress, con indicadores, un gráfico de columnas apiladas y un anillo"
             width="1440"
             height="900"
           />
           <img
-            src="/screenshots/docs-dark.webp"
+            src="/screenshots/author-dark.webp"
             data-scheme="dark"
-            alt="Una página de documentación de htmlpress con líneas de diff en un bloque de código resaltado, la navegación y la tabla de contenidos"
+            alt="Un panel de electricidad hecho como una sola página de htmlpress, con indicadores, un gráfico de columnas apiladas y un anillo"
             width="1440"
             height="900"
             loading="lazy"
@@ -88,51 +88,13 @@
             <path d="M16 17H8" />
           </svg>
           <figcaption>
-            <strong>Escrito en HTML sencillo</strong>rust/docs/authoring/code-blocks.html
+            <strong>HTML arbitrario, tal cual</strong
+            >rust/docs/examples/energy-dashboard.html
           </figcaption>
           <htmlpress-landing-code syntax="html">
-            <pre><code class="language-html">&lt;pre&gt;&lt;code class="language-js"
-  data-remove="1" data-add="2"&gt;
-…&lt;/code&gt;&lt;/pre&gt;</code></pre>
-          </htmlpress-landing-code>
-        </figure>
-      </section>
-      <section title="Búsqueda">
-        <div>
-          <img
-            src="/screenshots/search.webp"
-            data-scheme="light"
-            alt="El buscador de htmlpress con resultados para deploy en toda la documentación"
-            width="1440"
-            height="900"
-            loading="lazy"
-          />
-          <img
-            src="/screenshots/search-dark.webp"
-            data-scheme="dark"
-            alt="El buscador de htmlpress con resultados para deploy en toda la documentación"
-            width="1440"
-            height="900"
-            loading="lazy"
-          />
-        </div>
-        <figure>
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path
-              d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"
-            />
-            <path d="M14 2v5a1 1 0 0 0 1 1h5" />
-            <path d="M10 9H8" />
-            <path d="M16 13H8" />
-            <path d="M16 17H8" />
-          </svg>
-          <figcaption>
-            <strong>Indexado al construir</strong>rust/docs/deployment/index.html
-          </figcaption>
-          <htmlpress-landing-code syntax="html">
-            <pre><code class="language-html">&lt;h1&gt;Deployment&lt;/h1&gt;
-&lt;p&gt;&lt;code&gt;htmlpress build&lt;/code&gt;
-  produces a fully static site…&lt;/p&gt;</code></pre>
+            <pre><code class="language-html">&lt;title&gt;Electricity dashboard&lt;/title&gt;
+&lt;style&gt;.nrg { … }&lt;/style&gt;
+&lt;div class="nrg"&gt;…&lt;/div&gt;</code></pre>
           </htmlpress-landing-code>
         </figure>
       </section>
@@ -176,20 +138,20 @@
           </htmlpress-landing-code>
         </figure>
       </section>
-      <section title="Crear">
+      <section title="Búsqueda">
         <div>
           <img
-            src="/screenshots/create.webp"
+            src="/screenshots/search.webp"
             data-scheme="light"
-            alt="Un panel de electricidad hecho como una sola página de htmlpress, con indicadores, un gráfico de columnas apiladas y un anillo"
+            alt="El buscador de htmlpress con resultados para deploy en toda la documentación"
             width="1440"
             height="900"
             loading="lazy"
           />
           <img
-            src="/screenshots/create-dark.webp"
+            src="/screenshots/search-dark.webp"
             data-scheme="dark"
-            alt="Un panel de electricidad hecho como una sola página de htmlpress, con indicadores, un gráfico de columnas apiladas y un anillo"
+            alt="El buscador de htmlpress con resultados para deploy en toda la documentación"
             width="1440"
             height="900"
             loading="lazy"
@@ -206,13 +168,51 @@
             <path d="M16 17H8" />
           </svg>
           <figcaption>
-            <strong>Una página, su propio estilo</strong
-            >rust/docs/examples/energy-dashboard.html
+            <strong>Indexado al construir</strong>rust/docs/deployment/index.html
           </figcaption>
           <htmlpress-landing-code syntax="html">
-            <pre><code class="language-html">&lt;title&gt;Electricity dashboard&lt;/title&gt;
-&lt;style&gt;.nrg { … }&lt;/style&gt;
-&lt;div class="nrg"&gt;…&lt;/div&gt;</code></pre>
+            <pre><code class="language-html">&lt;h1&gt;Deployment&lt;/h1&gt;
+&lt;p&gt;&lt;code&gt;htmlpress build&lt;/code&gt;
+  produces a fully static site…&lt;/p&gt;</code></pre>
+          </htmlpress-landing-code>
+        </figure>
+      </section>
+      <section title="Blog">
+        <div>
+          <img
+            src="/screenshots/blog.webp"
+            data-scheme="light"
+            alt="El índice del blog de htmlpress con dos entradas fechadas, sus autores, las entradas recientes y las etiquetas"
+            width="1440"
+            height="900"
+            loading="lazy"
+          />
+          <img
+            src="/screenshots/blog-dark.webp"
+            data-scheme="dark"
+            alt="El índice del blog de htmlpress con dos entradas fechadas, sus autores, las entradas recientes y las etiquetas"
+            width="1440"
+            height="900"
+            loading="lazy"
+          />
+        </div>
+        <figure>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"
+            />
+            <path d="M14 2v5a1 1 0 0 0 1 1h5" />
+            <path d="M10 9H8" />
+            <path d="M16 13H8" />
+            <path d="M16 17H8" />
+          </svg>
+          <figcaption>
+            <strong>Fechado en su propio head</strong>rust/docs/blog/hello-world.html
+          </figcaption>
+          <htmlpress-landing-code syntax="html">
+            <pre><code class="language-html">&lt;meta name="date" content="2026-04-10" /&gt;
+&lt;meta name="author" content="Htmlpress Team" /&gt;
+&lt;meta name="keywords" content="announcement" /&gt;</code></pre>
           </htmlpress-landing-code>
         </figure>
       </section>

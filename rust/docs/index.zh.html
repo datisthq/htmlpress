@@ -56,19 +56,19 @@
       </ul>
     </div>
     <htmlpress-landing-carousel>
-      <section title="文档">
+      <section title="创作">
         <div>
           <img
-            src="/screenshots/docs.webp"
+            src="/screenshots/author.webp"
             data-scheme="light"
-            alt="一个 htmlpress 文档页面，包含高亮代码块中的差异行、导航和目录"
+            alt="用一个 htmlpress 页面构建的电力仪表盘，包含指标卡、堆叠柱状图和环形图"
             width="1440"
             height="900"
           />
           <img
-            src="/screenshots/docs-dark.webp"
+            src="/screenshots/author-dark.webp"
             data-scheme="dark"
-            alt="一个 htmlpress 文档页面，包含高亮代码块中的差异行、导航和目录"
+            alt="用一个 htmlpress 页面构建的电力仪表盘，包含指标卡、堆叠柱状图和环形图"
             width="1440"
             height="900"
             loading="lazy"
@@ -85,51 +85,12 @@
             <path d="M16 17H8" />
           </svg>
           <figcaption>
-            <strong>用纯 HTML 编写</strong>rust/docs/authoring/code-blocks.html
+            <strong>任意 HTML，原样保留</strong>rust/docs/examples/energy-dashboard.html
           </figcaption>
           <htmlpress-landing-code syntax="html">
-            <pre><code class="language-html">&lt;pre&gt;&lt;code class="language-js"
-  data-remove="1" data-add="2"&gt;
-…&lt;/code&gt;&lt;/pre&gt;</code></pre>
-          </htmlpress-landing-code>
-        </figure>
-      </section>
-      <section title="搜索">
-        <div>
-          <img
-            src="/screenshots/search.webp"
-            data-scheme="light"
-            alt="htmlpress 搜索对话框，在整个文档中匹配 deploy"
-            width="1440"
-            height="900"
-            loading="lazy"
-          />
-          <img
-            src="/screenshots/search-dark.webp"
-            data-scheme="dark"
-            alt="htmlpress 搜索对话框，在整个文档中匹配 deploy"
-            width="1440"
-            height="900"
-            loading="lazy"
-          />
-        </div>
-        <figure>
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path
-              d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"
-            />
-            <path d="M14 2v5a1 1 0 0 0 1 1h5" />
-            <path d="M10 9H8" />
-            <path d="M16 13H8" />
-            <path d="M16 17H8" />
-          </svg>
-          <figcaption>
-            <strong>构建时建立索引</strong>rust/docs/deployment/index.html
-          </figcaption>
-          <htmlpress-landing-code syntax="html">
-            <pre><code class="language-html">&lt;h1&gt;Deployment&lt;/h1&gt;
-&lt;p&gt;&lt;code&gt;htmlpress build&lt;/code&gt;
-  produces a fully static site…&lt;/p&gt;</code></pre>
+            <pre><code class="language-html">&lt;title&gt;Electricity dashboard&lt;/title&gt;
+&lt;style&gt;.nrg { … }&lt;/style&gt;
+&lt;div class="nrg"&gt;…&lt;/div&gt;</code></pre>
           </htmlpress-landing-code>
         </figure>
       </section>
@@ -172,20 +133,20 @@
           </htmlpress-landing-code>
         </figure>
       </section>
-      <section title="创作">
+      <section title="搜索">
         <div>
           <img
-            src="/screenshots/create.webp"
+            src="/screenshots/search.webp"
             data-scheme="light"
-            alt="用一个 htmlpress 页面构建的电力仪表盘，包含指标卡、堆叠柱状图和环形图"
+            alt="htmlpress 搜索对话框，在整个文档中匹配 deploy"
             width="1440"
             height="900"
             loading="lazy"
           />
           <img
-            src="/screenshots/create-dark.webp"
+            src="/screenshots/search-dark.webp"
             data-scheme="dark"
-            alt="用一个 htmlpress 页面构建的电力仪表盘，包含指标卡、堆叠柱状图和环形图"
+            alt="htmlpress 搜索对话框，在整个文档中匹配 deploy"
             width="1440"
             height="900"
             loading="lazy"
@@ -202,12 +163,51 @@
             <path d="M16 17H8" />
           </svg>
           <figcaption>
-            <strong>一个页面，自有风格</strong>rust/docs/examples/energy-dashboard.html
+            <strong>构建时建立索引</strong>rust/docs/deployment/index.html
           </figcaption>
           <htmlpress-landing-code syntax="html">
-            <pre><code class="language-html">&lt;title&gt;Electricity dashboard&lt;/title&gt;
-&lt;style&gt;.nrg { … }&lt;/style&gt;
-&lt;div class="nrg"&gt;…&lt;/div&gt;</code></pre>
+            <pre><code class="language-html">&lt;h1&gt;Deployment&lt;/h1&gt;
+&lt;p&gt;&lt;code&gt;htmlpress build&lt;/code&gt;
+  produces a fully static site…&lt;/p&gt;</code></pre>
+          </htmlpress-landing-code>
+        </figure>
+      </section>
+      <section title="博客">
+        <div>
+          <img
+            src="/screenshots/blog.webp"
+            data-scheme="light"
+            alt="htmlpress 博客索引，包含两篇带日期的文章、作者、最近文章和标签"
+            width="1440"
+            height="900"
+            loading="lazy"
+          />
+          <img
+            src="/screenshots/blog-dark.webp"
+            data-scheme="dark"
+            alt="htmlpress 博客索引，包含两篇带日期的文章、作者、最近文章和标签"
+            width="1440"
+            height="900"
+            loading="lazy"
+          />
+        </div>
+        <figure>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"
+            />
+            <path d="M14 2v5a1 1 0 0 0 1 1h5" />
+            <path d="M10 9H8" />
+            <path d="M16 13H8" />
+            <path d="M16 17H8" />
+          </svg>
+          <figcaption>
+            <strong>日期写在自己的 head 里</strong>rust/docs/blog/hello-world.html
+          </figcaption>
+          <htmlpress-landing-code syntax="html">
+            <pre><code class="language-html">&lt;meta name="date" content="2026-04-10" /&gt;
+&lt;meta name="author" content="Htmlpress Team" /&gt;
+&lt;meta name="keywords" content="announcement" /&gt;</code></pre>
           </htmlpress-landing-code>
         </figure>
       </section>
