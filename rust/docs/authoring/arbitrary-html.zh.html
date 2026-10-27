@@ -1,0 +1,108 @@
+<title>任意 HTML</title>
+<meta
+  name="description"
+  content="页面可以是浏览器能显示的任何 HTML：它自己的元素、样式和脚本，放在站点的布局之中。"
+/>
+<meta name="order" content="31" />
+<meta name="icon" content="braces" />
+
+<h1>任意 HTML</h1>
+<p>
+  页面就是纯 HTML，htmlpress 不对它做限制：任何元素、属性、内联
+  SVG、<code>&lt;canvas&gt;</code>、<code>&lt;iframe&gt;</code>、自定义元素、样式或脚本都按原样工作。没有模板语言，也没有白名单。Htmlpress
+  把页面包进站点的布局，让它获得导航、主题和搜索，其余交给浏览器。
+</p>
+<p>
+  这让页面不止是一篇文档：仪表盘、报告、幻灯片或交互式浏览器都只是一个
+  <code>.html</code> 文件。参见<a href="/zh/examples/">示例</a
+  >，其中十几个页面都基于真实的公开数据。
+</p>
+
+<h2>自包含的页面</h2>
+<p>
+  页面自己的 <code>&lt;style&gt;</code>、<code>&lt;script&gt;</code> 和
+  <code>&lt;link&gt;</code> 会被保留，并添加到布局的 head
+  中，位于主题之后。片段取其第一个内容之前的标签；完整文档取其 <code>&lt;head&gt;</code>。
+</p>
+<pre><code class="language-html">&lt;title&gt;计数器&lt;/title&gt;
+&lt;style&gt;
+  .counter button {
+    border: 1px solid var(--htmlpress-border);
+    background: var(--htmlpress-surface);
+    color: var(--htmlpress-text);
+  }
+&lt;/style&gt;
+&lt;script type="module"&gt;
+  const button = document.querySelector(".counter button")
+  let count = 0
+  button.addEventListener("click", () =&gt; {
+    button.textContent = `已点击 ${++count} 次`
+  })
+&lt;/script&gt;
+
+&lt;h1&gt;计数器&lt;/h1&gt;
+&lt;div class="counter"&gt;
+  &lt;button type="button"&gt;点我&lt;/button&gt;
+&lt;/div&gt;</code></pre>
+
+<h2>融入站点</h2>
+<ul>
+  <li>
+    <strong>把样式限定在一个类下。</strong>页面的 CSS
+    作用于整个文档，包括布局，所以每条规则都要以页面自身根元素上的类开头，如上面的
+    <code>.counter</code>。
+  </li>
+  <li>
+    <strong>使用主题令牌。</strong>来自
+    <a href="/zh/authoring/rich-elements/"><code>--htmlpress-*</code> 令牌</a>
+    的颜色会跟随浅色和深色主题以及任何覆盖，无需自己的媒体查询。
+  </li>
+  <li>
+    <strong>以模块方式运行脚本。</strong><code>type="module"</code>
+    在页面解析完成后运行，并让其中的名称不进入全局作用域。
+  </li>
+  <li>
+    <strong>优先使用语义化元素。</strong
+    >主题已经为标题、表格、列表和表单设置了样式；页面只需为 HTML
+    没有对应元素的部分编写自己的 CSS。
+  </li>
+</ul>
+
+<h2>htmlpress 会改动什么</h2>
+<p>内容按原样放入布局，只有以下构建时处理除外：</p>
+<ul>
+  <li>
+    没有 <code>id</code> 的 <code>&lt;h2&gt;</code> 到
+    <code>&lt;h6&gt;</code> 会获得一个，<code>&lt;h2&gt;</code> 到
+    <code>&lt;h4&gt;</code> 会进入目录；参见<a href="/zh/authoring/headings/">标题</a>。
+  </li>
+  <li>
+    指向页面文件的链接会变成它的 URL，相对 URL 从源文件解析；参见<a
+      href="/zh/authoring/links/"
+      >链接</a
+    >。
+  </li>
+  <li>
+    <code>&lt;pre&gt;&lt;code class="language-*"&gt;</code> 会被高亮；参见<a
+      href="/zh/authoring/code-blocks/"
+      >代码块</a
+    >。
+  </li>
+  <li>
+    正文中，裸 URL 变成链接，<code>:emoji:</code> 短代码变成表情，<code>$…$</code>
+    变成公式；参见<a href="/zh/authoring/advanced-syntax/">高级语法</a
+    >。代码、链接、脚本、样式以及带 <code>data-literal</code> 的元素保持不变。
+  </li>
+  <li>
+    <code>htmlpress-*</code> 标签会变成组件；参见<a href="/zh/authoring/rich-elements/"
+      >富元素</a
+    >。
+  </li>
+</ul>
+<p>
+  对于完全不需要站点外框的页面，例如落地页，用
+  <code>&lt;meta name="layout"&gt;</code> 选择另一个布局；参见<a
+    href="/zh/authoring/frontmatter/"
+    >前置元数据</a
+  >。
+</p>

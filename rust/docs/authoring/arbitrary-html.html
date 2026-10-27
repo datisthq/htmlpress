@@ -1,0 +1,104 @@
+<title>Arbitrary HTML</title>
+<meta
+  name="description"
+  content="A page is any HTML a browser can show: its own elements, styles and scripts, inside the site's layout."
+/>
+<meta name="order" content="31" />
+<meta name="icon" content="braces" />
+
+<h1>Arbitrary HTML</h1>
+<p>
+  A page is plain HTML, and htmlpress does not restrict it: any element, attribute, inline
+  SVG, <code>&lt;canvas&gt;</code>, <code>&lt;iframe&gt;</code>, custom element, style or
+  script works as written. There is no templating language and no allow-list. Htmlpress
+  wraps the page in the site's layout, so it gets the navigation, the theme and search,
+  and leaves the rest to the browser.
+</p>
+<p>
+  That makes a page more than a document: a dashboard, a report, a slide deck or an
+  interactive explorer is one <code>.html</code> file. See
+  <a href="/examples/">Examples</a> for a dozen of them, each built on real public data.
+</p>
+
+<h2>A self-contained page</h2>
+<p>
+  A page's own <code>&lt;style&gt;</code>, <code>&lt;script&gt;</code> and
+  <code>&lt;link&gt;</code> are kept and added to the layout's head, after the theme. A
+  fragment's are the ones before its first content; a full document's are its
+  <code>&lt;head&gt;</code>.
+</p>
+<pre><code class="language-html">&lt;title&gt;Counter&lt;/title&gt;
+&lt;style&gt;
+  .counter button {
+    border: 1px solid var(--htmlpress-border);
+    background: var(--htmlpress-surface);
+    color: var(--htmlpress-text);
+  }
+&lt;/style&gt;
+&lt;script type="module"&gt;
+  const button = document.querySelector(".counter button")
+  let count = 0
+  button.addEventListener("click", () =&gt; {
+    button.textContent = `Clicked ${++count} times`
+  })
+&lt;/script&gt;
+
+&lt;h1&gt;Counter&lt;/h1&gt;
+&lt;div class="counter"&gt;
+  &lt;button type="button"&gt;Click me&lt;/button&gt;
+&lt;/div&gt;</code></pre>
+
+<h2>Fitting the site</h2>
+<ul>
+  <li>
+    <strong>Scope styles under one class.</strong> A page's CSS applies to the whole
+    document, layout included, so prefix every rule with a class on the page's own root
+    element, as <code>.counter</code> above.
+  </li>
+  <li>
+    <strong>Use the theme tokens.</strong> Colors from
+    <a href="/authoring/rich-elements/#theme-tokens"><code>--htmlpress-*</code> tokens</a>
+    follow the light and dark theme and any override, with no media query of its own.
+  </li>
+  <li>
+    <strong>Run scripts as modules.</strong> <code>type="module"</code> runs once the page
+    is parsed and keeps its names out of the global scope.
+  </li>
+  <li>
+    <strong>Prefer semantic elements.</strong> The theme already styles headings, tables,
+    lists and forms; a page needs its own CSS only for what HTML has no element for.
+  </li>
+</ul>
+
+<h2>What htmlpress changes</h2>
+<p>The content goes into the layout as written, except for these build-time passes:</p>
+<ul>
+  <li>
+    <code>&lt;h2&gt;</code> to <code>&lt;h6&gt;</code> without an <code>id</code> get one,
+    and <code>&lt;h2&gt;</code> to <code>&lt;h4&gt;</code> fill the table of contents; see
+    <a href="/authoring/headings/">Headings</a>.
+  </li>
+  <li>
+    Links to a page's file become its URL, and relative URLs are resolved from the source
+    file; see <a href="/authoring/links/">Links</a>.
+  </li>
+  <li>
+    <code>&lt;pre&gt;&lt;code class="language-*"&gt;</code> is highlighted; see
+    <a href="/authoring/code-blocks/">Code Blocks</a>.
+  </li>
+  <li>
+    In prose, bare URLs become links, <code>:emoji:</code> shortcodes emoji and
+    <code>$…$</code> math; see <a href="/authoring/advanced-syntax/">Advanced Syntax</a>.
+    Code, links, scripts, styles and any element with <code>data-literal</code> are left
+    alone.
+  </li>
+  <li>
+    <code>htmlpress-*</code> tags become components; see
+    <a href="/authoring/rich-elements/">Rich Elements</a>.
+  </li>
+</ul>
+<p>
+  For a page that wants none of the site's chrome, such as a landing page, pick another
+  layout with <code>&lt;meta name="layout"&gt;</code>; see
+  <a href="/authoring/frontmatter/">Frontmatter</a>.
+</p>

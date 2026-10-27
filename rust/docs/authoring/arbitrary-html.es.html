@@ -1,0 +1,114 @@
+<title>HTML arbitrario</title>
+<meta
+  name="description"
+  content="Una página es cualquier HTML que un navegador pueda mostrar: sus propios elementos, estilos y scripts, dentro del layout del sitio."
+/>
+<meta name="order" content="31" />
+<meta name="icon" content="braces" />
+
+<h1>HTML arbitrario</h1>
+<p>
+  Una página es HTML plano, y htmlpress no lo restringe: cualquier elemento, atributo, SVG
+  en línea, <code>&lt;canvas&gt;</code>, <code>&lt;iframe&gt;</code>, elemento
+  personalizado, estilo o script funciona tal como está escrito. No hay lenguaje de
+  plantillas ni lista de permitidos. Htmlpress envuelve la página en el layout del sitio,
+  así que obtiene la navegación, el tema y la búsqueda, y deja el resto al navegador.
+</p>
+<p>
+  Eso hace de una página algo más que un documento: un panel, un informe, una presentación
+  o un explorador interactivo es un solo archivo <code>.html</code>. Consulta
+  <a href="/es/examples/">Ejemplos</a> para ver una docena, cada uno construido sobre
+  datos públicos reales.
+</p>
+
+<h2>Una página autocontenida</h2>
+<p>
+  Los <code>&lt;style&gt;</code>, <code>&lt;script&gt;</code> y
+  <code>&lt;link&gt;</code> propios de una página se conservan y se añaden al head del
+  layout, después del tema. Los de un fragmento son los que van antes de su primer
+  contenido; los de un documento completo, su <code>&lt;head&gt;</code>.
+</p>
+<pre><code class="language-html">&lt;title&gt;Contador&lt;/title&gt;
+&lt;style&gt;
+  .counter button {
+    border: 1px solid var(--htmlpress-border);
+    background: var(--htmlpress-surface);
+    color: var(--htmlpress-text);
+  }
+&lt;/style&gt;
+&lt;script type="module"&gt;
+  const button = document.querySelector(".counter button")
+  let count = 0
+  button.addEventListener("click", () =&gt; {
+    button.textContent = `${++count} clics`
+  })
+&lt;/script&gt;
+
+&lt;h1&gt;Contador&lt;/h1&gt;
+&lt;div class="counter"&gt;
+  &lt;button type="button"&gt;Haz clic&lt;/button&gt;
+&lt;/div&gt;</code></pre>
+
+<h2>Encajar en el sitio</h2>
+<ul>
+  <li>
+    <strong>Limita los estilos a una clase.</strong> El CSS de una página se aplica a todo
+    el documento, layout incluido, así que antepón a cada regla una clase del elemento
+    raíz de la página, como <code>.counter</code> arriba.
+  </li>
+  <li>
+    <strong>Usa los tokens del tema.</strong> Los colores de los
+    <a href="/es/authoring/rich-elements/#tokens-del-tema"
+      >tokens <code>--htmlpress-*</code></a
+    >
+    siguen el tema claro y oscuro y cualquier sobrescritura, sin media query propia.
+  </li>
+  <li>
+    <strong>Ejecuta los scripts como módulos.</strong> <code>type="module"</code> se
+    ejecuta cuando la página ya está analizada y mantiene sus nombres fuera del ámbito
+    global.
+  </li>
+  <li>
+    <strong>Prefiere elementos semánticos.</strong> El tema ya da estilo a encabezados,
+    tablas, listas y formularios; una página solo necesita CSS propio para lo que HTML no
+    tiene elemento.
+  </li>
+</ul>
+
+<h2>Lo que htmlpress cambia</h2>
+<p>
+  El contenido entra en el layout tal como está escrito, salvo por estos pasos en tiempo
+  de compilación:
+</p>
+<ul>
+  <li>
+    Los <code>&lt;h2&gt;</code> a <code>&lt;h6&gt;</code> sin <code>id</code> reciben uno,
+    y los <code>&lt;h2&gt;</code> a <code>&lt;h4&gt;</code> llenan la tabla de contenidos;
+    consulta <a href="/es/authoring/headings/">Encabezados</a>.
+  </li>
+  <li>
+    Los enlaces al archivo de una página se convierten en su URL, y las URL relativas se
+    resuelven desde el archivo fuente; consulta
+    <a href="/es/authoring/links/">Enlaces</a>.
+  </li>
+  <li>
+    <code>&lt;pre&gt;&lt;code class="language-*"&gt;</code> se resalta; consulta
+    <a href="/es/authoring/code-blocks/">Bloques de código</a>.
+  </li>
+  <li>
+    En la prosa, las URL sueltas se vuelven enlaces, los códigos
+    <code>:emoji:</code> emoji y <code>$…$</code> fórmulas; consulta
+    <a href="/es/authoring/advanced-syntax/">Sintaxis avanzada</a>. El código, los
+    enlaces, los scripts, los estilos y cualquier elemento con
+    <code>data-literal</code> quedan intactos.
+  </li>
+  <li>
+    Las etiquetas <code>htmlpress-*</code> se convierten en componentes; consulta
+    <a href="/es/authoring/rich-elements/">Elementos enriquecidos</a>.
+  </li>
+</ul>
+<p>
+  Para una página que no quiere nada del marco del sitio, como una página de inicio, elige
+  otro layout con <code>&lt;meta name="layout"&gt;</code>; consulta
+  <a href="/es/authoring/frontmatter/">Frontmatter</a>.
+</p>
