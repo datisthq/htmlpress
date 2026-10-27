@@ -42,3 +42,8 @@ include: rust/docs/**/*.html
 exclude: rust/docs/includes/**
 skills: .skills/*/SKILL.md
 edit: https://github.com/datisthq/htmlpress/edit/main/
+head:
+  scripts:
+    - defer: ""
+      data-domain: htmlpress.dev
+      src: https://plausible.io/js/script.outbound-links.js
