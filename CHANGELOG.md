@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/datisthq/htmlpress/compare/v0.2.0...v0.2.1) (2026-10-28)
+
+
+### Bug Fixes
+
+* align page content with the header nav links on wide screens ([90a372c](https://github.com/datisthq/htmlpress/commit/90a372c5ba176dbf3b5c70b14d195109cb08ca8e))
+
 ## [0.2.0](https://github.com/datisthq/htmlpress/compare/v0.1.0...v0.2.0) (2026-10-27)
 
 
