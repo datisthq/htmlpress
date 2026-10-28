@@ -18,7 +18,15 @@
     margin-top: 0;
   }
 
+  /* The content meets the header's first link: its 1rem padding, then, while the nav
+     toggle shows, the 2rem toggle and its 1rem margin, then the links' 1.5rem padding */
   @media (width > 56rem) {
+    :scope > main {
+      justify-self: start;
+    }
+    :root[data-scripted]:has(#htmlpress-sidebar) :scope {
+      padding-left: 5.5rem;
+    }
     :root[data-nav-collapsed] :scope > main {
       max-width: none;
     }
