@@ -1,6 +1,6 @@
 [package]
 name = "htmlpress"
-version = "0.2.1"
+version = "0.2.2"
 edition = "2024"
 rust-version = "1.88"
 description = "Turn a folder of HTML pages into a site: one layout, one theme, live reload, made for agents"
