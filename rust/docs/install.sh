@@ -21,13 +21,18 @@ main() {
   esac
   os=${platform%-*}
 
-  version=${HTMLPRESS_VERSION:-$(find_version)}
+  tmp=$(mktemp -d)
+  trap 'rm -rf "$tmp"' EXIT
+  release="https://api.github.com/repos/$REPO/releases/latest"
+  [ -z "${HTMLPRESS_VERSION:-}" ] ||
+    release="https://api.github.com/repos/$REPO/releases/tags/v$HTMLPRESS_VERSION"
+  curl -fsSL "$release" -o "$tmp/release.json" ||
+    fail "No htmlpress release ${HTMLPRESS_VERSION:-yet}: see https://github.com/$REPO/releases"
+  version=$(find_version "$tmp/release.json")
   [ -n "$version" ] || fail "No htmlpress release yet: see https://github.com/$REPO/releases"
   asset=$(name_asset "$os" "$platform" "$version")
 
   log "Installing: htmlpress $version for $platform"
-  tmp=$(mktemp -d)
-  trap 'rm -rf "$tmp"' EXIT
   download_asset "v$version" "$asset" "$tmp"
   install_binary "$os" "$tmp/$asset" "$tmp"
 }
@@ -47,9 +52,15 @@ detect_platform() {
 }
 
 find_version() {
-  curl -fsSL "https://api.github.com/repos/$REPO/releases/latest" |
-    sed -n 's/.*"tag_name": *"v\([^"]*\)".*/\1/p' |
-    head -n 1
+  sed -n 's/.*"tag_name": *"v\([^"]*\)".*/\1/p' "$1" | head -n 1
+}
+
+# GitHub records each asset's sha256 as its "digest", a few lines below its "name"
+find_digest() {
+  awk -v name="\"name\": \"$2\"" '
+    index($0, name) { found = 1 }
+    found && /"digest":/ { sub(/.*"sha256:/, ""); sub(/".*/, ""); print; exit }
+  ' "$1"
 }
 
 name_asset() {
@@ -63,8 +74,8 @@ download_asset() {
   url="https://github.com/$REPO/releases/download/$1/$2"
   log "Downloading: $url"
   curl -fL --progress-bar "$url" -o "$3/$2"
-  curl -fsSL "$url.sha256" -o "$3/$2.sha256"
-  expected=$(cut -d ' ' -f 1 < "$3/$2.sha256")
+  expected=$(find_digest "$3/release.json" "$2")
+  [ -n "$expected" ] || fail "No checksum published for $2"
   actual=$(hash_file "$3/$2")
   [ "$expected" = "$actual" ] || fail "Checksum mismatch for $2"
   log "Verified: sha256 $actual"

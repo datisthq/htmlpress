@@ -55,10 +55,12 @@ fail for `cargo install`.
 ## GitHub releases and `install.sh`
 
 The `github` job packs each `binaries` artifact as `htmlpress-<os>-<arch>-<version>.tar.gz`
-(`.zip` on Windows) with a `.sha256` beside it and attaches them to the release-please release.
+(`.zip` on Windows) and attaches them to the release-please release, with no `.sha256` files:
+GitHub records every asset's sha256 as its `digest` in the releases API.
 `<os>` is `linux`, `macos` or `windows`, not the npm `darwin`/`win32`. `rust/docs/install.sh`,
 served at `https://htmlpress.dev/install.sh`, builds the same names from the latest release's
-tag, verifies the checksum and installs to `~/.local/bin`: renaming an asset, or adding a
+tag, verifies the download against that release's `digest` for the asset and installs to
+`~/.local/bin`: renaming an asset, or adding a
 platform without adding it to the script's `PLATFORMS`, breaks every curl install.
 Check locally by running the Pack Binaries script on a `binaries/<platform>/` folder and the
 script with a `curl` stub on `PATH` that serves those files.
