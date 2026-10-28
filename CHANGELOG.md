@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2](https://github.com/datisthq/htmlpress/compare/v0.2.1...v0.2.2) (2026-10-28)
+
+
+### Bug Fixes
+
+* cap page content at its 1600px width, with equal gaps to the sidebar and the toc ([6acc4d7](https://github.com/datisthq/htmlpress/commit/6acc4d7fa44a0bae99cbcac1754a762f50b77041))
+
 ## [0.2.1](https://github.com/datisthq/htmlpress/compare/v0.2.0...v0.2.1) (2026-10-28)
 
 
