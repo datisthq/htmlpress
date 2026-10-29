@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1](https://github.com/datisthq/htmlpress/compare/v0.4.0...v0.4.1) (2026-10-29)
+
+
+### Bug Fixes
+
+* serve start and preview on localhost by default again, with --host for the network ([53fd5dc](https://github.com/datisthq/htmlpress/commit/53fd5dcaa702132116b0d9ca9d90f34419f4294b))
+
 ## [0.4.0](https://github.com/datisthq/htmlpress/compare/v0.3.0...v0.4.0) (2026-10-29)
 
 
