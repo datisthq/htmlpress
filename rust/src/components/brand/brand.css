@@ -21,6 +21,7 @@
     flex-shrink: 0;
     width: auto;
     height: 1.625rem;
+    margin-left: -1px;
   }
   a:has(small) img {
     margin-bottom: 0.25rem;
