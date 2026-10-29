@@ -52,13 +52,14 @@ Repo skills live in `.agents/skills/` (reached by Claude Code through the `.clau
 
 Shipped skills live in `.skills/` and teach coding agents to **use** htmlpress; they are published on the docs site and in the npm and PyPI packages. Read the matching one before changing the behaviour it describes, and update it in the same commit:
 
-| skill                     | when                                                               |
-| ------------------------- | ------------------------------------------------------------------ |
-| `htmlpress-authoring`     | pages: the page contract, metas, components, code blocks, includes |
-| `htmlpress-configuration` | `htmlpress.yaml`: sections, links, patches, include/exclude        |
-| `htmlpress-customization` | tokens, escapes, layouts and project components                    |
-| `htmlpress-landing`       | a landing page, with htmlpress.dev's own as the reference          |
-| `htmlpress-deployment`    | the build output, `site`/`base` and the hosts                      |
+| skill                     | when                                                                 |
+| ------------------------- | -------------------------------------------------------------------- |
+| `htmlpress-authoring`     | pages: the page contract, metas, components, code blocks, includes   |
+| `htmlpress-configuration` | `htmlpress.yaml`: sections, links, patches, include/exclude          |
+| `htmlpress-customization` | tokens, escapes, layouts and project components                      |
+| `htmlpress-landing`       | a landing page, with htmlpress.dev's own as the reference            |
+| `htmlpress-knowledge`     | internal docs in `.humans/`: research, reports, registers, decisions |
+| `htmlpress-deployment`    | the build output, `site`/`base` and the hosts                        |
 
 **There is exactly one `AGENTS.md`, at the root.** `.scripts/-test/docs.unit.ts` enforces that, along with every path and `pnpm` command these documents name and the two tables above.
 

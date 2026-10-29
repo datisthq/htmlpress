@@ -82,6 +82,26 @@ listed in every language with a badge and link to the original. Without a transl
 - A heading takes `data-toc="false"` (shown, not in the TOC) or `data-toc="only"` (in the TOC,
   not shown); `<htmlpress-toc level="2">` (2–4, default 3) in a page renders its TOC inline.
 
+## The layout owns the frame
+
+The layout already gives every page its `<main>`, width, gutters, header, footer and spacing.
+A page that brings its own frame nests one inside the other and gets double padding.
+
+- **No wrapper.** Content starts at the top level: no `<main>`, `<article>`, `<div class="container">`
+  or `<section>` around the whole page, and no `<header>` or `<footer>` of the page's own.
+- **No frame CSS.** Never style `html`, `body`, `main` or a page root: no `max-width`, `margin`,
+  `padding`, `font-family`, `background` or `color` scheme. These come from tokens.
+- **One `<h1>`, first.** The `<h1>` is the first content element, says what `<title>` says, and is
+  the only one; no eyebrow, logo or date above it (`date` and `author` metas make the byline).
+- **Headings descend in steps**: `<h2>` for sections, `<h3>` inside them, never skipping a
+  level to get a smaller size. A component's heading is `<h3>` (cards, steps).
+- **No spacing hacks**: no `<br>` runs, empty `<p>`, `&nbsp;` indents or `<hr>` between sections;
+  headings already space the page.
+- **Converting a standalone HTML page** (a report, an export, an artifact): keep its body content,
+  drop its `<style>` frame, wrapper, header and footer, map its stat tiles, badges and callouts to
+  the components below, and keep a page `<style>` only for a figure the theme cannot draw, scoped
+  to that figure and using `--htmlpress-*` tokens only.
+
 ## Semantic HTML first
 
 The theme styles the elements themselves: headings, `<p>`, lists, `<table>`, `<pre><code>`,
