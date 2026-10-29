@@ -1,8 +1,35 @@
 # Contributing
 
-Htmlpress is an open-source project and we'd love your help — whether that's fixing a bug, polishing the docs, or proposing a new feature. This guide walks through everything you need to get a change from your editor into a release.
+> [!WARNING]
+> **We don't accept pull requests from outside contributors.** Pull requests opened by anyone outside the team are closed without review. If you've found a bug or have an idea, open an issue or start a discussion instead, as described below.
 
-## Quick start
+Htmlpress is an open-source project developed by the [Datist](https://datist.io) team. Everyone is welcome to help shape it with bug reports, ideas and questions; code changes come from team members.
+
+## Contributors
+
+### Report a bug
+
+Open an issue on [GitHub Issues](https://github.com/datisthq/htmlpress/issues). A good report includes:
+
+- the Htmlpress version and how you use it
+- the smallest input that reproduces the problem
+- the output you got and the output you expected
+
+### Share an idea or ask a question
+
+Use [GitHub Discussions](https://github.com/datisthq/htmlpress/discussions) for anything that isn't a bug:
+
+- [Ideas](https://github.com/datisthq/htmlpress/discussions/new?category=ideas): features and improvements you'd like to see
+- [Q&A](https://github.com/datisthq/htmlpress/discussions/new?category=q-a): questions about using Htmlpress
+- [Show and tell](https://github.com/datisthq/htmlpress/discussions/new?category=show-and-tell): projects built with Htmlpress
+
+Ideas the team picks up turn into issues.
+
+## Members
+
+The rest of this guide is for Datist team members working on Htmlpress.
+
+### Quick start
 
 You'll need [Node.js](https://nodejs.org/) 24+, [pnpm](https://pnpm.io/) 11+ and [rustup](https://rustup.rs/); for building the Python wheel, [uv](https://docs.astral.sh/uv/). Then:
 
@@ -19,7 +46,7 @@ pnpm start
 pnpm test
 ```
 
-## Repository layout
+### Repository layout
 
 ```
 htmlpress/
@@ -47,7 +74,7 @@ htmlpress/
 
 All behaviour lives in `rust/`. The npm and PyPI packages only deliver the same binary, so a feature never lands in a wrapper.
 
-## Local commands
+### Local commands
 
 Run these at the repo root; each chains into the sections with `pnpm -C <section>`.
 
@@ -67,7 +94,7 @@ Run these at the repo root; each chains into the sections with `pnpm -C <section
 
 A change is ready to push when `pnpm test` is green.
 
-## Code conventions
+### Code conventions
 
 - **Rust**: edition 2024 on the pinned stable toolchain, clippy-clean with no `unwrap`/`expect` outside tests; unit tests beside the module as `<module>_unit.rs`, run one with `cargo test <name>` from `rust/`.
 - **TypeScript**: strict mode is on. Don't use `any`, `as`-casts, or non-null `!` without permission. Full ESM imports with the `.ts` extension; tests beside the module as `<module>.unit.ts`.
@@ -75,7 +102,7 @@ A change is ready to push when `pnpm test` is green.
 - **Docs pages**: semantic HTML and the documented `htmlpress-*` components, no inline styles.
 - **Formatting**: `pnpm format`. 2-space indent, no semicolons, double quotes (LF, UTF-8); rustfmt at 90 columns.
 
-## Proposing a change
+### Proposing a change
 
 1. **Open an issue first** for anything bigger than a typo or a small bug. It's easier to align on direction before code.
 2. **Branch from `main`** with a short descriptive name (e.g. `fix-fragment-title`, `feat-search`).
@@ -87,14 +114,6 @@ A change is ready to push when `pnpm test` is green.
 4. **Run `pnpm test`** before pushing.
 5. **Open a PR** against `main`. Describe the _why_ (link the issue), include a screenshot or CLI output for any visible change, and call out anything reviewers should pay extra attention to.
 
-## Releases
+### Releases
 
 Releases are driven by [release-please](https://github.com/googleapis/release-please): a `feat` or `fix` landing on `main` opens a Release PR, and merging it cuts the version, tags it, builds the binary for every platform and publishes it to crates.io, npm and PyPI at one shared version. Maintainers don't bump versions manually.
-
-## Where to find help
-
-- **Bugs and feature requests**: [GitHub Issues](https://github.com/datisthq/htmlpress/issues)
-- **Discussion / ideas**: [GitHub Discussions](https://github.com/datisthq/htmlpress/discussions)
-- **Source**: [github.com/datisthq/htmlpress](https://github.com/datisthq/htmlpress)
-
-Thanks for helping make Htmlpress better.
