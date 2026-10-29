@@ -17,7 +17,7 @@ use crate::settings::{
 };
 
 /// Build the project, serve the output and rebuild on every change, reloading open pages;
-/// a failed build is shown in the browser until the next one succeeds. `host` defaults to localhost and `port` to the first free one of [`PORTS`]. Calls
+/// a failed build is shown in the browser until the next one succeeds. `host` defaults to every address and `port` to the first free one of [`PORTS`]. Calls
 /// `on_ready` with the URLs once listening, the local one first; runs until killed.
 pub fn serve_site(
     options: &BuildOptions,
@@ -52,13 +52,13 @@ pub fn serve_site(
     Ok(())
 }
 
-/// Listen on `host`, localhost by default, and `port`, else the first free one of
+/// Listen on `host`, every address by default, and `port`, else the first free one of
 /// [`PORTS`]; returns the server and the URLs it answers at, the local one first.
 pub(crate) fn open_server(
     host: Option<&str>,
     port: Option<u16>,
 ) -> crate::Result<(Server, Vec<String>)> {
-    let address = host.unwrap_or("127.0.0.1");
+    let address = host.unwrap_or("0.0.0.0");
     let ports: Vec<u16> = match port {
         Some(port) => vec![port],
         None => PORTS.collect(),
