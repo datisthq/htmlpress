@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.4.0](https://github.com/datisthq/htmlpress/compare/v0.3.0...v0.4.0) (2026-10-29)
+
+
+### Features
+
+* serve start and preview on the local network by default, with --no-host for localhost only ([1a9ef55](https://github.com/datisthq/htmlpress/commit/1a9ef55ffc9e59178017fefc64f48a4c6f1c36cf))
+
+
+### Bug Fixes
+
+* center the site brand logo on the sidebar icons ([07ee63e](https://github.com/datisthq/htmlpress/commit/07ee63ecbd4424c2f9c417e0fddb7e4d0e1f9b63))
+
 ## [0.3.0](https://github.com/datisthq/htmlpress/compare/v0.2.2...v0.3.0) (2026-10-29)
 
 
