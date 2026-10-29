@@ -283,23 +283,22 @@ built 6 pages and 0 files into docs/.htmlpress/build</code></pre>
       obtuvo. <code>--port</code> / <code>-p</code> indica un puerto concreto (<code
         >0</code
       >
-      elige cualquiera libre). Sirve en todas las direcciones, para que un teléfono en la
-      misma red pueda abrir el sitio, e imprime también esa URL;
-      <code>--host &lt;address&gt;</code> sirve en una, y <code>--no-host</code> solo en
-      localhost. Con <code>base</code> en <code>htmlpress.yaml</code>, el sitio se sirve
-      bajo esa ruta, las URL impresas la incluyen y <code>/</code> lleva allí; reinicia
-      después de cambiar <code>base</code>. <code>--out</code> / <code>-o</code> funciona
-      igual que en <code>build</code>.
+      elige cualquiera libre). <code>--host</code> solo sirve en todas las direcciones,
+      para que un teléfono en la misma red pueda abrir el sitio, e imprime también esa
+      URL; <code>--host &lt;address&gt;</code> sirve en una. Con <code>base</code> en
+      <code>htmlpress.yaml</code>, el sitio se sirve bajo esa ruta, las URL impresas la
+      incluyen y <code>/</code> lleva allí; reinicia después de cambiar <code>base</code>.
+      <code>--out</code> / <code>-o</code> funciona igual que en <code>build</code>.
     </p>
-    <pre><code class="language-sh">$ htmlpress start docs
+    <pre><code class="language-sh">$ htmlpress start docs --host
 serving http://localhost:8000
 network http://192.168.1.107:8000</code></pre>
 
     <h3><code>htmlpress preview [root]</code></h3>
     <p>
       Compila el proyecto para producción y lo sirve tal como se desplegará: sin vigilar
-      cambios ni recargar. Acepta <code>--port</code>, <code>--host</code>,
-      <code>--no-host</code> y <code>--out</code> como <code>start</code>.
+      cambios ni recargar. Acepta <code>--port</code>, <code>--host</code> y
+      <code>--out</code> como <code>start</code>.
     </p>
 
     <h3><code>htmlpress clear [root]</code></h3>

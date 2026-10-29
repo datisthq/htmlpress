@@ -274,7 +274,7 @@ fn prints_the_url_as_json_once_serving() -> TestResult {
     let path = root.path().to_string_lossy().into_owned();
     for command in ["start", "preview"] {
         let mut child = std::process::Command::new(env!("CARGO_BIN_EXE_htmlpress"))
-            .args([command, &path, "--port", "0", "--no-host", "--json"])
+            .args([command, &path, "--port", "0", "--json"])
             .stdout(std::process::Stdio::piped())
             .stderr(std::process::Stdio::null())
             .spawn()?;

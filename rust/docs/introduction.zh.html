@@ -265,23 +265,23 @@ built 6 pages and 0 files into docs/.htmlpress/build</code></pre>
     <p>
       当 8000 端口被占用时，它会依次尝试 8001 直到 8009，并打印实际获得的 URL。
       <code>--port</code> / <code>-p</code> 可指定一个端口（<code>0</code>
-      表示任选一个空闲端口）。它会在所有地址上提供服务，这样同一网络中的手机也能打开站点，同时也会打印该
-      URL；<code>--host &lt;address&gt;</code> 则只在一个地址上提供服务，
-      <code>--no-host</code> 则只在 localhost 上提供服务。如果在
+      表示任选一个空闲端口）。单独使用 <code>--host</code>
+      会在所有地址上提供服务，这样同一网络中的手机也能打开站点，同时也会打印该 URL；
+      <code>--host &lt;address&gt;</code> 则只在一个地址上提供服务。如果在
       <code>htmlpress.yaml</code> 中设置了
       <code>base</code>，站点会在该路径下提供服务，打印的 URL 会包含它，<code>/</code>
       会跳转到那里；修改 <code>base</code> 后需要重启。 <code>--out</code> /
       <code>-o</code> 的作用与 <code>build</code> 相同。
     </p>
-    <pre><code class="language-sh">$ htmlpress start docs
+    <pre><code class="language-sh">$ htmlpress start docs --host
 serving http://localhost:8000
 network http://192.168.1.107:8000</code></pre>
 
     <h3><code>htmlpress preview [root]</code></h3>
     <p>
       以生产模式构建项目，并按部署后的样子提供服务：不监听文件，也不重载。与
-      <code>start</code> 一样接受 <code>--port</code>、<code>--host</code>、
-      <code>--no-host</code> 和 <code>--out</code>。
+      <code>start</code> 一样接受 <code>--port</code>、<code>--host</code> 和
+      <code>--out</code>。
     </p>
 
     <h3><code>htmlpress clear [root]</code></h3>

@@ -11,12 +11,10 @@ pub(crate) struct PreviewInput {
     /// The port to serve on; 0 picks a free one. Default: the first free of 8000-8009.
     #[fireargs(short = 'p')]
     port: Option<u16>,
-    /// The address to serve on. Default: every one, to reach it from the local network.
-    #[fireargs(preset = "0.0.0.0", conflicts = no_host)]
+    /// The address to serve on; alone, every one, to reach it from the local network.
+    /// Default: localhost only.
+    #[fireargs(preset = "0.0.0.0")]
     host: Option<String>,
-    /// Serve on localhost only, out of the local network's reach.
-    #[fireargs(default)]
-    no_host: bool,
     /// The output folder; defaults to .htmlpress/build inside the project.
     #[fireargs(short = 'o')]
     out: Option<String>,
@@ -26,7 +24,7 @@ pub(crate) struct PreviewInput {
 pub(crate) struct PreviewOutput {
     /// The local URL, printed as one JSON line under --json once the server listens.
     url: String,
-    /// The network URLs; none with --no-host.
+    /// The network URLs, with --host.
     network: Vec<String>,
 }
 
@@ -40,11 +38,7 @@ pub(crate) fn create_preview_command() -> fireargs::Command<PreviewInput, Previe
             if let Some(out) = input.out {
                 options.output = PathBuf::from(out);
             }
-            let host = if input.no_host {
-                Some("127.0.0.1")
-            } else {
-                input.host.as_deref()
-            };
+            let host = input.host.as_deref();
             preview_site(&options, host, input.port, |urls| {
                 // The server never returns, so --json gets its result as soon as it listens
                 if context.json {

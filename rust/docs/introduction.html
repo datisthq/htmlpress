@@ -265,22 +265,22 @@ built 6 pages and 0 files into docs/.htmlpress/build</code></pre>
     <p>
       When 8000 is taken it tries 8001 and on to 8009, and prints the URL it got.
       <code>--port</code> / <code>-p</code> names one port instead (<code>0</code> picks
-      any free one). It serves on every address, so a phone on the same network can open
-      the site, and prints that URL too; <code>--host &lt;address&gt;</code> serves on
-      one, and <code>--no-host</code> on localhost only. With <code>base</code> in
+      any free one). <code>--host</code> alone serves on every address, so a phone on the
+      same network can open the site, and prints that URL too;
+      <code>--host &lt;address&gt;</code> serves on one. With <code>base</code> in
       <code>htmlpress.yaml</code> the site is served under it, the printed URLs include
       it, and <code>/</code> leads there; restart after changing <code>base</code>.
       <code>--out</code> / <code>-o</code> works as for <code>build</code>.
     </p>
-    <pre><code class="language-sh">$ htmlpress start docs
+    <pre><code class="language-sh">$ htmlpress start docs --host
 serving http://localhost:8000
 network http://192.168.1.107:8000</code></pre>
 
     <h3><code>htmlpress preview [root]</code></h3>
     <p>
       Builds the project for production and serves it as it will be deployed: no watching,
-      no reload. Takes <code>--port</code>, <code>--host</code>,
-      <code>--no-host</code> and <code>--out</code> like <code>start</code>.
+      no reload. Takes <code>--port</code>, <code>--host</code> and
+      <code>--out</code> like <code>start</code>.
     </p>
 
     <h3><code>htmlpress clear [root]</code></h3>
