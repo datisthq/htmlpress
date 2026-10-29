@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.3.0](https://github.com/datisthq/htmlpress/compare/v0.2.2...v0.3.0) (2026-10-29)
+
+
+### Features
+
+* add the htmlpress-knowledge skill and teach page authors to leave the frame to the layout ([7e5795c](https://github.com/datisthq/htmlpress/commit/7e5795c58b613cd224d99347115c2d209f686d5b))
+
+
+### Bug Fixes
+
+* keep the site brand at the same inset with and without the sidebar ([663377c](https://github.com/datisthq/htmlpress/commit/663377cd769cabe0cd7610218a82b22105032ebf))
+
 ## [0.2.2](https://github.com/datisthq/htmlpress/compare/v0.2.1...v0.2.2) (2026-10-28)
 
 
