@@ -97,11 +97,10 @@ fn takes_the_first_free_port() -> crate::Result<()> {
             .map_err(Error::io("port"))
     };
     let taken = bind()?;
-    let free = bind()?;
-    let ports = [read(&taken)?, read(&free)?];
-    drop(free);
+    // Port 0 asks for any free port: a freed one could be taken by a parallel test first
+    let ports = [read(&taken)?, 0];
     let server = bind_server("127.0.0.1", &ports)?;
-    assert_eq!(read_port(&server), ports[1]);
+    assert!(![0, ports[0]].contains(&read_port(&server)));
     let error = bind_server("127.0.0.1", &ports[..1])
         .err()
         .map(|error| error.to_string());
