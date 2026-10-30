@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.1](https://github.com/datisthq/htmlpress/compare/v0.5.0...v0.5.1) (2026-10-30)
+
+
+### Bug Fixes
+
+* redirect a site without a home page on the server, not with a blank refresh page ([446c9ff](https://github.com/datisthq/htmlpress/commit/446c9ffbc11ca1d13209dd559c3a3ae686e9ff2e))
+
 ## [0.5.0](https://github.com/datisthq/htmlpress/compare/v0.4.2...v0.5.0) (2026-10-30)
 
 
