@@ -206,11 +206,11 @@ fn is_source_event(
 
 fn answer_request(request: Request, output: &Path, base: &str, state: &Reload) {
     let url = request.url().to_owned();
-    let (path, query) = url.split_once('?').unwrap_or((&url, ""));
-    let Some(path) = strip_base(path, base) else {
+    let (full, query) = url.split_once('?').unwrap_or((&url, ""));
+    let Some(path) = strip_base(full, base) else {
         // The root of a sub-path site has nothing of its own, so it leads to the site
-        let result = match path {
-            "/" => answer_redirect(request, &format!("{base}/")),
+        let result = match full {
+            "/" => answer_redirect(request, &format!("{base}/"), 302),
             _ => answer_missing(request, output),
         };
         if let Err(error) = result {
@@ -230,8 +230,15 @@ fn answer_request(request: Request, output: &Path, base: &str, state: &Reload) {
         RELOAD_SCRIPT => {
             request.respond(add_headers(Response::from_string(RELOAD), RELOAD_SCRIPT))
         }
-        _ => match error {
-            Some(error) if is_page_path(path) => answer_error(request, base, &error),
+        _ => match (error, find_redirect(output, full)) {
+            (Some(error), _) if is_page_path(path) => answer_error(request, base, &error),
+            (_, Some((location, status))) => {
+                let query = match query {
+                    "" => String::new(),
+                    query => format!("?{query}"),
+                };
+                answer_redirect(request, &format!("{location}{query}"), status)
+            }
             _ => answer_file(request, output, &url, path),
         },
     };
@@ -297,8 +304,24 @@ pub(crate) fn strip_base<'a>(path: &'a str, base: &str) -> Option<&'a str> {
     }
 }
 
-fn answer_redirect(request: Request, location: &str) -> std::io::Result<()> {
-    let response = Response::empty(302);
+// As Cloudflare and Netlify do, so `start` never shows the stub the build leaves for other
+// hosts; only exact paths, the only rules the build writes
+pub(crate) fn find_redirect(output: &Path, path: &str) -> Option<(String, u16)> {
+    let rules = std::fs::read_to_string(output.join("_redirects")).ok()?;
+    rules.lines().find_map(|line| {
+        let mut fields = line.split_whitespace();
+        let (from, to) = (fields.next()?, fields.next()?);
+        let status = fields
+            .next()
+            .map_or(Some(301), |status| status.parse().ok())?;
+        let exact = !from.starts_with('#') && !from.contains(['*', ':']);
+        (exact && from == path && (300..400).contains(&status))
+            .then(|| (to.to_owned(), status))
+    })
+}
+
+fn answer_redirect(request: Request, location: &str, status: u16) -> std::io::Result<()> {
+    let response = Response::empty(status);
     match Header::from_bytes(&b"Location"[..], location.as_bytes()) {
         Ok(header) => request.respond(response.with_header(header)),
         Err(()) => request.respond(response),
@@ -330,7 +353,7 @@ fn answer_file(
             .split_once('?')
             .map_or((url, None), |(a, b)| (a, Some(b)));
         let query = query.map(|query| format!("?{query}")).unwrap_or_default();
-        return answer_redirect(request, &format!("{location}/{query}"));
+        return answer_redirect(request, &format!("{location}/{query}"), 302);
     }
     match std::fs::File::open(&file) {
         Ok(handle) => {

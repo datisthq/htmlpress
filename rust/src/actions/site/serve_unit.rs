@@ -171,3 +171,25 @@ fn reading_the_config_feeds_no_events_back() -> crate::Result<()> {
     );
     Ok(())
 }
+
+#[test]
+fn finds_exact_redirects_only() -> crate::Result<()> {
+    let output = tempfile::tempdir().map_err(Error::io("tempdir"))?;
+    let output = output.path();
+    assert_eq!(find_redirect(output, "/"), None);
+    let rules =
+        "# home\n/blog/*  /news/:splat\n/old  /new\n/  /guide/  302\n/x  /y  200\n";
+    std::fs::write(output.join("_redirects"), rules).map_err(Error::io("_redirects"))?;
+    assert_eq!(
+        find_redirect(output, "/"),
+        Some(("/guide/".to_owned(), 302))
+    );
+    assert_eq!(
+        find_redirect(output, "/old"),
+        Some(("/new".to_owned(), 301))
+    );
+    assert_eq!(find_redirect(output, "/blog/a"), None);
+    assert_eq!(find_redirect(output, "/x"), None);
+    assert_eq!(find_redirect(output, "/guide/"), None);
+    Ok(())
+}

@@ -190,6 +190,26 @@ fn writes_agent_files_and_keeps_the_projects_own() -> crate::Result<()> {
     Ok(())
 }
 
+#[test]
+fn redirects_a_missing_home_on_the_host_first() -> crate::Result<()> {
+    let root = tempfile::tempdir().map_err(Error::io("tempdir"))?;
+    let root = root.path();
+    write_source(root, "guide.html", "<h1>Guide</h1>")?;
+    write_source(root, "_redirects", "/old/  /guide/  301\n")?;
+    write_source(root, "htmlpress.yaml", "base: /repo/\n")?;
+    let options = BuildOptions::new(root);
+    build_site(&options)?;
+    let read = |path: &str| std::fs::read_to_string(options.output.join(path));
+
+    assert_eq!(
+        read("_redirects").map_err(Error::io("_redirects"))?,
+        "/old/  /guide/  301\n\n/repo/  /repo/guide/  302\n"
+    );
+    let stub = read("index.html").map_err(Error::io("index.html"))?;
+    assert!(stub.contains(r#"content="0; url=/repo/guide/""#));
+    Ok(())
+}
+
 // Every URL the build writes must carry the base, or the site breaks on a sub-path host
 #[test]
 fn prefixes_every_url_with_the_base() -> crate::Result<()> {

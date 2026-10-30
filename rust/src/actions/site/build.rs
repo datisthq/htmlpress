@@ -68,8 +68,10 @@ pub fn build_site(options: &BuildOptions) -> crate::Result<BuildReport> {
     if options.reload {
         write_file(&assets.join("reload.js"), RELOAD.as_bytes())?;
     }
-    // A project's own file of the same name was copied above and wins; _headers merges it
+    // A project's own file of the same name was copied above and wins; _headers and
+    // _redirects merge it
     let shipped = |name: &str| site.files.contains_key(name);
+    let mut redirects = Vec::new();
     for (view, language) in views.iter().zip(&site.languages) {
         let index = index_site(view)?;
         write_file(&assets.join(create_search_path(language)), index.as_bytes())?;
@@ -87,10 +89,17 @@ pub fn build_site(options: &BuildOptions) -> crate::Result<BuildReport> {
                 write_file(&options.output.join(&path), feed.as_bytes())?;
             }
         }
-        if let Some(redirect) = create_redirect(view, language) {
+        if let Some(url) = find_home(view, language) {
             let path = format!("{}index.html", language.prefix.trim_start_matches('/'));
-            write_file(&options.output.join(path), redirect.as_bytes())?;
+            let stub = create_redirect(&url, language);
+            write_file(&options.output.join(path), stub.as_bytes())?;
+            let from = format!("{}{}", view.config.read_base(), language.prefix);
+            redirects.push(format!("{from}  {url}  302\n"));
         }
+    }
+    if !redirects.is_empty() {
+        let rules = create_redirects(&site, &redirects.concat())?;
+        write_file(&options.output.join("_redirects"), rules.as_bytes())?;
     }
     if !shipped("robots.txt") {
         write_file(
@@ -252,7 +261,7 @@ fn create_parent(path: &Path) -> crate::Result<()> {
 }
 
 // A language without a home page of its own sends `/<code>/` to its first page
-fn create_redirect(view: &Site, language: &SiteLanguage) -> Option<String> {
+fn find_home(view: &Site, language: &SiteLanguage) -> Option<String> {
     let home = |page: &Page| page.url == language.prefix && !page.untranslated;
     if view.pages.iter().any(home) {
         return None;
@@ -267,14 +276,28 @@ fn create_redirect(view: &Site, language: &SiteLanguage) -> Option<String> {
     let own = (view.pages.iter())
         .filter(|page| !page.untranslated && page.path != NOT_FOUND_PAGE);
     let first = (own.clone().find(|page| !generated(page))).or(own.clone().next())?;
-    let url = format!("{}{}", view.config.read_base(), first.url);
+    Some(format!("{}{}", view.config.read_base(), first.url))
+}
+
+// Only for hosts that ignore _redirects: the page paints before the refresh fires
+fn create_redirect(url: &str, language: &SiteLanguage) -> String {
     let url = url.replace('&', "&amp;").replace('"', "&quot;");
-    Some(format!(
+    format!(
         "<!doctype html>\n<html lang=\"{}\">\n<meta charset=\"utf-8\">\n\
          <meta http-equiv=\"refresh\" content=\"0; url={url}\">\n\
          <link rel=\"canonical\" href=\"{url}\">\n<a href=\"{url}\">{url}</a>\n</html>\n",
         language.locale
-    ))
+    )
+}
+
+// The first matching rule wins, so the project's own rules go before ours
+fn create_redirects(site: &Site, rules: &str) -> crate::Result<String> {
+    let Some(source) = site.files.get("_redirects") else {
+        return Ok(rules.to_owned());
+    };
+    let path = site.root.join(source);
+    let existing = std::fs::read_to_string(&path).map_err(Error::io(&path))?;
+    Ok(format!("{}\n\n{rules}", existing.trim_end()))
 }
 
 // The built-in page, in the default language: a host serves one 404 for every URL

@@ -26,7 +26,8 @@ htmlpress clear            # removes .htmlpress/build
 
 The output is `.htmlpress/build/`: an `index.html` per page in its own folder
 (`guides/build.html` at `guides/build/index.html`), `404.html`,
-`robots.txt`, `_headers`, a Markdown copy of each page and `llms.txt` for agents, the skills
+`robots.txt`, `_headers`, `_redirects` (when a language has no home page, its prefix to
+its first page, which Cloudflare and Netlify answer on the server), a Markdown copy of each page and `llms.txt` for agents, the skills
 under `.well-known/agent-skills/`, the theme under `_htmlpress/`, and every other project file.
 With `site` set it adds `sitemap.xml`. Never edit the output: every build replaces it.
 

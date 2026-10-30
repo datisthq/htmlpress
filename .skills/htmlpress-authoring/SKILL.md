@@ -74,6 +74,7 @@ file with `<meta name="language" content="<code>">`. It pairs with the original 
 language prefix, so a renamed one needs the same `<meta name="path">`. Untranslated pages stay
 listed in every language with a badge and link to the original. Without a translated home,
 `/<code>/` redirects to the language's first page.
+The same holds for the default language without an `index.html`.
 
 ## Headings
 

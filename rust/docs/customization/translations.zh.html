@@ -153,7 +153,9 @@ sections:
     <p>
       语言选择器把每种语言链接到当前页面在该语言中的版本，否则链接到该语言的首页。没有自己首页（<code>index.es.html</code>）的语言，会获得一个从
       <code>/es/</code> 到其第一个页面的重定向；没有
-      <code>index.html</code> 的默认语言也是如此。
+      <code>index.html</code> 的默认语言也是如此。读取
+      <code>_redirects</code> 的托管平台（如 Cloudflare 和 Netlify）以及
+      <code>htmlpress start</code> 会在服务器端重定向；其他平台则使用重定向页面。
     </p>
 
     <h2>界面文字</h2>

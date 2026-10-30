@@ -257,6 +257,8 @@ fn redirects_home_and_points_changelog_copies_at_the_default() -> TestResult {
     let build = root.path().join(".htmlpress/build");
     let home = std::fs::read_to_string(build.join("index.html"))?;
     assert!(home.contains(r#"url=/guide/"#), "{home}");
+    let redirects = std::fs::read_to_string(build.join("_redirects"))?;
+    assert_eq!(redirects, "/  /guide/  302\n/es/  /es/guide/  302\n");
     let copy = std::fs::read_to_string(build.join("es/changelog/index.html"))?;
     assert!(
         copy.contains(r#"<link rel="canonical" href="https://acme.dev/changelog/">"#)

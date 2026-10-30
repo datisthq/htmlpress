@@ -137,6 +137,9 @@ Never `root.join(path)` and read it directly.
 ## The dev server
 
 Both servers strip the base from each request (`strip_base`) and redirect `/` to it.
+They also answer the exact rules of the output's `_redirects` (`find_redirect`), where the
+build sends a missing home to its first page, so `start` never paints the refresh stub
+`index.html` that the build leaves for hosts without `_redirects`.
 `preview_site` builds without reload and serves through the same request loop, minus the
 watcher. `serve_site` builds with `reload: true`, serves the output with tiny_http (a thread per
 request) and rebuilds on notify events. Reload is a **long poll**, not SSE: tiny_http buffers

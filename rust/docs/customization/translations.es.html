@@ -166,7 +166,10 @@ sections:
       El selector de idioma enlaza cada idioma a la versión de esta página en él o, si no
       existe, a la página de inicio de ese idioma. Un idioma sin página de inicio propia,
       <code>index.es.html</code>, recibe una redirección de <code>/es/</code> a su primera
-      página; también el idioma predeterminado sin <code>index.html</code>.
+      página; también el idioma predeterminado sin <code>index.html</code>. Los hosts que
+      leen <code>_redirects</code>, como Cloudflare y Netlify, y
+      <code>htmlpress start</code>
+      redirigen en el servidor; los demás usan una página de redirección.
     </p>
 
     <h2>Textos de la interfaz</h2>

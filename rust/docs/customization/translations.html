@@ -162,7 +162,10 @@ sections:
       The language picker links each language to this page's version in it, else to that
       language's home. A language without a home page of its own,
       <code>index.es.html</code>, gets a redirect from <code>/es/</code> to its first
-      page; so does the default language without an <code>index.html</code>.
+      page; so does the default language without an <code>index.html</code>. Hosts that
+      read <code>_redirects</code>, such as Cloudflare and Netlify, and
+      <code>htmlpress start</code>
+      redirect on the server; others fall back to a redirect page.
     </p>
 
     <h2>UI strings</h2>
