@@ -130,3 +130,43 @@ fn strips_the_base_from_request_paths() {
     assert_eq!(strip_base("/repository/", "/repo"), None);
     assert_eq!(strip_base("/", "/repo"), None);
 }
+
+#[test]
+fn reading_the_config_feeds_no_events_back() -> crate::Result<()> {
+    let project = tempfile::tempdir().map_err(Error::io("tempdir"))?;
+    let root = project
+        .path()
+        .canonicalize()
+        .map_err(Error::io("canonicalize"))?;
+    std::fs::write(root.join(CONFIG_FILE), "title: a\n").map_err(Error::io("config"))?;
+    let options = BuildOptions::new(&root);
+    let (watched, raw) = channel();
+    let mut watcher = notify::recommended_watcher(watched)
+        .map_err(|error| Error::Usage(error.to_string()))?;
+    watcher
+        .watch(&root, RecursiveMode::Recursive)
+        .map_err(|error| Error::Usage(error.to_string()))?;
+    let (sender, events) = channel();
+    let access = notify::EventKind::Access(notify::event::AccessKind::Any);
+    let read = notify::Event::new(access).add_path(root.join(CONFIG_FILE));
+    let _ = sender.send(Ok(read));
+    let state = Reload::default();
+    let fed_back = std::thread::scope(|scope| {
+        let (options, state) = (&options, &state);
+        scope.spawn(move || rebuild_on_change(options, &events, state));
+        let mut fed_back = 0;
+        while let Ok(event) = raw.recv_timeout(Duration::from_millis(500)) {
+            fed_back += 1;
+            if fed_back > 100 || sender.send(event).is_err() {
+                break;
+            }
+        }
+        drop(sender);
+        fed_back
+    });
+    assert_eq!(
+        fed_back, 0,
+        "reading the config fed events back to the watcher"
+    );
+    Ok(())
+}

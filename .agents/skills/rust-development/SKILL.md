@@ -152,7 +152,9 @@ rewrites the output, so counting either would rebuild forever. `is_source_event`
 events, the output, other dot-folders, the bare `.htmlpress` folder and anything outside
 the include bases and `htmlpress.yaml`, but keeps files inside `.htmlpress/` such as an
 escape. `.htmlpress/cache/`, where a build stores GitHub releases, is dropped too: the
-build writes it, so it would rebuild forever.
+build writes it, so it would rebuild forever. Access events are dropped before anything else,
+even before `load_config` reads `htmlpress.yaml` for the bases: that read makes access events
+of its own, and handling them reads it again, a loop that spun a core while nothing changed.
 
 ## The CLI
 

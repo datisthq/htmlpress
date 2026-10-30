@@ -138,6 +138,11 @@ fn rebuild_on_change(options: &BuildOptions, events: &Events, state: &Reload) {
     let output = output.canonicalize().unwrap_or(output);
     let root = root.canonicalize().unwrap_or(root);
     while let Ok(event) = events.recv() {
+        // Reading the config makes access events of its own: let one through to it, and
+        // each read would read the config again, forever
+        if !is_change_event(&event) {
+            continue;
+        }
         let bases = match load_config(&root) {
             Ok(config) => read_bases(&config),
             Err(_) => vec![String::new()],
@@ -157,6 +162,12 @@ fn rebuild_on_change(options: &BuildOptions, events: &Events, state: &Reload) {
     }
 }
 
+fn is_change_event(event: &notify::Result<notify::Event>) -> bool {
+    event
+        .as_ref()
+        .is_ok_and(|event| !matches!(event.kind, notify::EventKind::Access(_)))
+}
+
 // A build reads every source and rewrites the output, so access events and anything under
 // the output, or the project folder itself, must not count: each would rebuild forever.
 // Outside the include bases nothing is read, so a `cargo build` beside docs/ is no change.
@@ -166,10 +177,10 @@ fn is_source_event(
     output: &Path,
     bases: &[String],
 ) -> bool {
-    let Ok(event) = event else { return false };
-    if matches!(event.kind, notify::EventKind::Access(_)) {
+    if !is_change_event(event) {
         return false;
     }
+    let Ok(event) = event else { return false };
     event.paths.iter().any(|path| {
         if path.starts_with(output) || path.starts_with(root.join(CACHE_DIR)) {
             return false;
