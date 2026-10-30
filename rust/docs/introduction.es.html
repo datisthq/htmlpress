@@ -288,6 +288,8 @@ built 6 pages and 0 files into docs/.htmlpress/build</code></pre>
       URL; <code>--host &lt;address&gt;</code> sirve en una. Con <code>base</code> en
       <code>htmlpress.yaml</code>, el sitio se sirve bajo esa ruta, las URL impresas la
       incluyen y <code>/</code> lleva allí; reinicia después de cambiar <code>base</code>.
+      <code>--open</code> abre el sitio en el navegador en cuanto escucha;
+      <code>--open &lt;path&gt;</code> abre esa página, bajo <code>base</code>.
       <code>--out</code> / <code>-o</code> funciona igual que en <code>build</code>.
     </p>
     <pre><code class="language-sh">$ htmlpress start docs --host
@@ -297,8 +299,8 @@ network http://192.168.1.107:8000</code></pre>
     <h3><code>htmlpress preview [root]</code></h3>
     <p>
       Compila el proyecto para producción y lo sirve tal como se desplegará: sin vigilar
-      cambios ni recargar. Acepta <code>--port</code>, <code>--host</code> y
-      <code>--out</code> como <code>start</code>.
+      cambios ni recargar. Acepta <code>--port</code>, <code>--host</code>,
+      <code>--open</code> y <code>--out</code> como <code>start</code>.
     </p>
 
     <h3><code>htmlpress clear [root]</code></h3>

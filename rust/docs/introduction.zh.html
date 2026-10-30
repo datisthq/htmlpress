@@ -270,8 +270,10 @@ built 6 pages and 0 files into docs/.htmlpress/build</code></pre>
       <code>--host &lt;address&gt;</code> 则只在一个地址上提供服务。如果在
       <code>htmlpress.yaml</code> 中设置了
       <code>base</code>，站点会在该路径下提供服务，打印的 URL 会包含它，<code>/</code>
-      会跳转到那里；修改 <code>base</code> 后需要重启。 <code>--out</code> /
-      <code>-o</code> 的作用与 <code>build</code> 相同。
+      会跳转到那里；修改 <code>base</code> 后需要重启。<code>--open</code>
+      会在服务启动后用浏览器打开站点；<code>--open &lt;path&gt;</code> 则打开
+      <code>base</code> 下的该页面。 <code>--out</code> / <code>-o</code> 的作用与
+      <code>build</code> 相同。
     </p>
     <pre><code class="language-sh">$ htmlpress start docs --host
 serving http://localhost:8000
@@ -280,8 +282,10 @@ network http://192.168.1.107:8000</code></pre>
     <h3><code>htmlpress preview [root]</code></h3>
     <p>
       以生产模式构建项目，并按部署后的样子提供服务：不监听文件，也不重载。与
-      <code>start</code> 一样接受 <code>--port</code>、<code>--host</code> 和
-      <code>--out</code>。
+      <code>start</code> 一样接受 <code>--port</code>、<code>--host</code>、<code
+        >--open</code
+      >
+      和 <code>--out</code>。
     </p>
 
     <h3><code>htmlpress clear [root]</code></h3>

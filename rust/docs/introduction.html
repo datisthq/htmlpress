@@ -270,6 +270,8 @@ built 6 pages and 0 files into docs/.htmlpress/build</code></pre>
       <code>--host &lt;address&gt;</code> serves on one. With <code>base</code> in
       <code>htmlpress.yaml</code> the site is served under it, the printed URLs include
       it, and <code>/</code> leads there; restart after changing <code>base</code>.
+      <code>--open</code> opens the site in the browser once it listens;
+      <code>--open &lt;path&gt;</code> opens that page, under <code>base</code>.
       <code>--out</code> / <code>-o</code> works as for <code>build</code>.
     </p>
     <pre><code class="language-sh">$ htmlpress start docs --host
@@ -279,7 +281,7 @@ network http://192.168.1.107:8000</code></pre>
     <h3><code>htmlpress preview [root]</code></h3>
     <p>
       Builds the project for production and serves it as it will be deployed: no watching,
-      no reload. Takes <code>--port</code>, <code>--host</code> and
+      no reload. Takes <code>--port</code>, <code>--host</code>, <code>--open</code> and
       <code>--out</code> like <code>start</code>.
     </p>
 

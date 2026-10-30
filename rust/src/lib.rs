@@ -7,6 +7,9 @@ mod actions {
         pub(crate) mod escape;
         pub(crate) mod list;
     }
+    pub(crate) mod browser {
+        pub(crate) mod open;
+    }
     pub(crate) mod changelog {
         pub(crate) mod fetch;
         pub(crate) mod split;

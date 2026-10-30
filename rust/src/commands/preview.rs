@@ -1,5 +1,6 @@
 use std::path::PathBuf;
 
+use crate::actions::browser::open::open_browser;
 use crate::actions::site::preview::preview_site;
 use crate::models::build::BuildOptions;
 
@@ -15,6 +16,9 @@ pub(crate) struct PreviewInput {
     /// Default: localhost only.
     #[fireargs(preset = "0.0.0.0")]
     host: Option<String>,
+    /// Open the site in the browser once it listens, at the given path. Default: /.
+    #[fireargs(preset = "/")]
+    open: Option<String>,
     /// The output folder; defaults to .htmlpress/build inside the project.
     #[fireargs(short = 'o')]
     out: Option<String>,
@@ -53,6 +57,9 @@ pub(crate) fn create_preview_command() -> fireargs::Command<PreviewInput, Previe
                 for (index, url) in urls.iter().enumerate() {
                     let label = if index == 0 { "serving" } else { "network" };
                     eprintln!("{label} {url}");
+                }
+                if let (Some(path), Some(url)) = (&input.open, urls.first()) {
+                    open_browser(url, path);
                 }
             })?;
             Ok(PreviewOutput {

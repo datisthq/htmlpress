@@ -161,7 +161,7 @@ component, not bare text.
 
 ```sh
 htmlpress build <root> --json   # {"output": "...", "pages": N, "files": N}; errors on stderr
-htmlpress start <root>          # http://localhost:8000 (or the next free port to 8009); --host for the network
+htmlpress start <root>          # http://localhost:8000 (or the next free port to 8009), --host for the network, --open [path] in the browser
 htmlpress start <root> --json   # {"url": "...", "network": []} on one line once serving
 htmlpress --llms                # every command's input and output schema
 ```
