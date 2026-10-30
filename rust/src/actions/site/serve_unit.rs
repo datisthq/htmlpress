@@ -146,6 +146,8 @@ fn reading_the_config_feeds_no_events_back() -> crate::Result<()> {
     watcher
         .watch(&root, RecursiveMode::Recursive)
         .map_err(|error| Error::Usage(error.to_string()))?;
+    // FSEvents can deliver the config's own creation after watching starts: let it pass
+    while raw.recv_timeout(Duration::from_millis(500)).is_ok() {}
     let (sender, events) = channel();
     let access = notify::EventKind::Access(notify::event::AccessKind::Any);
     let read = notify::Event::new(access).add_path(root.join(CONFIG_FILE));
