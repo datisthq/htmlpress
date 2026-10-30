@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/datisthq/htmlpress/compare/v0.4.2...v0.5.0) (2026-10-30)
+
+
+### Features
+
+* add --open to start and preview, like vite ([388face](https://github.com/datisthq/htmlpress/commit/388face8c09a56fc743996b4fc0c201dc4a351c5))
+
 ## [0.4.2](https://github.com/datisthq/htmlpress/compare/v0.4.1...v0.4.2) (2026-10-30)
 
 
