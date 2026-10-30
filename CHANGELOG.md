@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.2](https://github.com/datisthq/htmlpress/compare/v0.4.1...v0.4.2) (2026-10-30)
+
+
+### Bug Fixes
+
+* stop the dev server's watcher from spinning on its own config reads ([1995241](https://github.com/datisthq/htmlpress/commit/1995241b8cf00ecb6cb3e97bb7c62b1d1912148f))
+
 ## [0.4.1](https://github.com/datisthq/htmlpress/compare/v0.4.0...v0.4.1) (2026-10-29)
 
 
