@@ -1963,9 +1963,9 @@ dependencies = [
 
 [[package]]
 name = "textlane"
-version = "0.6.0"
+version = "0.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "da99c8ddc9bb2b1100a903abaf691c360cfc5c0b4acbfad49de5707793e07ced"
+checksum = "abbd172c69961d1a78b49afd3440b7e906a7fe08e281f15d3f3faea8dc5a5ca2"
 dependencies = [
  "serde",
  "serde_json",
@@ -1977,9 +1977,9 @@ dependencies = [
 
 [[package]]
 name = "textlane-core"
-version = "0.6.0"
+version = "0.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e2f69ed6cdcb5f3c582c90d1ec8ff470e8dd4775b57e305362dcc630b65d335b"
+checksum = "79d64fbb38edb7e42ffa3b70c1ce79d30120284f352ca430bacf2c1b8d996604"
 dependencies = [
  "bumpalo",
  "serde",
@@ -1988,9 +1988,9 @@ dependencies = [
 
 [[package]]
 name = "textlane-html"
-version = "0.6.0"
+version = "0.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d2fbe77adabc7d0304adf779551dc1566d7c732fe0ae329daa82a7f25ff18765"
+checksum = "5abb785663a781bd0c02bd604d6381572da198e56943dc349dff190b84b725b3"
 dependencies = [
  "bumpalo",
  "giallo",
@@ -2007,9 +2007,9 @@ dependencies = [
 
 [[package]]
 name = "textlane-md"
-version = "0.6.0"
+version = "0.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "426e6f708ae46ae6b9e39eac371c19a6f7af7ff7e31c20f170e3a0b5ae056473"
+checksum = "3216a96359bf2312c425504135b35dd647955dc4193576d9dfd765c58254c4e9"
 dependencies = [
  "bumpalo",
  "memchr",

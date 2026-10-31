@@ -20,8 +20,7 @@ fn colors_known_languages_in_both_themes() -> Result<(), String> {
 fn marks_lines_words_focus_and_numbers() -> Result<(), String> {
     let html = "<pre><code class=\"language-rust\" data-lines=\"1\" data-add=\"2\" \
                 data-remove=\"3\" data-error=\"4\" data-warning=\"5\" data-focus=\"1\" \
-                data-line-numbers=\"10\">let a = 1;\nlet b = 2;\nc\nd\ne</code></pre>\
-                <pre><code class=\"language-rust\" data-words=\"b\">let b = 2;</code></pre>";
+                data-words=\"b\" data-line-numbers=\"10\">let a = 1;\nlet b = 2;\nc\nd\ne</code></pre>";
     let colored = highlight_code(html, THEMES.0, THEMES.1)?;
     for class in [
         "line focused highlighted",
