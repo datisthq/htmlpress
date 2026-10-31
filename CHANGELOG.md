@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0](https://github.com/datisthq/htmlpress/compare/v0.5.1...v0.6.0) (2026-10-31)
+
+
+### Features
+
+* lead H and L across sections and from the landing page ([dc60d88](https://github.com/datisthq/htmlpress/commit/dc60d88aa03ef5c9306118c46137e1591ed0afe0))
+
 ## [0.5.1](https://github.com/datisthq/htmlpress/compare/v0.5.0...v0.5.1) (2026-10-30)
 
 
