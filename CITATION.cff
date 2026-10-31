@@ -2,7 +2,7 @@ cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 type: software
 title: Htmlpress
-abstract: Static site builder that turns a folder of HTML pages into a site with one layout, one theme and live reload, made for coding agents.
+abstract: Static site generator for humans and agents that turns a folder of Markdown and HTML pages into a site with one layout, one theme and live reload.
 authors:
   - family-names: Karev
     given-names: Evgeny

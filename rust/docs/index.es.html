@@ -1,7 +1,7 @@
 <title>Inicio</title>
 <meta
   name="description"
-  content="Convierte una carpeta de páginas HTML en un sitio: un layout, un tema, recarga en vivo, pensado para agentes."
+  content="Convierte una carpeta de páginas Markdown y HTML en un sitio: un layout, un tema, recarga en vivo, para humanos y agentes."
 />
 <meta name="layout" content="landing" />
 <meta name="sidebar" content="false" />
@@ -13,13 +13,15 @@
       <hgroup>
         <p>Código abierto · Licencia MIT</p>
         <h1>
-          El generador<br />de sitios estáticos<br /><mark>para HTML sencillo.</mark>
+          El generador<br />de sitios estáticos<br /><mark
+            >para la era de los agentes.</mark
+          >
         </h1>
       </hgroup>
       <p>
-        Escribe HTML semántico, o deja que tu agente lo escriba. Htmlpress añade layout,
-        tema, navegación y recarga en vivo, todo escapable. Ideal para documentación
-        interna en vivo y para publicar.
+        Escribe Markdown o HTML sencillo, o deja que tu agente lo escriba. Htmlpress añade
+        layout, tema, navegación y recarga en vivo, todo escapable. Ideal para
+        documentación interna y para publicar.
       </p>
       <htmlpress-landing-actions>
         <a href="/es/introduction/"
@@ -338,7 +340,7 @@
       <h2>No te estorba</h2>
       <p>
         Sin framework, sin configuración de compilación, sin estructura obligatoria. Una
-        carpeta de HTML ya es un proyecto.
+        carpeta de Markdown o HTML ya es un proyecto.
       </p>
     </header>
     <div>
@@ -355,10 +357,11 @@
               <path d="M3 5a2 2 0 0 0 2 2h3" />
               <path d="M3 3v13a2 2 0 0 0 2 2h3" />
             </svg>
-            <h3>Cualquier carpeta de HTML</h3>
+            <h3>Cualquier carpeta de páginas</h3>
             <p>
-              Una página es cualquier archivo <code>.html</code>, un documento completo o
-              un simple fragmento. Las carpetas se convierten en grupos de navegación, y
+              Una página es cualquier archivo <code>.md</code> o <code>.html</code>:
+              Markdown con frontmatter, o HTML desde un simple fragmento hasta un
+              documento completo. Las carpetas se convierten en grupos de navegación, y
               cualquier otro archivo se copia tal cual.
             </p>
           </li>
@@ -643,8 +646,8 @@ htmlpress.yaml</code></pre>
     <header>
       <h2>Pensado para agentes de programación</h2>
       <p>
-        Los agentes conocen HTML mejor que cualquier lenguaje de plantillas. Htmlpress
-        mantiene pequeño su trabajo y cada respuesta legible por máquinas.
+        Los agentes conocen Markdown y HTML mejor que cualquier lenguaje de plantillas.
+        Htmlpress mantiene pequeño su trabajo y cada respuesta legible por máquinas.
       </p>
     </header>
     <div>
@@ -674,7 +677,7 @@ $ htmlpress --llms</code></pre>
               <path d="M16 13H8" />
               <path d="M16 17H8" />
             </svg>
-            <h3>Entra HTML semántico sencillo</h3>
+            <h3>Entra Markdown o HTML sencillo</h3>
             <p>
               Sin framework, sin sintaxis que aprender, sin clases utilitarias: cuantas
               menos opciones ofrece una página, más se parecen las páginas a un mismo
@@ -764,8 +767,8 @@ $ htmlpress --llms</code></pre>
   <section>
     <h2>Empieza a escribir. <em>Deja que htmlpress se encargue del resto.</em></h2>
     <p>
-      Apunta htmlpress a una carpeta de HTML, escapa lo que quieras controlar y despliega.
-      Esa es toda la configuración.
+      Apunta htmlpress a una carpeta de Markdown o HTML, escapa lo que quieras controlar y
+      despliega. Esa es toda la configuración.
     </p>
     <htmlpress-landing-actions align="center">
       <a href="/es/introduction/"

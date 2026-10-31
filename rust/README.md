@@ -1,9 +1,10 @@
 # Htmlpress
 
-Htmlpress turns a folder of HTML pages into a site. Each page keeps its own markup, and
-htmlpress adds one layout, one theme, a navigation and a live-reloading dev server. It is
-made for coding agents: they write plain semantic HTML, and the result looks consistent
-without a framework, a build config or Tailwind.
+The static site generator for humans and agents. Htmlpress turns a folder of Markdown and
+HTML pages into a site. Each page keeps its own markup, and htmlpress adds one layout, one
+theme, a navigation and a live-reloading dev server. You or your agent write plain Markdown
+or semantic HTML, and the result looks consistent without a framework, a build config or
+Tailwind.
 
 ## Installation
 
@@ -20,7 +21,8 @@ htmlpress build docs --json # the result as JSON, for scripts and agents
 htmlpress --llms            # every command's input and output schema, for agents
 ```
 
-A page is any `.html` file in the folder: a full document or just a fragment. Its `<title>`
+A page is any `.md` or `.html` file in the folder: Markdown with frontmatter, or HTML from a
+fragment to a full document. Its `<title>`
 (else its first `<h1>`) names it in the navigation, `<meta name="order" content="1">` sorts it,
 and `index.html` comes first. Every other file is copied as-is.
 

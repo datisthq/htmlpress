@@ -12,14 +12,14 @@
   <body>
     <h1>Htmlpress</h1>
     <p>
-      Htmlpress 把一个装满 HTML
+      Htmlpress 是为人类与智能体打造的静态站点生成器。它把一个装满 Markdown 和 HTML
       页面的文件夹变成一个站点。每个页面保留自己的标记，htmlpress
       则添加一个布局、一套主题、一个导航和一个支持实时重载的开发服务器。它是一个 Rust
       二进制文件，可通过 npm、PyPI 或 crates.io 安装。
     </p>
     <p>
-      它是为编码智能体打造的。智能体编写纯粹的语义化 HTML——它们对 HTML
-      的了解远胜于任何模板语言——而每个页面最终看起来都属于同一个站点：没有框架，没有构建配置，没有工具类。
+      你或你的智能体编写纯 Markdown 或语义化
+      HTML——智能体对它们的了解远胜于任何模板语言——而每个页面最终看起来都属于同一个站点：没有框架，没有构建配置，没有工具类。
     </p>
 
     <htmlpress-callout type="warning">
@@ -29,10 +29,11 @@
     <h2>你将获得</h2>
     <ul>
       <li>
-        <strong>只需编写 HTML。</strong>页面就是任意
-        <code>.html</code> 文件，可以是完整文档，也可以是一个裸片段。它的
-        <code>&lt;title&gt;</code> 和 <code>&lt;meta&gt;</code> 标签承担了其他工具中
-        frontmatter 的作用。
+        <strong>只需编写 Markdown 或 HTML。</strong>页面可以是带 frontmatter 的任意
+        <code>.md</code> 文件，也可以是任意
+        <code>.html</code> 文件（完整文档或裸片段），其 <code>&lt;title&gt;</code> 和
+        <code>&lt;meta&gt;</code> 标签承担 frontmatter 的作用；参见
+        <a href="/zh/authoring/markdown-pages/">Markdown 页面</a>。
       </li>
       <li>
         <strong>基于元素的主题样式。</strong

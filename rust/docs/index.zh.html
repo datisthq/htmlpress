@@ -1,7 +1,7 @@
 <title>首页</title>
 <meta
   name="description"
-  content="把一个装满 HTML 页面的文件夹变成站点：一个布局、一套主题、实时重载，专为智能体打造。"
+  content="把一个装满 Markdown 和 HTML 页面的文件夹变成站点：一个布局、一套主题、实时重载，为人类与智能体打造。"
 />
 <meta name="layout" content="landing" />
 <meta name="sidebar" content="false" />
@@ -12,11 +12,11 @@
     <div>
       <hgroup>
         <p>开源 · MIT 许可证</p>
-        <h1>静态站点生成器，<br />专为<br /><mark>纯 HTML 而生。</mark></h1>
+        <h1>静态站点生成器，<br />为<br /><mark>智能体时代而生。</mark></h1>
       </hgroup>
       <p>
-        编写语义化 HTML，或让你的智能体来写。Htmlpress
-        添加布局、主题、导航和实时重载，均可弹出。适合实时内部文档，也适合对外发布。
+        编写 Markdown 或纯 HTML，或让你的智能体来写。Htmlpress
+        添加布局、主题、导航和实时重载，均可弹出。适合内部文档，也适合对外发布。
       </p>
       <htmlpress-landing-actions>
         <a href="/zh/introduction/"
@@ -331,7 +331,7 @@
     <header>
       <h2>绝不碍事</h2>
       <p>
-        没有框架，没有构建配置，没有强制的目录结构。一个装满 HTML
+        没有框架，没有构建配置，没有强制的目录结构。一个装满 Markdown 或 HTML
         的文件夹本身就是一个项目。
       </p>
     </header>
@@ -349,10 +349,11 @@
               <path d="M3 5a2 2 0 0 0 2 2h3" />
               <path d="M3 3v13a2 2 0 0 0 2 2h3" />
             </svg>
-            <h3>任意 HTML 文件夹</h3>
+            <h3>任意页面文件夹</h3>
             <p>
-              页面就是任意 <code>.html</code>
-              文件，可以是完整文档，也可以是一个裸片段。文件夹会成为导航分组，其他所有文件则原样复制。
+              页面就是任意 <code>.md</code> 或 <code>.html</code>
+              文件：带 frontmatter 的 Markdown，或从裸片段到完整文档的
+              HTML。文件夹会成为导航分组，其他所有文件则原样复制。
             </p>
           </li>
           <li>
@@ -626,7 +627,7 @@ htmlpress.yaml</code></pre>
     <header>
       <h2>为编码智能体打造</h2>
       <p>
-        智能体对 HTML 的了解远胜于任何模板语言。Htmlpress
+        智能体对 Markdown 和 HTML 的了解远胜于任何模板语言。Htmlpress
         让它们的工作保持简单，并让每个输出都可被机器读取。
       </p>
     </header>
@@ -657,7 +658,7 @@ $ htmlpress --llms</code></pre>
               <path d="M16 13H8" />
               <path d="M16 17H8" />
             </svg>
-            <h3>输入纯语义化 HTML</h3>
+            <h3>输入 Markdown 或纯 HTML</h3>
             <p>
               没有框架，没有需要学习的语法，没有工具类：页面提供的选择越少，所有页面看起来就越像同一个站点。
             </p>
@@ -744,7 +745,8 @@ $ htmlpress --llms</code></pre>
   <section>
     <h2>开始写作。<em>其余的交给 htmlpress。</em></h2>
     <p>
-      把 htmlpress 指向一个 HTML 文件夹，弹出你想掌控的部分，然后部署。全部设置就是这样。
+      把 htmlpress 指向一个 Markdown 或 HTML
+      文件夹，弹出你想掌控的部分，然后部署。全部设置就是这样。
     </p>
     <htmlpress-landing-actions align="center">
       <a href="/zh/introduction/"

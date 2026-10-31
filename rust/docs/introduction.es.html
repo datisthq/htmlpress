@@ -12,16 +12,17 @@
   <body>
     <h1>Htmlpress</h1>
     <p>
-      Htmlpress convierte una carpeta de páginas HTML en un sitio. Cada página conserva su
-      propio marcado, y htmlpress añade un layout, un tema, una navegación y un servidor
-      de desarrollo con recarga en vivo. Es un único binario de Rust, que se instala desde
+      Htmlpress es el generador de sitios estáticos para humanos y agentes. Convierte una
+      carpeta de páginas Markdown y HTML en un sitio. Cada página conserva su propio
+      marcado, y htmlpress añade un layout, un tema, una navegación y un servidor de
+      desarrollo con recarga en vivo. Es un único binario de Rust, que se instala desde
       npm, PyPI o crates.io.
     </p>
     <p>
-      Está pensado para agentes de programación. Escriben HTML semántico sencillo, que
-      conocen mejor que cualquier lenguaje de plantillas, y cada página acaba con el
-      aspecto del mismo sitio: sin framework, sin configuración de compilación, sin clases
-      utilitarias.
+      Escribes Markdown sencillo o HTML semántico, o deja que tu agente lo escriba: los
+      agentes los conocen mejor que cualquier lenguaje de plantillas, y cada página acaba
+      con el aspecto del mismo sitio: sin framework, sin configuración de compilación, sin
+      clases utilitarias.
     </p>
 
     <htmlpress-callout type="warning">
@@ -34,10 +35,12 @@
     <h2>Qué obtienes</h2>
     <ul>
       <li>
-        <strong>Solo escribe HTML.</strong> Una página es cualquier archivo
-        <code>.html</code>, un documento completo o un simple fragmento. Sus etiquetas
-        <code>&lt;title&gt;</code> y <code>&lt;meta&gt;</code> hacen lo que en otras
-        herramientas hace el frontmatter.
+        <strong>Solo escribe Markdown o HTML.</strong> Una página es cualquier archivo
+        <code>.md</code> con frontmatter, o cualquier archivo <code>.html</code>, un
+        documento completo o un simple fragmento, cuyas etiquetas
+        <code>&lt;title&gt;</code> y <code>&lt;meta&gt;</code> hacen lo que hace el
+        frontmatter; consulta
+        <a href="/es/authoring/markdown-pages/">Páginas Markdown</a>.
       </li>
       <li>
         <strong>Un tema que estiliza los elementos.</strong> Los encabezados, las tablas,

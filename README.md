@@ -1,8 +1,8 @@
 # Htmlpress
 
-Turn a folder of HTML pages into a site: one layout, one theme, a navigation and a
-live-reloading dev server — made for coding agents, which write plain semantic HTML better
-than any templating language.
+The static site generator for humans and agents. Turn a folder of Markdown and HTML pages
+into a site: one layout, one theme, a navigation and a live-reloading dev server — no
+framework, no templating language, so you or your agent just write the pages.
 
 | Channel   | Package                                                           | Install                                             |
 | --------- | ----------------------------------------------------------------- | --------------------------------------------------- |
