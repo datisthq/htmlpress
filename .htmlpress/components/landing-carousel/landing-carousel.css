@@ -3,7 +3,8 @@
     position: relative;
     display: block;
   }
-  :scope:not(:defined) > section:not(:first-of-type) {
+  :scope:not(:defined) > section:not(:first-of-type),
+  :scope:not(:defined) > section > svg {
     display: none;
   }
   :scope > figure {
@@ -38,6 +39,7 @@
     display: flex;
     gap: 0.25rem;
     min-width: 0;
+    overflow-x: auto;
   }
   [role="tab"] {
     position: relative;
@@ -70,10 +72,11 @@
       0 1px 3px 0 oklch(0 0 0 / 0.1),
       0 1px 2px -1px oklch(0 0 0 / 0.1);
   }
-  [role="tab"] > span:first-child {
-    font: 0.75rem var(--htmlpress-mono);
+  [role="tab"] > svg[aria-hidden] {
+    width: 1rem;
+    height: 1rem;
   }
-  [role="tab"][aria-selected="true"] > span:first-child {
+  [role="tab"][aria-selected="true"] > svg[aria-hidden] {
     color: var(--htmlpress-accent);
   }
   [role="tab"] > span[aria-hidden] {
@@ -190,9 +193,17 @@
     }
   }
   @media (max-width: 40rem) {
-    header > span,
-    [role="tab"]:not([aria-selected="true"]) > span:nth-child(2) {
+    header > span {
       display: none;
+    }
+    /* Only the icon shows, but the title still names the tab */
+    [role="tab"]:not([aria-selected="true"]) > span:not([aria-hidden]) {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
     }
   }
   @media (min-width: 64rem) {

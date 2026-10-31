@@ -1,5 +1,6 @@
 // Every slide is in the HTML, stacked in one grid cell; only the active one is shown and
 // reachable. A slide's source chip moves out of the window, so the window's crop misses it.
+// A slide's own <svg> becomes its tab icon; the carousel's `label` names the tab list.
 
 class LandingCarousel extends HTMLElement {
   connectedCallback() {
@@ -11,6 +12,7 @@ class LandingCarousel extends HTMLElement {
     dots.setAttribute("aria-hidden", "true")
     const list = document.createElement("div")
     list.setAttribute("role", "tablist")
+    list.setAttribute("aria-label", this.getAttribute("label") ?? "Examples")
     const panels = document.createElement("div")
     const chips = document.createElement("aside")
     chips.setAttribute("aria-label", "Page source")
@@ -21,11 +23,12 @@ class LandingCarousel extends HTMLElement {
       tab.id = `${id}-tab`
       tab.setAttribute("role", "tab")
       tab.setAttribute("aria-controls", id)
-      const number = document.createElement("span")
-      number.textContent = String(index + 1).padStart(2, "0")
+      tab.title = slide.title
       const title = document.createElement("span")
       title.textContent = slide.title
-      tab.append(number, title)
+      const icon = slide.querySelector(":scope > svg")
+      if (icon) tab.append(icon)
+      tab.append(title)
       tab.addEventListener("click", () => this.stop(index))
       list.append(tab)
       slide.id = id
