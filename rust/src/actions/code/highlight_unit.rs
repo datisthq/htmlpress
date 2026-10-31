@@ -1,4 +1,18 @@
-use super::{has_theme, highlight_code};
+use super::has_theme;
+use crate::actions::page::read::{finish_page, read_source};
+use crate::actions::pipeline::create::create_pipeline;
+use crate::models::pipeline::PipelineOptions;
+
+// A page's content once the pipeline has colored it with `light` and `dark`
+fn highlight_code(html: &str, light: &str, dark: &str) -> Result<String, String> {
+    let options = PipelineOptions {
+        themes: Some((light.to_owned(), dark.to_owned())),
+        ..PipelineOptions::default()
+    };
+    let mut page = read_source("a.html", html).map_err(|e| e.to_string())?;
+    finish_page(&mut page, &create_pipeline(&options)?).map_err(|e| e.to_string())?;
+    Ok(page.content)
+}
 
 const THEMES: (&str, &str) = ("catppuccin-latte", "catppuccin-mocha");
 

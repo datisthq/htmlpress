@@ -305,3 +305,58 @@ fn refuses_a_patch_or_changelog_that_reads_outside_the_project() -> crate::Resul
     }
     Ok(())
 }
+
+#[test]
+fn colors_code_blocks_with_the_configured_themes() -> crate::Result<()> {
+    let root = tempfile::tempdir().map_err(Error::io("tempdir"))?;
+    let root = root.path();
+    write_file(
+        root,
+        "index.html",
+        "<pre><code class=\"language-js\">let a = 1</code></pre>",
+    )?;
+    let site = scan_site(root)?;
+    let content = &site.pages[0].content;
+    assert!(
+        content.contains("color:#8839EF;--shiki-dark:#CBA6F7"),
+        "{content}"
+    );
+    write_file(
+        root,
+        "htmlpress.yaml",
+        "codeThemeLight: github-light\ncodeThemeDark: github-dark\n",
+    )?;
+    let content = scan_site(root)?.pages[0].content.clone();
+    assert!(
+        !content.contains("#8839EF") && content.contains("--shiki-dark:"),
+        "{content}"
+    );
+    Ok(())
+}
+
+#[test]
+fn reads_each_page_into_content_toc_and_markdown() -> crate::Result<()> {
+    let root = tempfile::tempdir().map_err(Error::io("tempdir"))?;
+    let root = root.path();
+    write_file(
+        root,
+        "guide.html",
+        "<title>Guide</title><h1>Guide</h1><h2>Run :rocket:</h2><p>See $x_1$ and index.html.</p>",
+    )?;
+    let site = scan_site(root)?;
+    let page = &site.pages[0];
+    assert_eq!(page.toc.len(), 1);
+    assert!(
+        page.content.contains("<htmlpress-math data-latex=\"x_1\">"),
+        "{}",
+        page.content
+    );
+    assert!(page.markdown.starts_with("# Guide\n"), "{}", page.markdown);
+    assert!(page.markdown.contains("$x_1$"), "{}", page.markdown);
+    assert!(
+        !page.markdown.contains("# Guide\n\n# Guide"),
+        "{}",
+        page.markdown
+    );
+    Ok(())
+}

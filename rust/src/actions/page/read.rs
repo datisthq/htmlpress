@@ -4,39 +4,38 @@ use std::rc::Rc;
 use lol_html::html_content::ContentType;
 use lol_html::html_content::Element;
 use lol_html::{RewriteStrSettings, doc_text, doctype, element, rewrite_str, text};
+use textlane::{Allocator, File};
 
 use crate::actions::icon::render::{list_icons, render_icon};
 use crate::actions::package::convert::{MANAGERS, convert_command};
-use crate::actions::page::transform::transform_page;
+use crate::actions::pipeline::create::create_pipeline;
 use crate::models::error::Error;
 use crate::models::page::{Heading, Page, SourceAction};
+use crate::models::pipeline::{Pipeline, PipelineOptions};
 use crate::settings::NOT_FOUND_PAGE;
+
+thread_local! {
+    static DEFAULT: Result<Pipeline, String> = create_pipeline(&PipelineOptions::default());
+}
 
 /// Split one HTML source into a [`Page`]. `path` is relative to the project root. A full
 /// document and a bare fragment both work: the wrappers are dropped, the content kept.
 pub fn read_page(path: &str, html: &str) -> crate::Result<Page> {
-    // First, so the title, the table of contents and the content all read the same text
-    let html = &transform_page(html).map_err(Error::page(path))?;
+    let mut page = read_source(path, html)?;
+    DEFAULT.with(|pipeline| match pipeline {
+        Ok(pipeline) => finish_page(&mut page, pipeline),
+        Err(message) => Err(Error::page(path)(message.clone())),
+    })?;
+    Ok(page)
+}
+
+/// A page's facts, read from its source without parsing it: title, metas, URL. Its
+/// `content` holds the source until [`finish_page`] makes it the page.
+pub(crate) fn read_source(path: &str, html: &str) -> crate::Result<Page> {
     let facts = read_facts(html).map_err(Error::page(path))?;
-    let headings = create_ids(facts.headings);
-    let content =
-        read_content(html, &headings, facts.has_head).map_err(Error::page(path))?;
-    let toc = headings
-        .into_iter()
-        .filter(|(_, listed)| *listed)
-        .map(|(heading, _)| heading)
-        .collect();
-    let head = match facts.has_head {
-        true => read_head(html).map_err(Error::page(path))?,
-        false => read_fragment_head(html).map_err(Error::page(path))?,
-    };
     let output = match &facts.route {
         Some(route) => create_route_path(route).map_err(Error::page(path))?,
         None => path.to_owned(),
-    };
-    let toc = match facts.toc {
-        true => toc,
-        false => vec![],
     };
     let title = [facts.title, facts.heading]
         .into_iter()
@@ -65,10 +64,80 @@ pub fn read_page(path: &str, html: &str) -> crate::Result<Page> {
         image: facts.image,
         order: facts.order,
         layout: facts.layout,
-        head,
-        content,
-        toc,
+        head: String::new(),
+        content: html.to_owned(),
+        toc: vec![],
+        markdown: String::new(),
     })
+}
+
+/// Make a page read by [`read_source`] whole, parsing its source once: the pipeline's
+/// prose, math, heading ids, links and code colors, then its content and extra head tags,
+/// its table of contents and its Markdown copy, all from that one tree.
+pub(crate) fn finish_page(page: &mut Page, pipeline: &Pipeline) -> crate::Result<()> {
+    let path = page.source.clone();
+    let fail = |message: String| Error::page(&path)(message);
+    let source = std::mem::take(&mut page.content);
+    let prepared = prepare_content(&source).map_err(fail)?;
+    let document = is_document(&source);
+    let processor = match document {
+        true => &pipeline.document,
+        false => &pipeline.fragment,
+    };
+    let alloc = Allocator::new();
+    let mut file = File::new();
+    file.path = Some(page.source.clone());
+    let failed = |error: textlane::Error| error.message;
+    let tree = processor
+        .parse(&prepared, &mut file, &alloc)
+        .map_err(failed)
+        .map_err(fail)?;
+    let tree = processor
+        .run_sync(tree, &mut file, &alloc)
+        .map_err(failed)
+        .map_err(fail)?;
+    // KaTeX reports bad LaTeX as a message and draws it red; a page must not ship that
+    let math = file.messages.iter().find(|message| {
+        matches!(message.rule.as_deref(), Some("parseerror" | "rangeerror"))
+    });
+    if let Some(message) = math {
+        return Err(fail(format!("invalid math: {}", message.reason)));
+    }
+    let html = processor
+        .stringify(&tree, &mut file)
+        .map_err(failed)
+        .map_err(fail)?;
+    let html = name_references(&html);
+    let facts = read_facts(&html).map_err(fail)?;
+    let headings = create_ids(facts.headings);
+    page.content = read_content(&html, &headings, document).map_err(fail)?;
+    page.head = match document {
+        true => read_head(&html).map_err(fail)?,
+        false => read_fragment_head(&html).map_err(fail)?,
+    };
+    page.toc = match facts.toc {
+        true => (headings.into_iter())
+            .filter(|(_, listed)| *listed)
+            .map(|(heading, _)| heading)
+            .collect(),
+        false => vec![],
+    };
+    let mut file = File::new();
+    let tree = (pipeline.markdown.run_sync(tree, &mut file, &alloc))
+        .map_err(failed)
+        .map_err(fail)?;
+    let body = (pipeline.markdown.stringify(&tree, &mut file))
+        .map_err(failed)
+        .map_err(fail)?;
+    let mut parts = vec![format!("# {}", page.title)];
+    if let Some(description) = &page.description {
+        parts.push(format!("> {description}"));
+    }
+    if !body.trim().is_empty() {
+        parts.push(body.trim().to_owned());
+    }
+    page.markdown = format!("{}\n", parts.join("\n\n"));
+    Ok(())
 }
 
 #[derive(Default)]
@@ -338,15 +407,11 @@ const UNLISTED_HEADINGS: &[&str] = &[
     "htmlpress-tabs h4",
 ];
 
-fn read_content(
-    html: &str,
-    headings: &[(Heading, bool)],
-    has_head: bool,
-) -> Result<String, String> {
-    let index = Cell::new(0);
-    let lead = Rc::new(Lead::default());
+// What becomes plain HTML before the parse: package tabs into tabs of code blocks, so they
+// are colored like any other, icons into their SVG, and themed images into the attribute
+fn prepare_content(html: &str) -> Result<String, String> {
     let commands = Rc::new(RefCell::new(String::new()));
-    let mut settings = RewriteStrSettings::new()
+    let settings = RewriteStrSettings::new()
         // Expanded here, not in the browser, so the tabs component and the copy buttons
         // treat each manager's command like any other code block
         .append_element_content_handler(element!("htmlpress-package-tabs", |el| {
@@ -383,15 +448,6 @@ fn read_content(
             chunk.remove();
             Ok(())
         }))
-        .append_element_content_handler(element!("h2, h3, h4, h5, h6", |el| {
-            if let Some((heading, _)) = headings.get(index.get())
-                && el.get_attribute("id").is_none_or(|id| id.is_empty())
-            {
-                el.set_attribute("id", &heading.id)?;
-            }
-            index.set(index.get() + 1);
-            Ok(())
-        }))
         // Livemark's `#light` and `#dark` image suffixes, as the attribute the theme reads
         .append_element_content_handler(element!("img[src]", |el| {
             let src = el.get_attribute("src").unwrap_or_default();
@@ -401,6 +457,48 @@ fn read_content(
                     el.set_attribute("data-theme", theme)?;
                 }
             }
+            Ok(())
+        }));
+    rewrite_str(html, settings).map_err(|error| error.to_string())
+}
+
+// textlane writes `&`, `<`, `"` and `'` as hexadecimal references; htmlpress reads
+// attribute values as written, so a `&#x27;` would show in a description, escaped twice
+fn name_references(html: &str) -> String {
+    html.replace("&#x26;", "&amp;")
+        .replace("&#x3C;", "&lt;")
+        .replace("&#x22;", "&quot;")
+        .replace("&#x27;", "'")
+}
+
+// A page with its own `<html>` or `<head>` is a document; anything else a fragment, whose
+// leading `<title>` and metas stay where they are
+fn is_document(html: &str) -> bool {
+    let lower = html.to_ascii_lowercase();
+    ["<html", "<head"].iter().any(|tag| {
+        lower.match_indices(tag).any(|(at, _)| {
+            (lower.as_bytes().get(at + tag.len())).is_some_and(|next| {
+                matches!(next, b'>' | b' ' | b'\t' | b'\n' | b'\r' | b'/')
+            })
+        })
+    })
+}
+
+fn read_content(
+    html: &str,
+    headings: &[(Heading, bool)],
+    has_head: bool,
+) -> Result<String, String> {
+    let index = Cell::new(0);
+    let lead = Rc::new(Lead::default());
+    let mut settings = RewriteStrSettings::new()
+        .append_element_content_handler(element!("h2, h3, h4, h5, h6", |el| {
+            if let Some((heading, _)) = headings.get(index.get())
+                && el.get_attribute("id").is_none_or(|id| id.is_empty())
+            {
+                el.set_attribute("id", &heading.id)?;
+            }
+            index.set(index.get() + 1);
             Ok(())
         }))
         .append_document_content_handler(doctype!(|doctype| {

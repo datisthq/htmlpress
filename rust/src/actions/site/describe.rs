@@ -1,7 +1,7 @@
 use sha2::{Digest, Sha256};
 
 use crate::actions::nav::build::build_nav;
-use crate::actions::page::convert::{convert_page, create_markdown_path};
+use crate::actions::page::convert::create_markdown_path;
 use crate::actions::section::find::find_section;
 use crate::models::error::Error;
 use crate::models::nav::NavNode;
@@ -41,7 +41,7 @@ pub(crate) fn describe_language(
         .collect();
     let mut files = vec![];
     for page in &pages {
-        let markdown = convert_page(page)?;
+        let markdown = page.markdown.clone();
         files.push((create_markdown_path(&page.path), markdown.into_bytes()));
     }
     let folder = prefix.trim_start_matches('/');

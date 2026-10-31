@@ -1,3 +1,4 @@
+use std::collections::hash_map::Entry;
 use std::collections::{BTreeMap, HashMap};
 use std::path::Path;
 
@@ -9,16 +10,18 @@ use crate::actions::language::resolve::resolve_languages;
 use crate::actions::page::compile::compile_markdown;
 use crate::actions::page::include::resolve_includes;
 use crate::actions::page::patch::patch_page;
-use crate::actions::page::read::{is_layout_name, read_page};
-use crate::actions::page::rebase::{list_links, rebase_page};
+use crate::actions::page::read::{finish_page, is_layout_name, read_source};
+use crate::actions::page::rebase::{list_links, read_root, rebase_image};
 use crate::actions::path::contain::read_contained;
 use crate::actions::path::select::{Selection, read_bases, select_paths};
+use crate::actions::pipeline::create::create_pipeline;
 use crate::actions::section::generate::generate_pages;
 use crate::actions::skill::load::load_skills;
 use crate::models::asset::{COMPONENT_PREFIX, read_component_path};
 use crate::models::config::Config;
 use crate::models::error::Error;
 use crate::models::page::Page;
+use crate::models::pipeline::{Pipeline, PipelineOptions};
 use crate::models::site::Site;
 use crate::settings::{ASSETS, CONFIG_FILE, NOT_FOUND_PAGE, PROJECT_DIR};
 
@@ -75,7 +78,7 @@ pub fn scan_site(root: &Path) -> crate::Result<Site> {
         };
         let html = resolve_includes(root, source, &html, &components)
             .map_err(Error::page(source))?;
-        let page = read_page(path, &html).map_err(|error| match error {
+        let page = read_source(path, &html).map_err(|error| match error {
             Error::Page { message, .. } => Error::Page {
                 path: source.clone(),
                 message,
@@ -111,10 +114,32 @@ pub fn scan_site(root: &Path) -> crate::Result<Site> {
     pages.extend(generated);
     let bases = read_bases(&config);
     let links = list_links(&pages, &bases);
-    let mut processors = HashMap::new();
+    // One parse a page, now that every page's URL is known for the links between them
+    let (light, dark) = config.read_code_themes();
+    let mut pipelines: HashMap<Option<String>, Pipeline> = HashMap::new();
     for page in &mut pages {
-        rebase_page(page, &bases, &links, &mut processors)
-            .map_err(Error::page(&page.source))?;
+        rebase_image(page, &bases);
+        let base = match page.source.is_empty() {
+            true => None,
+            false => Some(read_root(&page.source, &bases).unwrap_or_default()),
+        };
+        let pipeline = match pipelines.entry(base.clone()) {
+            Entry::Occupied(entry) => entry.into_mut(),
+            Entry::Vacant(entry) => {
+                let options = PipelineOptions {
+                    rebase: base,
+                    links: links.clone(),
+                    themes: Some((light.to_owned(), dark.to_owned())),
+                };
+                entry.insert(create_pipeline(&options).map_err(|message| {
+                    Error::Config {
+                        path: root.join(CONFIG_FILE),
+                        message,
+                    }
+                })?)
+            }
+        };
+        finish_page(page, pipeline)?;
     }
     sort_pages(&mut pages);
 
@@ -188,8 +213,8 @@ fn read_patched_file(
         .filter(|base| !base.is_empty())
         .find_map(|base| stem.strip_prefix(&format!("{base}/")))
         .unwrap_or(stem);
-    let page =
-        read_page(&format!("{output}.html"), &html).map_err(|error| error.to_string())?;
+    let page = read_source(&format!("{output}.html"), &html)
+        .map_err(|error| error.to_string())?;
     Ok(Page {
         source: file.to_owned(),
         ..page

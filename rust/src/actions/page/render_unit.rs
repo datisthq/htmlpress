@@ -680,26 +680,6 @@ fn leads_a_custom_section_to_the_pages_translation() -> crate::Result<()> {
 }
 
 #[test]
-fn colors_code_blocks_with_the_configured_themes() -> crate::Result<()> {
-    let mut site = create_site()?;
-    site.pages[1] = read_page(
-        "guide.html",
-        "<pre><code class=\"language-js\">let a = 1</code></pre>",
-    )?;
-    let html = render_page(&site, &site.pages[1], false)?;
-    assert!(
-        html.contains("color:#8839EF;--shiki-dark:#CBA6F7"),
-        "{html}"
-    );
-    site.config.code_theme_light = Some("github-light".to_owned());
-    site.config.code_theme_dark = Some("github-dark".to_owned());
-    let html = render_page(&site, &site.pages[1], false)?;
-    assert!(!html.contains("#8839EF") && html.contains("--shiki-dark:"));
-    assert!(!site.pages[1].content.contains("--shiki-dark"));
-    Ok(())
-}
-
-#[test]
 fn fills_an_inline_toc_written_in_the_page() -> crate::Result<()> {
     let mut site = create_site()?;
     site.pages[1] = read_page(

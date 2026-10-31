@@ -59,6 +59,9 @@ pub struct Page {
     pub content: String,
     /// The `<h2>` to `<h4>` headings, in order, for the page's table of contents.
     pub toc: Vec<Heading>,
+    /// The page as the Markdown agents read: its title and description, then its content.
+    #[serde(skip)]
+    pub markdown: String,
 }
 
 /// What the page's source link offers.

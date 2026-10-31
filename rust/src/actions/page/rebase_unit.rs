@@ -1,6 +1,30 @@
 use std::collections::BTreeMap;
 
 use super::*;
+use crate::actions::page::read::{finish_page, read_source};
+use crate::actions::pipeline::create::create_pipeline;
+use crate::models::pipeline::PipelineOptions;
+
+// A page read from `html` at `source` and finished as the scan finishes it under `docs/`
+fn finish(
+    path: &str,
+    source: &str,
+    html: &str,
+    links: BTreeMap<String, String>,
+) -> Result<Page, String> {
+    let mut page = Page {
+        source: source.into(),
+        ..read_source(path, html).map_err(|e| e.to_string())?
+    };
+    rebase_image(&mut page, &["docs/".to_owned()]);
+    let options = PipelineOptions {
+        rebase: Some("docs".into()),
+        links,
+        themes: None,
+    };
+    finish_page(&mut page, &create_pipeline(&options)?).map_err(|e| e.to_string())?;
+    Ok(page)
+}
 
 #[test]
 fn strips_the_include_base_from_the_source_folder() {
@@ -14,25 +38,12 @@ fn strips_the_include_base_from_the_source_folder() {
 
 #[test]
 fn rebases_the_urls_of_a_page_served_at_its_folder() -> Result<(), String> {
-    let mut page = Page {
-        source: "docs/guide.es.html".into(),
-        url: "/es/guide/".into(),
-        image: Some("cover.png".into()),
-        head: r#"<link rel="stylesheet" href="guide.css">"#.into(),
-        content: concat!(
-            r#"<img src="shot.png" srcset="shot.png 1x, /big.png 2x">"#,
-            r#"<a href="data.csv">x</a><video poster="p.jpg"></video>"#,
-        )
-        .into(),
-        ..crate::actions::page::read::read_page("guide.html", "")
-            .map_err(|e| e.to_string())?
-    };
-    rebase_page(
-        &mut page,
-        &["docs/".to_owned()],
-        &BTreeMap::new(),
-        &mut Default::default(),
-    )?;
+    let html = concat!(
+        r#"<meta name="image" content="cover.png"><link rel="stylesheet" href="guide.css">"#,
+        r#"<img src="shot.png" srcset="shot.png 1x, /big.png 2x">"#,
+        r#"<a href="data.csv">x</a><video poster="p.jpg"></video>"#,
+    );
+    let page = finish("guide.es.html", "docs/guide.es.html", html, BTreeMap::new())?;
     assert_eq!(page.image.as_deref(), Some("/cover.png"));
     assert_eq!(page.head, r#"<link rel="stylesheet" href="/guide.css">"#);
     assert_eq!(
@@ -48,7 +59,7 @@ fn rebases_the_urls_of_a_page_served_at_its_folder() -> Result<(), String> {
 #[test]
 fn links_a_page_file_to_its_url() -> Result<(), String> {
     let read = |path: &str, source: &str| -> Result<Page, String> {
-        let page = crate::actions::page::read::read_page(path, "");
+        let page = read_source(path, "");
         Ok(Page {
             source: source.into(),
             ..page.map_err(|e| e.to_string())?
@@ -56,18 +67,13 @@ fn links_a_page_file_to_its_url() -> Result<(), String> {
     };
     let other = read("es/other.html", "docs/other.es.html")?;
     let index = read("guides/index.html", "docs/guides/index.html")?;
-    let bases = ["docs/".to_owned()];
-    let links = list_links(&[other, index], &bases);
-    let mut page = Page {
-        content: concat!(
-            r#"<a href="other.es.html#a">x</a><a href="/es/other.html?q=1">x</a>"#,
-            r#"<a href="guides/index.html">x</a><a href="missing.html">x</a>"#,
-            r#"<img src="other.es.html">"#,
-        )
-        .into(),
-        ..read("guide.html", "docs/guide.html")?
-    };
-    rebase_page(&mut page, &bases, &links, &mut Default::default())?;
+    let links = list_links(&[other, index], &["docs/".to_owned()]);
+    let html = concat!(
+        r#"<a href="other.es.html#a">x</a><a href="/es/other.html?q=1">x</a>"#,
+        r#"<a href="guides/index.html">x</a><a href="missing.html">x</a>"#,
+        r#"<img src="other.es.html">"#,
+    );
+    let page = finish("guide.html", "docs/guide.html", html, links)?;
     assert_eq!(
         page.content,
         concat!(

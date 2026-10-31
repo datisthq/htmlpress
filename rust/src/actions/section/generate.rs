@@ -5,7 +5,7 @@ use crate::actions::changelog::fetch::{fetch_releases, is_github_source};
 use crate::actions::changelog::split::split_changelog;
 use crate::actions::date::format::format_date;
 use crate::actions::language::detect::create_key;
-use crate::actions::page::read::read_page;
+use crate::actions::page::read::read_source;
 use crate::actions::path::contain::read_contained;
 use crate::models::config::{Section, SectionKind};
 use crate::models::error::Error;
@@ -215,7 +215,7 @@ fn read_newest(posts: &[&Page]) -> Option<String> {
 }
 
 fn create_page(path: &str, html: &str, source: &str) -> crate::Result<Page> {
-    let page = read_page(path, html)?;
+    let page = read_source(path, html)?;
     Ok(Page {
         source: source.to_owned(),
         ..page

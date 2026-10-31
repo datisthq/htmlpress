@@ -10,7 +10,7 @@ fn converts_a_page_with_its_title_and_description() -> crate::Result<()> {
          <pre><code>htmlpress build</code></pre>",
     )?;
     assert_eq!(
-        convert_page(&page)?,
+        page.markdown.clone(),
         "# Guide\n\n> How to.\n\nRun `build`.\n\n- One\n- Two\n\n```\nhtmlpress build\n```\n"
     );
     Ok(())
@@ -27,7 +27,7 @@ fn reduces_components_to_plain_markdown() -> crate::Result<()> {
          <htmlpress-terminal><pre><kbd>ls</kbd></pre></htmlpress-terminal>\
          <script>alert(1)</script>",
     )?;
-    let markdown = convert_page(&page)?;
+    let markdown = page.markdown.clone();
     assert!(
         markdown.contains("> **Warning**\n>\n> Careful."),
         "{markdown}"
@@ -54,7 +54,11 @@ fn names_a_titled_block_before_its_fence() -> crate::Result<()> {
         "a.html",
         "<h1>A</h1><pre data-title=\"a.yaml\"><code>x: 1</code></pre>",
     )?;
-    assert!(convert_page(&page)?.contains("**a.yaml**\n\n```\nx: 1\n```"));
+    assert!(
+        page.markdown
+            .clone()
+            .contains("**a.yaml**\n\n```\nx: 1\n```")
+    );
     Ok(())
 }
 
@@ -64,7 +68,7 @@ fn writes_math_back_as_latex() -> crate::Result<()> {
         "a.html",
         "<h1>A</h1><p>Inline $x_1^2$ here.</p><p>$$\\frac{a}{b}$$</p>",
     )?;
-    let markdown = convert_page(&page)?;
+    let markdown = page.markdown.clone();
     assert!(markdown.contains("Inline $x_1^2$ here."), "{markdown}");
     assert!(markdown.contains("$$\n\\frac{a}{b}\n$$"), "{markdown}");
     Ok(())

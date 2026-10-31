@@ -1,51 +1,26 @@
-use std::collections::hash_map::Entry;
-use std::collections::{BTreeMap, HashMap};
+use std::collections::BTreeMap;
 
-use textlane::{File, FrozenProcessor, Processor, html, resolve_url};
-
-use crate::actions::page::transform::name_references;
+use textlane::resolve_url;
 
 use crate::models::page::Page;
 
-/// Make a page's relative URLs (`href`, `src`, `srcset`, `poster`), in its content and
-/// head, and its `image` root-relative, resolved from the folder its source file sits in:
-/// served at its own folder URL, a page would otherwise point one level too deep. A link
-/// to a page's file (`/guide.html`, `guide.es.html`) then takes that page's URL from `links`.
-pub(crate) fn rebase_page(
-    page: &mut Page,
-    bases: &[String],
-    links: &BTreeMap<String, String>,
-    processors: &mut HashMap<Option<String>, FrozenProcessor>,
-) -> Result<(), String> {
+/// Make a page's `image` root-relative, resolved from the folder its source file sits in,
+/// as its links are by the page pipeline: served at its own folder URL, a page would
+/// otherwise point one level too deep.
+pub(crate) fn rebase_image(page: &mut Page, bases: &[String]) {
     if page.source.is_empty() {
-        return Ok(());
+        return;
     }
     let root = read_root(&page.source, bases);
-    // One per include base: the links are the same for every page under it
-    let processor = match processors.entry(root.clone()) {
-        Entry::Occupied(entry) => entry.into_mut(),
-        Entry::Vacant(entry) => entry.insert(create_processor(root.clone(), links)?),
-    };
-    let rebase = |html: &str| -> Result<String, String> {
-        let mut file = File::new();
-        file.path = Some(page.source.clone());
-        let output =
-            (processor.process_file(html, file)).map_err(|error| error.message)?;
-        Ok(name_references(&output.value))
-    };
-    page.content = rebase(&page.content)?;
-    page.head = rebase(&page.head)?;
     if let Some(image) = &page.image
         && let Some(resolved) = resolve_url(image, Some(&page.source), root.as_deref())
     {
-        let slash = if resolved.directory && !resolved.file.is_empty() {
-            "/"
-        } else {
-            ""
+        let slash = match resolved.directory && !resolved.file.is_empty() {
+            true => "/",
+            false => "",
         };
         page.image = Some(format!("/{}{slash}{}", resolved.file, resolved.suffix));
     }
-    Ok(())
 }
 
 /// Each page's file, as a root-relative URL, mapped to the URL it is served at: by its
@@ -80,33 +55,8 @@ fn read_source_folder(source: &str, bases: &[String]) -> String {
     format!("/{folder}")
 }
 
-fn create_processor(
-    root: Option<String>,
-    links: &BTreeMap<String, String>,
-) -> Result<FrozenProcessor, String> {
-    let options = html::PathRewrite {
-        root,
-        pages: (links.iter())
-            .map(|(file, url)| (file.trim_start_matches('/').to_owned(), url.clone()))
-            .collect(),
-        ..html::PathRewrite::default()
-    };
-    Processor::new()
-        .with(html::Parse {
-            fragment: true,
-            ..html::Parse::default()
-        })
-        .with(options)
-        .with(html::Stringify {
-            close_empty_elements: true,
-            ..html::Stringify::default()
-        })
-        .freeze()
-        .map_err(|error| error.message)
-}
-
-// The include base a source sits under, which its relative URLs count from
-fn read_root(source: &str, bases: &[String]) -> Option<String> {
+/// The include base a source sits under, which its relative URLs count from.
+pub(crate) fn read_root(source: &str, bases: &[String]) -> Option<String> {
     (bases.iter())
         .filter(|base| !base.is_empty() && source.starts_with(base.as_str()))
         .max_by_key(|base| base.len())

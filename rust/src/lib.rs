@@ -45,6 +45,9 @@ mod actions {
     pub(crate) mod nav {
         pub(crate) mod build;
     }
+    pub(crate) mod pipeline {
+        pub(crate) mod create;
+    }
     pub(crate) mod package {
         pub(crate) mod convert;
     }
@@ -63,7 +66,7 @@ mod actions {
         pub(crate) mod read;
         pub(crate) mod rebase;
         pub(crate) mod render;
-        pub(crate) mod transform;
+        pub(crate) mod simplify;
     }
     pub(crate) mod skill {
         pub(crate) mod load;
@@ -98,6 +101,7 @@ mod models {
     pub(crate) mod language;
     pub(crate) mod nav;
     pub(crate) mod page;
+    pub(crate) mod pipeline;
     pub(crate) mod plugin;
     pub(crate) mod site;
     pub(crate) mod skill;
