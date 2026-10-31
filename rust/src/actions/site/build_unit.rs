@@ -381,8 +381,9 @@ fn builds_a_blog_and_a_changelog() -> crate::Result<()> {
         "{version}"
     );
     assert!(!version.contains("<summary>0.2.0</summary>"), "{version}");
-    let nav = version.find("href=\"/changelog/\"").unwrap_or(usize::MAX);
-    assert!(nav < version.find("href=\"/changelog/0-1-0/\"").unwrap_or(0));
+    let nav = &version[version.find("<htmlpress-nav").unwrap_or(0)..];
+    let index = nav.find("href=\"/changelog/\"").unwrap_or(usize::MAX);
+    assert!(index < nav.find("href=\"/changelog/0-1-0/\"").unwrap_or(0));
     assert!(read("index.html").contains("type=\"application/rss+xml\""));
     assert!(
         read("sitemap.xml").contains(

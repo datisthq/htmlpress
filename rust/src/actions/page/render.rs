@@ -321,6 +321,13 @@ fn create_head(
         let _ = writeln!(head, "<link rel=\"canonical\" href=\"{url}\">");
     }
     head.push_str(&create_alternates(site, page));
+    let (prev, next) = find_neighbours(site, page);
+    for (rel, item) in [("prev", prev), ("next", next)] {
+        if let Some(item) = item {
+            let href = escape_html(read_href(item));
+            let _ = writeln!(head, "<link rel=\"{rel}\" href=\"{href}\">");
+        }
+    }
     if page.path != NOT_FOUND_PAGE {
         let href = escape_html(&create_markdown_path(&page.path));
         let _ = writeln!(
@@ -1164,16 +1171,7 @@ fn read_latest(site: &Site, index: usize) -> Option<&str> {
 }
 
 fn create_pager(site: &Site, page: &Page) -> Option<String> {
-    // As in Livemark, a blog's or changelog's index pages nowhere: its posts page each other
-    let index = read_section(site, page)
-        .filter(|section| {
-            matches!(section.kind, SectionKind::Blog | SectionKind::Changelog)
-        })
-        .and_then(|section| section.prefix.as_deref());
-    let pages: Vec<&Page> = NavNode::flatten(&read_nav(site, page))
-        .into_iter()
-        .filter(|item| Some(item.url.as_str()) != index)
-        .collect();
+    let pages = list_walk(site, page);
     let index = pages.iter().position(|item| item.path == page.path)?;
     let prev = index
         .checked_sub(1)
@@ -1198,6 +1196,59 @@ fn create_pager(site: &Site, page: &Page) -> Option<String> {
     }
     html.push_str("</nav>");
     Some(html)
+}
+
+// The pages the pager walks in the open page's section. As in Livemark, a blog's or
+// changelog's index pages nowhere: its posts page each other
+fn list_walk<'a>(site: &'a Site, page: &Page) -> Vec<&'a Page> {
+    let index = read_section(site, page)
+        .filter(|section| {
+            matches!(section.kind, SectionKind::Blog | SectionKind::Changelog)
+        })
+        .and_then(|section| section.prefix.as_deref());
+    NavNode::flatten(&read_nav(site, page))
+        .into_iter()
+        .filter(|item| Some(item.url.as_str()) != index)
+        .collect()
+}
+
+// The pages H and L lead to: each section's walk in config order after the pages outside
+// any, behind the language's home page, so the keys cross where the pager stops
+fn find_neighbours<'a>(
+    site: &'a Site,
+    page: &Page,
+) -> (Option<&'a Page>, Option<&'a Page>) {
+    let sections = &site.config.sections;
+    let mut firsts: Vec<(Option<usize>, &Page)> = vec![];
+    for item in site
+        .pages
+        .iter()
+        .filter(|item| item.language == page.language)
+    {
+        let section = find_section(sections, &item.url);
+        if !firsts.iter().any(|(known, _)| *known == section) {
+            firsts.push((section, item));
+        }
+    }
+    firsts.sort_by_key(|(section, _)| *section);
+    let mut pages: Vec<&Page> = firsts
+        .iter()
+        .flat_map(|(_, item)| list_walk(site, item))
+        .collect();
+    let home = &site.read_language(&page.language).prefix;
+    let landing = site.pages.iter().find(|item| {
+        &item.url == home && item.language == page.language && !item.untranslated
+    });
+    if let Some(landing) = landing.filter(|landing| !pages.contains(landing)) {
+        pages.insert(0, landing);
+    }
+    let Some(index) = pages.iter().position(|item| item.path == page.path) else {
+        return (None, None);
+    };
+    let prev = index
+        .checked_sub(1)
+        .and_then(|index| pages.get(index).copied());
+    (prev, pages.get(index + 1).copied())
 }
 
 // Authors, published and updated dates, as one line under the page's title

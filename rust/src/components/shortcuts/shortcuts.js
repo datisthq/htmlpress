@@ -29,6 +29,8 @@ class HtmlpressShortcuts extends HTMLElement {
 }
 
 function isAnnounced(key) {
+  const rel = { H: "prev", L: "next" }[key]
+  if (rel) return Boolean(document.querySelector(`link[rel="${rel}"]`))
   const controls = document.querySelectorAll(`[aria-keyshortcuts="${key}"]`)
   return [...controls].some(control => control.checkVisibility())
 }

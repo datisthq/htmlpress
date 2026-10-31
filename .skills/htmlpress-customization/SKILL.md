@@ -68,7 +68,8 @@ upgrade it misses the new defaults: escape only what you change.
 `<htmlpress-skip>` at build time, every string in the page's language. The interactive ones,
 `<htmlpress-nav-toggle>`, `<htmlpress-search>`, `<htmlpress-theme-toggle>`, `<htmlpress-toc-bar>`
 (the phone's contents bar), `<htmlpress-shortcuts>` (the keyboard shortcuts menu, listing every key and disabling the ones no
-control on the page announces with `aria-keyshortcuts`) and `<htmlpress-back-to-top>`, run in the browser; the first three get their button at build time,
+control on the page announces with `aria-keyshortcuts`, and `H`/`L` without the head's `<link rel="prev">`/`rel="next"`, which
+`scripts/keys.js` follows across sections, from the home page on) and `<htmlpress-back-to-top>`, run in the browser; the first three get their button at build time,
 so the header is whole on its first frame. A head script sets `data-scripted` on `<html>`:
 without it those buttons stay hidden, so style anything that needs scripts under
 `:root[data-scripted]`. An element with nothing to show is removed. The theme toggle, the

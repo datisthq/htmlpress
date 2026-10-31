@@ -488,6 +488,21 @@ fn shows_only_the_open_sections_pages_with_its_brand() -> crate::Result<()> {
 }
 
 #[test]
+fn links_the_neighbours_across_sections_from_the_head() -> crate::Result<()> {
+    let site = create_sectioned_site()?;
+    let guide = render_page(&site, &site.pages[1], false)?;
+    assert!(guide.contains(r#"<link rel="prev" href="/">"#), "{guide}");
+    assert!(guide.contains(r#"<link rel="next" href="/api/">"#));
+    assert!(!guide.contains(r#"<a rel="next""#));
+    let home = render_page(&site, &site.pages[0], false)?;
+    assert!(!home.contains(r#"<link rel="prev""#));
+    let cli = render_page(&site, &site.pages[3], false)?;
+    assert!(cli.contains(r#"<link rel="prev" href="/api/">"#));
+    assert!(!cli.contains(r#"<link rel="next""#));
+    Ok(())
+}
+
+#[test]
 fn puts_icons_before_link_and_section_titles() -> crate::Result<()> {
     let mut site = create_sectioned_site()?;
     site.config.sections[1].icon = Some("code".to_owned());
