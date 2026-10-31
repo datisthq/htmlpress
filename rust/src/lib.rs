@@ -1,5 +1,5 @@
-//! Htmlpress turns a folder of HTML pages into a site: every page gets one layout, one
-//! theme and a navigation, with a live-reloading dev server. The binary is `htmlpress`;
+//! Htmlpress turns a folder of Markdown and HTML pages into a site: every page gets one
+//! layout, one theme and a navigation, with a live-reloading dev server. The binary is `htmlpress`;
 //! this library is what it runs.
 
 mod actions {
