@@ -32,12 +32,12 @@
     <pre><code class="language-yaml">title: My docs</code></pre>
     <p>
       An empty <code>htmlpress.yaml</code> is the same as none. Without one, every
-      <code>.html</code> file under the project (default
-      <code>include: "**/*.html"</code>) becomes a page, rendered with the built-in layout
-      and theme: sidebar, table of contents, dark mode, all defaults. Every other file is
-      copied to the output as-is, at the same path. Dot-folders such as
-      <code>.git/</code> and <code>.htmlpress/</code>, and <code>node_modules/</code>, are
-      skipped.
+      <code>.html</code> and <code>.md</code> file under the project (default
+      <code>include: ["**/*.html", "**/*.md"]</code>) becomes a page, rendered with the
+      built-in layout and theme: sidebar, table of contents, dark mode, all defaults.
+      Every other file is copied to the output as-is, at the same path. Dot-folders such
+      as <code>.git/</code> and <code>.htmlpress/</code>, and <code>node_modules/</code>,
+      are skipped.
     </p>
 
     <h2>What you can configure</h2>
@@ -53,8 +53,12 @@
       <tbody>
         <tr>
           <td><code>include</code></td>
-          <td><code>**/*.html</code></td>
-          <td>one glob or a list: the <code>.html</code> files that become pages</td>
+          <td><code>**/*.html</code>, <code>**/*.md</code></td>
+          <td>
+            one glob or a list: the <code>.html</code> and <code>.md</code> files that
+            become pages; an <code>.md</code> beside its <code>.html</code> twin is copied
+            instead
+          </td>
         </tr>
         <tr>
           <td><code>exclude</code></td>

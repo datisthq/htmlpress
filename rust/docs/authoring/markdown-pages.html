@@ -1,0 +1,112 @@
+<title>Markdown Pages</title>
+<meta
+  name="description"
+  content="Write a page in Markdown: frontmatter for its metadata, directives for components."
+/>
+<meta name="order" content="40" />
+<meta name="icon" content="file-pen-line" />
+
+<h1>Markdown Pages</h1>
+<p>
+  A <code>.md</code> file is a page too. It is served where its <code>.html</code> twin
+  would be, <code>guide.md</code> at <code>/guide/</code>, and goes through the same build
+  as an HTML page: components, math, code blocks, includes, the table of contents and the
+  Markdown copy for agents.
+</p>
+<pre><code class="language-md">---
+title: Getting started
+description: Install and run it in a minute.
+order: 1
+---
+
+# Getting started
+
+Install it, then build the docs:
+
+```sh title="Terminal"
+npx gethtmlpress build docs
+```</code></pre>
+<p>
+  The Markdown is GitHub's: tables, task lists, strikethrough, footnotes and bare links.
+  Raw HTML works as in any page, so an <code>htmlpress-*</code> component can be written
+  as a tag, with Markdown inside it after a blank line.
+</p>
+
+<h2>Frontmatter</h2>
+<p>
+  The YAML at the top of the file sets what an HTML page sets in its
+  <code>&lt;head&gt;</code>, under the same names: <code>title</code>,
+  <code>description</code>, <code>order</code>, <code>label</code>, <code>icon</code>,
+  <code>layout</code>, <code>sidebar</code>, <code>breadcrumbs</code>, <code>toc</code>,
+  <code>date</code>, <code>author</code>, <code>keywords</code>, <code>image</code>,
+  <code>language</code>, <code>path</code>, <code>source-url</code> and
+  <code>source-action</code>, as described in
+  <a href="/authoring/frontmatter/">Frontmatter</a>. <code>author</code> and
+  <code>keywords</code> take a list, and <code>head</code> is raw HTML added to the page's
+  <code>&lt;head&gt;</code>:
+</p>
+<pre><code class="language-yaml">title: Release notes
+author: [Ann, Bo]
+keywords: [release, notes]
+head: &lt;link rel="alternate" type="application/rss+xml" href="/feed.xml"&gt;</code></pre>
+<p>Any other key fails the build, so a typo never passes for metadata.</p>
+
+<h2>Components</h2>
+<p>
+  A directive is a component: <code>:::name</code> wraps a block,
+  <code>::name</code> stands on a line of its own and <code>:name[label]</code> sits
+  inside text. Attributes go in braces.
+</p>
+<pre><code class="language-md">:::callout{type="warning"}
+Back up the folder first.
+:::
+
+The API is :badge[beta]{tone="info"}.</code></pre>
+<p>
+  Each becomes the component of that name,
+  <code>&lt;htmlpress-callout type="warning"&gt;</code> and
+  <code>&lt;htmlpress-badge tone="info"&gt;</code>, a built-in one or the project's own. A
+  block directive that names no component fails the build; inside text, something like
+  <code>note:important</code> stays text.
+</p>
+
+<h2>Code blocks</h2>
+<p>
+  A fence's language highlights it, and what follows the language takes the
+  <a href="/authoring/code-blocks/">code block attributes</a> without their
+  <code>data-</code>: <code>title</code>, <code>collapse</code>, <code>lines</code>,
+  <code>line-numbers</code>, <code>add</code>, <code>remove</code>, <code>focus</code>,
+  <code>error</code>, <code>warning</code> and <code>words</code>.
+</p>
+<pre><code class="language-md">```js title="build.js" lines="2" line-numbers
+import { build } from "htmlpress"
+await build("docs")
+```</code></pre>
+
+<h2>Math, emoji and links</h2>
+<p>
+  <code>$…$</code> and <code>$$…$$</code> are
+  <a href="/authoring/advanced-syntax/">math</a>, and <code>:rocket:</code> shortcodes are
+  emoji, as in an HTML page. Link to another page by its file,
+  <code>[Setup](setup.md)</code>, and the link takes the page's URL.
+</p>
+
+<h2>Which files are pages</h2>
+<p>
+  Without an <code>include</code>, every <code>.html</code> and <code>.md</code> file in
+  the project is a page, a <code>README.md</code> too. Exclude what is not a page in the
+  <a href="/customization/configuration-file/">configuration file</a>. These files are
+  never pages:
+</p>
+<ul>
+  <li>
+    an <code>.md</code> beside its <code>.html</code> page, which is that page's own
+    Markdown copy for agents, published instead of the generated one;
+  </li>
+  <li>
+    an <code>.md</code> that a page includes with <code>&lt;htmlpress-include&gt;</code>,
+    a partial, whose directives and code blocks work as in a page;
+  </li>
+  <li>a changelog section's <code>source</code>, which its own pages show;</li>
+  <li>the agent skills that <code>skills</code> names.</li>
+</ul>

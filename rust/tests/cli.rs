@@ -293,3 +293,104 @@ fn prints_the_url_as_json_once_serving() -> TestResult {
     }
     Ok(())
 }
+
+#[test]
+fn builds_markdown_pages_beside_html_ones() -> TestResult {
+    let root = tempfile::tempdir()?;
+    write_page(
+        root.path(),
+        "index.html",
+        "<h1>Home</h1><a href=\"guide.md\">Guide</a>",
+    )?;
+    write_page(
+        root.path(),
+        "guide.md",
+        "---\ntitle: Guide\norder: 1\n---\n\n:::callout\nCareful.\n:::\n\n::hello\n\n[Home](index.html)",
+    )?;
+    write_page(
+        root.path(),
+        ".htmlpress/components/hello/hello.css",
+        "@scope (htmlpress-hello) {}",
+    )?;
+    let path = root.path().to_string_lossy().into_owned();
+
+    let (code, out) = run_cli(&["build", &path, "--json"])?;
+    assert_eq!(code, 0, "{out}");
+    let report: serde_json::Value = serde_json::from_str(&out)?;
+    assert_eq!(report["pages"], 2);
+    let build = root.path().join(".htmlpress/build");
+    let guide = std::fs::read_to_string(build.join("guide/index.html"))?;
+    assert!(guide.contains("<title>Guide"), "{guide}");
+    assert!(guide.contains("<htmlpress-callout"), "{guide}");
+    assert!(guide.contains("<htmlpress-hello"), "{guide}");
+    assert!(build.join("guide/index.md").is_file());
+    let home = std::fs::read_to_string(build.join("index.html"))?;
+    assert!(home.contains("href=\"/guide/\""), "{home}");
+
+    write_page(root.path(), "guide.md", ":::nope\nx\n:::")?;
+    let failed = run_cli(&["build", &path, "--json"]);
+    assert!(failed.is_err_and(|error| error.to_string().contains(":::nope")));
+    Ok(())
+}
+
+#[test]
+fn fills_an_escaped_layout_and_component_as_written() -> TestResult {
+    let root = tempfile::tempdir()?;
+    let layout = std::fs::read_to_string(
+        std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("src/layout.html"),
+    )?;
+    let chrome = "<footer class='mine'   data-k=1><b>kept</b></footer>";
+    write_page(
+        root.path(),
+        ".htmlpress/layout.html",
+        &layout.replace("</body>", &format!("{chrome}</body>")),
+    )?;
+    write_page(
+        root.path(),
+        ".htmlpress/components/hello/hello.html",
+        "<span class='hi'  >Hi</span>",
+    )?;
+    write_page(
+        root.path(),
+        "index.html",
+        "<h1>Home</h1><htmlpress-hello></htmlpress-hello>",
+    )?;
+    let path = root.path().to_string_lossy().into_owned();
+    let (code, _) = run_cli(&["build", &path, "--json"])?;
+    assert_eq!(code, 0);
+    let home = std::fs::read_to_string(root.path().join(".htmlpress/build/index.html"))?;
+    assert!(home.contains(chrome), "{home}");
+    assert!(home.contains("<span class='hi'  >Hi</span>"), "{home}");
+    Ok(())
+}
+
+#[test]
+fn keeps_changelog_sources_and_markdown_partials_out_of_the_pages() -> TestResult {
+    let root = tempfile::tempdir()?;
+    write_page(
+        root.path(),
+        "index.html",
+        "<h1>Home</h1><htmlpress-include src=\"parts/note.md\"></htmlpress-include>",
+    )?;
+    write_page(root.path(), "parts/note.md", ":::callout\nShared.\n:::")?;
+    write_page(
+        root.path(),
+        "CHANGELOG.md",
+        "# Changelog\n\n## 1.0.0 (2026-10-01)\n\n- first\n",
+    )?;
+    write_page(
+        root.path(),
+        "htmlpress.yaml",
+        "sections:\n  - { title: Changelog, prefix: /changelog/, type: changelog, source: CHANGELOG.md }\n",
+    )?;
+    let path = root.path().to_string_lossy().into_owned();
+    let (code, _) = run_cli(&["build", &path, "--json"])?;
+    assert_eq!(code, 0);
+    let build = root.path().join(".htmlpress/build");
+    assert!(!build.join("CHANGELOG").exists());
+    assert!(!build.join("parts/note").exists());
+    assert!(build.join("changelog/1-0-0/index.html").is_file());
+    let home = std::fs::read_to_string(build.join("index.html"))?;
+    assert!(home.contains("<htmlpress-callout"), "{home}");
+    Ok(())
+}

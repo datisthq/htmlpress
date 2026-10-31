@@ -28,7 +28,7 @@ fn inlines_html_markdown_and_code_files() -> Result<(), String> {
     let html = "<htmlpress-include src=\"includes/note.html\"></htmlpress-include>\
         <htmlpress-include src=\"includes/list.md\"></htmlpress-include>\
         <htmlpress-include src=\"/examples/server.ts\" data-lines=\"1\" data-title=\"server\"></htmlpress-include>";
-    let resolved = resolve_includes(dir.path(), "docs/page.html", html)?;
+    let resolved = resolve_includes(dir.path(), "docs/page.html", html, &[])?;
     assert!(resolved.starts_with("<p>Note</p>"), "{resolved}");
     assert!(resolved.contains("<li>one</li>") && !resolved.contains("title: x"));
     assert!(resolved.contains(
@@ -56,12 +56,13 @@ fn nests_and_refuses_cycles_escapes_and_missing_files() -> Result<(), String> {
         dir.path(),
         "page.html",
         "<htmlpress-include src=\"a.html\"></htmlpress-include>",
+        &[],
     )?;
     assert_eq!(nested, "<p>A</p><p>B</p>");
     for src in ["loop.html", "missing.html", "../outside.html", ".env", ""] {
         let html = format!("<htmlpress-include src=\"{src}\"></htmlpress-include>");
         assert!(
-            resolve_includes(dir.path(), "page.html", &html).is_err(),
+            resolve_includes(dir.path(), "page.html", &html, &[]).is_err(),
             "{src}"
         );
     }
@@ -69,6 +70,7 @@ fn nests_and_refuses_cycles_escapes_and_missing_files() -> Result<(), String> {
         dir.path(),
         "page.html",
         "<htmlpress-include src=\"b.html\"><p>After</p>",
+        &[],
     )?;
     assert!(
         unclosed.contains("<p>B</p>") && unclosed.contains("<p>After</p>"),
@@ -88,9 +90,30 @@ fn refuses_includes_that_fan_out_past_the_budget() -> Result<(), String> {
         ("c.html", &ten("d.html")),
         ("d.html", "<p>leaf</p>"),
     ])?;
-    let error = resolve_includes(dir.path(), "page.html", &ten("a.html"))
+    let error = resolve_includes(dir.path(), "page.html", &ten("a.html"), &[])
         .err()
         .unwrap_or_default();
     assert!(error.contains("expand past 1000"), "{error}");
+    Ok(())
+}
+
+#[test]
+fn compiles_an_included_markdown_partial_with_its_directives() -> Result<(), String> {
+    let root = tempfile::tempdir().map_err(|error| error.to_string())?;
+    std::fs::write(
+        root.path().join("part.md"),
+        "---\nanything: 1\n---\n:::callout\nHi\n:::",
+    )
+    .map_err(|error| error.to_string())?;
+    let html = resolve_includes(
+        root.path(),
+        "index.html",
+        "<htmlpress-include src=\"part.md\"></htmlpress-include>",
+        &["callout".to_owned()],
+    )?;
+    assert!(
+        html.contains("<htmlpress-callout><p>Hi</p></htmlpress-callout>"),
+        "{html}"
+    );
     Ok(())
 }

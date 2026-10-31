@@ -15,7 +15,7 @@ mod actions {
         pub(crate) mod split;
     }
     pub(crate) mod code {
-        pub(crate) mod ansi;
+        pub(crate) mod annotate;
         pub(crate) mod highlight;
         pub(crate) mod title;
     }
@@ -31,6 +31,9 @@ mod actions {
     }
     pub(crate) mod git {
         pub(crate) mod read;
+    }
+    pub(crate) mod include {
+        pub(crate) mod list;
     }
     pub(crate) mod icon {
         pub(crate) mod render;
@@ -48,7 +51,11 @@ mod actions {
     pub(crate) mod markdown {
         pub(crate) mod render;
     }
+    pub(crate) mod math {
+        pub(crate) mod wrap;
+    }
     pub(crate) mod page {
+        pub(crate) mod compile;
         pub(crate) mod convert;
         pub(crate) mod include;
         pub(crate) mod patch;
@@ -56,10 +63,7 @@ mod actions {
         pub(crate) mod read;
         pub(crate) mod rebase;
         pub(crate) mod render;
-    }
-    pub(crate) mod text {
-        pub(crate) mod enrich;
-        pub(crate) mod math;
+        pub(crate) mod transform;
     }
     pub(crate) mod skill {
         pub(crate) mod load;
@@ -94,6 +98,7 @@ mod models {
     pub(crate) mod language;
     pub(crate) mod nav;
     pub(crate) mod page;
+    pub(crate) mod plugin;
     pub(crate) mod site;
     pub(crate) mod skill;
 }

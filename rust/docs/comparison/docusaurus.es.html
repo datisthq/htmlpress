@@ -44,7 +44,7 @@
         </tr>
         <tr>
           <td>Formato de contenido</td>
-          <td>Páginas HTML</td>
+          <td>Páginas HTML y Markdown</td>
           <td>Markdown + MDX</td>
         </tr>
         <tr>
@@ -89,9 +89,10 @@
     <h2>Superficie de contenido</h2>
     <p>
       Docusaurus acepta Markdown y MDX con frontmatter y te permite incrustar componentes
-      de React dentro de archivos <code>.md</code>/<code>.mdx</code>. htmlpress no acepta
-      ninguno de los dos: una página es un archivo <code>.html</code>, un documento
-      completo o un fragmento suelto.
+      de React dentro de archivos <code>.md</code>/<code>.mdx</code>. htmlpress acepta
+      páginas <code>.html</code>, un documento completo o un fragmento suelto, y páginas
+      <code>.md</code> con frontmatter, cuyas directivas <code>:::nombre</code> son sus
+      componentes; ni MDX ni React.
     </p>
     <p>
       Las páginas de htmlpress son HTML semántico simple, al que el tema da estilo a

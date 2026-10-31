@@ -13,10 +13,11 @@
     <h1>Temas de sintaxis</h1>
     <p>
       Los bloques de código con una clase <code>language-*</code> se resaltan al compilar
-      con <a href="https://github.com/getzola/giallo">giallo</a>, que ejecuta las
-      gramáticas y los temas TextMate de VS Code y produce la misma salida que Shiki. Cada
-      token lleva los colores de ambos temas mediante <code>light-dark()</code> de CSS,
-      así que el selector de tema también cambia el código, sin scripts ni parpadeos.
+      con <a href="https://textlane.dev">textlane</a>, que ejecuta las gramáticas y los
+      temas TextMate de VS Code y produce el mismo marcado que Shiki. Cada token lleva el
+      color del tema claro y el del oscuro como variable <code>--shiki-dark</code>, que el
+      tema usa con el selector y la preferencia del lector, así que el código también
+      cambia, sin scripts ni parpadeos.
     </p>
 
     <h2>Configuración</h2>

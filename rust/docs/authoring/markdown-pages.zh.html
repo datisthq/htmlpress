@@ -1,0 +1,116 @@
+<title>Markdown 页面</title>
+<meta
+  name="description"
+  content="用 Markdown 编写页面：用前置元数据写元数据，用指令写组件。"
+/>
+<meta name="order" content="40" />
+<meta name="icon" content="file-pen-line" />
+
+<h1>Markdown 页面</h1>
+<p>
+  <code>.md</code> 文件同样是页面。它会在其 <code>.html</code> 同名文件所在的位置提供，
+  <code>guide.md</code> 对应 <code>/guide/</code>，并与 HTML
+  页面走相同的构建流程：组件、数学公式、代码块、包含、目录，以及供智能体使用的 Markdown
+  副本。
+</p>
+<pre><code class="language-md">---
+title: Getting started
+description: Install and run it in a minute.
+order: 1
+---
+
+# Getting started
+
+Install it, then build the docs:
+
+```sh title="Terminal"
+npx gethtmlpress build docs
+```</code></pre>
+<p>
+  这里的 Markdown 是 GitHub 风格：表格、任务列表、删除线、脚注和裸链接。原始 HTML
+  与任何页面一样有效，因此 <code>htmlpress-*</code> 组件可以写成标签，空一行后在其中写
+  Markdown。
+</p>
+
+<h2>前置元数据</h2>
+<p>
+  文件开头的 YAML 设置的内容与 HTML 页面在其 <code>&lt;head&gt;</code>
+  中设置的相同，名称也相同：<code>title</code>、<code>description</code>、<code>order</code>、
+  <code>label</code>、<code>icon</code>、<code>layout</code>、<code>sidebar</code>、
+  <code>breadcrumbs</code>、<code>toc</code>、<code>date</code>、<code>author</code>、
+  <code>keywords</code>、<code>image</code>、<code>language</code>、<code>path</code>、
+  <code>source-url</code> 和 <code>source-action</code>，详见
+  <a href="/zh/authoring/frontmatter/">Frontmatter</a>。<code>author</code> 和
+  <code>keywords</code> 接受列表，<code>head</code> 是添加到页面
+  <code>&lt;head&gt;</code> 中的原始 HTML：
+</p>
+<pre><code class="language-yaml">title: Release notes
+author: [Ann, Bo]
+keywords: [release, notes]
+head: &lt;link rel="alternate" type="application/rss+xml" href="/feed.xml"&gt;</code></pre>
+<p>任何其他键都会使构建失败，因此拼写错误不会被当作元数据。</p>
+
+<h2>组件</h2>
+<p>
+  指令就是组件：<code>:::name</code> 包裹一个区块，<code>::name</code> 独占一行，<code
+    >:name[label]</code
+  >
+  位于文本之中。属性写在花括号里。
+</p>
+<pre><code class="language-md">:::callout{type="warning"}
+Back up the folder first.
+:::
+
+The API is :badge[beta]{tone="info"}.</code></pre>
+<p>
+  每个指令都会变成同名组件，即
+  <code>&lt;htmlpress-callout type="warning"&gt;</code> 和
+  <code>&lt;htmlpress-badge tone="info"&gt;</code
+  >，可以是内置组件，也可以是项目自己的组件。
+  没有对应组件的区块指令会使构建失败；在文本中，像 <code>note:important</code>
+  这样的内容仍保持为文本。
+</p>
+
+<h2>代码块</h2>
+<p>
+  代码块的语言决定其高亮，语言之后的内容取
+  <a href="/zh/authoring/code-blocks/">代码块属性</a>，但去掉 <code>data-</code>：
+  <code>title</code
+  >、<code>collapse</code>、<code>lines</code>、<code>line-numbers</code>、
+  <code>add</code>、<code>remove</code>、<code>focus</code>、<code>error</code>、
+  <code>warning</code> 和 <code>words</code>。
+</p>
+<pre><code class="language-md">```js title="build.js" lines="2" line-numbers
+import { build } from "htmlpress"
+await build("docs")
+```</code></pre>
+
+<h2>数学公式、表情和链接</h2>
+<p>
+  <code>$…$</code> 和 <code>$$…$$</code> 是<a href="/zh/authoring/advanced-syntax/"
+    >数学公式</a
+  >， <code>:rocket:</code> 这样的短代码是表情，与 HTML
+  页面相同。通过文件链接到另一个页面， <code>[Setup](setup.md)</code>，链接会取该页面的
+  URL。
+</p>
+
+<h2>哪些文件是页面</h2>
+<p>
+  没有 <code>include</code> 时，项目中的每个 <code>.html</code> 和
+  <code>.md</code> 文件都是页面，<code>README.md</code> 也不例外。请在<a
+    href="/zh/customization/configuration-file/"
+    >配置文件</a
+  >中排除不是页面的文件。以下文件永远不是页面：
+</p>
+<ul>
+  <li>
+    与其 <code>.html</code> 页面并存的 <code>.md</code>，它是该页面供智能体使用的 Markdown
+    副本，会代替生成的副本发布；
+  </li>
+  <li>
+    页面通过 <code>&lt;htmlpress-include&gt;</code> 包含的 <code>.md</code>
+    片段，其中的指令和代码块与页面中一样有效；
+  </li>
+  <li>changelog 分区的 <code>source</code> 文件，由该分区自己的页面展示；</li>
+  <li><code>skills</code> 指定的智能体技能。</li>
+</ul>

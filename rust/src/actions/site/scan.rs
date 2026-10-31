@@ -1,17 +1,18 @@
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, HashMap};
 use std::path::Path;
 
 use crate::actions::config::load::load_config;
 use crate::actions::git::read::read_dates;
+use crate::actions::include::list::list_includes;
 use crate::actions::language::detect::{create_key, detect_language};
 use crate::actions::language::resolve::resolve_languages;
-use crate::actions::markdown::render::render_markdown;
+use crate::actions::page::compile::compile_markdown;
 use crate::actions::page::include::resolve_includes;
 use crate::actions::page::patch::patch_page;
 use crate::actions::page::read::{is_layout_name, read_page};
 use crate::actions::page::rebase::{list_links, rebase_page};
 use crate::actions::path::contain::read_contained;
-use crate::actions::path::select::{read_bases, select_paths};
+use crate::actions::path::select::{Selection, read_bases, select_paths};
 use crate::actions::section::generate::generate_pages;
 use crate::actions::skill::load::load_skills;
 use crate::models::asset::{COMPONENT_PREFIX, read_component_path};
@@ -48,7 +49,9 @@ pub fn scan_site(root: &Path) -> crate::Result<Site> {
         message,
     })?;
     // stderr, not stdout: under --json stdout carries only the result
-    for pattern in &selection.unused {
+    // A project of HTML pages only is the common case, not a typo
+    let quiet = |pattern: &String| config.include.is_empty() && pattern == "**/*.md";
+    for pattern in selection.unused.iter().filter(|pattern| !quiet(pattern)) {
         match config.include.is_empty() && !config.exclude.contains(pattern) {
             true => {
                 eprintln!("warning: no file matches the default include \"{pattern}\"")
@@ -56,11 +59,22 @@ pub fn scan_site(root: &Path) -> crate::Result<Site> {
             false => eprintln!("warning: {CONFIG_FILE}: \"{pattern}\" matches no file"),
         }
     }
+    let mut selection = selection;
+    keep_partials(root, &mut selection)?;
+    let assets = read_assets(root)?;
+    let components = list_components(&assets);
     let mut pages = vec![];
     for (path, source) in &selection.pages {
         let file = root.join(source);
         let html = std::fs::read_to_string(&file).map_err(Error::io(&file))?;
-        let html = resolve_includes(root, source, &html).map_err(Error::page(source))?;
+        let html = match source.ends_with(".md") {
+            true => {
+                compile_markdown(&html, &components, true).map_err(Error::page(source))?
+            }
+            false => html,
+        };
+        let html = resolve_includes(root, source, &html, &components)
+            .map_err(Error::page(source))?;
         let page = read_page(path, &html).map_err(|error| match error {
             Error::Page { message, .. } => Error::Page {
                 path: source.clone(),
@@ -74,7 +88,7 @@ pub fn scan_site(root: &Path) -> crate::Result<Site> {
         });
     }
     let files = selection.files;
-    apply_patches(root, &config, &mut pages)?;
+    apply_patches(root, &config, &components, &mut pages)?;
     let suffixes = !config.languages.is_empty();
     for page in &mut pages {
         detect_language(page, &languages, suffixes).map_err(Error::page(&page.source))?;
@@ -97,12 +111,13 @@ pub fn scan_site(root: &Path) -> crate::Result<Site> {
     pages.extend(generated);
     let bases = read_bases(&config);
     let links = list_links(&pages, &bases);
+    let mut processors = HashMap::new();
     for page in &mut pages {
-        rebase_page(page, &bases, &links).map_err(Error::page(&page.source))?;
+        rebase_page(page, &bases, &links, &mut processors)
+            .map_err(Error::page(&page.source))?;
     }
     sort_pages(&mut pages);
 
-    let assets = read_assets(root)?;
     for page in &pages {
         if let Some(layout) = &page.layout
             && !assets.contains_key(&format!("layouts/{layout}.html"))
@@ -133,6 +148,7 @@ pub fn scan_site(root: &Path) -> crate::Result<Site> {
 fn apply_patches(
     root: &Path,
     config: &Config,
+    components: &[String],
     pages: &mut Vec<Page>,
 ) -> crate::Result<()> {
     let bases = read_bases(config);
@@ -143,24 +159,31 @@ fn apply_patches(
         };
         let page = match pages.iter().position(|page| page.source == patch.file) {
             Some(index) => pages.remove(index),
-            None => read_patched_file(root, &bases, &patch.file).map_err(fail)?,
+            None => {
+                read_patched_file(root, &bases, components, &patch.file).map_err(fail)?
+            }
         };
         pages.push(patch_page(page, &patch.article).map_err(fail)?);
     }
     Ok(())
 }
 
-fn read_patched_file(root: &Path, bases: &[String], file: &str) -> Result<Page, String> {
+fn read_patched_file(
+    root: &Path,
+    bases: &[String],
+    components: &[String],
+    file: &str,
+) -> Result<Page, String> {
     let stem = match (file.strip_suffix(".md"), file.strip_suffix(".html")) {
         (Some(stem), _) | (_, Some(stem)) => stem,
         _ => return Err("a patched file is an .html page or a .md file".to_owned()),
     };
     let text = read_contained(root, file, false)?;
     let html = match file.ends_with(".md") {
-        true => render_markdown(&text),
+        true => compile_markdown(&text, components, true)?,
         false => text,
     };
-    let html = resolve_includes(root, file, &html)?;
+    let html = resolve_includes(root, file, &html, components)?;
     let output = (bases.iter())
         .filter(|base| !base.is_empty())
         .find_map(|base| stem.strip_prefix(&format!("{base}/")))
@@ -210,6 +233,53 @@ fn check_urls(pages: &[Page]) -> crate::Result<()> {
         }
     }
     Ok(())
+}
+
+// A Markdown file another page includes is a partial, as before Markdown pages: copied
+// as a file, never built into a page of its own, nor listed
+fn keep_partials(root: &Path, selection: &mut Selection) -> crate::Result<()> {
+    let mut pending: Vec<String> = selection.pages.values().cloned().collect();
+    let mut seen: Vec<String> = vec![];
+    let mut partials: Vec<String> = vec![];
+    while let Some(source) = pending.pop() {
+        if seen.contains(&source) {
+            continue;
+        }
+        seen.push(source.clone());
+        let Ok(text) = std::fs::read_to_string(root.join(&source)) else {
+            continue;
+        };
+        for path in list_includes(&source, &text).map_err(Error::page(&source))? {
+            if path.ends_with(".md") && !partials.contains(&path) {
+                partials.push(path.clone());
+            }
+            pending.push(path);
+        }
+    }
+    let served: Vec<String> = (selection.pages.iter())
+        .filter(|(_, source)| partials.contains(source))
+        .map(|(served, _)| served.clone())
+        .collect();
+    for served in served {
+        if let Some(source) = selection.pages.remove(&served) {
+            let file = served
+                .strip_suffix(".html")
+                .map_or(served.clone(), |stem| format!("{stem}.md"));
+            selection.files.insert(file, source);
+        }
+    }
+    Ok(())
+}
+
+// The names, without the prefix, of every component built in or the project's
+fn list_components(assets: &BTreeMap<String, String>) -> Vec<String> {
+    let mut names: Vec<String> = (assets.keys())
+        .filter_map(|path| read_component_path(path))
+        .filter_map(|(tag, _)| tag.strip_prefix(COMPONENT_PREFIX).map(str::to_owned))
+        .collect();
+    names.sort();
+    names.dedup();
+    names
 }
 
 // Only `layout.html`, the files directly in `styles/`, `scripts/`, `components/` and

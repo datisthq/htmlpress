@@ -43,7 +43,7 @@
         </tr>
         <tr>
           <td>内容格式</td>
-          <td>HTML 页面</td>
+          <td>HTML 和 Markdown 页面</td>
           <td>Markdown + MDX</td>
         </tr>
         <tr>
@@ -83,8 +83,10 @@
     <h2>内容形式</h2>
     <p>
       Docusaurus 接受带 frontmatter 的 Markdown 和 MDX，并允许在
-      <code>.md</code>/<code>.mdx</code> 文件中嵌入 React 组件。htmlpress
-      两者都不接受：页面就是一个 <code>.html</code> 文件，可以是完整文档，也可以是裸片段。
+      <code>.md</code>/<code>.mdx</code> 文件中嵌入 React 组件。htmlpress 接受
+      <code>.html</code> 页面（完整文档或裸片段）和带 frontmatter 的
+      <code>.md</code> 页面，其 <code>:::name</code> 指令就是它的组件；不支持 MDX，也没有
+      React。
     </p>
     <p>
       htmlpress 页面是纯语义化 HTML，主题直接根据元素本身设置样式。更丰富的区块是

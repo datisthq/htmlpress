@@ -33,12 +33,12 @@
     <pre><code class="language-yaml">title: My docs</code></pre>
     <p>
       Un <code>htmlpress.yaml</code> vacío equivale a no tenerlo. Sin él, cada archivo
-      <code>.html</code> del proyecto (por defecto <code>include: "**/*.html"</code>) se
-      convierte en una página, renderizada con el layout y el tema integrados: barra
-      lateral, tabla de contenidos, modo oscuro, todo por defecto. Cualquier otro archivo
-      se copia tal cual a la salida, en la misma ruta. Las carpetas ocultas como
-      <code>.git/</code> y <code>.htmlpress/</code>, y <code>node_modules/</code>, se
-      omiten.
+      <code>.html</code> y <code>.md</code> del proyecto (por defecto
+      <code>include: ["**/*.html", "**/*.md"]</code>) se convierte en una página,
+      renderizada con el layout y el tema integrados: barra lateral, tabla de contenidos,
+      modo oscuro, todo por defecto. Cualquier otro archivo se copia tal cual a la salida,
+      en la misma ruta. Las carpetas ocultas como <code>.git/</code> y
+      <code>.htmlpress/</code>, y <code>node_modules/</code>, se omiten.
     </p>
 
     <h2>Qué puedes configurar</h2>
@@ -54,10 +54,12 @@
       <tbody>
         <tr>
           <td><code>include</code></td>
-          <td><code>**/*.html</code></td>
+          <td><code>**/*.html</code>, <code>**/*.md</code></td>
           <td>
-            un glob o una lista: los archivos <code>.html</code> que se convierten en
-            páginas
+            un glob o una lista: los archivos <code>.html</code> y <code>.md</code> que se
+            convierten en páginas; un <code>.md</code> junto a su gemelo
+            <code>.html</code>
+            se copia en su lugar
           </td>
         </tr>
         <tr>

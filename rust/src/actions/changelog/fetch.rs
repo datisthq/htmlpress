@@ -5,7 +5,7 @@ use std::time::{Duration, Instant};
 
 use serde_json::{Value, json};
 
-use crate::actions::changelog::split::{Release, create_slug, raise_headings};
+use crate::actions::changelog::split::{Release, create_slug};
 use crate::actions::markdown::render::render_untrusted_markdown;
 use crate::settings::CACHE_DIR;
 
@@ -116,14 +116,7 @@ fn read_releases(releases: &Value) -> Vec<Release> {
                 .and_then(|date| date.get(..10))
                 .map(str::to_owned);
             let body = release["body"].as_str().unwrap_or_default().trim();
-            let html = raise_headings(&render_untrusted_markdown(body));
-            // A body opening with its own title repeats the page's <h1>
-            let html = match html.trim_start().starts_with("<h1") {
-                true => html
-                    .split_once("</h1>")
-                    .map_or(html.clone(), |(_, rest)| rest.to_owned()),
-                false => html,
-            };
+            let html = render_untrusted_markdown(body);
             Some(Release {
                 slug: create_slug(&version),
                 version,

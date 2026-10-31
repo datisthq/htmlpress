@@ -45,7 +45,7 @@
         </tr>
         <tr>
           <td>Formato de contenido</td>
-          <td>Páginas HTML</td>
+          <td>Páginas HTML y Markdown</td>
           <td>Markdown (CommonMark + extensiones de Python-Markdown)</td>
         </tr>
         <tr>
@@ -98,13 +98,14 @@
     </p>
     <h2>Superficie de contenido</h2>
     <p>
-      MkDocs acepta Markdown con frontmatter; htmlpress acepta solo HTML. MkDocs extiende
-      Markdown mediante extensiones de Python-Markdown (admoniciones, pestañas, notas al
-      pie, listas de definiciones) y <code>pymdown-extensions</code> (que añade toda la
-      sintaxis de Material: pestañas <code>=== "Tab 1"</code>, admoniciones
-      <code>:::note</code>, atajos de teclado <code>++ctrl++</code>, etc.). Personalizar
-      más allá de lo que ofrecen las extensiones requiere escribir un plugin de Python o
-      hacer override de una plantilla Jinja.
+      MkDocs acepta Markdown con frontmatter; htmlpress acepta por igual páginas HTML y
+      Markdown con frontmatter. MkDocs extiende Markdown mediante extensiones de
+      Python-Markdown (admoniciones, pestañas, notas al pie, listas de definiciones) y
+      <code>pymdown-extensions</code> (que añade toda la sintaxis de Material: pestañas
+      <code>=== "Tab 1"</code>, admoniciones <code>:::note</code>, atajos de teclado
+      <code>++ctrl++</code>, etc.). Personalizar más allá de lo que ofrecen las
+      extensiones requiere escribir un plugin de Python o hacer override de una plantilla
+      Jinja.
     </p>
     <p>
       Las páginas de htmlpress son HTML semántico plano, al que el tema da estilo a partir

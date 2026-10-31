@@ -10,10 +10,11 @@
     <h1>语法主题</h1>
     <p>
       带有 <code>language-*</code> 类的代码块会在构建时由
-      <a href="https://github.com/getzola/giallo">giallo</a> 进行高亮，它运行 VS Code 的
-      TextMate 语法和主题，输出与 Shiki 相同。每个词法单元都通过 CSS 的
-      <code>light-dark()</code>
-      同时携带两个主题的颜色，因此主题切换按钮也会切换代码颜色，无需脚本，也不会闪烁。
+      <a href="https://textlane.dev">textlane</a> 进行高亮，它运行 VS Code 的 TextMate
+      语法和主题，输出与 Shiki
+      相同的标记。每个词法单元带有浅色主题的颜色，深色主题的颜色则放在
+      <code>--shiki-dark</code>
+      变量中，主题会随切换按钮和读者的设置使用它，因此代码颜色也会跟着切换，无需脚本，也不会闪烁。
     </p>
 
     <h2>配置</h2>

@@ -7,8 +7,7 @@ use lol_html::{RewriteStrSettings, doc_text, doctype, element, rewrite_str, text
 
 use crate::actions::icon::render::{list_icons, render_icon};
 use crate::actions::package::convert::{MANAGERS, convert_command};
-use crate::actions::text::enrich::enrich_text;
-use crate::actions::text::math::render_math;
+use crate::actions::page::transform::transform_page;
 use crate::models::error::Error;
 use crate::models::page::{Heading, Page, SourceAction};
 use crate::settings::NOT_FOUND_PAGE;
@@ -17,8 +16,7 @@ use crate::settings::NOT_FOUND_PAGE;
 /// document and a bare fragment both work: the wrappers are dropped, the content kept.
 pub fn read_page(path: &str, html: &str) -> crate::Result<Page> {
     // First, so the title, the table of contents and the content all read the same text
-    let html = &enrich_text(html).map_err(Error::page(path))?;
-    let html = &render_math(html).map_err(Error::page(path))?;
+    let html = &transform_page(html).map_err(Error::page(path))?;
     let facts = read_facts(html).map_err(Error::page(path))?;
     let headings = create_ids(facts.headings);
     let content =

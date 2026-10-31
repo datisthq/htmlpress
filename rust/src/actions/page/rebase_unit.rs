@@ -3,29 +3,6 @@ use std::collections::BTreeMap;
 use super::*;
 
 #[test]
-fn resolves_only_relative_urls() {
-    assert_eq!(
-        resolve_url("shot.png", "/guides/").as_deref(),
-        Some("/guides/shot.png")
-    );
-    assert_eq!(
-        resolve_url("../a/b.png?v=1#x", "/guides/cli/").as_deref(),
-        Some("/guides/a/b.png?v=1#x")
-    );
-    assert_eq!(resolve_url("./c.png", "/").as_deref(), Some("/c.png"));
-    for url in [
-        "/a.png",
-        "https://x.dev/a.png",
-        "//cdn.dev/a.png",
-        "data:image/png;base64,AA",
-        "#top",
-        "",
-    ] {
-        assert_eq!(resolve_url(url, "/guides/"), None, "{url}");
-    }
-}
-
-#[test]
 fn strips_the_include_base_from_the_source_folder() {
     let bases = vec!["rust/docs/".to_owned()];
     assert_eq!(
@@ -50,7 +27,12 @@ fn rebases_the_urls_of_a_page_served_at_its_folder() -> Result<(), String> {
         ..crate::actions::page::read::read_page("guide.html", "")
             .map_err(|e| e.to_string())?
     };
-    rebase_page(&mut page, &["docs/".to_owned()], &BTreeMap::new())?;
+    rebase_page(
+        &mut page,
+        &["docs/".to_owned()],
+        &BTreeMap::new(),
+        &mut Default::default(),
+    )?;
     assert_eq!(page.image.as_deref(), Some("/cover.png"));
     assert_eq!(page.head, r#"<link rel="stylesheet" href="/guide.css">"#);
     assert_eq!(
@@ -85,7 +67,7 @@ fn links_a_page_file_to_its_url() -> Result<(), String> {
         .into(),
         ..read("guide.html", "docs/guide.html")?
     };
-    rebase_page(&mut page, &bases, &links)?;
+    rebase_page(&mut page, &bases, &links, &mut Default::default())?;
     assert_eq!(
         page.content,
         concat!(

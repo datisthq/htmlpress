@@ -1,6 +1,9 @@
-use std::collections::BTreeMap;
+use std::collections::hash_map::Entry;
+use std::collections::{BTreeMap, HashMap};
 
-use lol_html::{RewriteStrSettings, element, rewrite_str};
+use textlane::{File, FrozenProcessor, Processor, html, resolve_url};
+
+use crate::actions::page::transform::name_references;
 
 use crate::models::page::Page;
 
@@ -12,16 +15,36 @@ pub(crate) fn rebase_page(
     page: &mut Page,
     bases: &[String],
     links: &BTreeMap<String, String>,
+    processors: &mut HashMap<Option<String>, FrozenProcessor>,
 ) -> Result<(), String> {
     if page.source.is_empty() {
         return Ok(());
     }
-    let folder = read_source_folder(&page.source, bases);
-    if let Some(image) = &page.image {
-        page.image = Some(resolve_url(image, &folder).unwrap_or_else(|| image.clone()));
+    let root = read_root(&page.source, bases);
+    // One per include base: the links are the same for every page under it
+    let processor = match processors.entry(root.clone()) {
+        Entry::Occupied(entry) => entry.into_mut(),
+        Entry::Vacant(entry) => entry.insert(create_processor(root.clone(), links)?),
+    };
+    let rebase = |html: &str| -> Result<String, String> {
+        let mut file = File::new();
+        file.path = Some(page.source.clone());
+        let output =
+            (processor.process_file(html, file)).map_err(|error| error.message)?;
+        Ok(name_references(&output.value))
+    };
+    page.content = rebase(&page.content)?;
+    page.head = rebase(&page.head)?;
+    if let Some(image) = &page.image
+        && let Some(resolved) = resolve_url(image, Some(&page.source), root.as_deref())
+    {
+        let slash = if resolved.directory && !resolved.file.is_empty() {
+            "/"
+        } else {
+            ""
+        };
+        page.image = Some(format!("/{}{slash}{}", resolved.file, resolved.suffix));
     }
-    page.content = rebase_urls(&page.content, &folder, links)?;
-    page.head = rebase_urls(&page.head, &folder, links)?;
     Ok(())
 }
 
@@ -46,55 +69,6 @@ pub(crate) fn list_links(pages: &[Page], bases: &[String]) -> BTreeMap<String, S
     links
 }
 
-fn rebase_urls(
-    html: &str,
-    folder: &str,
-    links: &BTreeMap<String, String>,
-) -> Result<String, String> {
-    let settings = RewriteStrSettings::new().append_element_content_handler(element!(
-        "[href], [src], [srcset], [poster]",
-        |el| {
-            for name in ["href", "src", "poster"] {
-                if let Some(value) = el.get_attribute(name) {
-                    let url =
-                        resolve_url(&value, folder).unwrap_or_else(|| value.clone());
-                    let url = match name {
-                        "href" => link_page(&url, links).unwrap_or(url),
-                        _ => url,
-                    };
-                    if url != value {
-                        el.set_attribute(name, &url)?;
-                    }
-                }
-            }
-            if let Some(srcset) = el.get_attribute("srcset") {
-                let candidates: Vec<String> = (srcset.split(','))
-                    .map(|candidate| {
-                        let trimmed = candidate.trim_start();
-                        let lead = &candidate[..candidate.len() - trimmed.len()];
-                        let (url, rest) = trimmed.split_at(
-                            trimmed.find(char::is_whitespace).unwrap_or(trimmed.len()),
-                        );
-                        let url =
-                            resolve_url(url, folder).unwrap_or_else(|| url.to_owned());
-                        format!("{lead}{url}{rest}")
-                    })
-                    .collect();
-                el.set_attribute("srcset", &candidates.join(","))?;
-            }
-            Ok(())
-        }
-    ));
-    rewrite_str(html, settings).map_err(|error| error.to_string())
-}
-
-// `/guide.html#flags` → `/guide/#flags`; None for a URL that names no page's file
-fn link_page(url: &str, links: &BTreeMap<String, String>) -> Option<String> {
-    let end = url.find(['?', '#']).unwrap_or(url.len());
-    let page = links.get(&url[..end])?;
-    Some(format!("{page}{}", &url[end..]))
-}
-
 /// `/guides/` for `docs/guides/setup.html` when `docs/` is an include base.
 fn read_source_folder(source: &str, bases: &[String]) -> String {
     let folder = source.rfind('/').map_or("", |end| &source[..=end]);
@@ -106,31 +80,37 @@ fn read_source_folder(source: &str, bases: &[String]) -> String {
     format!("/{folder}")
 }
 
-// None for a URL that is not relative: root-relative, absolute, `data:`, a fragment or a query
-fn resolve_url(url: &str, folder: &str) -> Option<String> {
-    let scheme = url.find(':').is_some_and(|colon| {
-        let scheme = &url[..colon];
-        !scheme.is_empty()
-            && !scheme.contains(['/', '?', '#'])
-            && scheme
-                .chars()
-                .all(|c| c.is_ascii_alphanumeric() || "+.-".contains(c))
-    });
-    if url.is_empty() || scheme || url.starts_with(['/', '#', '?']) {
-        return None;
-    }
-    let end = url.find(['?', '#']).unwrap_or(url.len());
-    let mut segments: Vec<&str> = folder.split('/').filter(|s| !s.is_empty()).collect();
-    for segment in url[..end].split('/') {
-        match segment {
-            "." => {}
-            ".." => {
-                segments.pop();
-            }
-            segment => segments.push(segment),
-        }
-    }
-    Some(format!("/{}{}", segments.join("/"), &url[end..]))
+fn create_processor(
+    root: Option<String>,
+    links: &BTreeMap<String, String>,
+) -> Result<FrozenProcessor, String> {
+    let options = html::PathRewrite {
+        root,
+        pages: (links.iter())
+            .map(|(file, url)| (file.trim_start_matches('/').to_owned(), url.clone()))
+            .collect(),
+        ..html::PathRewrite::default()
+    };
+    Processor::new()
+        .with(html::Parse {
+            fragment: true,
+            ..html::Parse::default()
+        })
+        .with(options)
+        .with(html::Stringify {
+            close_empty_elements: true,
+            ..html::Stringify::default()
+        })
+        .freeze()
+        .map_err(|error| error.message)
+}
+
+// The include base a source sits under, which its relative URLs count from
+fn read_root(source: &str, bases: &[String]) -> Option<String> {
+    (bases.iter())
+        .filter(|base| !base.is_empty() && source.starts_with(base.as_str()))
+        .max_by_key(|base| base.len())
+        .map(|base| base.trim_end_matches('/').to_owned())
 }
 
 #[cfg(test)]

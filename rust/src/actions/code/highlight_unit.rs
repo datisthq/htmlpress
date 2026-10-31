@@ -1,126 +1,71 @@
-use super::*;
+use super::{has_theme, highlight_code};
 
-const PAINT: &str = " style=\"color: light-dark(#4C4F69, #CDD6F4)\"";
+const THEMES: (&str, &str) = ("catppuccin-latte", "catppuccin-mocha");
 
 #[test]
 fn colors_known_languages_in_both_themes() -> Result<(), String> {
-    let html = "<pre><code class=\"language-rust\">let x = &quot;&lt;a&gt;&quot;;\n</code></pre>";
-    let colored = highlight_code(html, "catppuccin-latte", "catppuccin-mocha")?;
+    let html = "<pre data-title=\"a.rs\"><code class=\"language-rust\">let x = &quot;&lt;a&gt;&quot;;\n</code></pre>";
+    let colored = highlight_code(html, THEMES.0, THEMES.1)?;
     assert!(
-        colored
-            .starts_with("<pre><code class=\"language-rust\" style=\"color: light-dark(#4C4F69, #CDD6F4)\"><span class=\"giallo-l\">"),
+        colored.starts_with("<pre class=\"shiki shiki-themes"),
         "{colored}"
     );
-    assert!(colored.contains("light-dark(#8839EF, #CBA6F7)"));
-    assert!(colored.contains("&lt;a&gt;"));
-    assert!(colored.ends_with("</code></pre>"));
+    assert!(colored.contains("data-title=\"a.rs\""), "{colored}");
+    assert!(colored.contains("--shiki-dark:"), "{colored}");
+    assert!(colored.contains("\"&lt;a>\""), "{colored}");
     Ok(())
 }
 
 #[test]
-fn leaves_plain_unknown_and_marked_up_blocks_alone() -> Result<(), String> {
-    for html in [
-        "<pre><code>plain</code></pre>",
-        "<pre><code class=\"language-nope\">a &amp; b</code></pre>",
-        "<pre><code class=\"language-rust\">let <mark>x</mark> = 1;</code></pre>",
-        "<p><code>plain inline</code></p>",
+fn marks_lines_words_focus_and_numbers() -> Result<(), String> {
+    let html = "<pre><code class=\"language-rust\" data-lines=\"1\" data-add=\"2\" \
+                data-remove=\"3\" data-error=\"4\" data-warning=\"5\" data-focus=\"1\" \
+                data-line-numbers=\"10\">let a = 1;\nlet b = 2;\nc\nd\ne</code></pre>\
+                <pre><code class=\"language-rust\" data-words=\"b\">let b = 2;</code></pre>";
+    let colored = highlight_code(html, THEMES.0, THEMES.1)?;
+    for class in [
+        "line focused highlighted",
+        "line diff add",
+        "line diff remove",
+        "line severity error",
+        "line severity warning",
+        "has-focused",
+        "highlighted-word",
     ] {
-        // Left as it is, but a block's code takes the themes' text color
-        let colored = highlight_code(html, "catppuccin-latte", "catppuccin-mocha")?;
-        let painted = colored.contains(PAINT);
-        assert_eq!(painted, html.starts_with("<pre>"), "{colored}");
-        assert_eq!(colored.replace(PAINT, ""), html);
+        assert!(colored.contains(class), "{class} in {colored}");
     }
+    assert!(
+        colored.contains("<span class=\"line-number\">10</span>"),
+        "{colored}"
+    );
+    assert!(
+        colored.contains("<span class=\"line-number\">14</span>"),
+        "{colored}"
+    );
+    Ok(())
+}
+
+#[test]
+fn colors_ansi_and_inline_code_but_leaves_marked_up_blocks() -> Result<(), String> {
+    let ansi = highlight_code(
+        "<pre><code class=\"language-ansi\">\u{1b}[1;32mok\u{1b}[0m</code></pre>",
+        THEMES.0,
+        THEMES.1,
+    )?;
+    assert!(ansi.contains("ok") && !ansi.contains('\u{1b}'), "{ansi}");
+    let inline = highlight_code(
+        "<p><code class=\"language-js\">let a</code></p>",
+        THEMES.0,
+        THEMES.1,
+    )?;
+    assert!(inline.starts_with("<p><span class=\"shiki"), "{inline}");
+    let marked =
+        "<pre><code class=\"language-rust\">let <mark>x</mark> = 1;</code></pre>";
+    assert_eq!(highlight_code(marked, THEMES.0, THEMES.1)?, marked);
+    Ok(())
+}
+
+#[test]
+fn knows_the_built_in_themes() {
     assert!(has_theme("catppuccin-mocha") && !has_theme("no-such-theme"));
-    Ok(())
-}
-
-#[test]
-fn highlights_and_numbers_chosen_lines() -> Result<(), String> {
-    let html = "<pre><code class=\"language-rust\" data-lines=\"2\" data-line-numbers=\"10\">let a = 1;\nlet b = 2;</code></pre>";
-    let colored = highlight_code(html, "catppuccin-latte", "catppuccin-mocha")?;
-    assert!(colored.contains("class=\"giallo-ln\""), "{colored}");
-    assert!(colored.contains(">10</span>") && colored.contains(">11</span>"));
-    assert!(
-        colored.contains("background-color: light-dark("),
-        "{colored}"
-    );
-    let bad = "<pre><code class=\"language-rust\" data-lines=\"3-1\">a</code></pre>";
-    assert!(highlight_code(bad, "catppuccin-latte", "catppuccin-mocha").is_err());
-    Ok(())
-}
-
-#[test]
-fn marks_diff_severity_focus_and_words() -> Result<(), String> {
-    let html = "<pre><code class=\"language-js\" data-add=\"1\" data-remove=\"2\" data-error=\"3\" \
-                data-warning=\"4\" data-focus=\"1-2\" data-words=\"greet,&lt;b&gt;\">\
-                const greet = 1\nconst b = greet\nlet c = \"&lt;b&gt;\"\nlet d = 4</code></pre>";
-    let colored = highlight_code(html, "catppuccin-latte", "catppuccin-mocha")?;
-    let lines: Vec<&str> = colored.split("<span class=\"giallo-l\"").skip(1).collect();
-    assert_eq!(lines.len(), 4, "{colored}");
-    assert!(lines[0].starts_with(" data-diff=\"add\">"), "{}", lines[0]);
-    assert!(lines[1].starts_with(" data-diff=\"remove\">"));
-    assert!(
-        lines[2].starts_with(" data-severity=\"error\" data-dim>"),
-        "{}",
-        lines[2]
-    );
-    assert!(lines[3].starts_with(" data-severity=\"warning\" data-dim>"));
-    assert!(
-        colored.matches("<mark>greet</mark>").count() == 2,
-        "{colored}"
-    );
-    assert!(
-        colored.contains("<mark>&lt;b&gt;</mark>") || colored.contains("&lt;"),
-        "{colored}"
-    );
-    assert!(!colored.contains("data-words=\"<mark>"));
-    let bad = "<pre><code class=\"language-js\" data-add=\"x\">a</code></pre>";
-    let error = highlight_code(bad, "catppuccin-latte", "catppuccin-mocha")
-        .err()
-        .unwrap_or_default();
-    assert!(error.contains("data-add"), "{error}");
-    Ok(())
-}
-
-#[test]
-fn colors_inline_code_that_names_a_language() -> Result<(), String> {
-    let html = "<p>Run <code class=\"language-js\">const a = 1</code> now.</p>";
-    let colored = highlight_code(html, "catppuccin-latte", "catppuccin-mocha")?;
-    assert!(
-        colored
-            .starts_with("<p>Run <code class=\"language-js\"><span class=\"giallo-l\">"),
-        "{colored}"
-    );
-    assert!(
-        colored.contains("light-dark(#8839EF, #CBA6F7)")
-            && colored.ends_with("</code> now.</p>")
-    );
-    Ok(())
-}
-
-#[test]
-fn darkens_latte_strings_for_contrast() -> Result<(), String> {
-    let html = highlight_code(
-        "<pre><code class=\"language-js\">const a = \"text\"</code></pre>",
-        "catppuccin-latte",
-        "catppuccin-mocha",
-    )?;
-    assert!(html.contains("light-dark(#2A7E16,"), "{html}");
-    assert!(!html.contains("#40A02B"));
-    Ok(())
-}
-
-#[test]
-fn renders_ansi_blocks_from_escapes_or_entities() -> Result<(), String> {
-    let html = highlight_code(
-        "<pre><code class=\"language-ansi\">&#27;[31merror&#27;[0m &lt;ok&gt;</code></pre>",
-        "catppuccin-latte",
-        "catppuccin-mocha",
-    )?;
-    assert!(
-        html.contains("<span style=\"color:#bf616a\">error</span> &lt;ok&gt;"),
-        "{html}"
-    );
-    Ok(())
 }

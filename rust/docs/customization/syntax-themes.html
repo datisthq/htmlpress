@@ -10,10 +10,11 @@
     <h1>Syntax Themes</h1>
     <p>
       Code blocks with a <code>language-*</code> class are highlighted at build time by
-      <a href="https://github.com/getzola/giallo">giallo</a>, which runs VS Code's
-      TextMate grammars and themes and gives the same output as Shiki. Each token carries
-      both themes' colors through CSS <code>light-dark()</code>, so the theme toggle
-      switches code too, with no script and no flash.
+      <a href="https://textlane.dev">textlane</a>, which runs VS Code's TextMate grammars
+      and themes and gives the same markup as Shiki. Each token carries the light theme's
+      color and the dark one's as a <code>--shiki-dark</code> variable, which the theme
+      switches to with the toggle and the reader's setting, so code follows them too, with
+      no script and no flash.
     </p>
 
     <h2>Configuration</h2>

@@ -1,62 +1,80 @@
-use pulldown_cmark::{CowStr, Event, Options, Parser, Tag, html};
+use textlane::{FrozenProcessor, Processor, html, md};
 
-/// Markdown as HTML, with GitHub's tables, task lists, strikethrough and footnotes.
+thread_local! {
+    static TRUSTED: Option<FrozenProcessor> = create_processor(true).ok();
+    static UNTRUSTED: Option<FrozenProcessor> = create_processor(false).ok();
+}
+
+/// Markdown as HTML, with GitHub's tables, task lists, strikethrough and footnotes; a
+/// leading YAML frontmatter is dropped.
 pub(crate) fn render_markdown(markdown: &str) -> String {
-    let mut output = String::new();
-    html::push_html(&mut output, Parser::new_ext(markdown, OPTIONS));
-    output
+    TRUSTED.with(|processor| process(processor.as_ref(), markdown))
 }
 
-/// Markdown written by someone else, such as a fetched release's notes: its raw HTML shows
-/// as text and a link or image to a script URL loses it, so it cannot run in the site.
+/// A release's notes fetched from GitHub, rendered as GitHub renders them: raw HTML kept,
+/// then sanitized, so nothing in it can run in the site; headings raised one level and a
+/// leading title dropped, as the release's own page already shows one.
 pub(crate) fn render_untrusted_markdown(markdown: &str) -> String {
-    let events = Parser::new_ext(markdown, OPTIONS).map(|event| match event {
-        Event::Html(text) | Event::InlineHtml(text) => Event::Text(text),
-        Event::Start(Tag::Link {
-            link_type,
-            dest_url,
-            title,
-            id,
-        }) => Event::Start(Tag::Link {
-            link_type,
-            dest_url: drop_script(dest_url),
-            title,
-            id,
-        }),
-        Event::Start(Tag::Image {
-            link_type,
-            dest_url,
-            title,
-            id,
-        }) => Event::Start(Tag::Image {
-            link_type,
-            dest_url: drop_script(dest_url),
-            title,
-            id,
-        }),
-        event => event,
+    UNTRUSTED.with(|processor| process(processor.as_ref(), markdown))
+}
+
+// A processor that failed to build, or a document it fails on, shows as escaped text
+// rather than vanishing
+fn process(processor: Option<&FrozenProcessor>, markdown: &str) -> String {
+    processor
+        .and_then(|processor| processor.process(markdown).ok())
+        .map(|output| output.value)
+        .unwrap_or_else(|| format!("<pre>{}</pre>", escape_text(markdown)))
+}
+
+fn create_processor(trusted: bool) -> Result<FrozenProcessor, textlane::Error> {
+    let processor = Processor::new()
+        .with(md::Parse::default())
+        .with(md::Frontmatter {
+            strip: true,
+            ..md::Frontmatter::default()
+        })
+        .with(md::Gfm::default());
+    // On the tree, before sanitizing: sanitized HTML edited as a string could be split
+    // inside an attribute and let markup through
+    let processor = match trusted {
+        true => processor,
+        // A title `##` becomes an `h1` only once raised, so it is dropped after
+        false => processor
+            .with(md::ShiftHeading {
+                shift: -1,
+                drop_title: false,
+            })
+            .with(md::ShiftHeading {
+                shift: 0,
+                drop_title: true,
+            }),
+    };
+    let processor = processor.with(md::ToHtml {
+        allow_dangerous_html: true,
+        ..md::ToHtml::default()
     });
-    let mut output = String::new();
-    html::push_html(&mut output, events);
-    output
+    let processor = match trusted {
+        true => processor,
+        // Reparsed first: sanitizing raw nodes as strings would let them through whole
+        false => processor
+            .with(html::Raw::default())
+            .with(html::Sanitize::default()),
+    };
+    processor
+        .with(html::Stringify {
+            allow_dangerous_html: trusted,
+            ..html::Stringify::default()
+        })
+        .freeze()
 }
 
-const OPTIONS: Options = Options::ENABLE_TABLES
-    .union(Options::ENABLE_TASKLISTS)
-    .union(Options::ENABLE_STRIKETHROUGH)
-    .union(Options::ENABLE_FOOTNOTES);
-
-// Browsers ignore whitespace and control characters inside a scheme, `java\tscript:`
-fn drop_script(url: CowStr) -> CowStr {
-    let scheme: String = (url.chars())
-        .filter(|c| !c.is_whitespace() && !c.is_control())
-        .take_while(|c| *c != ':')
-        .collect::<String>()
-        .to_ascii_lowercase();
-    let plain = url.contains(':')
-        && ["javascript", "vbscript", "data"].contains(&scheme.as_str());
-    match plain {
-        true => CowStr::Borrowed("#"),
-        false => url,
-    }
+fn escape_text(text: &str) -> String {
+    text.replace('&', "&amp;")
+        .replace('<', "&lt;")
+        .replace('>', "&gt;")
 }
+
+#[cfg(test)]
+#[path = "render_unit.rs"]
+mod unit;

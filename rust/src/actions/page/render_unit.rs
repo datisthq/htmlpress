@@ -687,12 +687,15 @@ fn colors_code_blocks_with_the_configured_themes() -> crate::Result<()> {
         "<pre><code class=\"language-js\">let a = 1</code></pre>",
     )?;
     let html = render_page(&site, &site.pages[1], false)?;
-    assert!(html.contains("light-dark(#8839EF, #CBA6F7)"), "{html}");
+    assert!(
+        html.contains("color:#8839EF;--shiki-dark:#CBA6F7"),
+        "{html}"
+    );
     site.config.code_theme_light = Some("github-light".to_owned());
     site.config.code_theme_dark = Some("github-dark".to_owned());
     let html = render_page(&site, &site.pages[1], false)?;
-    assert!(!html.contains("#8839EF") && html.contains("light-dark("));
-    assert!(!site.pages[1].content.contains("light-dark("));
+    assert!(!html.contains("#8839EF") && html.contains("--shiki-dark:"));
+    assert!(!site.pages[1].content.contains("--shiki-dark"));
     Ok(())
 }
 

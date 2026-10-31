@@ -4,7 +4,7 @@ use std::path::Path;
 use lol_html::html_content::ContentType;
 use lol_html::{RewriteStrSettings, doctype, element, rewrite_str};
 
-use crate::actions::markdown::render::render_markdown;
+use crate::actions::page::compile::compile_markdown;
 use crate::actions::path::contain::{contain_path, read_contained};
 
 // Livemark's limit; a deeper chain is a mistake, and a cycle is caught before it
@@ -21,9 +21,10 @@ struct Budget {
     bytes: usize,
 }
 
-// The attributes an include of a code file passes to the block it builds
-const PRE_ATTRIBUTES: &[&str] = &["data-title", "data-collapse"];
-const CODE_ATTRIBUTES: &[&str] = &[
+/// The attributes a code block's `<pre>` takes: an included file's or a Markdown fence's.
+pub(crate) const PRE_ATTRIBUTES: &[&str] = &["data-title", "data-collapse"];
+/// The attributes a code block's `<code>` takes, which mark its lines and words.
+pub(crate) const CODE_ATTRIBUTES: &[&str] = &[
     "data-lines",
     "data-line-numbers",
     "data-add",
@@ -42,11 +43,13 @@ pub(crate) fn resolve_includes(
     root: &Path,
     source: &str,
     html: &str,
+    components: &[String],
 ) -> Result<String, String> {
     resolve_nested(
         root,
         source,
         html,
+        components,
         &RefCell::new(vec![]),
         &RefCell::new(Budget::default()),
     )
@@ -57,6 +60,7 @@ fn resolve_nested(
     root: &Path,
     source: &str,
     html: &str,
+    components: &[String],
     chain: &RefCell<Vec<String>>,
     budget: &RefCell<Budget>,
 ) -> Result<String, String> {
@@ -96,7 +100,7 @@ fn resolve_nested(
             let attributes: Vec<(String, String)> = (el.attributes().iter())
                 .map(|attribute| (attribute.name(), attribute.value()))
                 .collect();
-            let content = create_content(&path, &text, &attributes);
+            let content = create_content(&path, &text, &attributes, components)?;
             {
                 let mut budget = budget.borrow_mut();
                 budget.expansions += 1;
@@ -109,7 +113,7 @@ fn resolve_nested(
                 }
             }
             chain.borrow_mut().push(key);
-            let nested = resolve_nested(root, &path, &content, chain, budget);
+            let nested = resolve_nested(root, &path, &content, components, chain, budget);
             chain.borrow_mut().pop();
             // Before, then unwrapped rather than replaced: an include left unclosed holds
             // the page that follows as its children, which must not vanish with it
@@ -121,15 +125,20 @@ fn resolve_nested(
     rewrite_str(html, settings).map_err(|error| error.to_string())
 }
 
-fn create_content(path: &str, text: &str, attributes: &[(String, String)]) -> String {
+fn create_content(
+    path: &str,
+    text: &str,
+    attributes: &[(String, String)],
+    components: &[String],
+) -> Result<String, String> {
     let extension = path
         .rsplit_once('.')
         .map_or("", |(_, extension)| extension)
         .to_lowercase();
     match extension.as_str() {
-        "html" | "htm" => read_body(text).unwrap_or_else(|_| text.to_owned()),
-        "md" | "markdown" => render_markdown(strip_frontmatter(text)),
-        _ => create_code_block(path, &extension, text, attributes),
+        "html" | "htm" => Ok(read_body(text).unwrap_or_else(|_| text.to_owned())),
+        "md" | "markdown" => compile_markdown(text, components, false),
+        _ => Ok(create_code_block(path, &extension, text, attributes)),
     }
 }
 
@@ -216,14 +225,6 @@ fn read_body(html: &str) -> Result<String, String> {
         }));
     let body = rewrite_str(html, settings).map_err(|error| error.to_string())?;
     Ok(body.trim().to_owned())
-}
-
-fn strip_frontmatter(text: &str) -> &str {
-    text.strip_prefix("---\n")
-        .and_then(|rest| rest.split_once("\n---").map(|(_, after)| after))
-        .map_or(text, |after| {
-            after.split_once('\n').map_or("", |(_, body)| body)
-        })
 }
 
 fn escape_text(text: &str) -> String {

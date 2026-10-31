@@ -1,0 +1,119 @@
+<title>Páginas Markdown</title>
+<meta
+  name="description"
+  content="Escribe una página en Markdown: frontmatter para sus metadatos, directivas para los componentes."
+/>
+<meta name="order" content="40" />
+<meta name="icon" content="file-pen-line" />
+
+<h1>Páginas Markdown</h1>
+<p>
+  Un archivo <code>.md</code> también es una página. Se sirve donde estaría su gemelo
+  <code>.html</code>, <code>guide.md</code> en <code>/guide/</code>, y pasa por la misma
+  compilación que una página HTML: componentes, matemáticas, bloques de código,
+  inclusiones, la tabla de contenidos y la copia en Markdown para agentes.
+</p>
+<pre><code class="language-md">---
+title: Getting started
+description: Install and run it in a minute.
+order: 1
+---
+
+# Getting started
+
+Install it, then build the docs:
+
+```sh title="Terminal"
+npx gethtmlpress build docs
+```</code></pre>
+<p>
+  El Markdown es el de GitHub: tablas, listas de tareas, tachado, notas al pie y enlaces
+  sueltos. El HTML en bruto funciona como en cualquier página, así que un componente
+  <code>htmlpress-*</code> puede escribirse como etiqueta, con Markdown dentro tras una
+  línea en blanco.
+</p>
+
+<h2>Frontmatter</h2>
+<p>
+  El YAML al principio del archivo fija lo que una página HTML fija en su
+  <code>&lt;head&gt;</code>, con los mismos nombres: <code>title</code>,
+  <code>description</code>, <code>order</code>, <code>label</code>, <code>icon</code>,
+  <code>layout</code>, <code>sidebar</code>, <code>breadcrumbs</code>, <code>toc</code>,
+  <code>date</code>, <code>author</code>, <code>keywords</code>, <code>image</code>,
+  <code>language</code>, <code>path</code>, <code>source-url</code> y
+  <code>source-action</code>, como se describe en
+  <a href="/es/authoring/frontmatter/">Frontmatter</a>. <code>author</code> y
+  <code>keywords</code> aceptan una lista, y <code>head</code> es HTML en bruto que se
+  añade al <code>&lt;head&gt;</code> de la página:
+</p>
+<pre><code class="language-yaml">title: Release notes
+author: [Ann, Bo]
+keywords: [release, notes]
+head: &lt;link rel="alternate" type="application/rss+xml" href="/feed.xml"&gt;</code></pre>
+<p>
+  Cualquier otra clave hace fallar la compilación, así que una errata nunca pasa por
+  metadato.
+</p>
+
+<h2>Componentes</h2>
+<p>
+  Una directiva es un componente: <code>:::nombre</code> envuelve un bloque,
+  <code>::nombre</code> ocupa una línea propia y <code>:nombre[etiqueta]</code> va dentro
+  del texto. Los atributos van entre llaves.
+</p>
+<pre><code class="language-md">:::callout{type="warning"}
+Back up the folder first.
+:::
+
+The API is :badge[beta]{tone="info"}.</code></pre>
+<p>
+  Cada una se convierte en el componente de ese nombre,
+  <code>&lt;htmlpress-callout type="warning"&gt;</code> y
+  <code>&lt;htmlpress-badge tone="info"&gt;</code>, integrado o del proyecto. Una
+  directiva de bloque que no nombra ningún componente hace fallar la compilación; dentro
+  del texto, algo como <code>note:important</code> sigue siendo texto.
+</p>
+
+<h2>Bloques de código</h2>
+<p>
+  El lenguaje de un bloque lo resalta, y lo que sigue al lenguaje toma los
+  <a href="/es/authoring/code-blocks/">atributos de bloque de código</a> sin su
+  <code>data-</code>: <code>title</code>, <code>collapse</code>, <code>lines</code>,
+  <code>line-numbers</code>, <code>add</code>, <code>remove</code>, <code>focus</code>,
+  <code>error</code>, <code>warning</code> y <code>words</code>.
+</p>
+<pre><code class="language-md">```js title="build.js" lines="2" line-numbers
+import { build } from "htmlpress"
+await build("docs")
+```</code></pre>
+
+<h2>Matemáticas, emoji y enlaces</h2>
+<p>
+  <code>$…$</code> y <code>$$…$$</code> son
+  <a href="/es/authoring/advanced-syntax/">matemáticas</a>, y los códigos como
+  <code>:rocket:</code> son emoji, como en una página HTML. Enlaza otra página por su
+  archivo, <code>[Setup](setup.md)</code>, y el enlace toma la URL de la página.
+</p>
+
+<h2>Qué archivos son páginas</h2>
+<p>
+  Sin <code>include</code>, cada archivo <code>.html</code> y <code>.md</code> del
+  proyecto es una página, también un <code>README.md</code>. Excluye lo que no sea una
+  página en el
+  <a href="/es/customization/configuration-file/">archivo de configuración</a>. Estos
+  archivos nunca son páginas:
+</p>
+<ul>
+  <li>
+    un <code>.md</code> junto a su página <code>.html</code>, que es la propia copia en
+    Markdown de esa página para agentes, publicada en lugar de la generada;
+  </li>
+  <li>
+    un <code>.md</code> que una página incluye con <code>&lt;htmlpress-include&gt;</code>,
+    un fragmento, cuyas directivas y bloques de código funcionan como en una página;
+  </li>
+  <li>
+    el <code>source</code> de una sección de changelog, que sus propias páginas muestran;
+  </li>
+  <li>las habilidades para agentes que nombra <code>skills</code>.</li>
+</ul>

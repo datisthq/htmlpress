@@ -42,7 +42,7 @@
         </tr>
         <tr>
           <td>Content format</td>
-          <td>HTML pages</td>
+          <td>HTML and Markdown pages</td>
           <td>Markdown (CommonMark + Python-Markdown extensions)</td>
         </tr>
         <tr>
@@ -92,10 +92,11 @@
     </p>
     <h2>Content surface</h2>
     <p>
-      MkDocs accepts Markdown with frontmatter; htmlpress accepts HTML only. MkDocs
-      extends Markdown through Python-Markdown extensions (admonitions, tabs, footnotes,
-      definition lists) and <code>pymdown-extensions</code> (which adds the full Material
-      syntax: <code>=== "Tab 1"</code> tabs, <code>:::note</code> admonitions,
+      MkDocs accepts Markdown with frontmatter; htmlpress accepts HTML pages and Markdown
+      with frontmatter alike. MkDocs extends Markdown through Python-Markdown extensions
+      (admonitions, tabs, footnotes, definition lists) and
+      <code>pymdown-extensions</code> (which adds the full Material syntax:
+      <code>=== "Tab 1"</code> tabs, <code>:::note</code> admonitions,
       <code>++ctrl++</code> keyboard shortcuts, etc.). Customization beyond what
       extensions offer requires writing a Python plugin or overriding a Jinja template.
     </p>

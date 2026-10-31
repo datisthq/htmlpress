@@ -49,22 +49,33 @@ run from source: `cargo run --manifest-path rust/Cargo.toml -- build docs`.
 1. `scan_site` lists only the include bases (`read_bases`: each glob's folders before its
    first wildcard), skipping dot-entries and `node_modules/`, so `.htmlpress/build` is
    never read back and a repo-root project never walks `rust/target`. `select_paths`
-   sorts them by `include` (pages, `**/*.html` when unset) and `exclude` (dropped); other
-   files under a base, `.html` outside `include` too, are copied. Every path is served
+   sorts them by `include` (pages: `.html` and `.md`, both `**/*.html` and `**/*.md` when
+   unset) and `exclude` (dropped); other files under a base, `.html` outside `include` too,
+   are copied, and so are an `.md` beside its `.html` page (the project's own Markdown
+   copy), a changelog section's `source` and the `skills` files; `keep_partials` then turns
+   back into files the `.md` pages a page includes (`include/list`), as before Markdown pages.
+   `page/rebase` keeps one textlane processor per include base for the whole scan. A `.md` page is served at its `.html` path and compiled first
+   (`page/compile`: frontmatter checked against `FRONTMATTER_KEYS` into the head's metas,
+   `:::name` directives into `htmlpress-name` of a known component, a fence's meta onto
+   `data-*` by the `AnnotateCode` plugin, before `html.raw`, which drops nodes' `data`). Every path is served
    without its base, so `Page.path` is the page's path without it (`guides/build.html`) and `Page.source`
    the file's. The nav, breadcrumbs and Markdown copies nest by `Page.path`; a page is
    written to `create_output_path` (`guides/build/index.html`) and served at `create_url`
    (`/guides/build/`), the root `404.html` excepted. `page/rebase` then makes relative URLs
-   root-relative from the source folder, since every page sits one folder deeper, and
+   root-relative from the source folder (textlane's `html.pathRewrite`, rooted at the
+   page's include base, `list_links` as its `pages`), since every page sits one folder deeper, and
    turns a link naming a page's file into its URL (`list_links`). Pages sort `index.html`
    first, then by `<meta name="order">` (negatives last), then by path; `nav/build` nests
    them by folder for the sidebar and the pager.
    `scan_site` resolves `<htmlpress-include>` (`page/include`, through `path/contain`) in a
    page's source before `read_page`, which has no filesystem access, so included content
    reaches the TOC, search and the Markdown copies like the page's own.
-2. `read_page` first runs `text/enrich` (`$…$` math, auto links and emoji shortcodes, on whole text
-   nodes outside links, code and `data-literal`), then `text/math` (every `<htmlpress-math>` to
-   MathML with math-core, the LaTeX kept in `data-latex`), then lol_html over the source three times — facts (title, first `<h1>`, metas,
+2. `read_page` first runs `page/transform`, one textlane processor over the page:
+   `html.gemoji`, `html.linkify` and `html.math` on text outside links, code and
+   `data-literal`, then htmlpress' `WrapMath` (every formula into its `<htmlpress-math>`,
+   the LaTeX kept in `data-latex`), `html.katex` (MathML) and `html.slug` (h2–h6, ids already
+   in the page reserved). textlane writes `&`, `<`, `"` and `'` as hex references, which
+   `name_references` turns back, since the lol_html passes read attributes as written. Then lol_html over the result three times — facts (title, first `<h1>`, metas,
    whether a `<head>` exists), content (wrappers and layout-owned tags removed) and the extra
    head tags. lol_html builds no tree and adds no implied `<head>` or `<body>`, so for a
    fragment both passes split at its first content (`read_lead`): the head tags before it
@@ -83,15 +94,17 @@ run from source: `cargo run --manifest-path rust/Cargo.toml -- build docs`.
    are left to the browser; an element with nothing to show is removed. With `sections`,
    `find_section` (longest prefix) picks the open page's section, and the nav, pager,
    brand and breadcrumbs use only its pages and its `site*` overrides. Code blocks are
-   highlighted in `render_page` (`code/highlight`, giallo with the dual themes inline
-   as `light-dark()`), not in `read_page`, so search, the Markdown copies and
-   `page.content` keep plain text; giallo's registry loads once per process. Line marks are attributes added to giallo's `giallo-l` line spans by
-   position (the nth span is line n), and word marks only touch text between tags;
+   highlighted in `render_page` (`code/highlight`, textlane's `html.highlight`: the light
+   theme inline, the dark one as `--shiki-dark` variables `content.css` switches to), not in
+   `read_page`, so search, the Markdown copies and `page.content` keep plain text; one
+   processor per theme pair per thread. The `data-*` line and word marks map onto its
+   `lineAttributes`, `wordAttribute` and `lineNumberAttribute`, and `keepProperties` keeps
+   `data-title` and `data-collapse` for
    `code/title` then frames every `<pre data-title>` in a captioned figure with
    its language logo (`src/language_icons.rs`, Livemark's six) and sizes
    `<pre data-collapse>`; inline `<code class="language-…">` is highlighted by the same
-   pass run on `:not(pre) > code`. `scan_site` applies `patches` first (`page/patch`; a patched
-   `.md` file is rendered by `markdown/render` into a new page) and refuses two pages on
+   pass (`inline: "class"`). `scan_site` applies `patches` first (`page/patch`; a patched
+   `.md` file is compiled by `page/compile` into a new page) and refuses two pages on
    one URL, then adds the pages blog and
    changelog sections build (`section/generate`: a blog's index and tag pages, a page per
    `changelog/split` release) after reading git's dates (`git/read`, one `git log`), so a
@@ -109,7 +122,8 @@ run from source: `cargo run --manifest-path rust/Cargo.toml -- build docs`.
    The widget mirrors Livemark's: a result links `?highlight=<query>`, and the opened page
    paints the matches with the CSS Custom Highlight API, so the DOM stays untouched. `describe_site` adds the agent files:
    each page as Markdown (`page/convert` first rewrites `htmlpress-*` components and bare
-   `<pre>` into plain HTML, since htmd fences only `<pre><code>`), `llms.txt`, the skills
+   `<pre>` into plain HTML, since `html.toMarkdown` fences only `<pre><code>`, then runs
+   `html.toMarkdown` with `math`, which turns KaTeX's MathML back into `$…$`), `llms.txt`, the skills
    `load_skills` matched, and `_headers`; a shipped file of the same name wins, except
    `_headers`, which is extended
 

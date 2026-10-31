@@ -27,7 +27,53 @@ fn makes_every_html_file_a_page_by_default() -> Result<(), String> {
         [("a/b/c.html", "a/b/c.html"), ("index.html", "index.html")]
     );
     assert_eq!(pairs(&selection.files), [("logo.svg", "logo.svg")]);
-    assert!(selection.unused.is_empty());
+    assert_eq!(selection.unused, ["**/*.md"]);
+    Ok(())
+}
+
+#[test]
+fn makes_every_markdown_file_a_page_served_as_html() -> Result<(), String> {
+    let paths = [
+        "README.md",
+        "docs/guide.es.md",
+        "docs/img.png",
+        "index.html",
+    ];
+    let selection = select(&[], &[], &paths)?;
+    assert_eq!(
+        pairs(&selection.pages),
+        [
+            ("README.html", "README.md"),
+            ("docs/guide.es.html", "docs/guide.es.md"),
+            ("index.html", "index.html"),
+        ]
+    );
+    assert_eq!(pairs(&selection.files), [("docs/img.png", "docs/img.png")]);
+    let selection = select(&["docs/**/*.md"], &[], &paths)?;
+    assert_eq!(
+        pairs(&selection.pages),
+        [("guide.es.html", "docs/guide.es.md")]
+    );
+    Ok(())
+}
+
+#[test]
+fn keeps_a_markdown_twin_and_skills_as_files() -> Result<(), String> {
+    let config = Config {
+        skills: vec!["skills/*/SKILL.md".to_owned()],
+        ..Config::default()
+    };
+    let paths = ["a.html", "a.md", "skills/one/SKILL.md"];
+    let selection =
+        select_paths(&config, paths.iter().map(|path| path.to_string()).collect())?;
+    assert_eq!(pairs(&selection.pages), [("a.html", "a.html")]);
+    assert_eq!(
+        pairs(&selection.files),
+        [
+            ("a.md", "a.md"),
+            ("skills/one/SKILL.md", "skills/one/SKILL.md")
+        ]
+    );
     Ok(())
 }
 
@@ -106,5 +152,27 @@ fn reports_patterns_that_match_nothing_and_bad_ones() -> Result<(), String> {
         ..Config::default()
     };
     assert!(read_bases(&config).is_empty());
+    Ok(())
+}
+
+#[test]
+fn keeps_a_changelog_source_a_file_and_twins_only_of_pages() -> Result<(), String> {
+    let config: Config = serde_saphyr::from_str(
+        "include: [\"**/*.md\"]\nsections:\n  - { title: Changes, prefix: /changes/, type: changelog, source: CHANGELOG.md }\n",
+    )
+    .map_err(|error| error.to_string())?;
+    let paths = ["CHANGELOG.md", "a.md", "b.html"];
+    let selection =
+        select_paths(&config, paths.iter().map(|path| path.to_string()).collect())?;
+    assert_eq!(pairs(&selection.pages), [("a.html", "a.md")]);
+    assert_eq!(
+        pairs(&selection.files),
+        [("CHANGELOG.md", "CHANGELOG.md"), ("b.html", "b.html")]
+    );
+    // An `.html` that is no page is no twin: the `.md` page is built and the clash told
+    let paths = ["a.html", "a.md"];
+    let clash =
+        select_paths(&config, paths.iter().map(|path| path.to_string()).collect());
+    assert!(clash.is_err_and(|error| error.contains("both served at /a.html")));
     Ok(())
 }

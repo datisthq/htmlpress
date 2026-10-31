@@ -141,15 +141,15 @@ fn lists_the_headings_and_gives_each_an_id() -> crate::Result<()> {
     assert_eq!(
         toc,
         [
-            ("install-run", "Install & run", 2),
+            ("install--run", "Install & run", 2),
             ("flags", "The --port flag", 3),
-            ("install-run-2", "Install & run", 2),
-            ("flags-2", "Flags", 2),
+            ("install--run-1", "Install & run", 2),
+            ("flags-1", "Flags", 2),
         ]
     );
-    assert!(page.content.contains("<h2 id=\"install-run\">"));
+    assert!(page.content.contains("<h2 id=\"install--run\">"));
     assert!(page.content.contains("<h3 id=\"flags\">"));
-    assert!(page.content.contains("<h2 id=\"install-run-2\">"));
+    assert!(page.content.contains("<h2 id=\"install--run-1\">"));
     Ok(())
 }
 

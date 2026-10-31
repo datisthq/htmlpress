@@ -48,18 +48,19 @@ fn turns_releases_into_pages_without_drafts() {
 }
 
 #[test]
-fn shows_release_html_as_text_and_drops_script_links() {
+fn sanitizes_release_html_and_drops_script_links() {
     let releases = json!([{
         "tag_name": "v1",
-        "body": "<script>alert(1)</script>\n\n[x](javascript:alert(1)) <img src=x onerror=alert(1)>",
+        "body": "<script>alert(1)</script>\n\n[x](javascript:alert(1)) <img src=x onerror=alert(1)>\n\n<details><summary>More</summary>hi</details>",
     }]);
     let html = &read_releases(&releases)[0].html;
     assert!(
-        !html.contains("<script") && !html.contains("<img"),
+        !html.contains("<script") && !html.contains("alert"),
         "{html}"
     );
     assert!(
-        html.contains("&lt;script&gt;") && html.contains("href=\"#\""),
+        !html.contains("onerror") && !html.contains("javascript:"),
         "{html}"
     );
+    assert!(html.contains("<details><summary>More</summary>"), "{html}");
 }

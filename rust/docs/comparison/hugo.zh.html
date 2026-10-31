@@ -45,7 +45,7 @@
         </tr>
         <tr>
           <td>内容格式</td>
-          <td>HTML 页面</td>
+          <td>HTML 和 Markdown 页面</td>
           <td>带 Hugo 短代码的 Markdown</td>
         </tr>
         <tr>
@@ -92,7 +92,10 @@
       读取内容，URL 结构与目录树一致（并可通过各栏目的 frontmatter 覆盖）。
     </p>
     <h2>内容层面</h2>
-    <p>Hugo 接受带 frontmatter 的 Markdown；htmlpress 接受 HTML 页面。</p>
+    <p>
+      Hugo 接受带 frontmatter 的 Markdown；htmlpress 同样接受 HTML 页面和带 frontmatter 的
+      Markdown。
+    </p>
     <p>
       Hugo 通过<strong>短代码</strong>嵌入组件——这是一种以 Go 模板编写的函数，在 Markdown
       中以 <code>{{&lt; shortcode-name arg="value" &gt;}}</code> 调用。短代码定义在

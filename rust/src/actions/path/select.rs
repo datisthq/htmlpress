@@ -13,7 +13,8 @@ pub(crate) struct Selection {
     pub unused: Vec<String>,
 }
 
-const DEFAULT_INCLUDE: &str = "**/*.html";
+/// The include of a config naming none: every page, HTML or Markdown.
+pub(crate) const DEFAULT_INCLUDE: &[&str] = &["**/*.html", "**/*.md"];
 
 // `*` must stop at `/`, or `*.html` would take every page in every folder
 const OPTIONS: glob::MatchOptions = glob::MatchOptions {
@@ -22,9 +23,11 @@ const OPTIONS: glob::MatchOptions = glob::MatchOptions {
     require_literal_leading_dot: false,
 };
 
-/// Sort project-relative, `/`-separated paths into pages (`.html` matched by `include`,
-/// `**/*.html` when empty) and files copied as-is (any other path under an include's
-/// base); `exclude` drops a path from both. A path is served without its base.
+/// Sort project-relative, `/`-separated paths into pages (`.html` and `.md` matched by
+/// `include`, both when empty; a `.md` page served at `.html`) and files copied as-is
+/// (any other path under an include's base, an `.md` beside its `.html` page, a
+/// changelog section's `source` and the `skills` files among them); `exclude` drops a path
+/// from both. A path is served without its base.
 pub(crate) fn select_paths(
     config: &Config,
     paths: Vec<String>,
@@ -37,17 +40,37 @@ pub(crate) fn select_paths(
         })
         .map(|(text, _)| text.clone())
         .collect();
+    let skills = compile_patterns("skills", &config.skills)?;
+    let excluded = |path: &str| {
+        (exclude.iter()).any(|(_, pattern)| pattern.matches_with(path, OPTIONS))
+    };
+    let included = |path: &str| {
+        (include.iter()).any(|(_, pattern)| pattern.matches_with(path, OPTIONS))
+    };
+    // An `.md` beside its `.html` page is the project's own Markdown copy of that page
+    let twins: Vec<String> = (paths.iter())
+        .filter(|path| !excluded(path) && included(path))
+        .filter_map(|path| path.strip_suffix(".html"))
+        .map(|stem| format!("{stem}.md"))
+        .collect();
+    // A changelog section reads its file into pages of its own
+    let sources: Vec<&str> = (config.sections.iter())
+        .filter_map(|section| section.source.as_deref())
+        .collect();
     let mut selection = Selection {
         unused,
         ..Selection::default()
     };
     for path in paths {
-        if (exclude.iter()).any(|(_, pattern)| pattern.matches_with(&path, OPTIONS)) {
+        if excluded(&path) {
             continue;
         }
-        let page = (include.iter()).find(|(_, pattern)| {
-            path.ends_with(".html") && pattern.matches_with(&path, OPTIONS)
-        });
+        let source = is_page(&path)
+            && !twins.contains(&path)
+            && !sources.contains(&path.as_str())
+            && !(skills.iter()).any(|(_, pattern)| pattern.matches_with(&path, OPTIONS));
+        let page = (include.iter())
+            .find(|(_, pattern)| source && pattern.matches_with(&path, OPTIONS));
         let (base, is_page) = match page {
             Some((text, _)) => (read_base(text), true),
             None => match (include.iter())
@@ -60,6 +83,11 @@ pub(crate) fn select_paths(
             },
         };
         let served = path[base.len()..].to_owned();
+        // A Markdown page is served where its `.html` twin would be
+        let served = match (is_page, served.strip_suffix(".md")) {
+            (true, Some(stem)) => format!("{stem}.html"),
+            _ => served,
+        };
         let taken = (selection.pages.get(&served))
             .or_else(|| selection.files.get(&served))
             .cloned();
@@ -72,6 +100,11 @@ pub(crate) fn select_paths(
         };
     }
     Ok(selection)
+}
+
+/// Whether a path is a page's source: an `.html` or `.md` file.
+pub(crate) fn is_page(path: &str) -> bool {
+    path.ends_with(".html") || path.ends_with(".md")
 }
 
 /// The folders, each empty or ending in `/`, that `include` reaches: only these are read.
@@ -88,7 +121,10 @@ pub(crate) fn read_bases(config: &Config) -> Vec<String> {
 
 fn read_include(config: &Config) -> Vec<String> {
     match config.include.is_empty() {
-        true => vec![DEFAULT_INCLUDE.to_owned()],
+        true => DEFAULT_INCLUDE
+            .iter()
+            .map(|pattern| (*pattern).to_owned())
+            .collect(),
         false => config.include.clone(),
     }
 }

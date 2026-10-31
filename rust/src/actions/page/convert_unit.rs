@@ -29,7 +29,7 @@ fn reduces_components_to_plain_markdown() -> crate::Result<()> {
     )?;
     let markdown = convert_page(&page)?;
     assert!(
-        markdown.contains("> **Warning**\n> \n> Careful."),
+        markdown.contains("> **Warning**\n>\n> Careful."),
         "{markdown}"
     );
     assert!(markdown.contains("**npm**\n\nUse npm."), "{markdown}");

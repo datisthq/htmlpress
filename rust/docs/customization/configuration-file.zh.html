@@ -30,8 +30,8 @@
     <pre><code class="language-yaml">title: My docs</code></pre>
     <p>
       空的 <code>htmlpress.yaml</code> 等同于没有配置。没有配置时，项目下的每个
-      <code>.html</code> 文件（默认
-      <code>include: "**/*.html"</code
+      <code>.html</code> 和 <code>.md</code> 文件（默认
+      <code>include: ["**/*.html", "**/*.md"]</code
       >）都会成为页面，使用内置的布局和主题渲染：侧边栏、目录、深色模式，全部采用默认值。其他文件都会按原样复制到输出目录的相同路径下。像
       <code>.git/</code> 和 <code>.htmlpress/</code> 这样的点文件夹，以及
       <code>node_modules/</code>，都会被跳过。
@@ -50,8 +50,12 @@
       <tbody>
         <tr>
           <td><code>include</code></td>
-          <td><code>**/*.html</code></td>
-          <td>一个 glob 或一个列表：成为页面的 <code>.html</code> 文件</td>
+          <td><code>**/*.html</code>、<code>**/*.md</code></td>
+          <td>
+            一个 glob 或一个列表：成为页面的 <code>.html</code> 和
+            <code>.md</code> 文件；与同名 <code>.html</code> 并存的
+            <code>.md</code> 会按原样复制
+          </td>
         </tr>
         <tr>
           <td><code>exclude</code></td>

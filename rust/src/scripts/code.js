@@ -33,7 +33,7 @@ function addCopyButtons() {
     copy.addEventListener("click", async () => {
       // Line numbers are part of the text but not of the code
       const code = pre.cloneNode(true)
-      code.querySelectorAll(".giallo-ln").forEach(number => number.remove())
+      code.querySelectorAll(".line-number").forEach(number => number.remove())
       await navigator.clipboard.writeText(code.textContent ?? "")
       copy.innerHTML = createIcon("check")
       copy.setAttribute("aria-label", MESSAGES["code.copied"] ?? "Copied")

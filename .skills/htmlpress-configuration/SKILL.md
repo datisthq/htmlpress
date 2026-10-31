@@ -53,8 +53,8 @@ head:
 - `title`, `description`, `logo`, `favicon` (URLs) and `banner` (HTML above the header).
 - `breadcrumbs` — `false` hides the folder trail above every page; default `true`, and a
   page's `<meta name="breadcrumbs">` overrides it.
-- `include` — globs of the `.html` files that become pages, default `**/*.html`. Only files under
-  a glob's base, its folders before the first wildcard, are read, and they are served without it:
+- `include` — globs of the `.html` and `.md` files that become pages, default `**/*.html` and
+  `**/*.md` (a `README.md` too: exclude what is not a page). Only files under a glob's base, its folders before the first wildcard, are read, and they are served without it:
   `docs/**/*.html` serves `docs/guide.html` at `/guide.html`. Other files there are copied as-is.
 - `exclude` — globs left out of the build: partials for includes, drafts.
 - `codeThemeLight`, `codeThemeDark` — the code block themes, by Shiki theme name.

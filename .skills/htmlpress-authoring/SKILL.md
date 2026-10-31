@@ -47,6 +47,44 @@ The config keys are in `htmlpress-configuration`; a different look in `htmlpress
 - A root `404.html` is the not-found page, kept out of the navigation; without one a built-in
   is used.
 
+## Markdown pages
+
+A `.md` file is a page too, served where its `.html` twin would be (`guide.md` at `/guide/`),
+and goes through the same build: components, math, code blocks, includes, the TOC.
+
+````md
+---
+title: Getting started
+description: Install and run it in a minute.
+order: 1
+---
+
+# Getting started
+
+:::callout{type="warning"}
+Back up first.
+:::
+
+```js title="build.js" lines="2"
+await build("docs")
+```
+````
+
+- The frontmatter keys are the page metas by the same names (`title`, `description`, `order`,
+  `layout`, `icon`, `label`, `sidebar`, `date`, `author`, `keywords`, …) plus `head`, raw HTML
+  for `<head>`; `author` and `keywords` take a list. Any other key fails the build.
+- `:::name{attrs}`, `::name{attrs}` and `:name[label]{attrs}` are the component
+  `<htmlpress-name attrs>`; a name that is no component fails the build, except inline, where
+  `note:important` stays text. Raw `<htmlpress-*>` HTML works too, with Markdown inside after a
+  blank line.
+- A fence's meta is the code block attributes without `data-`: `title`, `collapse`, `lines`,
+  `line-numbers`, `add`, `remove`, `focus`, `error`, `warning`, `words`.
+- GitHub Markdown (tables, task lists, footnotes, autolinks), `$…$` math and `:emoji:` work.
+  Link to another page by its file, `[Setup](setup.md)`.
+- Never pages: an `.md` beside its `.html` page (that page's own Markdown copy for agents),
+  an `.md` a page includes (a partial, with directives), a changelog section's `source`, and
+  the `skills` files.
+
 ## Page metas
 
 | Meta                                         | Effect                                                       |
@@ -79,7 +117,9 @@ The same holds for the default language without an `index.html`.
 ## Headings
 
 - `<h2>` to `<h4>` outside components make the page's table of contents; any `<h2>` to `<h6>`
-  without an `id` gets a slug of its text and an anchor link. Give a heading an `id` only when a link needs it fixed.
+  without an `id` gets a slug of its text, as GitHub makes them (`intro`, then `intro-1`), never
+  an `id` the page already uses, and an anchor link. Give a heading an `id` only when a link
+  needs it fixed.
 - A heading takes `data-toc="false"` (shown, not in the TOC) or `data-toc="only"` (in the TOC,
   not shown); `<htmlpress-toc level="2">` (2–4, default 3) in a page renders its TOC inline.
 
@@ -119,7 +159,7 @@ The theme styles the elements themselves: headings, `<p>`, lists, `<table>`, `<p
   is a dollar), or `<htmlpress-math display>…</htmlpress-math>`; rendered to MathML at build
   time, and invalid LaTeX fails the build.
 - `<htmlpress-include src="partial.html">` pastes in another file by path, relative to the page:
-  an `.html` body, rendered `.md`, or any other file as a titled code block that takes
+  an `.html` body, compiled `.md` (directives and fence meta work), or any other file as a titled code block that takes
   `data-lines` and the other code block attributes. Exclude the partials folder in the config.
 
 ## Code blocks
