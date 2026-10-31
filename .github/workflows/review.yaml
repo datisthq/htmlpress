@@ -12,6 +12,7 @@ jobs:
       actions: read
       contents: read
       pull-requests: write
+      id-token: write
 
     steps:
       - name: Checkout Repo
