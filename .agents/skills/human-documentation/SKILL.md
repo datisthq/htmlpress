@@ -42,10 +42,7 @@ files, and is no longer true.
 
 ## Where a fact belongs
 
-`AGENTS.md` loads into every session, so it carries only what must hold before anyone knows which
-area they are in: hard rules, invariants that fail silently, terminology, one line per command
-and per source folder, and the skills tables. Procedure, rationale and an area's traps go in that
-area's skill. Keep `AGENTS.md` near 10 KB.
+Whether a rule or lesson for agents goes in `AGENTS.md` or a skill: **`agent-documentation`**.
 
 - How to **use** htmlpress (pages, components, CLI) → the matching `rust/docs/` page and the shipped
   skill under `.skills/` covering it (authoring, configuration, customization, landing,

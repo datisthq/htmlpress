@@ -31,7 +31,7 @@ Htmlpress turns a folder of HTML pages into a site: one layout, one theme, a nav
 - Don't destructure props in a TypeScript function signature — use `props.x`. Put higher-level items above the ones they compose, public before private.
 - **Comments must not outnumber code**, and one is at most ~3 lines. The bar is: **name the specific mistake this prevents** — if you cannot, delete it. A file with none is normal. Rationale and history belong in git; only a non-obvious invariant (an ordering types cannot express, a failure that looks like success, a deliberate deviation from a rule here) earns lines.
 - Doc comments only on public API — a brief line on what an exported item does; none on files.
-- Update docs when a change requires it, and **after every task check whether a skill needs the lesson it taught** — update it in the same commit, or add one when no skill covers the area. Where a fact belongs: the **`human-documentation`** skill.
+- Update docs when a change requires it (**`human-documentation`**), and **after every task record any lesson it taught** in the same commit (**`agent-documentation`**).
 - **End every response that finishes a task with a status line: one bold sentence of about ten words, as the final paragraph, nothing after it** (e.g. **Ready to commit; lint, types and units green.**).
 
 ## Skills
@@ -42,6 +42,7 @@ Repo skills live in `.agents/skills/` (reached by Claude Code through the `.clau
 
 | skill                  | when                                                                       |
 | ---------------------- | -------------------------------------------------------------------------- |
+| `agent-documentation`  | writing a session's lesson into a skill or `AGENTS.md`                     |
 | `change-review`        | reviewing a pull request or the working diff — also what CI review runs    |
 | `change-verification`  | checking a change works — the smallest lint/type/unit slice and a look     |
 | `human-documentation`  | the docs-truth pass before a commit, and where a fact belongs              |
