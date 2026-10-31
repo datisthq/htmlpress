@@ -72,12 +72,16 @@
       0 1px 3px 0 oklch(0 0 0 / 0.1),
       0 1px 2px -1px oklch(0 0 0 / 0.1);
   }
+  [role="tab"] > span:first-child {
+    font: 0.75rem var(--htmlpress-mono);
+  }
+  [role="tab"][aria-selected="true"] > span:first-child {
+    color: var(--htmlpress-accent);
+  }
   [role="tab"] > svg[aria-hidden] {
+    display: none;
     width: 1rem;
     height: 1rem;
-  }
-  [role="tab"][aria-selected="true"] > svg[aria-hidden] {
-    color: var(--htmlpress-accent);
   }
   [role="tab"] > span[aria-hidden] {
     position: absolute;
@@ -196,8 +200,14 @@
     header > span {
       display: none;
     }
-    /* Only the icon shows, but the title still names the tab */
-    [role="tab"]:not([aria-selected="true"]) > span:not([aria-hidden]) {
+    /* A collapsed tab shows its icon in place of the number; the title still names it */
+    [role="tab"]:not([aria-selected="true"]):has(> svg) > span:first-child {
+      display: none;
+    }
+    [role="tab"]:not([aria-selected="true"]) > svg[aria-hidden] {
+      display: block;
+    }
+    [role="tab"]:not([aria-selected="true"]) > span:nth-of-type(2) {
       position: absolute;
       width: 1px;
       height: 1px;
