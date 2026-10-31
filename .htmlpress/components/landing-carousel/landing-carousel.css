@@ -26,8 +26,13 @@
     flex-shrink: 0;
     width: 2.375rem;
     height: 0.625rem;
-    background: radial-gradient(circle closest-side, var(--htmlpress-border) 92%, #0000) 0
-      0 / 0.625rem 0.625rem space no-repeat;
+    background:
+      radial-gradient(circle closest-side, oklch(0.7 0.19 22 / 0.6) 92%, #0000) 0 0 /
+        0.625rem 0.625rem no-repeat,
+      radial-gradient(circle closest-side, oklch(0.85 0.17 90 / 0.6) 92%, #0000) 0.875rem
+        0 / 0.625rem 0.625rem no-repeat,
+      radial-gradient(circle closest-side, oklch(0.8 0.18 150 / 0.6) 92%, #0000) 1.75rem 0
+        / 0.625rem 0.625rem no-repeat;
   }
   [role="tablist"] {
     display: flex;
