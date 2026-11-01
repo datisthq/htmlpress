@@ -107,9 +107,11 @@ run from source: `cargo run --manifest-path rust/Cargo.toml -- build docs`.
    naming a missing one), as a fragment unless it is a document, so a bare layout gains no
    `<html>` or `<body>`. It fills `<head>`, each project component's tag with its `.html`,
    and swaps each layout element (`htmlpress-nav`, `htmlpress-page-toc`, `htmlpress-pager`,
-   …) for markup built from the site (`parse_fragment`); `htmlpress-content` becomes the
-   page's content as a raw node, written as the page pipeline left it, and the page's
-   extra head tags go in the same way. Markup it fills in is not walked again; an element
+   …) for markup built from the site, as a raw node written as built: parsing it, as
+   `parse_fragment` does, cost a fifth of the docs build, so only a `base`, which prefixes
+   its URLs on the tree, parses it. `htmlpress-content` becomes the page's content as a
+   raw node, written as the page pipeline left it, and the page's extra head tags go in
+   the same way. Markup it fills in is not walked again; an element
    with nothing to show is removed. The CSS it links is for the layout's tags and
    `Page.components`. An escaped layout or component comes out as the same elements,
    respelled, never byte for byte. With `sections`,

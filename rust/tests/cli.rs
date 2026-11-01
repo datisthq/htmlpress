@@ -167,7 +167,7 @@ fn builds_every_language_with_its_picker_and_fallbacks() -> TestResult {
     assert!(guide.contains(r#"<link rel="alternate" hreflang="x-default" href="https://docs.example.com/guide/">"#));
     assert!(guide.contains(r#"<a href="/guide/" hreflang="en" lang="en">"#));
     assert!(guide.contains(r#"<a href="/zh/" hreflang="zh" lang="zh">"#));
-    assert!(guide.contains(r#"<a href="/install/" hreflang="en" title="Aún sin traducir" data-untranslated="">Install<small>en</small></a>"#));
+    assert!(guide.contains(r#"<a href="/install/" hreflang="en" title="Aún sin traducir" data-untranslated>Install<small>en</small></a>"#));
     assert!(!guide.contains(r#"href="/zh/start/""#));
     assert!(read("es/install/index.html").is_err());
     assert!(read("guide/index.html")?.contains("<title>Guide · Docs</title>"));

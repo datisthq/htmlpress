@@ -66,12 +66,12 @@ fn renders_the_page_in_the_layout() -> crate::Result<()> {
     let site = create_site()?;
     let html = render_page(&site, &site.pages[1], false)?;
     assert!(html.starts_with("<!doctype html>"));
-    assert!(html.contains("<title>Guide · Docs &lt;&amp;></title>"));
+    assert!(html.contains("<title>Guide · Docs &lt;&amp;&gt;</title>"));
     assert!(html.contains("<p>Read me.</p>"));
     assert!(html.contains(r#"<a href="/guide/" aria-current="page">Guide</a>"#));
     assert!(html.contains(r#"<a href="/">Home</a>"#));
     assert!(html.contains(
-        r#"<htmlpress-brand><a href="/">Docs &lt;&amp;></a></htmlpress-brand>"#
+        r#"<htmlpress-brand><a href="/">Docs &lt;&amp;&gt;</a></htmlpress-brand>"#
     ));
     assert!(!html.contains("<htmlpress-content>") && !html.contains(RELOAD_PATH));
     Ok(())
@@ -112,9 +112,7 @@ fn leaves_the_byline_off_a_page_with_its_own_layout() -> crate::Result<()> {
 fn labels_the_navigation_and_its_links() -> crate::Result<()> {
     let mut site = create_site()?;
     let html = render_page(&site, &site.pages[0], false)?;
-    assert!(
-        html.contains(r#"<nav aria-label="Pages"><p data-label="">Articles</p><ul>"#)
-    );
+    assert!(html.contains(r#"<nav aria-label="Pages"><p data-label>Articles</p><ul>"#));
     site.config.links = vec![Link {
         title: "Chat".into(),
         url: "https://chat.x".to_owned(),
@@ -122,7 +120,7 @@ fn labels_the_navigation_and_its_links() -> crate::Result<()> {
         ..Link::default()
     }];
     let html = render_page(&site, &site.pages[0], false)?;
-    assert!(html.contains(r#"<p data-label="">Links</p><ul data-links="">"#));
+    assert!(html.contains(r#"<p data-label>Links</p><ul data-links>"#));
     Ok(())
 }
 
@@ -228,7 +226,7 @@ fn uses_the_layout_a_page_names() -> crate::Result<()> {
     let html = render_page(&site, &site.pages[0], false)?;
     assert_eq!(
         html,
-        r#"<header><htmlpress-brand><a href="/">Docs &lt;&amp;></a></htmlpress-brand></header><main><h1>Home</h1></main>"#
+        r#"<header><htmlpress-brand><a href="/">Docs &lt;&amp;&gt;</a></htmlpress-brand></header><main><h1>Home</h1></main>"#
     );
     let other = render_page(&site, &site.pages[1], false)?;
     assert!(other.contains("<htmlpress-nav>"));
@@ -359,7 +357,7 @@ fn adds_the_favicon_social_tags_and_head_from_the_config() -> crate::Result<()> 
         r#"<meta property="og:image" content="https://example.com/cover.png">"#
     ));
     assert!(html.contains(r#"<meta name="twitter:card" content="summary_large_image">"#));
-    assert!(html.contains(r#"<script defer src="/stats.js"></script>"#));
+    assert!(html.contains(r#"<script defer="" src="/stats.js"></script>"#));
     assert!(html.contains(r#"<meta content="article" property="og:type">"#));
     assert!(!html.contains(r#"content="website""#));
     assert!(!html.contains(r#"<meta name="image""#));
@@ -397,7 +395,7 @@ fn puts_the_description_under_the_brand_title() -> crate::Result<()> {
     site.config.description = Some("Notes <&>".into());
     let html = render_page(&site, &site.pages[0], false)?;
     assert!(html.contains(
-        r#"<a href="/"><span>Docs &lt;&amp;><small>Notes &lt;&amp;></small></span></a>"#
+        r#"<a href="/"><span>Docs &lt;&amp;&gt;<small>Notes &lt;&amp;&gt;</small></span></a>"#
     ));
     Ok(())
 }
@@ -423,7 +421,7 @@ fn puts_each_link_in_its_position() -> crate::Result<()> {
     ];
     let html = render_page(&site, &site.pages[0], false)?;
     assert!(html.contains(r#"<nav aria-label="Links"><a href="https://github.com/x">"#));
-    assert!(html.contains(r#"<ul data-links=""><li><a href="https://chat.x">Chat</a>"#));
+    assert!(html.contains(r#"<ul data-links><li><a href="https://chat.x">Chat</a>"#));
     Ok(())
 }
 
@@ -436,11 +434,11 @@ fn fills_the_breadcrumbs_from_the_folders() -> crate::Result<()> {
     assert!(!home.contains("<htmlpress-breadcrumbs"));
     let auth = render_page(&site, &site.pages[4], false)?;
     assert!(auth.contains(
-        r#"<ol><li><a href="/">Docs &lt;&amp;></a></li><li><a href="/api/">API</a></li><li>v1</li><li aria-current="page">Auth</li></ol>"#
+        r#"<ol><li><a href="/">Docs &lt;&amp;&gt;</a></li><li><a href="/api/">API</a></li><li>v1</li><li aria-current="page">Auth</li></ol>"#
     ));
     let index = render_page(&site, &site.pages[2], false)?;
     assert!(index.contains(
-        r#"<li><a href="/">Docs &lt;&amp;></a></li><li aria-current="page">API</li>"#
+        r#"<li><a href="/">Docs &lt;&amp;&gt;</a></li><li aria-current="page">API</li>"#
     ));
     Ok(())
 }
@@ -504,32 +502,29 @@ fn create_sectioned_site() -> crate::Result<Site> {
 fn shows_only_the_open_sections_pages_with_its_brand() -> crate::Result<()> {
     let site = create_sectioned_site()?;
     let cli = render_page(&site, &site.pages[3], false)?;
-    assert!(
-        cli.contains(r#"<a href="/api/" data-section="" aria-current="page">API</a>"#)
-    );
-    assert!(cli.contains(r#"<a href="/" data-section="">Docs</a>"#));
+    assert!(cli.contains(r#"<a href="/api/" data-section aria-current="page">API</a>"#));
+    assert!(cli.contains(r#"<a href="/" data-section>Docs</a>"#));
     assert!(cli.contains(r#"<htmlpress-brand><a href="/api/">API Reference</a>"#));
     assert!(!cli.contains(r#"<a href="/guide/""#), "{cli}");
     assert!(cli.contains(r#"<a rel="prev" href="/api/"><small>Previous</small>API</a>"#));
     assert!(!cli.contains(r#"rel="next""#));
     assert!(!cli.contains("<details open>"), "{cli}");
-    assert!(cli.contains(
-        r#"<div data-sections=""><p data-label="">Sections</p><details><summary>"#
-    ));
+    assert!(
+        cli.contains(
+            r#"<div data-sections><p data-label>Sections</p><details><summary>"#
+        )
+    );
     assert!(cli.contains("<span>API</span></summary>"));
 
     let guide = render_page(&site, &site.pages[1], false)?;
-    assert!(
-        guide.contains(r#"<a href="/" data-section="" aria-current="page">Docs</a>"#)
-    );
+    assert!(guide.contains(r#"<a href="/" data-section aria-current="page">Docs</a>"#));
     assert!(!guide.contains(r#"href="/api/cli/""#));
     assert!(guide.contains(
-        r#"<li data-position="sidebar"><a href="https://github.com/x" data-section="">GitHub</a></li>"#
+        r#"<li data-position="sidebar"><a href="https://github.com/x" data-section>GitHub</a></li>"#
     ));
     assert!(
-        !guide.contains(
-            r#"<a href="https://github.com/x" data-section="">GitHub</a></nav>"#
-        )
+        !guide
+            .contains(r#"<a href="https://github.com/x" data-section>GitHub</a></nav>"#)
     );
     Ok(())
 }
@@ -561,7 +556,7 @@ fn puts_icons_before_link_and_section_titles() -> crate::Result<()> {
         prefix: None,
     }];
     let html = render_page(&site, &site.pages[0], false)?;
-    assert!(html.contains(r#"<a href="/api/" data-section=""><svg viewBox="0 0 24 24""#));
+    assert!(html.contains(r#"<a href="/api/" data-section><svg viewBox="0 0 24 24""#));
     assert!(html.contains(r#"<a href="https://chat.x"><svg viewBox="0 0 24 24""#));
     Ok(())
 }
@@ -733,7 +728,7 @@ fn leads_a_custom_section_to_the_pages_translation() -> crate::Result<()> {
     site.translations.insert("/guide/".to_owned(), versions);
     site.pages[0].language = "es".to_owned();
     let html = render_page(&site, &site.pages[0], false)?;
-    assert!(html.contains(r#"<a href="/es/guide/" data-section="">Start</a>"#));
+    assert!(html.contains(r#"<a href="/es/guide/" data-section>Start</a>"#));
     Ok(())
 }
 
@@ -772,7 +767,7 @@ fn builds_the_header_buttons_into_the_page() -> crate::Result<()> {
     assert!(html.contains(r#"data-icon="system""#));
     assert!(html.contains(r#"aria-controls="htmlpress-sidebar" aria-keyshortcuts="M""#));
     assert!(html.contains(
-        r#"<button type="button" data-key="L" data-targeted=""><span>Next page</span><kbd>L</kbd>"#
+        r#"<button type="button" data-key="L" data-targeted><span>Next page</span><kbd>L</kbd>"#
     ));
     assert!(html.contains("root.dataset.scripted"));
     Ok(())

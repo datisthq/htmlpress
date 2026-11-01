@@ -75,6 +75,13 @@ pub(crate) fn render_page(
         }));
         nodes
     };
+    let base = site.config.read_base();
+    // What htmlpress writes itself goes in as written; only a base, which prefixes its
+    // URLs on the tree, needs it parsed
+    let insert = |html: &str| match base.is_empty() {
+        true => raw(html),
+        false => parse_fragment(html, &alloc),
+    };
     walk_nodes(&mut root.children, &mut |element| {
         if let Some((_, html)) = fragments.iter().find(|(tag, _)| tag == element.tag_name)
         {
@@ -90,10 +97,7 @@ pub(crate) fn render_page(
                 return Ok(Step::Continue);
             }
             "head" => {
-                let own = std::mem::replace(
-                    &mut element.children,
-                    parse_fragment(&head, &alloc),
-                );
+                let own = std::mem::replace(&mut element.children, insert(&head));
                 element.children.extend(own);
                 element.children.extend(raw(&page.head));
                 return Ok(Step::Skip);
@@ -133,14 +137,13 @@ pub(crate) fn render_page(
         // the box around it with `:empty` or `:has()`
         Ok(match fill {
             Some(html) => {
-                element.children = parse_fragment(&html, &alloc);
+                element.children = insert(&html);
                 Step::Skip
             }
             None => Step::Remove,
         })
     })
     .map_err(fail)?;
-    let base = site.config.read_base();
     if !base.is_empty() {
         prefix_urls(&mut root.children, &base, &alloc);
     }
