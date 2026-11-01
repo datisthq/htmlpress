@@ -127,6 +127,11 @@ the folder:
 - To restyle a component from an outer one, beat its `:scope`: write `:scope htmlpress-header`,
   not a bare `htmlpress-header`, which loses on specificity.
 - Use tokens inside your CSS (`var(--htmlpress-muted)`) so dark mode keeps working.
+- Every `<pre><code>` is highlighted by Shiki at build time, one without a language as plain
+  `text`: a component coloring its own code meets `pre.shiki` with an inline background, a
+  surface background forced with `!important`, and spans already inside. To color it
+  yourself, drop the `shiki` class and `style` from the `pre`, or dark mode's `.shiki span`
+  rule repaints every token one color.
 
 ## Verification
 
