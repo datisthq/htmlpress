@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.8.0](https://github.com/datisthq/htmlpress/compare/v0.7.1...v0.8.0) (2026-11-01)
+
+
+### Features
+
+* compare build speed with other site generators, charted on the landing ([62a219b](https://github.com/datisthq/htmlpress/commit/62a219b3b5826696cbea09e59fe2cc88715325a2))
+
+
+### Performance Improvements
+
+* build and render pages on every core ([c8ddd92](https://github.com/datisthq/htmlpress/commit/c8ddd92b075610fbf8547ff3a4f600010f21eb07))
+
 ## [0.7.1](https://github.com/datisthq/htmlpress/compare/v0.7.0...v0.7.1) (2026-11-01)
 
 
