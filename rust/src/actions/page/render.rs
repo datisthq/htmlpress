@@ -210,7 +210,13 @@ fn create_head(
     let favicon = (site.config.favicon.as_ref()).or(site.config.logo.as_ref());
     let favicon =
         favicon.map_or(format!("/{ASSETS_DIR}/favicon.svg"), |url| escape_html(url));
-    let _ = writeln!(head, "<link rel=\"icon\" href=\"{favicon}\">");
+    let kind = match read_favicon_type(&favicon) {
+        Some(kind) => format!(" type=\"{kind}\""),
+        None => String::new(),
+    };
+    for rel in ["icon", "shortcut icon"] {
+        let _ = writeln!(head, "<link rel=\"{rel}\" href=\"{favicon}\"{kind}>");
+    }
     head.push_str(RESTORE_SCRIPT);
     head.push_str(&create_speculation_rules(&site.config.read_base()));
     head.push_str(&create_messages(site.read_language(&page.language)));
@@ -360,6 +366,17 @@ const MENU_ICON: &str = r#"<svg viewBox="0 0 24 24" aria-hidden="true"><path d="
 
 // A page is prerendered while a link to it is hovered, as Livemark preloads its routes, so
 // the next page is ready, scripts run, before the view transition shows it
+fn read_favicon_type(href: &str) -> Option<&'static str> {
+    [
+        (".svg", "image/svg+xml"),
+        (".png", "image/png"),
+        (".ico", "image/x-icon"),
+    ]
+    .into_iter()
+    .find(|(extension, _)| href.ends_with(extension))
+    .map(|(_, kind)| kind)
+}
+
 fn create_speculation_rules(base: &str) -> String {
     let rules = serde_json::json!({
         "prerender": [{

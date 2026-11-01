@@ -345,7 +345,12 @@ fn adds_the_favicon_social_tags_and_head_from_the_config() -> crate::Result<()> 
         "<title>Guide</title><meta name=\"image\" content=\"/cover.png\"><p>Hi.</p>",
     )?;
     let html = render_page(&site, &site.pages[1], false)?;
-    assert!(html.contains(r#"<link rel="icon" href="/favicon.svg">"#));
+    assert!(
+        html.contains(r#"<link rel="icon" href="/favicon.svg" type="image/svg+xml">"#)
+    );
+    assert!(html.contains(
+        r#"<link rel="shortcut icon" href="/favicon.svg" type="image/svg+xml">"#
+    ));
     assert!(html.contains(r#"<meta property="og:title" content="Guide">"#));
     assert!(
         html.contains(r#"<meta property="og:url" content="https://example.com/guide/">"#)
@@ -368,13 +373,18 @@ fn fills_the_logo_banner_and_footer() -> crate::Result<()> {
     let mut site = create_site()?;
     let html = render_page(&site, &site.pages[0], false)?;
     assert!(!html.contains("<htmlpress-banner"));
-    assert!(html.contains(r#"<link rel="icon" href="/_htmlpress/favicon.svg">"#));
+    assert!(html.contains(
+        r#"<link rel="icon" href="/_htmlpress/favicon.svg" type="image/svg+xml">"#
+    ));
     assert!(html.contains(r#"<a href="https://htmlpress.dev">Htmlpress</a>"#));
     site.config.logo = Some("/logo.svg".to_owned());
     site.config.banner = Some("<a href=\"/new\">New</a>".into());
     let html = render_page(&site, &site.pages[0], false)?;
     assert!(html.contains(r#"<a href="/"><img src="/logo.svg" alt="">Docs"#));
-    assert!(html.contains(r#"<link rel="icon" href="/logo.svg">"#));
+    assert!(html.contains(r#"<link rel="icon" href="/logo.svg" type="image/svg+xml">"#));
+    site.config.favicon = Some("/icon.webp".to_owned());
+    let html = render_page(&site, &site.pages[0], false)?;
+    assert!(html.contains(r#"<link rel="shortcut icon" href="/icon.webp">"#));
     assert!(
         html.contains(r#"<htmlpress-banner><a href="/new">New</a></htmlpress-banner>"#)
     );
