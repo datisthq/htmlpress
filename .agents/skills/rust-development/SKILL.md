@@ -29,6 +29,12 @@ run from source: `cargo run --manifest-path rust/Cargo.toml -- build docs`.
 
 - `src/actions/<entity>/<verb>.rs` exports `verb_noun`; the module tree is declared inline in
   `lib.rs`, so there is no `mod.rs`
+- `vendor/` holds dependencies htmlpress patches, wired in through `[patch.crates-io]`, as
+  textlane's `rust/vendor/` does and copied from it; only the release binaries build with
+  them, a crates.io build takes the published crate. `onig-regset` (giallo's Oniguruma
+  binding) takes its global lock for the first `onig_new` only: with the lock on every
+  compile, the parallel build ran slower than one thread. Drop a copy once upstream ships
+  its fix, and keep it out of formatting (`vite.config.ts`'s `rust/vendor/**`)
 - `src/models/` — `Asset` / `AssetStatus`, `Config`, `Page`, `Site`, `BuildOptions` /
   `BuildReport`, `Error`
 - `Config` mirrors Livemark's config keys and is read from `htmlpress.yaml` by
@@ -77,9 +83,17 @@ run from source: `cargo run --manifest-path rust/Cargo.toml -- build docs`.
    page's tree before `read_source`, splicing in the partial's nodes, so included content
    reaches the facts, TOC, search and the Markdown copies like the page's own.
 2. A page is parsed **once**, into one tree that lives from its parse to its content: no
-   stage writes HTML that a later one parses again. `scan_site` holds one `Allocator` for
-   the build and a `Sources` cache (`models/source.rs`, `page/parse`): every page, partial
-   and generated page is parsed into that arena once (`html.parse` through the project's
+   stage writes HTML that a later one parses again. `read_site` (behind `scan_site` and,
+   rendering too, `build_site`) builds on every core in three steps: workers parse their
+   share of the pages and report their includes, then their facts; the main thread alone
+   settles what pages need of each other (partials, patches, languages, URLs, generated
+   pages, links, each language's view); then each worker finishes and renders its own.
+   A tree borrows its arena, which no other thread may touch, so a worker keeps its
+   pages' trees from parse to HTML and only `Page` facts and output cross threads; a
+   failure carries its page's index, so the first page in order is the one reported. Each
+   worker (and the main thread, for generated and patched pages) holds one `Allocator`
+   and a `Sources` cache (`models/source.rs`, `page/parse`): every page, partial
+   and generated page is parsed into its arena once (`html.parse` through the project's
    `html` plugins, as a document when `is_document`, or compiled), and each use takes a
    `copy_node` of it, so a partial included twice stays as parsed. `read_source` reads the
    facts (title, metas, URL) from the tree, each page held as a `Draft` with its tree, since

@@ -88,6 +88,7 @@ The root is a private pnpm workspace (`package.json`, `pnpm-workspace.yaml`): fo
   - `src/commands/` — the fireargs commands `build`, `start`, `preview`, `clear` and `escape`; `src/program.rs` the CLI; `src/main.rs` runs it
   - `src/models/` (`plugin.rs` holds htmlpress' own textlane plugins, the last resort beside textlane's built-in ones), `src/settings.rs` (paths and the embedded assets), `src/icons.rs` (the built-in Lucide icons), `src/language_icons.rs` (code block language logos), `src/flags.rs` (the language picker's flags), `src/messages/` (the bundled UI strings), `src/lib.rs` the façade; `src/layout.html`, `src/404.html`, `src/reload.js`, `src/styles/`, `src/scripts/` and `src/components/` are compiled into the binary, laid out as a project's `.htmlpress/` escapes them
   - Unit tests beside their module as `<module>_unit.rs`; `tests/` the CLI integration tests
+  - `vendor/` — copies of dependencies with a fix htmlpress needs (`onig-regset`, as textlane vendors it), wired in through `[patch.crates-io]`
   - `docs/` — the docs site's HTML pages, outside the crate's `include`; the repo root is their project, with `htmlpress.yaml` and `.htmlpress/`
 - `typescript/` — the npm package `gethtmlpress`: `entrypoints/main.ts` runs the binary `actions/binary/resolve.ts` finds; `settings.ts` lists the platforms; `scripts/` packs and publishes the platform packages into `typescript/compile/` (**`package-distribution`**)
 - `python/` — the PyPI package `htmlpress`: only `pyproject.toml`, which points maturin at `rust/Cargo.toml` with `bindings = "bin"`

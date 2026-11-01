@@ -2,13 +2,13 @@ use std::path::{Path, PathBuf};
 
 use crate::actions::date::format::format_feed_date;
 use crate::actions::page::decorate::{Decoration, list_fragments};
-use crate::actions::page::read::{create_output_path, read_decorated_page};
+use crate::actions::page::read::read_decorated_page;
 use crate::actions::page::render::render_page;
 use crate::actions::section::generate::list_posts;
 use crate::actions::site::describe::{describe_language, describe_site};
 use crate::actions::site::index::{create_search_path, index_site};
 use crate::actions::site::localize::localize_site;
-use crate::actions::site::scan::scan_site;
+use crate::actions::site::scan::{Rendered, read_site};
 use crate::models::build::{BuildOptions, BuildReport};
 use crate::models::config::SectionKind;
 use crate::models::error::Error;
@@ -20,7 +20,7 @@ use crate::settings::{ASSETS_DIR, NOT_FOUND, NOT_FOUND_PAGE, RELOAD, THEME_STYLE
 /// Build the project at `options.root` into `options.output`, replacing what is there.
 pub fn build_site(options: &BuildOptions) -> crate::Result<BuildReport> {
     check_output(&options.root, &options.output)?;
-    let site = scan_site(&options.root)?;
+    let (site, rendered) = read_site(&options.root, Some(options.reload))?;
     // Written beside the output and swapped in whole: the dev server answers requests
     // while it rebuilds, and a page loaded from a half-written output shows unstyled
     let (staging, previous) = create_build_paths(&options.output);
@@ -31,7 +31,7 @@ pub fn build_site(options: &BuildOptions) -> crate::Result<BuildReport> {
         output: staging.clone(),
         ..options.clone()
     };
-    write_site(&staged, &site)?;
+    write_site(&staged, &site, &rendered)?;
     swap_output(&staging, &previous, &options.output)?;
     Ok(BuildReport {
         output: options.output.clone(),
@@ -64,21 +64,19 @@ fn swap_output(staging: &Path, previous: &Path, output: &Path) -> crate::Result<
     Ok(())
 }
 
-fn write_site(options: &BuildOptions, site: &Site) -> crate::Result<()> {
-    // Each language renders through its own view: its config, its pages, and the default
-    // pages it lacks listed but not built
+fn write_site(
+    options: &BuildOptions,
+    site: &Site,
+    rendered: &[Rendered],
+) -> crate::Result<()> {
+    for (path, html) in rendered {
+        write_file(&options.output.join(path), html.as_bytes())?;
+    }
+    // Each language describes itself through its own view: its config, its pages, and
+    // the default pages it lacks listed but not built
     let views: Vec<Site> = (site.languages.iter())
         .map(|language| localize_site(site, &language.code))
         .collect();
-    for view in &views {
-        for page in view.pages.iter().filter(|page| !page.untranslated) {
-            let html = render_page(view, page, options.reload)?;
-            write_file(
-                &options.output.join(create_output_path(&page.path)),
-                html.as_bytes(),
-            )?;
-        }
-    }
     if !site.pages.iter().any(|page| page.path == NOT_FOUND_PAGE) {
         let language = site.read_language("");
         let base = site.config.read_base();

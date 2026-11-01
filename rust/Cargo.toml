@@ -49,3 +49,9 @@ unsafe_code = "forbid"
 [lints.clippy]
 unwrap_used = "deny"
 expect_used = "deny"
+
+# A copy of a dependency with a fix htmlpress needs, until upstream ships it, as textlane
+# vendors it: the release binaries build with it; a crates.io build takes the published
+# crate, whose global lock serializes the regex compiles of a parallel build
+[patch.crates-io]
+onig-regset = { path = "vendor/onig-regset" }

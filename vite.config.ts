@@ -1,6 +1,6 @@
 import { defineConfig } from "vite-plus"
 
-const ignorePatterns = ["**/generated/**", "rust/target/**"]
+const ignorePatterns = ["**/generated/**", "rust/target/**", "rust/vendor/**"]
 
 export default defineConfig({
   fmt: {
