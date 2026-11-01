@@ -567,6 +567,65 @@ htmlpress.yaml</code></pre>
   </section>
 </htmlpress-landing-section>
 
+<htmlpress-landing-section>
+  <section>
+    <header>
+      <h2>Builds in a blink</h2>
+      <p>
+        A thousand Markdown pages built cold. Htmlpress makes a whole documentation site
+        of them, navigation, search and highlighted code included, faster than every other
+        documentation generator measured.
+      </p>
+    </header>
+    <htmlpress-landing-window label="benchmark · 1,000-page docs site, cold build"
+      ><htmlpress-landing-benchmark
+        ><ul>
+          <li data-own>
+            <span>htmlpress</span><meter min="0" max="763" value="763"></meter
+            ><data value="763">763 pages/s</data>
+          </li>
+          <li>
+            <span>mdBook</span><meter min="0" max="763" value="376"></meter
+            ><data value="376">376 pages/s</data>
+          </li>
+          <li>
+            <span>Zola + book</span><meter min="0" max="763" value="83"></meter
+            ><data value="83">83 pages/s</data>
+          </li>
+          <li>
+            <span>Astro Starlight</span><meter min="0" max="763" value="58"></meter
+            ><data value="58">58 pages/s</data>
+          </li>
+          <li>
+            <span>MkDocs Material</span><meter min="0" max="763" value="51"></meter
+            ><data value="51">51 pages/s</data>
+          </li>
+          <li>
+            <span>Hugo + Hextra</span><meter min="0" max="763" value="48"></meter
+            ><data value="48">48 pages/s</data>
+          </li>
+          <li>
+            <span>Docusaurus</span><meter min="0" max="763" value="21"></meter
+            ><data value="21">21 pages/s</data>
+          </li>
+          <li>
+            <span>Livemark</span><meter min="0" max="763" value="16"></meter
+            ><data value="16">16 pages/s</data>
+          </li>
+          <li>
+            <span>VitePress</span><meter min="0" max="763" value="14"></meter
+            ><data value="14">14 pages/s</data>
+          </li>
+        </ul></htmlpress-landing-benchmark
+      ></htmlpress-landing-window
+    >
+    <p>
+      Pages built per second at the median, on an AMD Ryzen 5 PRO 7545U. Reproduce with
+      <code>pnpm -C benchmark measure</code>.
+    </p>
+  </section>
+</htmlpress-landing-section>
+
 <htmlpress-landing-section tone="tint">
   <section>
     <header>

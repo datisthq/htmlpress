@@ -1,0 +1,8 @@
+# Its own root, outside the htmlpress workspace, so `pnpm install` there never installs the
+# rival site generators; the same seven-day quarantine as the workspace applies
+minimumReleaseAge: 10080
+allowBuilds:
+  esbuild: true
+  sharp: true
+  core-js: true
+  "@swc/core": true

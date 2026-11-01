@@ -1,0 +1,10 @@
+[project]
+name = "htmlpress-benchmark-rivals"
+version = "0.0.0"
+requires-python = ">=3.12"
+dependencies = ["mkdocs-material==9.8.0"]
+
+# The workspace's seven-day quarantine, as a date: nothing published after it resolves
+[tool.uv]
+exclude-newer = "2026-10-25T00:00:00Z"
+package = false

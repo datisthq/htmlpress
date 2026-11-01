@@ -73,7 +73,7 @@ project has something real to say in; three strong ones beat seven thin ones.
 ## Patterns from the reference
 
 - **One component per block** — `landing-hero`, `-section`, `-features`, `-points`, `-cta`,
-  `-actions`, `-carousel`, `-window`, `-code`, `-backdrop`, `-footer`, `-page`, each a folder
+  `-actions`, `-carousel`, `-window`, `-code`, `-benchmark`, `-backdrop`, `-footer`, `-page`, each a folder
   under `.htmlpress/components/` with a `.css` scoped to its tag, and `.js` or `.html` only
   where needed. The page holds semantic HTML inside them: `<section>`, `<header>`, `<hgroup>`,
   `<h2>`, `<ul>` of `<li>` cards. No classes.
@@ -86,6 +86,9 @@ project has something real to say in; three strong ones beat seven thin ones.
 - **Show the product** — real screenshots, not stock art, each shipped light and dark as two
   `<img>` toggled by the theme with an attribute the component's CSS reads; set `width` and
   `height` so nothing shifts. `landing-carousel` turns `<section title>` slides into tabs.
+- **Numbers** — a measured comparison as a `<ul>` of rows, each bar a `<meter value max>` whose
+  length is its value, so no width is written inline (`landing-benchmark`); say under it what was
+  measured, on what machine, and how to reproduce it.
 - **Icons** — inline `<svg aria-hidden="true">` with `currentColor` strokes, so they follow the
   theme.
 - **Colour** — only `--htmlpress-*` tokens and `color-mix(in oklab, …)` of them, so the page

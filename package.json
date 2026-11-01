@@ -17,7 +17,7 @@
     "squash": "node .scripts/squash-branch.ts",
     "start": "cargo run --quiet --manifest-path rust/Cargo.toml -- start",
     "test": "pnpm check && pnpm test:unit",
-    "test:unit": "vp test && pnpm -C typescript test:unit && pnpm -C rust test:unit",
+    "test:unit": "vp test && pnpm -C benchmark test:unit && pnpm -C typescript test:unit && pnpm -C rust test:unit",
     "update:deps": "ncu -ws --root -u --cooldown 7d"
   },
   "devDependencies": {

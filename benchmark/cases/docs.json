@@ -1,0 +1,6 @@
+{
+  "description": "A documentation site: sections of Markdown pages with prose, lists, tables and code",
+  "profile": "docs",
+  "sizes": [100, 1000],
+  "seed": 1
+}

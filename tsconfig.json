@@ -10,7 +10,9 @@
     "${configDir}/**/examples/",
     "${configDir}/typescript/",
     "${configDir}/python/",
-    "${configDir}/rust/"
+    "${configDir}/rust/",
+    "${configDir}/benchmark/.cache/",
+    "${configDir}/benchmark/rivals/"
   ],
 
   "compilerOptions": {

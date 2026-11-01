@@ -41,16 +41,17 @@ Depth lives in skills: this file carries invariants, the skills carry procedure.
 
 Repo skills live in `.agents/skills/` (reached by Claude Code through the `.claude/skills` symlink `pnpm install` creates) and are never published:
 
-| skill                  | when                                                                       |
-| ---------------------- | -------------------------------------------------------------------------- |
-| `agent-documentation`  | writing a session's lesson into a skill or `AGENTS.md`                     |
-| `change-review`        | reviewing a pull request or the working diff — also what CI review runs    |
-| `change-verification`  | checking a change works — the smallest lint/type/unit slice and a look     |
-| `human-documentation`  | the docs-truth pass before a commit, and where a fact belongs              |
-| `issue-resolution`     | taking one issue or bug report to one tested commit in a worktree          |
-| `package-distribution` | the npm and PyPI wrappers, platform packages and the release build matrix  |
-| `rust-development`     | working in `rust/` — layout, cargo commands, the page pipeline, dev server |
-| `worktree-workflow`    | starting, running and landing a `.worktrees/<name>` branch                 |
+| skill                   | when                                                                       |
+| ----------------------- | -------------------------------------------------------------------------- |
+| `agent-documentation`   | writing a session's lesson into a skill or `AGENTS.md`                     |
+| `benchmark-development` | `benchmark/` — build time and memory against other site generators         |
+| `change-review`         | reviewing a pull request or the working diff — also what CI review runs    |
+| `change-verification`   | checking a change works — the smallest lint/type/unit slice and a look     |
+| `human-documentation`   | the docs-truth pass before a commit, and where a fact belongs              |
+| `issue-resolution`      | taking one issue or bug report to one tested commit in a worktree          |
+| `package-distribution`  | the npm and PyPI wrappers, platform packages and the release build matrix  |
+| `rust-development`      | working in `rust/` — layout, cargo commands, the page pipeline, dev server |
+| `worktree-workflow`     | starting, running and landing a `.worktrees/<name>` branch                 |
 
 Shipped skills live in `.skills/` and teach coding agents to **use** htmlpress; they are published on the docs site and in the npm and PyPI packages. Read the matching one before changing the behaviour it describes, and update it in the same commit:
 
@@ -78,6 +79,7 @@ Shipped skills live in `.skills/` and teach coding agents to **use** htmlpress; 
 - `pnpm update:deps` — bump npm dependencies past a 7-day cooldown
 - `pnpm -C typescript pack:platforms --binaries <dir>` / `pnpm -C typescript release` / `pnpm -C python release` / `pnpm -C rust release` — lay out and publish npm / PyPI / crates.io; run by the release workflow only
 - `pnpm squash <branch> -m "<subject>"` — land a worktree branch on local `main` as one commit (**`worktree-workflow`**)
+- `pnpm -C benchmark setup:tools` / `pnpm -C benchmark measure` / `pnpm -C benchmark show:report` — install the rival site generators, time every build, write the report (**`benchmark-development`**)
 
 ## Code structure
 
@@ -92,6 +94,7 @@ The root is a private pnpm workspace (`package.json`, `pnpm-workspace.yaml`): fo
   - `docs/` — the docs site's HTML pages, outside the crate's `include`; the repo root is their project, with `htmlpress.yaml` and `.htmlpress/`
 - `typescript/` — the npm package `gethtmlpress`: `entrypoints/main.ts` runs the binary `actions/binary/resolve.ts` finds; `settings.ts` lists the platforms; `scripts/` packs and publishes the platform packages into `typescript/compile/` (**`package-distribution`**)
 - `python/` — the PyPI package `htmlpress`: only `pyproject.toml`, which points maturin at `rust/Cargo.toml` with `bindings = "bin"`
+- `benchmark/` — the private package timing htmlpress against other site generators, its rivals in `rivals/` outside the workspace; it ships nothing, so its commits are `chore(benchmark)` (**`benchmark-development`**)
 - `.skills/` — the shipped agent skills
 - `README.md`, `CONTRIBUTING.md` — the GitHub overview and the contributor guide; `rust/README.md`, `typescript/README.md` and `python/README.md` are each registry's page
 

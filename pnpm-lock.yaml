@@ -58,6 +58,18 @@ importers:
         specifier: 4.85.0
         version: 4.85.0
 
+  benchmark:
+    devDependencies:
+      '@types/node':
+        specifier: 24.2.0
+        version: 24.2.0
+      vite-plus:
+        specifier: 'catalog:'
+        version: 1.0.0(@types/node@24.2.0)(@vitest/coverage-v8@5.0.1)(@vitest/ui@5.0.1)(esbuild@0.27.3)
+      vitest:
+        specifier: 'catalog:'
+        version: 5.0.1(@types/node@24.2.0)(@vitest/browser-preview@5.0.1)(@vitest/coverage-v8@5.0.1)(@vitest/ui@5.0.1(vitest@5.0.1))(@voidzero-dev/vite-plus-core@1.0.0(@types/node@24.2.0)(esbuild@0.27.3))
+
   python: {}
 
   rust: {}
