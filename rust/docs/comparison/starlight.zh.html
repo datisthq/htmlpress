@@ -148,12 +148,12 @@
         </tr>
         <tr>
           <td>博客</td>
-          <td>否</td>
+          <td>是（<code>blog</code> 分区，含标签页）</td>
           <td>否（使用 Astro 的内容集合）</td>
         </tr>
         <tr>
           <td>更新日志</td>
-          <td>否</td>
+          <td>是（<code>changelog</code> 分区，每个版本一页）</td>
           <td>否</td>
         </tr>
         <tr>
@@ -163,7 +163,7 @@
         </tr>
         <tr>
           <td>RSS</td>
-          <td>否</td>
+          <td>是（每个博客分区，设置 <code>site</code> 时）</td>
           <td>通过 <code>@astrojs/rss</code> 集成</td>
         </tr>
         <tr>
@@ -173,7 +173,12 @@
         </tr>
         <tr>
           <td>插件</td>
-          <td>否（使用 <code>.htmlpress/components/</code> 中的项目组件）</td>
+          <td>
+            部分支持（在 <code>plugins</code> 下按名称启用 textlane 插件；<code
+              >.htmlpress/components/</code
+            >
+            中的项目组件）
+          </td>
           <td>Astro 集成 + Starlight 插件</td>
         </tr>
         <tr>
