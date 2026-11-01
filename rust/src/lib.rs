@@ -48,6 +48,9 @@ mod actions {
     pub(crate) mod pipeline {
         pub(crate) mod create;
     }
+    pub(crate) mod plugin {
+        pub(crate) mod load;
+    }
     pub(crate) mod package {
         pub(crate) mod convert;
     }

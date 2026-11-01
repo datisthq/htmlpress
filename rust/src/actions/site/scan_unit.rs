@@ -360,3 +360,39 @@ fn reads_each_page_into_content_toc_and_markdown() -> crate::Result<()> {
     );
     Ok(())
 }
+
+#[test]
+fn runs_the_config_plugins_and_rejects_a_bad_one() -> crate::Result<()> {
+    let root = tempfile::tempdir().map_err(Error::io("tempdir"))?;
+    let root = root.path();
+    write_file(root, "index.html", "<h1>Home</h1>")?;
+    write_file(
+        root,
+        "guide.md",
+        "# Guide\n\n## Usage\n\n[Out](https://example.com)",
+    )?;
+    let config = "include: ['**/*.html', '**/*.md']\nplugins:\n  md:\n    - name: md.shiftHeading\n      options: { shift: 1 }\n  html:\n    - html.externalLinks\n";
+    write_file(root, CONFIG_FILE, config)?;
+    let site = scan_site(root)?;
+    let Some(guide) = site.pages.iter().find(|page| page.source == "guide.md") else {
+        panic!("no guide page");
+    };
+    assert!(
+        guide.content.contains("<h3 id=\"usage\""),
+        "{}",
+        guide.content
+    );
+    assert!(
+        guide.content.contains("rel=\"nofollow\""),
+        "{}",
+        guide.content
+    );
+    write_file(root, CONFIG_FILE, "plugins:\n  md: [md.gfm]\n")?;
+    match scan_site(root) {
+        Err(Error::Config { message, .. }) => {
+            assert!(message.contains("\"md.gfm\" adds no step"), "{message}")
+        }
+        other => panic!("{other:?}"),
+    }
+    Ok(())
+}

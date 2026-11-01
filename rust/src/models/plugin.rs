@@ -1,4 +1,8 @@
-use textlane::{Allocator, Attach, Error, File, Plugin, Transform, Tree, TreeKind};
+use std::sync::{Arc, Mutex};
+
+use textlane::{
+    Allocator, Attach, Error, File, Pipeline, Plugin, Transform, Tree, TreeKind,
+};
 
 use crate::actions::code::annotate::annotate_code;
 use crate::actions::math::wrap::wrap_math;
@@ -121,5 +125,41 @@ impl Transform for SimplifyPage {
                 "htmlpress' Markdown step takes hast",
             )),
         }
+    }
+}
+
+/// The project's textlane plugins at one hook of the page pipeline, run as one stage over
+/// the tree that hook carries (see `load_plugins`).
+#[derive(Clone)]
+pub(crate) struct RunPlugins {
+    pub kind: TreeKind,
+    pub pipeline: Arc<Mutex<Pipeline>>,
+}
+
+impl Plugin for RunPlugins {
+    fn attach(&self, context: &mut Attach) -> Result<(), Error> {
+        context.add_transform(Box::new(self.clone()));
+        Ok(())
+    }
+}
+
+impl Transform for RunPlugins {
+    fn input(&self) -> TreeKind {
+        self.kind
+    }
+
+    fn output(&self) -> TreeKind {
+        self.kind
+    }
+
+    fn run<'a>(
+        &self,
+        tree: Tree<'a>,
+        file: &mut File,
+        alloc: &'a Allocator,
+    ) -> Result<Tree<'a>, Error> {
+        let mut pipeline = (self.pipeline.lock())
+            .map_err(|_| Error::new("poisoned", "a project plugin panicked before"))?;
+        pipeline.freeze()?.run(tree, file, alloc)
     }
 }

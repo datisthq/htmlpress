@@ -1,10 +1,15 @@
 use super::compile_markdown;
 use crate::actions::page::read::read_page;
+use crate::models::config::{PluginEntry, PluginOptions};
 use crate::models::page::Page;
+use crate::models::pipeline::MarkdownOptions;
 
 fn compile(markdown: &str) -> Result<Page, String> {
-    let components = ["callout".to_owned(), "badge".to_owned()];
-    let html = compile_markdown(markdown, &components, true)?;
+    let options = MarkdownOptions {
+        components: vec!["callout".to_owned(), "badge".to_owned()],
+        ..MarkdownOptions::default()
+    };
+    let html = compile_markdown(markdown, &options, true)?;
     read_page("guide.html", &html).map_err(|error| error.to_string())
 }
 
@@ -231,5 +236,19 @@ fn reads_livemark_code_tabs_package_commands_and_inline_code() -> Result<(), Str
         ],
     );
     assert!(!page.content.contains("{:ts}"), "{}", page.content);
+    Ok(())
+}
+
+#[test]
+fn runs_the_project_md_plugins_before_heading_ids() -> Result<(), String> {
+    let options = MarkdownOptions {
+        plugins: vec![PluginEntry::Options(PluginOptions {
+            name: "md.shiftHeading".to_owned(),
+            options: Some(serde_json::json!({ "shift": 1 })),
+        })],
+        ..MarkdownOptions::default()
+    };
+    let html = compile_markdown("## Usage [step]", &options, false)?;
+    assert!(html.contains("<h3 data-step"), "{html}");
     Ok(())
 }

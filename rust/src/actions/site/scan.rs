@@ -2,6 +2,8 @@ use std::collections::hash_map::Entry;
 use std::collections::{BTreeMap, HashMap};
 use std::path::Path;
 
+use textlane::TreeKind;
+
 use crate::actions::config::load::load_config;
 use crate::actions::git::read::read_dates;
 use crate::actions::include::list::list_includes;
@@ -15,13 +17,14 @@ use crate::actions::page::rebase::{list_links, read_root, rebase_image};
 use crate::actions::path::contain::read_contained;
 use crate::actions::path::select::{Selection, read_bases, select_paths};
 use crate::actions::pipeline::create::create_pipeline;
+use crate::actions::plugin::load::load_plugins;
 use crate::actions::section::generate::generate_pages;
 use crate::actions::skill::load::load_skills;
 use crate::models::asset::{COMPONENT_PREFIX, read_component_path};
 use crate::models::config::Config;
 use crate::models::error::Error;
 use crate::models::page::Page;
-use crate::models::pipeline::{Pipeline, PipelineOptions};
+use crate::models::pipeline::{MarkdownOptions, Pipeline, PipelineOptions};
 use crate::models::site::Site;
 use crate::settings::{ASSETS, CONFIG_FILE, NOT_FOUND_PAGE, PROJECT_DIR};
 
@@ -65,18 +68,28 @@ pub fn scan_site(root: &Path) -> crate::Result<Site> {
     let mut selection = selection;
     keep_partials(root, &mut selection)?;
     let assets = read_assets(root)?;
-    let components = list_components(&assets);
+    let markdown = MarkdownOptions {
+        components: list_components(&assets),
+        plugins: config.plugins.md.clone(),
+    };
+    // Up front, so a bad plugin is the config's error, not the first Markdown page's
+    load_plugins(TreeKind::Mdast, &markdown.plugins).map_err(|message| {
+        Error::Config {
+            path: root.join(CONFIG_FILE),
+            message,
+        }
+    })?;
     let mut pages = vec![];
     for (path, source) in &selection.pages {
         let file = root.join(source);
         let html = std::fs::read_to_string(&file).map_err(Error::io(&file))?;
         let html = match source.ends_with(".md") {
             true => {
-                compile_markdown(&html, &components, true).map_err(Error::page(source))?
+                compile_markdown(&html, &markdown, true).map_err(Error::page(source))?
             }
             false => html,
         };
-        let html = resolve_includes(root, source, &html, &components)
+        let html = resolve_includes(root, source, &html, &markdown)
             .map_err(Error::page(source))?;
         let page = read_source(path, &html).map_err(|error| match error {
             Error::Page { message, .. } => Error::Page {
@@ -91,7 +104,7 @@ pub fn scan_site(root: &Path) -> crate::Result<Site> {
         });
     }
     let files = selection.files;
-    apply_patches(root, &config, &components, &mut pages)?;
+    apply_patches(root, &config, &markdown, &mut pages)?;
     let suffixes = !config.languages.is_empty();
     for page in &mut pages {
         detect_language(page, &languages, suffixes).map_err(Error::page(&page.source))?;
@@ -130,6 +143,7 @@ pub fn scan_site(root: &Path) -> crate::Result<Site> {
                     rebase: base,
                     links: links.clone(),
                     themes: Some((light.to_owned(), dark.to_owned())),
+                    plugins: config.plugins.html.clone(),
                 };
                 entry.insert(create_pipeline(&options).map_err(|message| {
                     Error::Config {
@@ -173,7 +187,7 @@ pub fn scan_site(root: &Path) -> crate::Result<Site> {
 fn apply_patches(
     root: &Path,
     config: &Config,
-    components: &[String],
+    markdown: &MarkdownOptions,
     pages: &mut Vec<Page>,
 ) -> crate::Result<()> {
     let bases = read_bases(config);
@@ -185,7 +199,7 @@ fn apply_patches(
         let page = match pages.iter().position(|page| page.source == patch.file) {
             Some(index) => pages.remove(index),
             None => {
-                read_patched_file(root, &bases, components, &patch.file).map_err(fail)?
+                read_patched_file(root, &bases, markdown, &patch.file).map_err(fail)?
             }
         };
         pages.push(patch_page(page, &patch.article).map_err(fail)?);
@@ -196,7 +210,7 @@ fn apply_patches(
 fn read_patched_file(
     root: &Path,
     bases: &[String],
-    components: &[String],
+    markdown: &MarkdownOptions,
     file: &str,
 ) -> Result<Page, String> {
     let stem = match (file.strip_suffix(".md"), file.strip_suffix(".html")) {
@@ -205,10 +219,10 @@ fn read_patched_file(
     };
     let text = read_contained(root, file, false)?;
     let html = match file.ends_with(".md") {
-        true => compile_markdown(&text, components, true)?,
+        true => compile_markdown(&text, markdown, true)?,
         false => text,
     };
-    let html = resolve_includes(root, file, &html, components)?;
+    let html = resolve_includes(root, file, &html, markdown)?;
     let output = (bases.iter())
         .filter(|base| !base.is_empty())
         .find_map(|base| stem.strip_prefix(&format!("{base}/")))

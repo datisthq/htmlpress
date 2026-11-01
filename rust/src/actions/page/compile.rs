@@ -2,8 +2,10 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 
 use serde_json::{Map, Value, json};
-use textlane::{FrozenProcessor, Processor, html, md};
+use textlane::{FrozenProcessor, Processor, TreeKind, html, md};
 
+use crate::actions::plugin::load::load_plugins;
+use crate::models::pipeline::MarkdownOptions;
 use crate::models::plugin::AnnotateCode;
 
 /// The frontmatter keys a Markdown page may set: `title`, `head`, and every
@@ -30,26 +32,30 @@ pub(crate) const FRONTMATTER_KEYS: &[&str] = &[
 ];
 
 thread_local! {
-    static PROCESSORS: RefCell<HashMap<Vec<String>, FrozenProcessor>> =
+    static PROCESSORS: RefCell<HashMap<(Vec<String>, String), FrozenProcessor>> =
         RefCell::new(HashMap::new());
 }
 
 /// Turn Markdown into HTML: Livemark's directives, alerts and fences as htmlpress'
-/// elements, any other `:::name` as `<htmlpress-name>` of one of `components`, and a
-/// fence's meta as its block's `data-*` attributes. A `page` takes its
+/// elements, any other `:::name` as `<htmlpress-name>` of one of the project's components,
+/// the project's `md` plugins after the directives, and a fence's meta as its block's
+/// `data-*` attributes. A `page` takes its
 /// frontmatter as the head's `<title>` and metas; a partial's is dropped, unread.
 pub(crate) fn compile_markdown(
     markdown: &str,
-    components: &[String],
+    options: &MarkdownOptions,
     page: bool,
 ) -> Result<String, String> {
     PROCESSORS.with(|processors| {
         let mut processors = processors.borrow_mut();
-        let processor = match processors.get(components) {
+        let plugins =
+            serde_json::to_string(&options.plugins).map_err(|e| e.to_string())?;
+        let key = (options.components.clone(), plugins);
+        let processor = match processors.get(&key) {
             Some(processor) => processor,
             None => {
-                let processor = create_processor(components)?;
-                processors.entry(components.to_vec()).or_insert(processor)
+                let processor = create_processor(options)?;
+                processors.entry(key).or_insert(processor)
             }
         };
         let output = processor.process(markdown).map_err(|error| error.message)?;
@@ -69,9 +75,10 @@ pub(crate) fn compile_markdown(
     })
 }
 
-fn create_processor(components: &[String]) -> Result<FrozenProcessor, String> {
-    let component: md::Component = serde_json::from_value(create_rules(components))
-        .map_err(|error| error.to_string())?;
+fn create_processor(options: &MarkdownOptions) -> Result<FrozenProcessor, String> {
+    let component: md::Component =
+        serde_json::from_value(create_rules(&options.components))
+            .map_err(|error| error.to_string())?;
     let heading_id: md::HeadingId = serde_json::from_value(json!({
         "attributes": true,
         "markers": {
@@ -81,7 +88,7 @@ fn create_processor(components: &[String]) -> Result<FrozenProcessor, String> {
         },
     }))
     .map_err(|error| error.to_string())?;
-    Processor::new()
+    let mut processor = Processor::new()
         .with(md::Parse::default())
         .with(md::Frontmatter {
             data: true,
@@ -91,7 +98,12 @@ fn create_processor(components: &[String]) -> Result<FrozenProcessor, String> {
         .with(md::Gfm::default())
         .with(md::DefinitionList)
         .with(md::Math::default())
-        .with(md::Directive::default())
+        .with(md::Directive::default());
+    // Before md.component, which renders an unknown directive as its source text
+    if let Some(plugins) = load_plugins(TreeKind::Mdast, &options.plugins)? {
+        processor = processor.with(plugins);
+    }
+    processor
         .with(heading_id)
         .with(component)
         .with(md::ToHtml {

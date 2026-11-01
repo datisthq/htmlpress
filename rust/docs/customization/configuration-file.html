@@ -168,6 +168,17 @@
           </td>
         </tr>
         <tr>
+          <td><code>plugins</code></td>
+          <td>none</td>
+          <td>
+            <a href="https://textlane.dev">Textlane</a> plugins added to the page
+            pipeline, each a name or <code>{ name, options }</code>: <code>md</code> on a
+            Markdown page's tree after its directives, <code>html</code> on every page's
+            tree before heading ids. A plugin that does not change its hook's tree, such
+            as <code>md.gfm</code> or <code>md.toHtml</code>, fails the build.
+          </td>
+        </tr>
+        <tr>
           <td><code>skills</code></td>
           <td>none</td>
           <td>

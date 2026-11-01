@@ -1,6 +1,6 @@
 ---
 name: htmlpress-configuration
-description: Use when editing htmlpress.yaml — site metadata, base, include/exclude globs, code themes, sections (blog, changelog, custom), links, languages, versions, patches, head tags, agent skills, content signals and the edit link.
+description: Use when editing htmlpress.yaml — site metadata, base, include/exclude globs, code themes, sections (blog, changelog, custom), links, languages, versions, patches, head tags, agent skills, content signals, the edit link and textlane plugins.
 ---
 
 # Htmlpress Configuration
@@ -35,6 +35,9 @@ exclude: [docs/includes/**]
 codeThemeLight: catppuccin-latte
 codeThemeDark: catppuccin-mocha
 edit: https://github.com/acme/acme/edit/main/
+plugins:
+  md: [{ name: md.shiftHeading, options: { shift: 1 } }]
+  html: [html.externalLinks]
 links:
   - { title: GitHub, url: https://github.com/acme/acme, position: header, icon: github }
 sections:
@@ -59,6 +62,11 @@ head:
 - `exclude` — globs left out of the build: partials for includes, drafts.
 - `codeThemeLight`, `codeThemeDark` — the code block themes, by Shiki theme name.
 - `edit` — a URL prefix for an "Edit on GitHub" link.
+- `plugins` — textlane plugins added to the page pipeline, as Livemark's: `md` on a Markdown
+  page's tree after its directives, before heading ids and components; `html` on every page's
+  tree before heading ids. An entry is a name or `{ name, options }`. Only a plugin that changes
+  its hook's tree is accepted: a syntax extension (`md.gfm`, `md.math`), a parser, a compiler
+  or a bridge such as `md.toHtml` fails the build, and one htmlpress already runs runs again.
 
 ## Sections
 

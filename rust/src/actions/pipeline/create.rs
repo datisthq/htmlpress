@@ -1,6 +1,7 @@
-use textlane::{FrozenProcessor, Processor, html, md};
+use textlane::{FrozenProcessor, Processor, TreeKind, html, md};
 
 use crate::actions::code::highlight::create_highlight;
+use crate::actions::plugin::load::load_plugins;
 use crate::models::pipeline::{Pipeline, PipelineOptions};
 use crate::models::plugin::{SimplifyPage, WrapMath};
 
@@ -25,11 +26,11 @@ const LITERAL: &[&str] = &[
 /// The processors a page goes through once: bare URLs, emails and `:emoji:` shortcodes in
 /// its prose, `$…$` math as MathML in `<htmlpress-math>`, an id on every heading from `<h2>`
 /// down that has none, never one the page already uses, then what `options` asks for, and
-/// the Markdown copy of the same tree.
+/// the Markdown copy of the same tree. The project's `html` plugins run before the ids.
 pub(crate) fn create_pipeline(options: &PipelineOptions) -> Result<Pipeline, String> {
     Ok(Pipeline {
-        document: create_html(options, false).map_err(|error| error.message)?,
-        fragment: create_html(options, true).map_err(|error| error.message)?,
+        document: create_html(options, false)?,
+        fragment: create_html(options, true)?,
         markdown: create_markdown().map_err(|error| error.message)?,
     })
 }
@@ -37,7 +38,7 @@ pub(crate) fn create_pipeline(options: &PipelineOptions) -> Result<Pipeline, Str
 fn create_html(
     options: &PipelineOptions,
     fragment: bool,
-) -> Result<FrozenProcessor, textlane::Error> {
+) -> Result<FrozenProcessor, String> {
     let ignore = Some(
         LITERAL
             .iter()
@@ -68,12 +69,15 @@ fn create_html(
         .with(html::Katex {
             output: Some(html::KatexOutput::Mathml),
             ..html::Katex::default()
-        })
-        .with(html::Slug {
-            reserve_existing: true,
-            ranks: Some(vec![2, 3, 4, 5, 6]),
-            ..html::Slug::default()
         });
+    if let Some(plugins) = load_plugins(TreeKind::Hast, &options.plugins)? {
+        processor = processor.with(plugins);
+    }
+    processor = processor.with(html::Slug {
+        reserve_existing: true,
+        ranks: Some(vec![2, 3, 4, 5, 6]),
+        ..html::Slug::default()
+    });
     if let Some(root) = &options.rebase {
         processor = processor.with(html::PathRewrite {
             root: (!root.is_empty()).then(|| root.clone()),
@@ -92,6 +96,7 @@ fn create_html(
             ..html::Stringify::default()
         })
         .freeze()
+        .map_err(|error| error.message)
 }
 
 // KaTeX's MathML carries its LaTeX, which comes back as `$…$`, what agents read
@@ -110,3 +115,7 @@ fn create_markdown() -> Result<FrozenProcessor, textlane::Error> {
         })
         .freeze()
 }
+
+#[cfg(test)]
+#[path = "create_unit.rs"]
+mod unit;

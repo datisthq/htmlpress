@@ -60,6 +60,35 @@ pub struct Config {
     /// A URL each page's source path is appended to for its "Edit this page" link, such
     /// as `https://github.com/owner/repo/edit/main/docs/`.
     pub edit: Option<String>,
+    /// The project's own textlane plugins, at the page pipeline's two hooks.
+    pub plugins: Plugins,
+}
+
+/// Textlane plugins a project adds to the page pipeline, as Livemark's `plugins` does:
+/// `md` on a Markdown page's tree before heading ids and components, `html` on every
+/// page's tree before heading slugs.
+#[derive(Debug, Clone, Default, PartialEq, Deserialize, Serialize)]
+#[serde(default, deny_unknown_fields)]
+pub struct Plugins {
+    pub md: Vec<PluginEntry>,
+    pub html: Vec<PluginEntry>,
+}
+
+/// A textlane plugin by name, alone or with its options.
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
+#[serde(untagged)]
+pub enum PluginEntry {
+    Name(String),
+    Options(PluginOptions),
+}
+
+/// A textlane plugin's name and the options it takes, as JSON.
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct PluginOptions {
+    pub name: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub options: Option<serde_json::Value>,
 }
 
 fn read_patterns<'de, D: serde::Deserializer<'de>>(

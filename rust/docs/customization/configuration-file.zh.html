@@ -165,6 +165,18 @@
           </td>
         </tr>
         <tr>
+          <td><code>plugins</code></td>
+          <td>无</td>
+          <td>
+            加入页面流水线的
+            <a href="https://textlane.dev">Textlane</a> 插件，每项为名称或
+            <code>{ name, options }</code>：<code>md</code> 作用于 Markdown
+            页面在指令之后的语法树，<code>html</code> 作用于每个页面在生成标题 id
+            之前的语法树。不改变其挂载点语法树的插件（如 <code>md.gfm</code> 或
+            <code>md.toHtml</code>）会使构建失败。
+          </td>
+        </tr>
+        <tr>
           <td><code>skills</code></td>
           <td>无</td>
           <td>

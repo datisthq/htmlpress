@@ -56,7 +56,7 @@ run from source: `cargo run --manifest-path rust/Cargo.toml -- build docs`.
    back into files the `.md` pages a page includes (`include/list`), as before Markdown pages.
    A `.md` page is served at its `.html` path and compiled first
    (`page/compile`: frontmatter checked against `FRONTMATTER_KEYS` into the head's metas,
-   Livemark's directives, alerts and fences onto htmlpress' elements (`create_rules`, ported from Livemark's `create.ts`), any other `:::name` into `htmlpress-name` of a known component, a fence's meta onto
+   Livemark's directives, alerts and fences onto htmlpress' elements (`create_rules`, ported from Livemark's `create.ts`), any other `:::name` into `htmlpress-name` of a known component, the config's `plugins.md` after `md.directive` (`plugin/load`: one `RunPlugins` stage wrapping a frozen textlane `Pipeline`, which only `Pipeline` builds by name), a fence's meta onto
    `data-*` by the `AnnotateCode` plugin, before `html.raw`, which drops nodes' `data`). Every path is served
    without its base, so `Page.path` is the page's path without it (`guides/build.html`) and `Page.source`
    the file's. The nav, breadcrumbs and Markdown copies nest by `Page.path`; a page is
@@ -77,7 +77,7 @@ run from source: `cargo run --manifest-path rust/Cargo.toml -- build docs`.
    (`pipeline/create`, one per include base): `html.gemoji`, `html.linkify` and
    `html.math` on text outside links, code and `data-literal`, htmlpress' `WrapMath`
    (every formula into its `<htmlpress-math>`, the LaTeX in `data-latex`), `html.katex`
-   (MathML), `html.slug` (h2–h6, ids already in the page reserved), `html.pathRewrite` and
+   (MathML), the config's `plugins.html`, `html.slug` (h2–h6, ids already in the page reserved), `html.pathRewrite` and
    `html.highlight`; the same tree then goes through `SimplifyPage` and `html.toMarkdown`
    into `Page.markdown`, the agent copy. Generated and patched pages take the same two steps;
    the public `read_page` is both, with no links or colors. Never add a stage that parses

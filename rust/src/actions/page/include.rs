@@ -6,6 +6,7 @@ use lol_html::{RewriteStrSettings, doctype, element, rewrite_str};
 
 use crate::actions::page::compile::compile_markdown;
 use crate::actions::path::contain::{contain_path, read_contained};
+use crate::models::pipeline::MarkdownOptions;
 
 // Livemark's limit; a deeper chain is a mistake, and a cycle is caught before it
 const MAX_DEPTH: usize = 5;
@@ -43,13 +44,13 @@ pub(crate) fn resolve_includes(
     root: &Path,
     source: &str,
     html: &str,
-    components: &[String],
+    markdown: &MarkdownOptions,
 ) -> Result<String, String> {
     resolve_nested(
         root,
         source,
         html,
-        components,
+        markdown,
         &RefCell::new(vec![]),
         &RefCell::new(Budget::default()),
     )
@@ -60,7 +61,7 @@ fn resolve_nested(
     root: &Path,
     source: &str,
     html: &str,
-    components: &[String],
+    markdown: &MarkdownOptions,
     chain: &RefCell<Vec<String>>,
     budget: &RefCell<Budget>,
 ) -> Result<String, String> {
@@ -100,7 +101,7 @@ fn resolve_nested(
             let attributes: Vec<(String, String)> = (el.attributes().iter())
                 .map(|attribute| (attribute.name(), attribute.value()))
                 .collect();
-            let content = create_content(&path, &text, &attributes, components)?;
+            let content = create_content(&path, &text, &attributes, markdown)?;
             {
                 let mut budget = budget.borrow_mut();
                 budget.expansions += 1;
@@ -113,7 +114,7 @@ fn resolve_nested(
                 }
             }
             chain.borrow_mut().push(key);
-            let nested = resolve_nested(root, &path, &content, components, chain, budget);
+            let nested = resolve_nested(root, &path, &content, markdown, chain, budget);
             chain.borrow_mut().pop();
             // Before, then unwrapped rather than replaced: an include left unclosed holds
             // the page that follows as its children, which must not vanish with it
@@ -129,7 +130,7 @@ fn create_content(
     path: &str,
     text: &str,
     attributes: &[(String, String)],
-    components: &[String],
+    markdown: &MarkdownOptions,
 ) -> Result<String, String> {
     let extension = path
         .rsplit_once('.')
@@ -137,7 +138,7 @@ fn create_content(
         .to_lowercase();
     match extension.as_str() {
         "html" | "htm" => Ok(read_body(text).unwrap_or_else(|_| text.to_owned())),
-        "md" | "markdown" => compile_markdown(text, components, false),
+        "md" | "markdown" => compile_markdown(text, markdown, false),
         _ => Ok(create_code_block(path, &extension, text, attributes)),
     }
 }
