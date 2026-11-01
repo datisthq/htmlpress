@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.7.0](https://github.com/datisthq/htmlpress/compare/v0.6.0...v0.7.0) (2026-11-01)
+
+
+### Features
+
+* add md and html textlane plugin hooks to htmlpress.yaml ([f94179e](https://github.com/datisthq/htmlpress/commit/f94179ed520c8b953a6f7f82b20dac075a265043))
+* build pages through textlane, with Markdown pages ([dd2ad27](https://github.com/datisthq/htmlpress/commit/dd2ad279e6bf762c9a868f77f150e467460e0126))
+* merge a project plugin into the one htmlpress runs, on textlane 0.7.0 ([fadb9a3](https://github.com/datisthq/htmlpress/commit/fadb9a38b7630ea84b5ecdac890aa2581ba9b97d))
+* name authoring components and attributes after livemark's directives ([f27bd2c](https://github.com/datisthq/htmlpress/commit/f27bd2c24bb531c04ffebd3a3c77ab596b28284f))
+* read Livemark's Markdown syntax in Markdown pages ([1d41df6](https://github.com/datisthq/htmlpress/commit/1d41df6f02ce151a7dcb34eeb0a007babf074fe7))
+* slugify page URLs and nest the nav under index pages, as Livemark does ([6335e09](https://github.com/datisthq/htmlpress/commit/6335e09ed505fd18b3354d476d20f9594edd271f))
+
+
+### Bug Fixes
+
+* describe htmlpress as a Markdown and HTML site generator in the CLI help and package metadata ([98a24b7](https://github.com/datisthq/htmlpress/commit/98a24b7f4bd5bea3342e86845116425f8b7f3c26))
+* mark words on numbered code lines, with textlane 0.6.1 ([007463c](https://github.com/datisthq/htmlpress/commit/007463c1de253b252d5b772c8d51778eb0fef55c))
+* parse each page once, with every pipeline stage on one tree ([a5ef278](https://github.com/datisthq/htmlpress/commit/a5ef2780ece1fa4f9ac0a952cb6a07dee1a2dd9c))
+* warn htmlpress-customization that Shiki highlights every code block ([5592dcb](https://github.com/datisthq/htmlpress/commit/5592dcb1afad90fa64a71be18e5a5dc46a965f91))
+
 ## [0.6.0](https://github.com/datisthq/htmlpress/compare/v0.5.1...v0.6.0) (2026-10-31)
 
 
