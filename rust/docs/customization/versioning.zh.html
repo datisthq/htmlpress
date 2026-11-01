@@ -61,9 +61,18 @@ sections:
       <code>position: sidebar</code> 可以让版本标签页不出现在页眉中。
     </p>
     <p>要在旧页面上提醒读者，可以在每个页面开头放一个标注框：</p>
-    <pre><code class="language-html">&lt;htmlpress-callout type="warning"&gt;
+    <htmlpress-tabs sync="syntax">
+      <htmlpress-tab title="HTML">
+        <pre><code class="language-html">&lt;htmlpress-callout type="warning"&gt;
   &lt;p&gt;You are reading the docs for v1. &lt;a href="/getting-started/"&gt;See the latest version&lt;/a&gt;.&lt;/p&gt;
 &lt;/htmlpress-callout&gt;</code></pre>
+      </htmlpress-tab>
+      <htmlpress-tab title="Markdown">
+        <pre><code class="language-md">:::warning
+You are reading the docs for v1. [See the latest version](/getting-started/).
+:::</code></pre>
+      </htmlpress-tab>
+    </htmlpress-tabs>
     <p>需要注意：</p>
     <ul>
       <li>搜索会索引整个站点，因此结果中包含所有版本的页面。</li>

@@ -20,7 +20,9 @@
     </p>
 
     <h2>Ejemplo mínimo</h2>
-    <pre><code class="language-html">&lt;!-- about.html --&gt;
+    <htmlpress-tabs sync="syntax">
+      <htmlpress-tab title="HTML">
+        <pre><code class="language-html">&lt;!-- about.html --&gt;
 &lt;title&gt;About&lt;/title&gt;
 &lt;meta name="layout" content="landing"&gt;
 
@@ -35,6 +37,28 @@
   &lt;/htmlpress-header&gt;
   &lt;main&gt;&lt;htmlpress-content&gt;&lt;/htmlpress-content&gt;&lt;/main&gt;
 &lt;/body&gt;</code></pre>
+      </htmlpress-tab>
+      <htmlpress-tab title="Markdown">
+        <pre><code class="language-md">&lt;!-- about.md --&gt;
+---
+title: About
+layout: landing
+---
+
+# About
+
+Anything you'd write in a normal Markdown page, here.
+
+&lt;!-- .htmlpress/layouts/landing.html --&gt;
+&lt;body&gt;
+  &lt;htmlpress-header role="banner"&gt;
+    &lt;htmlpress-brand&gt;&lt;/htmlpress-brand&gt;
+    &lt;htmlpress-theme-toggle&gt;&lt;/htmlpress-theme-toggle&gt;
+  &lt;/htmlpress-header&gt;
+  &lt;main&gt;&lt;htmlpress-content&gt;&lt;/htmlpress-content&gt;&lt;/main&gt;
+&lt;/body&gt;</code></pre>
+      </htmlpress-tab>
+    </htmlpress-tabs>
     <p>
       Guarda y visita <code>/about/</code>. Sin el meta, la página recibe el layout del
       sitio, el mismo marco que todas las demás páginas: banner, cabecera, barra lateral,

@@ -199,12 +199,27 @@ include: docs/**/*.html</code></pre>
       Cada página define su título, descripción y orden en etiquetas que también puede
       llevar un fragmento:
     </p>
-    <pre><code class="language-html">&lt;title&gt;Getting Started&lt;/title&gt;
+    <htmlpress-tabs sync="syntax">
+      <htmlpress-tab title="HTML">
+        <pre><code class="language-html">&lt;title&gt;Getting Started&lt;/title&gt;
 &lt;meta name="description" content="Set up the project in five minutes." /&gt;
 &lt;meta name="order" content="1" /&gt;
 
 &lt;h1&gt;Getting Started&lt;/h1&gt;
 &lt;p&gt;Welcome!&lt;/p&gt;</code></pre>
+      </htmlpress-tab>
+      <htmlpress-tab title="Markdown">
+        <pre><code class="language-md">---
+title: Getting Started
+description: Set up the project in five minutes.
+order: 1
+---
+
+# Getting Started
+
+Welcome!</code></pre>
+      </htmlpress-tab>
+    </htmlpress-tabs>
     <p>
       Consulta <a href="/es/authoring/frontmatter/">Frontmatter</a> para saber qué
       significa cada etiqueta.

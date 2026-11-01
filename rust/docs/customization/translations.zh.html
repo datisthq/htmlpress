@@ -110,10 +110,20 @@
       依然是英语页面。若要把译文放在单独的文件夹中，或自由命名文件，可以改为在其 head
       中设置语言；已经位于该语言文件夹下的文件不会被重复加前缀：
     </p>
-    <pre
-      data-title="es/guias/instalar.html"
-    ><code class="language-html">&lt;meta name="language" content="es" /&gt;
+    <htmlpress-tabs sync="syntax">
+      <htmlpress-tab title="HTML">
+        <pre
+          data-title="es/guias/instalar.html"
+        ><code class="language-html">&lt;meta name="language" content="es" /&gt;
 &lt;meta name="path" content="/guides/install/" /&gt;</code></pre>
+      </htmlpress-tab>
+      <htmlpress-tab title="Markdown">
+        <pre data-title="es/guias/instalar.md"><code class="language-md">---
+language: es
+path: /guides/install/
+---</code></pre>
+      </htmlpress-tab>
+    </htmlpress-tabs>
     <p>
       只有当译文与原文在语言前缀之下共享同一个 URL
       时，两者才会配对，所以要给重命名的文件设置与原文相同的

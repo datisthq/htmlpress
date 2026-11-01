@@ -11,12 +11,27 @@
   会根据文件推导出合理的默认值。<a href="/zh/authoring/markdown-pages/">Markdown 页面</a>
   则在其前置元数据中用相同的名称设置同样的元数据。
 </p>
-<pre><code class="language-html">&lt;title&gt;Getting started&lt;/title&gt;
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;title&gt;Getting started&lt;/title&gt;
 &lt;meta name="description" content="Install and run it."&gt;
 &lt;meta name="order" content="1"&gt;
 
 &lt;h1&gt;Getting started&lt;/h1&gt;
 &lt;p&gt;Plain HTML, styled by the theme.&lt;/p&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">---
+title: Getting started
+description: Install and run it.
+order: 1
+---
+
+# Getting started
+
+Plain Markdown, styled by the theme.</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>
   body 会成为布局内的页面内容。每个页面应有一个
   <code>&lt;title&gt;</code> 和一个 <code>&lt;h1&gt;</code>。

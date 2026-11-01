@@ -113,10 +113,20 @@
       libremente, define el idioma en su head; un archivo que ya está bajo la carpeta del
       idioma no recibe el prefijo dos veces:
     </p>
-    <pre
-      data-title="es/guias/instalar.html"
-    ><code class="language-html">&lt;meta name="language" content="es" /&gt;
+    <htmlpress-tabs sync="syntax">
+      <htmlpress-tab title="HTML">
+        <pre
+          data-title="es/guias/instalar.html"
+        ><code class="language-html">&lt;meta name="language" content="es" /&gt;
 &lt;meta name="path" content="/guides/install/" /&gt;</code></pre>
+      </htmlpress-tab>
+      <htmlpress-tab title="Markdown">
+        <pre data-title="es/guias/instalar.md"><code class="language-md">---
+language: es
+path: /guides/install/
+---</code></pre>
+      </htmlpress-tab>
+    </htmlpress-tabs>
     <p>
       Una traducción solo se empareja con su original cuando ambos comparten una URL bajo
       el prefijo del idioma, así que da a un archivo renombrado el mismo

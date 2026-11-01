@@ -15,12 +15,27 @@
   <a href="/es/authoring/markdown-pages/">página Markdown</a> fija los mismos metadatos en
   su frontmatter, con los mismos nombres.
 </p>
-<pre><code class="language-html">&lt;title&gt;Getting started&lt;/title&gt;
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;title&gt;Getting started&lt;/title&gt;
 &lt;meta name="description" content="Install and run it."&gt;
 &lt;meta name="order" content="1"&gt;
 
 &lt;h1&gt;Getting started&lt;/h1&gt;
 &lt;p&gt;Plain HTML, styled by the theme.&lt;/p&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">---
+title: Getting started
+description: Install and run it.
+order: 1
+---
+
+# Getting started
+
+Plain Markdown, styled by the theme.</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>
   El cuerpo se convierte en el contenido de la página dentro del layout. Dale a cada
   página un <code>&lt;title&gt;</code> y un <code>&lt;h1&gt;</code>.

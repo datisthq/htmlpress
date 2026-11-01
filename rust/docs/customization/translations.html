@@ -112,10 +112,20 @@
       folder of their own, or to name a file freely, set the language in its head instead;
       a file already under the language's folder is not prefixed twice:
     </p>
-    <pre
-      data-title="es/guias/instalar.html"
-    ><code class="language-html">&lt;meta name="language" content="es" /&gt;
+    <htmlpress-tabs sync="syntax">
+      <htmlpress-tab title="HTML">
+        <pre
+          data-title="es/guias/instalar.html"
+        ><code class="language-html">&lt;meta name="language" content="es" /&gt;
 &lt;meta name="path" content="/guides/install/" /&gt;</code></pre>
+      </htmlpress-tab>
+      <htmlpress-tab title="Markdown">
+        <pre data-title="es/guias/instalar.md"><code class="language-md">---
+language: es
+path: /guides/install/
+---</code></pre>
+      </htmlpress-tab>
+    </htmlpress-tabs>
     <p>
       A translation pairs with its original only when both share a URL below the language
       prefix, so give a renamed file the same <code>path</code> as its original. A

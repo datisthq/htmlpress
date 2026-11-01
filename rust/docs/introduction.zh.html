@@ -189,12 +189,27 @@ include: docs/**/*.html</code></pre>
       </ul>
     </htmlpress-filetree>
     <p>每个页面通过片段中也可以携带的标签来设置标题、描述和顺序：</p>
-    <pre><code class="language-html">&lt;title&gt;Getting Started&lt;/title&gt;
+    <htmlpress-tabs sync="syntax">
+      <htmlpress-tab title="HTML">
+        <pre><code class="language-html">&lt;title&gt;Getting Started&lt;/title&gt;
 &lt;meta name="description" content="Set up the project in five minutes." /&gt;
 &lt;meta name="order" content="1" /&gt;
 
 &lt;h1&gt;Getting Started&lt;/h1&gt;
 &lt;p&gt;Welcome!&lt;/p&gt;</code></pre>
+      </htmlpress-tab>
+      <htmlpress-tab title="Markdown">
+        <pre><code class="language-md">---
+title: Getting Started
+description: Set up the project in five minutes.
+order: 1
+---
+
+# Getting Started
+
+Welcome!</code></pre>
+      </htmlpress-tab>
+    </htmlpress-tabs>
     <p>各标签的含义请参见 <a href="/zh/authoring/frontmatter/">Frontmatter</a>。</p>
 
     <h3>运行</h3>

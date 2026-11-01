@@ -65,9 +65,18 @@ sections:
       <code>position: sidebar</code> to keep version tabs out of the header.
     </p>
     <p>To warn readers on old pages, start each with a callout:</p>
-    <pre><code class="language-html">&lt;htmlpress-callout type="warning"&gt;
+    <htmlpress-tabs sync="syntax">
+      <htmlpress-tab title="HTML">
+        <pre><code class="language-html">&lt;htmlpress-callout type="warning"&gt;
   &lt;p&gt;You are reading the docs for v1. &lt;a href="/getting-started/"&gt;See the latest version&lt;/a&gt;.&lt;/p&gt;
 &lt;/htmlpress-callout&gt;</code></pre>
+      </htmlpress-tab>
+      <htmlpress-tab title="Markdown">
+        <pre><code class="language-md">:::warning
+You are reading the docs for v1. [See the latest version](/getting-started/).
+:::</code></pre>
+      </htmlpress-tab>
+    </htmlpress-tabs>
     <p>Things to know:</p>
     <ul>
       <li>Search indexes the whole site, so results include every version's pages.</li>

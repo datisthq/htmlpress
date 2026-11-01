@@ -71,9 +71,18 @@ sections:
     <p>
       Para avisar a los lectores en las páginas antiguas, empieza cada una con un callout:
     </p>
-    <pre><code class="language-html">&lt;htmlpress-callout type="warning"&gt;
+    <htmlpress-tabs sync="syntax">
+      <htmlpress-tab title="HTML">
+        <pre><code class="language-html">&lt;htmlpress-callout type="warning"&gt;
   &lt;p&gt;You are reading the docs for v1. &lt;a href="/getting-started/"&gt;See the latest version&lt;/a&gt;.&lt;/p&gt;
 &lt;/htmlpress-callout&gt;</code></pre>
+      </htmlpress-tab>
+      <htmlpress-tab title="Markdown">
+        <pre><code class="language-md">:::warning
+You are reading the docs for v1. [See the latest version](/getting-started/).
+:::</code></pre>
+      </htmlpress-tab>
+    </htmlpress-tabs>
     <p>Conviene saber:</p>
     <ul>
       <li>
