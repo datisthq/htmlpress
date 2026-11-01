@@ -147,7 +147,7 @@
             <strong>用纯 HTML 编写</strong>rust/docs/authoring/rich-elements.html
           </figcaption>
           <htmlpress-landing-code syntax="html">
-            <pre><code class="language-html">&lt;htmlpress-callout type="success"&gt;
+            <pre><code class="language-html">&lt;htmlpress-callout type="tip"&gt;
   &lt;p&gt;Every page built.&lt;/p&gt;
 &lt;/htmlpress-callout&gt;</code></pre>
           </htmlpress-landing-code>
@@ -316,9 +316,7 @@
             <strong>用纯 HTML 编写</strong>rust/docs/authoring/rich-elements.html
           </figcaption>
           <htmlpress-landing-code syntax="html">
-            <pre><code class="language-html">&lt;htmlpress-steps&gt;
-  &lt;ol&gt;&lt;li&gt;&lt;h3&gt;Install&lt;/h3&gt;&lt;/li&gt;&lt;/ol&gt;
-&lt;/htmlpress-steps&gt;</code></pre>
+            <pre><code class="language-html">&lt;h3 data-step&gt;Install&lt;/h3&gt;</code></pre>
           </htmlpress-landing-code>
         </figure>
       </section>
@@ -417,8 +415,8 @@ htmlpress.yaml</code></pre>
       <p>精致的主题、文档所需的组件以及合理的默认设置。只需自定义你想改的部分。</p>
     </header>
     <htmlpress-landing-features
-      ><htmlpress-grid cols="3">
-        <htmlpress-card
+      ><htmlpress-cards>
+        <htmlpress-card title="基于元素的样式"
           ><svg viewBox="0 0 24 24" aria-hidden="true">
             <path
               d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"
@@ -427,7 +425,6 @@ htmlpress.yaml</code></pre>
             <path d="M10 12.5 8 15l2 2.5" />
             <path d="m14 12.5 2 2.5-2 2.5" />
           </svg>
-          <h3>基于元素的样式</h3>
           <p>
             标题、列表、表格、代码、<code>&lt;details&gt;</code>、<code
               >&lt;figure&gt;</code
@@ -435,87 +432,80 @@ htmlpress.yaml</code></pre>
             和 <code>&lt;kbd&gt;</code> 无需任何类名即可正确呈现。
           </p></htmlpress-card
         >
-        <htmlpress-card
+        <htmlpress-card title="弥补 HTML 空缺的 Web Components"
           ><svg viewBox="0 0 24 24" aria-hidden="true">
             <path
               d="M10 22V7a1 1 0 0 0-1-1H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5a1 1 0 0 0-1-1H2"
             />
             <rect x="14" y="2" width="8" height="8" rx="1" />
           </svg>
-          <h3>弥补 HTML 空缺的 Web Components</h3>
           <p>
             提示框、标签页、步骤、卡片、文件树、徽章、图标、可排序表格、Mermaid
             图表和可缩放图片，全部以 light DOM 自定义元素的形式提供。
           </p></htmlpress-card
         >
-        <htmlpress-card
+        <htmlpress-card title="代码高亮"
           ><svg viewBox="0 0 24 24" aria-hidden="true">
             <polyline points="16 18 22 12 16 6" />
             <polyline points="8 6 2 12 8 18" />
           </svg>
-          <h3>代码高亮</h3>
           <p>
             构建时高亮 220
             多种语言，支持标题、标签页、差异、聚焦和行标记，并提供浅色和深色主题。
           </p></htmlpress-card
         >
-        <htmlpress-card
+        <htmlpress-card title="源自文件夹的导航"
           ><svg viewBox="0 0 24 24" aria-hidden="true">
             <rect width="7" height="18" x="3" y="3" rx="1" />
             <rect width="7" height="7" x="14" y="3" rx="1" />
             <rect width="7" height="7" x="14" y="14" rx="1" />
           </svg>
-          <h3>源自文件夹的导航</h3>
           <p>
             按文件夹分组，按 <code>&lt;meta name="order"&gt;</code>
             排序，并带有目录以及上一页和下一页链接。
           </p></htmlpress-card
         >
-        <htmlpress-card
+        <htmlpress-card title="内置搜索"
           ><svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="m21 21-4.34-4.34" />
             <circle cx="11" cy="11" r="8" />
           </svg>
-          <h3>内置搜索</h3>
           <p>
             构建时生成全文索引，按 <kbd>S</kbd> 打开；结果所打开的页面会高亮匹配内容。
           </p></htmlpress-card
         >
-        <htmlpress-card
+        <htmlpress-card title="文档、博客和更新日志"
           ><svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="M4 11a9 9 0 0 1 9 9" />
             <path d="M4 4a16 16 0 0 1 16 16" />
             <circle cx="5" cy="19" r="1" />
           </svg>
-          <h3>文档、博客和更新日志</h3>
           <p>
             将站点拆分为多个分区，各有自己的标签页和侧边栏：带 RSS 订阅的日期文章，或从
             <code>CHANGELOG.md</code> 生成的每版本一页。
           </p></htmlpress-card
         >
-        <htmlpress-card
+        <htmlpress-card title="手机上同样自如"
           ><svg viewBox="0 0 24 24" aria-hidden="true">
             <rect width="14" height="20" x="5" y="2" rx="2" ry="2" />
             <path d="M12 18h.01" />
           </svg>
-          <h3>手机上同样自如</h3>
           <p>
             导航变为抽屉，选择器变为底部面板，没有任何内容会横向滚动。
           </p></htmlpress-card
         >
-        <htmlpress-card
+        <htmlpress-card title="深色模式和主题令牌"
           ><svg viewBox="0 0 24 24" aria-hidden="true">
             <path
               d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"
             />
           </svg>
-          <h3>深色模式和主题令牌</h3>
           <p>
             深色主题可跟随系统或通过开关切换，每种颜色、字体和宽度都是一个
             <code>--htmlpress-*</code> 令牌。
           </p></htmlpress-card
         >
-        <htmlpress-card
+        <htmlpress-card title="多语言"
           ><svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="m5 8 6 6" />
             <path d="m4 14 6-6 2-3" />
@@ -524,38 +514,35 @@ htmlpress.yaml</code></pre>
             <path d="m22 22-5-10-5 10" />
             <path d="M14 18h6" />
           </svg>
-          <h3>多语言</h3>
           <p>
             在原页面旁以
             <code>page.es.html</code> 翻译：每种语言都有自己的前缀、导航、搜索和界面文案。
           </p></htmlpress-card
         >
-        <htmlpress-card
+        <htmlpress-card title="实时重载"
           ><svg viewBox="0 0 24 24" aria-hidden="true">
             <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
             <path d="M21 3v5h-5" />
             <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
             <path d="M8 16H3v5" />
           </svg>
-          <h3>实时重载</h3>
           <p>
             <code>htmlpress start</code>
             在每次保存时重新构建并刷新浏览器，弹出文件和组件也不例外。
           </p></htmlpress-card
         >
-        <htmlpress-card
+        <htmlpress-card title="静态输出"
           ><svg viewBox="0 0 24 24" aria-hidden="true">
             <path
               d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"
             />
           </svg>
-          <h3>静态输出</h3>
           <p>
             <code>htmlpress build</code> 将纯文件写入
             <code>.htmlpress/build</code>，带有规范链接，可部署到任何静态托管平台。
           </p></htmlpress-card
         >
-        <htmlpress-card
+        <htmlpress-card title="一个二进制文件，三个渠道"
           ><svg viewBox="0 0 24 24" aria-hidden="true">
             <path
               d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"
@@ -564,13 +551,12 @@ htmlpress.yaml</code></pre>
             <polyline points="3.29 7 12 12 20.71 7" />
             <path d="m7.5 4.27 9 5.15" />
           </svg>
-          <h3>一个二进制文件，三个渠道</h3>
           <p>
             单个 Rust 可执行文件，可通过 npm、PyPI 或 crates.io
             安装。无需安装其他任何东西。
           </p></htmlpress-card
         >
-      </htmlpress-grid></htmlpress-landing-features
+      </htmlpress-cards></htmlpress-landing-features
     >
   </section>
 </htmlpress-landing-section>
@@ -624,7 +610,7 @@ Run `htmlpress start` and open the browser.
 &lt;p&gt;Install the binary:&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;npm install -g gethtmlpress&lt;/code&gt;&lt;/pre&gt;
 
-&lt;htmlpress-callout label="Tip"&gt;
+&lt;htmlpress-callout title="Tip"&gt;
 &lt;p&gt;Run &lt;code&gt;htmlpress start&lt;/code&gt; and open the browser.&lt;/p&gt;
 &lt;/htmlpress-callout&gt;
 
@@ -641,7 +627,7 @@ Run `htmlpress start` and open the browser.
           <h3>快速开始</h3>
           <p>安装二进制文件：</p>
           <pre><code>npm install -g gethtmlpress</code></pre>
-          <htmlpress-callout label="提示"
+          <htmlpress-callout title="提示"
             ><p>运行 <code>htmlpress start</code> 并打开浏览器。</p></htmlpress-callout
           >
           <h4>功能</h4>

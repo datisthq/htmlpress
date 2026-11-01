@@ -81,7 +81,7 @@
 
     <h3>Install</h3>
     <htmlpress-tabs sync="channel">
-      <section title="Script">
+      <htmlpress-tab title="Script">
         <pre><code class="language-sh">curl -fsSL https://htmlpress.dev/install.sh | sh</code></pre>
         <p>
           Downloads the binary for your platform from the
@@ -90,8 +90,8 @@
           <code>HTMLPRESS_VERSION</code> to pin a version and
           <code>HTMLPRESS_INSTALL_DIR</code> to install elsewhere.
         </p>
-      </section>
-      <section title="npm">
+      </htmlpress-tab>
+      <htmlpress-tab title="npm">
         <pre><code>npm install --global gethtmlpress
 # or run it without installing
 npx gethtmlpress --version</code></pre>
@@ -100,17 +100,17 @@ npx gethtmlpress --version</code></pre>
           <code>@htmlpress/linux-x64</code>, through an optional dependency. Installing
           with <code>--omit=optional</code> leaves the binary out.
         </p>
-      </section>
-      <section title="PyPI">
+      </htmlpress-tab>
+      <htmlpress-tab title="PyPI">
         <pre><code class="language-sh">pip install htmlpress
 # or run it without installing
 uvx htmlpress --version</code></pre>
         <p>The wheel for your platform carries the binary; no Python code runs.</p>
-      </section>
-      <section title="Cargo">
+      </htmlpress-tab>
+      <htmlpress-tab title="Cargo">
         <pre><code class="language-sh">cargo install htmlpress</code></pre>
         <p>Builds from source with the Rust toolchain, 1.88 or newer.</p>
-      </section>
+      </htmlpress-tab>
     </htmlpress-tabs>
     <p>Prebuilt binaries cover Linux, macOS and Windows on x64 and arm64:</p>
     <table>
@@ -175,7 +175,7 @@ include: docs/**/*.html</code></pre>
     </p>
 
     <h3>Add content</h3>
-    <htmlpress-file-tree>
+    <htmlpress-filetree>
       <ul>
         <li>
           docs/
@@ -186,7 +186,7 @@ include: docs/**/*.html</code></pre>
           </ul>
         </li>
       </ul>
-    </htmlpress-file-tree>
+    </htmlpress-filetree>
     <p>Each page sets its title, description and order in tags a fragment may carry:</p>
     <pre><code class="language-html">&lt;title&gt;Getting Started&lt;/title&gt;
 &lt;meta name="description" content="Set up the project in five minutes." /&gt;
@@ -210,7 +210,7 @@ htmlpress clear    # remove .htmlpress/build/</code></pre>
 
     <h2>Project structure</h2>
     <p>A typical htmlpress site:</p>
-    <htmlpress-file-tree>
+    <htmlpress-filetree>
       <ul>
         <li>
           my-project/
@@ -235,7 +235,7 @@ htmlpress clear    # remove .htmlpress/build/</code></pre>
           </ul>
         </li>
       </ul>
-    </htmlpress-file-tree>
+    </htmlpress-filetree>
     <p>
       A file under <code>.htmlpress/</code> at a built-in's path, such as
       <code>layout.html</code>, <code>styles/tokens.css</code> or

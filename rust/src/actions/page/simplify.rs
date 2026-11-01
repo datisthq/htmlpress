@@ -51,7 +51,7 @@ pub(crate) fn simplify_page<'a>(node: &mut Node<'a>, alloc: &'a Allocator) {
                         }
                     }
                     "htmlpress-callout" => {
-                        let label = read_attribute(element, "label")
+                        let label = read_attribute(element, "title")
                             .map(|label| label.into_owned())
                             .unwrap_or_else(|| {
                                 let tone = read_attribute(element, "type")
@@ -61,7 +61,7 @@ pub(crate) fn simplify_page<'a>(node: &mut Node<'a>, alloc: &'a Allocator) {
                         element.tag_name = "blockquote";
                         element.children.insert(0, create_label(&label, alloc));
                     }
-                    "section" if parent == Some("htmlpress-tabs") => {
+                    "htmlpress-tab" if parent == Some("htmlpress-tabs") => {
                         if let Some(title) = read_attribute(element, "title") {
                             element.children.insert(0, create_label(&title, alloc));
                         }

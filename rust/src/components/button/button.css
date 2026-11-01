@@ -25,49 +25,49 @@
   a:hover {
     background: color-mix(in oklab, var(--htmlpress-accent) 80%, transparent);
   }
-  :scope[type="secondary"] a {
+  :scope[variant="secondary"] a {
     border-color: var(--htmlpress-border);
     background: var(--htmlpress-bg);
     color: var(--htmlpress-prose-strong);
   }
-  :scope[type="secondary"] a:hover {
+  :scope[variant="secondary"] a:hover {
     background: var(--htmlpress-surface);
   }
-  :scope:is([type="outline"], [type="ghost"], [type="link"]) a {
+  :scope:is([variant="outline"], [variant="ghost"], [variant="link"]) a {
     border-color: var(--htmlpress-border);
     background: transparent;
     color: var(--htmlpress-text);
   }
-  :scope:is([type="outline"], [type="ghost"]) a:hover {
+  :scope:is([variant="outline"], [variant="ghost"]) a:hover {
     background: var(--htmlpress-surface);
   }
-  :scope:is([type="ghost"], [type="link"]) a {
+  :scope:is([variant="ghost"], [variant="link"]) a {
     border-color: transparent;
   }
-  :scope[type="link"] a {
+  :scope[variant="link"] a {
     padding-inline: 0;
     color: var(--htmlpress-accent);
     text-decoration: underline;
     text-underline-offset: 0.2em;
   }
-  :scope[type="link"] a:hover {
+  :scope[variant="link"] a:hover {
     background: transparent;
   }
-  :scope:is([type="positive"], [type="warning"], [type="destructive"]) a {
+  :scope:is([variant="positive"], [variant="warning"], [variant="destructive"]) a {
     border-color: var(--tone);
     background: var(--tone);
     color: var(--htmlpress-bg);
   }
-  :scope:is([type="positive"], [type="warning"], [type="destructive"]) a:hover {
+  :scope:is([variant="positive"], [variant="warning"], [variant="destructive"]) a:hover {
     background: color-mix(in oklab, var(--tone) 85%, var(--htmlpress-text));
   }
-  :scope[type="positive"] {
+  :scope[variant="positive"] {
     --tone: var(--htmlpress-success);
   }
-  :scope[type="warning"] {
+  :scope[variant="warning"] {
     --tone: var(--htmlpress-warning);
   }
-  :scope[type="destructive"] {
+  :scope[variant="destructive"] {
     --tone: var(--htmlpress-danger);
   }
   :scope[size="sm"] a {

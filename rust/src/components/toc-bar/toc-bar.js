@@ -9,7 +9,7 @@ const RING = 2 * Math.PI * 6
 class HtmlpressTocBar extends HTMLElement {
   connectedCallback() {
     if (this.querySelector("button")) return
-    const toc = document.querySelector("htmlpress-aside htmlpress-toc")
+    const toc = document.querySelector("htmlpress-aside htmlpress-page-toc")
     const links = toc ? [...toc.querySelectorAll("a[href^='#']")] : []
     this.entries = links
       .map(link => ({

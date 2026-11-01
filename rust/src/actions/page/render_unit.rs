@@ -131,7 +131,7 @@ fn fills_the_toc_and_removes_it_without_headings() -> crate::Result<()> {
     let html = render_page(&site, &site.pages[1], false)?;
     assert!(html.contains(r##"<a href="#setup" data-level="2">Setup</a>"##));
     let home = render_page(&site, &site.pages[0], false)?;
-    assert!(!home.contains("<htmlpress-toc>"));
+    assert!(!home.contains("<htmlpress-page-toc>"));
     Ok(())
 }
 
@@ -201,7 +201,7 @@ fn links_only_the_components_a_page_uses() -> crate::Result<()> {
     let mut site = create_site()?;
     site.pages[0] = read_page(
         "index.html",
-        "<htmlpress-tabs><section></section></htmlpress-tabs>",
+        "<htmlpress-tabs><htmlpress-tab></htmlpress-tab></htmlpress-tabs>",
     )?;
     let html = render_page(&site, &site.pages[0], false)?;
     assert!(html.contains(
@@ -216,7 +216,8 @@ fn links_only_the_components_a_page_uses() -> crate::Result<()> {
     assert!(html.contains(r#"href="/_htmlpress/components/header/header.css""#));
     assert!(html.contains(r#"src="/_htmlpress/scripts/code.js""#));
     assert!(
-        !html.contains("htmlpress-callout.css") && !html.contains("htmlpress-zoom.js")
+        !html.contains("components/callout/callout.css")
+            && !html.contains("components/video/video.js")
     );
     Ok(())
 }
@@ -649,12 +650,16 @@ fn writes_the_ui_in_the_pages_language() -> crate::Result<()> {
     );
     assert!(html.contains(r#"<a rel="prev" href="/"><small>Anterior</small>Home</a>"#));
     assert!(html.contains(r#""search.label":"Buscar""#));
-    site.pages[1].content = r#"<htmlpress-callout type="warning"><p>!</p></htmlpress-callout><htmlpress-callout label="Ojo"></htmlpress-callout>"#.to_owned();
+    site.pages[1].content = r#"<htmlpress-callout type="warning"><p>!</p></htmlpress-callout><htmlpress-callout title="A &amp; B"></htmlpress-callout>"#.to_owned();
     let callouts = render_page(&site, &site.pages[1], false)?;
     assert!(
-        callouts.contains(r#"<htmlpress-callout type="warning" label="Advertencia">"#)
+        callouts
+            .contains(r#"<htmlpress-callout type="warning" data-title="Advertencia">"#)
     );
-    assert!(callouts.contains(r#"<htmlpress-callout label="Ojo">"#));
+    assert!(
+        callouts.contains(r#"<htmlpress-callout data-title="A &amp; B">"#),
+        "{callouts}"
+    );
     let home = render_page(&site, &site.pages[0], false)?;
     assert!(home.contains(r#"<html lang="fa" dir="rtl">"#));
     assert!(home.contains("<p>Created with"));
@@ -684,19 +689,19 @@ fn fills_an_inline_toc_written_in_the_page() -> crate::Result<()> {
     let mut site = create_site()?;
     site.pages[1] = read_page(
         "guide.html",
-        "<title>Guide</title><htmlpress-toc level=\"2\"></htmlpress-toc><h2>One</h2><h3>Sub</h3>",
+        "<title>Guide</title><htmlpress-toc max-level=\"2\"></htmlpress-toc><h2>One</h2><h3>Sub</h3>",
     )?;
     let html = render_page(&site, &site.pages[1], false)?;
-    assert!(html.contains(r##"<htmlpress-toc level="2" data-inline=""><p>Contents</p><ul><li><a href="#one" data-level="2">One</a></li></ul></htmlpress-toc>"##), "{html}");
+    assert!(html.contains(r##"<htmlpress-toc max-level="2"><p>Contents</p><ul><li><a href="#one" data-level="2">One</a></li></ul></htmlpress-toc>"##), "{html}");
     site.pages[1] = read_page(
         "guide.html",
         "<title>Guide</title><htmlpress-toc></htmlpress-toc><p>No headings.</p>",
     )?;
     let html = render_page(&site, &site.pages[1], false)?;
-    assert!(!html.contains("data-inline"));
+    assert!(!html.contains("<htmlpress-toc>"));
     site.pages[1] = read_page(
         "guide.html",
-        "<htmlpress-toc level=\"5\"></htmlpress-toc><h2>A</h2>",
+        "<htmlpress-toc max-level=\"5\"></htmlpress-toc><h2>A</h2>",
     )?;
     assert!(render_page(&site, &site.pages[1], false).is_err());
     Ok(())

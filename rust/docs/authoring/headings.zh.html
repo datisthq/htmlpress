@@ -60,10 +60,10 @@
 <h2>内联目录</h2>
 <p>
   写在页面中的
-  <code>&lt;htmlpress-toc&gt;</code> 会被填入页面目录，并以卡片形式呈现：默认包含
-  <code>&lt;h2&gt;</code> 和 <code>&lt;h3&gt;</code>，<code>level="2"</code> 只保留
-  <code>&lt;h2&gt;</code>，<code>level="4"</code> 则一直包含到
-  <code>&lt;h4&gt;</code>。没有标题的页面不会生成目录。
+  <code>&lt;htmlpress-toc&gt;</code> 会被填入页面目录，并以卡片形式呈现：默认包含 到
+  <code>&lt;h4&gt;</code> 为止的标题，<code>max-level="2"</code> 只保留
+  <code>&lt;h2&gt;</code>，<code>max-level="3"</code> 则包含到
+  <code>&lt;h3&gt;</code>。没有标题的页面不会生成目录。
 </p>
-<pre><code class="language-html">&lt;htmlpress-toc level="2"&gt;&lt;/htmlpress-toc&gt;</code></pre>
-<htmlpress-toc level="2"></htmlpress-toc>
+<pre><code class="language-html">&lt;htmlpress-toc max-level="2"&gt;&lt;/htmlpress-toc&gt;</code></pre>
+<htmlpress-toc max-level="2"></htmlpress-toc>

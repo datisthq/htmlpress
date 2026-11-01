@@ -309,7 +309,8 @@ fn create_not_found(language: &SiteLanguage) -> String {
             let text = text
                 .replace('&', "&amp;")
                 .replace('<', "&lt;")
-                .replace('>', "&gt;");
+                .replace('>', "&gt;")
+                .replace('"', "&quot;");
             html.replace(&format!("{{{key}}}"), &text)
         },
     )

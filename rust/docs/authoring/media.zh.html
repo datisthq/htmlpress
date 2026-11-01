@@ -76,43 +76,42 @@
 
 <h2>图片缩放</h2>
 <p>
-  <code>&lt;htmlpress-zoom&gt;</code>
-  内的图片点击后会全屏打开；点击任意位置即可关闭。内部图片、外部图片和 base64 图片都适用。
+  页面中的每张图片点击后都会全屏打开，被链接包住的除外；点击任意位置即可关闭。内部图片、外部图片和
+  base64 图片都适用。
 </p>
-<pre><code class="language-html">&lt;htmlpress-zoom&gt;&lt;img src="screenshot.png" alt="The docs site"&gt;&lt;/htmlpress-zoom&gt;</code></pre>
+<pre><code class="language-html">&lt;img src="screenshot.png" alt="The docs site"&gt;</code></pre>
 <p>渲染为（点击试试）：</p>
-<htmlpress-zoom>
+<p>
   <img
     src="/screenshots/components.webp"
     alt="htmlpress 组件页面，展示四种颜色的提示框"
     width="1440"
     height="900"
   />
-</htmlpress-zoom>
+</p>
 
 <h2>视频块</h2>
 <p>
-  <code>&lt;htmlpress-youtube&gt;</code> 内的链接会变成该视频的播放器（支持
+  <code>&lt;htmlpress-video type="youtube" url&gt;</code> 播放其
+  <code>url</code> 指向的视频（支持
   <code>watch</code>、<code>youtu.be</code>、<code>embed</code>、<code>shorts</code> 或
   <code>live</code> URL）；没有脚本时它仍是一个链接：
 </p>
-<pre><code class="language-html">&lt;htmlpress-youtube&gt;
-  &lt;a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"&gt;The video&lt;/a&gt;
-&lt;/htmlpress-youtube&gt;</code></pre>
+<pre><code class="language-html">&lt;htmlpress-video type="youtube" url="https://www.youtube.com/watch?v=dQw4w9WgXcQ"&gt;&lt;/htmlpress-video&gt;</code></pre>
 <p>渲染为：</p>
-<htmlpress-youtube>
-  <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">视频</a>
-</htmlpress-youtube>
+<htmlpress-video
+  type="youtube"
+  url="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+></htmlpress-video>
 
 <h2>音频块</h2>
 <p>
-  <code>&lt;htmlpress-soundcloud&gt;</code>
-  内的链接会变成该曲目的播放器；没有脚本时它仍是一个链接：
+  <code>&lt;htmlpress-audio type="soundcloud" url&gt;</code>
+  播放其 <code>url</code> 指向的曲目；没有脚本时它仍是一个链接：
 </p>
-<pre><code class="language-html">&lt;htmlpress-soundcloud&gt;
-  &lt;a href="https://soundcloud.com/flume/never-be-like-you-feat-kai"&gt;The track&lt;/a&gt;
-&lt;/htmlpress-soundcloud&gt;</code></pre>
+<pre><code class="language-html">&lt;htmlpress-audio type="soundcloud" url="https://soundcloud.com/flume/never-be-like-you-feat-kai"&gt;&lt;/htmlpress-audio&gt;</code></pre>
 <p>渲染为：</p>
-<htmlpress-soundcloud>
-  <a href="https://soundcloud.com/flume/never-be-like-you-feat-kai">曲目</a>
-</htmlpress-soundcloud>
+<htmlpress-audio
+  type="soundcloud"
+  url="https://soundcloud.com/flume/never-be-like-you-feat-kai"
+></htmlpress-audio>

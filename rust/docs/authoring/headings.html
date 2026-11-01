@@ -64,10 +64,10 @@
 <h2>Inline Table of Contents</h2>
 <p>
   An <code>&lt;htmlpress-toc&gt;</code> written in the page is filled with the page's
-  table of contents, framed as a card: its <code>&lt;h2&gt;</code>s and
-  <code>&lt;h3&gt;</code>s by default, only the <code>&lt;h2&gt;</code>s with
-  <code>level="2"</code>, down to the <code>&lt;h4&gt;</code>s with
-  <code>level="4"</code>. A page without headings gets none.
+  table of contents, framed as a card: down to its <code>&lt;h4&gt;</code>s by default,
+  only the <code>&lt;h2&gt;</code>s with <code>max-level="2"</code>, down to the
+  <code>&lt;h3&gt;</code>s with <code>max-level="3"</code>. A page without headings gets
+  none.
 </p>
-<pre><code class="language-html">&lt;htmlpress-toc level="2"&gt;&lt;/htmlpress-toc&gt;</code></pre>
-<htmlpress-toc level="2"></htmlpress-toc>
+<pre><code class="language-html">&lt;htmlpress-toc max-level="2"&gt;&lt;/htmlpress-toc&gt;</code></pre>
+<htmlpress-toc max-level="2"></htmlpress-toc>

@@ -328,20 +328,18 @@
         <h2 id="nrg-table-title">Change by source</h2>
         <span>% of generation · click a header to sort</span>
       </header>
-      <htmlpress-table>
-        <table id="nrg-table">
-          <thead>
-            <tr>
-              <th>Source</th>
-              <th>2000</th>
-              <th>2015</th>
-              <th>2025</th>
-              <th>vs 2015, pp</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </htmlpress-table>
+      <table id="nrg-table">
+        <thead>
+          <tr>
+            <th>Source</th>
+            <th>2000</th>
+            <th>2015</th>
+            <th>2025</th>
+            <th>vs 2015, pp</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
       <p class="nrg-note">
         Other is oil (2.7% in 2025), bioenergy (2.2%) and geothermal, tidal and other
         renewables (0.3%).
@@ -368,8 +366,8 @@
     hovered year, and the donut's arcs computed with plain trigonometry.
   </li>
   <li>
-    <strong>The table</strong> is the built-in <code>&lt;htmlpress-table&gt;</code>
-    component, so sorting comes for free.
+    <strong>The table</strong> is a plain <code>&lt;table&gt;</code>, which htmlpress
+    sorts by a click on any header, so sorting comes for free.
   </li>
 </ul>
 <p>

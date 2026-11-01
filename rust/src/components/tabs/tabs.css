@@ -35,16 +35,22 @@
   [role="tabpanel"] {
     padding: 1rem;
   }
-  :scope > section > :first-child {
+  :scope > htmlpress-tab {
+    display: block;
+  }
+  :scope > htmlpress-tab[hidden] {
+    display: none;
+  }
+  :scope > htmlpress-tab > :first-child {
     margin-top: 0;
   }
-  :scope > section > :last-child {
+  :scope > htmlpress-tab > :last-child {
     margin-bottom: 0;
   }
 
   /* Tabs over nothing but code blocks frame them as one block */
-  :scope:has(> section > :is(pre, .htmlpress-code)):not(
-      :has(> section > :not(pre, .htmlpress-code))
+  :scope:has(> htmlpress-tab > :is(pre, .htmlpress-code)):not(
+      :has(> htmlpress-tab > :not(pre, .htmlpress-code))
     ) {
     overflow: hidden;
     background: var(--htmlpress-surface);

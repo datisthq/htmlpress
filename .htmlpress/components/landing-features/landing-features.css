@@ -1,4 +1,4 @@
-/* The built-in grid and cards, each card led by an icon and lifted on hover */
+/* The built-in cards, each card led by an icon and lifted on hover */
 @scope (htmlpress-landing-features) {
   :scope {
     display: block;
@@ -27,7 +27,13 @@
       0 10px 15px -3px oklch(0 0 0 / 0.1),
       0 4px 6px -4px oklch(0 0 0 / 0.1);
   }
+  /* The build writes a card's heading first, so its icon is moved back above it */
+  :scope htmlpress-card {
+    display: flex;
+    flex-direction: column;
+  }
   :scope htmlpress-card > svg[aria-hidden] {
+    order: -1;
     display: block;
     width: 2.5rem;
     height: 2.5rem;
@@ -47,16 +53,17 @@
     font-weight: 600;
     line-height: 1.75rem;
   }
-  :scope htmlpress-grid {
+  :scope htmlpress-cards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     margin: 0;
   }
   @media (max-width: 64rem) {
-    :scope htmlpress-grid[cols="3"] {
+    :scope htmlpress-cards {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
   @media (max-width: 40rem) {
-    :scope htmlpress-grid[cols="3"] {
+    :scope htmlpress-cards {
       grid-template-columns: minmax(0, 1fr);
     }
   }

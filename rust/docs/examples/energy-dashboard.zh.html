@@ -326,20 +326,18 @@
         <h2 id="nrg-table-title">各电源变化</h2>
         <span>占发电量 % · 点击表头排序</span>
       </header>
-      <htmlpress-table>
-        <table id="nrg-table">
-          <thead>
-            <tr>
-              <th>电源</th>
-              <th>2000</th>
-              <th>2015</th>
-              <th>2025</th>
-              <th>较 2015 年（百分点）</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </htmlpress-table>
+      <table id="nrg-table">
+        <thead>
+          <tr>
+            <th>电源</th>
+            <th>2000</th>
+            <th>2015</th>
+            <th>2025</th>
+            <th>较 2015 年（百分点）</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
       <p class="nrg-note">
         “其他”包括石油（2025 年为
         2.7%）、生物质能（2.2%）以及地热、潮汐能和其他可再生能源（0.3%）。
@@ -364,8 +362,8 @@
     的间隔堆叠，悬停时不画十字准线，只高亮所指的年份，环形图的弧线则用简单的三角函数计算。
   </li>
   <li>
-    <strong>表格</strong>使用内置的 <code>&lt;htmlpress-table&gt;</code>
-    组件，因此排序功能开箱即得。
+    <strong>表格</strong>是普通的 <code>&lt;table&gt;</code>，htmlpress
+    会在点击任意表头时排序，因此排序功能开箱即得。
   </li>
 </ul>
 <p>

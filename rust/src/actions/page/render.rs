@@ -155,12 +155,14 @@ pub(crate) fn render_page(
                 Ok(())
             }));
     }
-    if !replaced("htmlpress-toc") {
-        settings =
-            settings.append_element_content_handler(element!("htmlpress-toc", |el| {
+    if !replaced("htmlpress-page-toc") {
+        settings = settings.append_element_content_handler(element!(
+            "htmlpress-page-toc",
+            |el| {
                 fill_element(el, create_toc(page, language));
                 Ok(())
-            }));
+            }
+        ));
     }
     if !replaced("htmlpress-search") {
         settings =
@@ -1290,7 +1292,7 @@ fn create_byline(page: &Page, language: &SiteLanguage) -> Option<String> {
 }
 
 // A page's own <htmlpress-toc> goes in unparsed, so the layout's handler never fills it;
-// it is filled here, `level="2"` keeping only the <h2>s
+// it is filled here, `max-level="2"` keeping only the <h2>s
 fn fill_inline_tocs(
     content: &str,
     page: &Page,
@@ -1302,23 +1304,20 @@ fn fill_inline_tocs(
     let settings = RewriteStrSettings::new().append_element_content_handler(element!(
         "htmlpress-toc",
         |el| {
-            let level = match el.get_attribute("level").as_deref().map(str::trim) {
-                None => 3,
+            let level = match el.get_attribute("max-level").as_deref().map(str::trim) {
+                None => 4,
                 Some("2") => 2,
                 Some("3") => 3,
                 Some("4") => 4,
                 Some(other) => {
                     return Err(format!(
-                        "<htmlpress-toc level> must be 2, 3 or 4, got \"{other}\""
+                        "<htmlpress-toc max-level> must be 2, 3 or 4, got \"{other}\""
                     )
                     .into());
                 }
             };
             match create_toc_up_to(page, level, language) {
-                Some(html) => {
-                    el.set_attribute("data-inline", "")?;
-                    el.set_inner_content(&html, ContentType::Html);
-                }
+                Some(html) => el.set_inner_content(&html, ContentType::Html),
                 None => el.remove(),
             }
             Ok(())
@@ -1327,24 +1326,30 @@ fn fill_inline_tocs(
     rewrite_str(content, settings).map_err(|error| error.to_string())
 }
 
-// A callout's default label is CSS, which cannot know the page's language; an explicit
-// `label` wins over it, so each unlabelled callout gets its type's label in that language
+// A callout's default title is CSS, which cannot know the page's language, so each gets
+// its own or its type's in that language; as `data-title`, since `title` is a tooltip
 fn label_callouts(content: &str, language: &SiteLanguage) -> Result<String, String> {
     if !content.contains("<htmlpress-callout") {
         return Ok(content.to_owned());
     }
     let settings = RewriteStrSettings::new().append_element_content_handler(element!(
-        "htmlpress-callout:not([label])",
+        "htmlpress-callout",
         |el| {
-            let key = match el.get_attribute("type").as_deref().map(str::trim) {
-                Some("note") => "callout.note",
-                Some("tip") => "callout.tip",
-                Some("success") => "callout.success",
-                Some("warning") => "callout.warning",
-                Some("danger") => "callout.danger",
-                _ => "callout.info",
+            let title = match el.get_attribute("title") {
+                Some(title) => title,
+                None => {
+                    let key = match el.get_attribute("type").as_deref().map(str::trim) {
+                        Some("note") => "callout.note",
+                        Some("tip") => "callout.tip",
+                        Some("warning") => "callout.warning",
+                        Some("danger") => "callout.danger",
+                        _ => "callout.info",
+                    };
+                    language.read_message(key).to_owned()
+                }
             };
-            el.set_attribute("label", language.read_message(key))?;
+            el.remove_attribute("title");
+            el.set_attribute("data-title", &title)?;
             Ok(())
         }
     ));

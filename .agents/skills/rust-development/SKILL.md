@@ -96,7 +96,7 @@ run from source: `cargo run --manifest-path rust/Cargo.toml -- build docs`.
    its content goes in unparsed, but the tags it links CSS for are read before that; a
    project component keeps its tag, so its CSS scopes to it. It
    fills `<head>` and
-   swaps each layout element (`htmlpress-content`, `htmlpress-nav`, `htmlpress-toc`, `htmlpress-pager`, …) for markup
+   swaps each layout element (`htmlpress-content`, `htmlpress-nav`, `htmlpress-page-toc`, `htmlpress-pager`, …) for markup
    built from the site. Inserted markup is never re-parsed, so a page's own `htmlpress-*` tags
    are left to the browser; an element with nothing to show is removed. With `sections`,
    `find_section` (longest prefix) picks the open page's section, and the nav, pager,

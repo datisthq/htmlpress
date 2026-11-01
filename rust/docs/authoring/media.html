@@ -86,43 +86,41 @@
 
 <h2>Image Zooming</h2>
 <p>
-  An image inside <code>&lt;htmlpress-zoom&gt;</code> opens full screen on click; a click
+  Every image in a page opens full screen on click, unless a link wraps it; a click
   anywhere closes it. It works with internal, external and base64 images alike.
 </p>
-<pre><code class="language-html">&lt;htmlpress-zoom&gt;&lt;img src="screenshot.png" alt="The docs site"&gt;&lt;/htmlpress-zoom&gt;</code></pre>
+<pre><code class="language-html">&lt;img src="screenshot.png" alt="The docs site"&gt;</code></pre>
 <p>Renders as (click it):</p>
-<htmlpress-zoom>
+<p>
   <img
     src="/screenshots/components.webp"
     alt="The htmlpress components page with callouts in four colors"
     width="1440"
     height="900"
   />
-</htmlpress-zoom>
+</p>
 
 <h2>Video Blocks</h2>
 <p>
-  A link inside <code>&lt;htmlpress-youtube&gt;</code> becomes the video's player (a
-  <code>watch</code>, <code>youtu.be</code>, <code>embed</code>, <code>shorts</code> or
-  <code>live</code> URL); without the script it stays a link:
+  <code>&lt;htmlpress-video type="youtube" url&gt;</code> plays the video at its
+  <code>url</code> (a <code>watch</code>, <code>youtu.be</code>, <code>embed</code>,
+  <code>shorts</code> or <code>live</code> URL); without the script it stays a link:
 </p>
-<pre><code class="language-html">&lt;htmlpress-youtube&gt;
-  &lt;a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"&gt;The video&lt;/a&gt;
-&lt;/htmlpress-youtube&gt;</code></pre>
+<pre><code class="language-html">&lt;htmlpress-video type="youtube" url="https://www.youtube.com/watch?v=dQw4w9WgXcQ"&gt;&lt;/htmlpress-video&gt;</code></pre>
 <p>Renders as:</p>
-<htmlpress-youtube>
-  <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">The video</a>
-</htmlpress-youtube>
+<htmlpress-video
+  type="youtube"
+  url="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+></htmlpress-video>
 
 <h2>Audio Blocks</h2>
 <p>
-  A link inside <code>&lt;htmlpress-soundcloud&gt;</code> becomes the track's player;
-  without the script it stays a link:
+  <code>&lt;htmlpress-audio type="soundcloud" url&gt;</code> plays the track at its
+  <code>url</code>; without the script it stays a link:
 </p>
-<pre><code class="language-html">&lt;htmlpress-soundcloud&gt;
-  &lt;a href="https://soundcloud.com/flume/never-be-like-you-feat-kai"&gt;The track&lt;/a&gt;
-&lt;/htmlpress-soundcloud&gt;</code></pre>
+<pre><code class="language-html">&lt;htmlpress-audio type="soundcloud" url="https://soundcloud.com/flume/never-be-like-you-feat-kai"&gt;&lt;/htmlpress-audio&gt;</code></pre>
 <p>Renders as:</p>
-<htmlpress-soundcloud>
-  <a href="https://soundcloud.com/flume/never-be-like-you-feat-kai">The track</a>
-</htmlpress-soundcloud>
+<htmlpress-audio
+  type="soundcloud"
+  url="https://soundcloud.com/flume/never-be-like-you-feat-kai"
+></htmlpress-audio>

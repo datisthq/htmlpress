@@ -155,7 +155,7 @@ fn lists_the_headings_and_gives_each_an_id() -> crate::Result<()> {
 
 #[test]
 fn keeps_headings_inside_components_out_of_the_toc() -> crate::Result<()> {
-    let html = "<h2>Cards</h2>\n<htmlpress-grid><htmlpress-card><h3>One</h3></htmlpress-card></htmlpress-grid>\n<h3>After</h3>";
+    let html = "<h2>Cards</h2>\n<htmlpress-cards><htmlpress-card title=\"One\"></htmlpress-card></htmlpress-cards>\n<h3>After</h3>";
     let page = read_page("guide.html", html)?;
     let ids: Vec<_> = page.toc.iter().map(|heading| heading.id.as_str()).collect();
     assert_eq!(ids, ["cards", "after"]);
@@ -180,13 +180,91 @@ fn expands_package_tabs_into_tabs() -> crate::Result<()> {
         page.content,
         concat!(
             r#"<htmlpress-tabs sync="package-manager">"#,
-            r#"<section title="npm"><pre><code>npm install a &amp;&amp; npx b</code></pre></section>"#,
-            r#"<section title="pnpm"><pre><code>pnpm add a &amp;&amp; npx b</code></pre></section>"#,
-            r#"<section title="yarn"><pre><code>yarn add a &amp;&amp; npx b</code></pre></section>"#,
-            r#"<section title="bun"><pre><code>bun add a &amp;&amp; npx b</code></pre></section>"#,
+            r#"<htmlpress-tab title="npm"><pre><code>npm install a &amp;&amp; npx b</code></pre></htmlpress-tab>"#,
+            r#"<htmlpress-tab title="pnpm"><pre><code>pnpm add a &amp;&amp; npx b</code></pre></htmlpress-tab>"#,
+            r#"<htmlpress-tab title="yarn"><pre><code>yarn add a &amp;&amp; npx b</code></pre></htmlpress-tab>"#,
+            r#"<htmlpress-tab title="bun"><pre><code>bun add a &amp;&amp; npx b</code></pre></htmlpress-tab>"#,
             "</htmlpress-tabs>"
         )
     );
+    Ok(())
+}
+
+#[test]
+fn keeps_step_headings_out_of_the_toc_and_draws_mermaid_blocks() -> crate::Result<()> {
+    let html = "<h2>Guide</h2><h3 data-step>Install</h3><p>…</p>";
+    let page = read_page("a.html", html)?;
+    let ids: Vec<_> = page.toc.iter().map(|heading| heading.id.as_str()).collect();
+    assert_eq!(ids, ["guide"]);
+    let html = r#"<pre><code class="language-mermaid">a --&gt; b</code></pre>"#;
+    let page = read_page("a.html", html)?;
+    assert_eq!(
+        page.content,
+        "<htmlpress-mermaid><pre>a --> b</pre></htmlpress-mermaid>"
+    );
+    Ok(())
+}
+
+#[test]
+fn writes_card_headings_and_button_links_from_attributes() -> crate::Result<()> {
+    let html = r#"<htmlpress-card title="Go" href="/go/" icon="rocket"><p>Body</p></htmlpress-card>"#;
+    let page = read_page("a.html", html)?;
+    assert!(page.content.starts_with(r#"<htmlpress-card><h3 id="go"><a href="/go/"><htmlpress-icon name="rocket"><svg"#), "{}", page.content);
+    assert!(
+        page.content
+            .contains("Go</a></h3><p>Body</p></htmlpress-card>")
+    );
+    let page = read_page(
+        "a.html",
+        r#"<htmlpress-card title="Plain"></htmlpress-card>"#,
+    )?;
+    assert!(
+        page.content
+            .contains(r#"<htmlpress-card><h3 id="plain">Plain</h3>"#),
+        "{}",
+        page.content
+    );
+    let html = r#"<htmlpress-card title="X" icon="nope"></htmlpress-card>"#;
+    assert!(read_page("a.html", html).is_err());
+    let html = r#"<htmlpress-button href="/a/" label="Start" variant="outline"></htmlpress-button>"#;
+    let page = read_page("a.html", html)?;
+    assert_eq!(
+        page.content,
+        r#"<htmlpress-button variant="outline"><a href="/a/">Start</a></htmlpress-button>"#
+    );
+    assert!(
+        read_page(
+            "a.html",
+            r#"<htmlpress-button label="A"></htmlpress-button>"#
+        )
+        .is_err()
+    );
+    Ok(())
+}
+
+#[test]
+fn starts_media_as_a_link_and_refuses_a_wrong_type() -> crate::Result<()> {
+    let html =
+        r#"<htmlpress-video type="youtube" url="https://youtu.be/a"></htmlpress-video>"#;
+    let page = read_page("a.html", html)?;
+    assert!(
+        page.content.contains(
+            r#"<a href="https://youtu.be/a">https://youtu.be/a</a></htmlpress-video>"#
+        ),
+        "{}",
+        page.content
+    );
+    let html = r#"<htmlpress-audio type="soundcloud" url="https://soundcloud.com/a/b"></htmlpress-audio>"#;
+    let page = read_page("a.html", html)?;
+    assert!(
+        page.content
+            .contains(r#"<a href="https://soundcloud.com/a/b">"#)
+    );
+    let html =
+        r#"<htmlpress-video type="vimeo" url="https://vimeo.com/1"></htmlpress-video>"#;
+    assert!(read_page("a.html", html).is_err());
+    let html = r#"<htmlpress-audio type="soundcloud"></htmlpress-audio>"#;
+    assert!(read_page("a.html", html).is_err());
     Ok(())
 }
 

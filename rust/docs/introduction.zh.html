@@ -81,7 +81,7 @@
 
     <h3>安装</h3>
     <htmlpress-tabs sync="channel">
-      <section title="Script">
+      <htmlpress-tab title="Script">
         <pre><code class="language-sh">curl -fsSL https://htmlpress.dev/install.sh | sh</code></pre>
         <p>
           从 <a href="https://github.com/datisthq/htmlpress/releases">GitHub releases</a>
@@ -89,8 +89,8 @@
           <code>~/.local/bin</code>。设置 <code>HTMLPRESS_VERSION</code> 可固定版本，设置
           <code>HTMLPRESS_INSTALL_DIR</code> 可安装到其他目录。
         </p>
-      </section>
-      <section title="npm">
+      </htmlpress-tab>
+      <htmlpress-tab title="npm">
         <pre><code>npm install --global gethtmlpress
 # or run it without installing
 npx gethtmlpress --version</code></pre>
@@ -99,17 +99,17 @@ npx gethtmlpress --version</code></pre>
           <code>@htmlpress/linux-x64</code>。使用
           <code>--omit=optional</code> 安装会遗漏二进制文件。
         </p>
-      </section>
-      <section title="PyPI">
+      </htmlpress-tab>
+      <htmlpress-tab title="PyPI">
         <pre><code class="language-sh">pip install htmlpress
 # or run it without installing
 uvx htmlpress --version</code></pre>
         <p>对应你所在平台的 wheel 携带了二进制文件；不会运行任何 Python 代码。</p>
-      </section>
-      <section title="Cargo">
+      </htmlpress-tab>
+      <htmlpress-tab title="Cargo">
         <pre><code class="language-sh">cargo install htmlpress</code></pre>
         <p>使用 1.88 或更高版本的 Rust 工具链从源码构建。</p>
-      </section>
+      </htmlpress-tab>
     </htmlpress-tabs>
     <p>预构建的二进制文件覆盖 x64 和 arm64 架构上的 Linux、macOS 和 Windows：</p>
     <table>
@@ -176,7 +176,7 @@ include: docs/**/*.html</code></pre>
     </p>
 
     <h3>添加内容</h3>
-    <htmlpress-file-tree>
+    <htmlpress-filetree>
       <ul>
         <li>
           docs/
@@ -187,7 +187,7 @@ include: docs/**/*.html</code></pre>
           </ul>
         </li>
       </ul>
-    </htmlpress-file-tree>
+    </htmlpress-filetree>
     <p>每个页面通过片段中也可以携带的标签来设置标题、描述和顺序：</p>
     <pre><code class="language-html">&lt;title&gt;Getting Started&lt;/title&gt;
 &lt;meta name="description" content="Set up the project in five minutes." /&gt;
@@ -211,7 +211,7 @@ htmlpress clear    # remove .htmlpress/build/</code></pre>
 
     <h2>项目结构</h2>
     <p>一个典型的 htmlpress 站点：</p>
-    <htmlpress-file-tree>
+    <htmlpress-filetree>
       <ul>
         <li>
           my-project/
@@ -236,7 +236,7 @@ htmlpress clear    # remove .htmlpress/build/</code></pre>
           </ul>
         </li>
       </ul>
-    </htmlpress-file-tree>
+    </htmlpress-filetree>
     <p>
       位于 <code>.htmlpress/</code> 下、路径与内置文件相同的文件，例如
       <code>layout.html</code>、<code>styles/tokens.css</code> 或

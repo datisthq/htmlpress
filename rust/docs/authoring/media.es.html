@@ -88,45 +88,42 @@
 
 <h2>Zoom de imágenes</h2>
 <p>
-  Una imagen dentro de <code>&lt;htmlpress-zoom&gt;</code> se abre a pantalla completa al
-  hacer clic; un clic en cualquier sitio la cierra. Funciona igual con imágenes internas,
-  externas y en base64.
+  Toda imagen de una página se abre a pantalla completa al hacer clic, salvo si la
+  envuelve un enlace; un clic en cualquier sitio la cierra. Funciona igual con imágenes
+  internas, externas y en base64.
 </p>
-<pre><code class="language-html">&lt;htmlpress-zoom&gt;&lt;img src="screenshot.png" alt="The docs site"&gt;&lt;/htmlpress-zoom&gt;</code></pre>
+<pre><code class="language-html">&lt;img src="screenshot.png" alt="The docs site"&gt;</code></pre>
 <p>Se renderiza como (haz clic):</p>
-<htmlpress-zoom>
+<p>
   <img
     src="/screenshots/components.webp"
     alt="La página de componentes de htmlpress con avisos en cuatro colores"
     width="1440"
     height="900"
   />
-</htmlpress-zoom>
+</p>
 
 <h2>Bloques de vídeo</h2>
 <p>
-  Un enlace dentro de <code>&lt;htmlpress-youtube&gt;</code> se convierte en el
-  reproductor del vídeo (una URL <code>watch</code>, <code>youtu.be</code>,
-  <code>embed</code>, <code>shorts</code> o <code>live</code>); sin el script sigue siendo
-  un enlace:
+  <code>&lt;htmlpress-video type="youtube" url&gt;</code> reproduce el vídeo de su
+  <code>url</code> (una URL <code>watch</code>, <code>youtu.be</code>, <code>embed</code>,
+  <code>shorts</code> o <code>live</code>); sin el script sigue siendo un enlace:
 </p>
-<pre><code class="language-html">&lt;htmlpress-youtube&gt;
-  &lt;a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"&gt;The video&lt;/a&gt;
-&lt;/htmlpress-youtube&gt;</code></pre>
+<pre><code class="language-html">&lt;htmlpress-video type="youtube" url="https://www.youtube.com/watch?v=dQw4w9WgXcQ"&gt;&lt;/htmlpress-video&gt;</code></pre>
 <p>Se renderiza como:</p>
-<htmlpress-youtube>
-  <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">El vídeo</a>
-</htmlpress-youtube>
+<htmlpress-video
+  type="youtube"
+  url="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+></htmlpress-video>
 
 <h2>Bloques de audio</h2>
 <p>
-  Un enlace dentro de <code>&lt;htmlpress-soundcloud&gt;</code> se convierte en el
-  reproductor de la pista; sin el script sigue siendo un enlace:
+  <code>&lt;htmlpress-audio type="soundcloud" url&gt;</code> reproduce la pista de su
+  <code>url</code>; sin el script sigue siendo un enlace:
 </p>
-<pre><code class="language-html">&lt;htmlpress-soundcloud&gt;
-  &lt;a href="https://soundcloud.com/flume/never-be-like-you-feat-kai"&gt;The track&lt;/a&gt;
-&lt;/htmlpress-soundcloud&gt;</code></pre>
+<pre><code class="language-html">&lt;htmlpress-audio type="soundcloud" url="https://soundcloud.com/flume/never-be-like-you-feat-kai"&gt;&lt;/htmlpress-audio&gt;</code></pre>
 <p>Se renderiza como:</p>
-<htmlpress-soundcloud>
-  <a href="https://soundcloud.com/flume/never-be-like-you-feat-kai">La pista</a>
-</htmlpress-soundcloud>
+<htmlpress-audio
+  type="soundcloud"
+  url="https://soundcloud.com/flume/never-be-like-you-feat-kai"
+></htmlpress-audio>

@@ -121,7 +121,7 @@ The same holds for the default language without an `index.html`.
   an `id` the page already uses, and an anchor link. Give a heading an `id` only when a link
   needs it fixed.
 - A heading takes `data-toc="false"` (shown, not in the TOC) or `data-toc="only"` (in the TOC,
-  not shown); `<htmlpress-toc level="2">` (2–4, default 3) in a page renders its TOC inline.
+  not shown); `<htmlpress-toc max-level="2">` (2–4, default 4) in a page renders its TOC inline.
 
 ## The layout owns the frame
 
@@ -151,6 +151,7 @@ The theme styles the elements themselves: headings, `<p>`, lists, `<table>`, `<p
 - No inline `style`, no classes for looks, no utility CSS: every page should look like the same
   site. A site-wide change is a token (`htmlpress-customization`).
 - An image with `data-theme="light"` or `"dark"` shows in that theme only.
+- Every image opens full screen on click, unless a link wraps it; nothing to write.
 - `<abbr title>` and footnote references (`<sup><a href="#n1">` to an `<li id="n1">`) show a
   hover hint; headings get a link on their own.
 - Bare URLs and emails in prose become links and GitHub shortcodes (`:rocket:`) become emoji at
@@ -180,23 +181,21 @@ The theme styles the elements themselves: headings, `<p>`, lists, `<table>`, `<p
 Only these; anything else is plain HTML. Put block content (`<p>`, `<h3>`, `<pre>`) inside a
 component, not bare text.
 
-| Element                                          | Use                                                                                                                     |
-| ------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
-| `<htmlpress-callout type="…" label="…">`         | a note; `type` is `info` (default), `note`, `tip`, `success`, `warning`, `danger`                                       |
-| `<htmlpress-grid cols="2">` + `<htmlpress-card>` | cards in columns (`cols` 2–4, else responsive); `<h3><a>` links a card                                                  |
-| `<htmlpress-tabs sync="…">` + `<section title>`  | tabs, one per `<section>`; tabs sharing `sync` switch together                                                          |
-| `<htmlpress-steps>` + `<ol>`                     | numbered steps, one per `<li>`, each led by an `<h3>`                                                                   |
-| `<htmlpress-badge type="…">`                     | an inline label; `type` as a callout's, `neutral`, `outline`, `ghost` or `link`                                         |
-| `<htmlpress-file-tree>` + nested `<ul>`          | a file tree; an `<li>` holding a `<ul>` is a folder                                                                     |
-| `<htmlpress-table>` + `<table>`                  | a table sorted by a click on a `<thead>` header                                                                         |
-| `<htmlpress-zoom>` + `<img>`                     | an image that opens full screen on click                                                                                |
-| `<htmlpress-icon name="…">`                      | an inline Lucide icon; names at htmlpress.dev/authoring/rich-elements/#icons                                            |
-| `<htmlpress-button type="…">` + `<a>`            | a call-to-action link; `type` `secondary`/`outline`/`ghost`/`link`/`positive`/`warning`/`destructive`, `size` `sm`/`lg` |
-| `<htmlpress-package-tabs>` + `<pre><code>`       | one `npm`/`npx` command, built into npm, pnpm, yarn and bun tabs                                                        |
-| `<htmlpress-terminal title="…">` + `<pre>`       | terminal output: `<kbd>` command, `<samp>` output, `<ins>`/`<del>`/`<mark>` colours                                     |
-| `<htmlpress-youtube>` + `<a href>`               | a YouTube video player for the linked video                                                                             |
-| `<htmlpress-soundcloud>` + `<a href>`            | a SoundCloud player for the linked track                                                                                |
-| `<htmlpress-mermaid>` + `<pre>`                  | a Mermaid diagram from the source in `<pre>` (escape `<` and `&`)                                                       |
+| Element                                                  | Use                                                                                                                        |
+| -------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `<htmlpress-callout type="…" title="…">`                 | a note; `type` is `info` (default), `note`, `tip`, `warning`, `danger`                                                     |
+| `<htmlpress-cards>` + `<htmlpress-card title href icon>` | cards in two columns; `title` is the heading, `href` links the whole card, `icon` leads it                                 |
+| `<htmlpress-tabs sync="…">` + `<htmlpress-tab title>`    | tabs, one per `<htmlpress-tab>`; tabs sharing `sync` switch together                                                       |
+| `<h3 data-step>`                                         | a numbered step, counted through the page; kept out of the TOC                                                             |
+| `<htmlpress-badge variant="…">`                          | an inline label; `variant` `secondary`/`outline`/`positive`/`warning`/`destructive`, accent without it                     |
+| `<htmlpress-filetree>` + nested `<ul>`                   | a file tree; an `<li>` holding a `<ul>` is a folder                                                                        |
+| `<htmlpress-icon name="…">`                              | an inline Lucide icon; names at htmlpress.dev/authoring/rich-elements/#icons                                               |
+| `<htmlpress-button href label variant="…">`              | a call-to-action link; `variant` `secondary`/`outline`/`ghost`/`link`/`positive`/`warning`/`destructive`, `size` `sm`/`lg` |
+| `<htmlpress-package-tabs>` + `<pre><code>`               | one `npm`/`npx` command, built into npm, pnpm, yarn and bun tabs                                                           |
+| `<htmlpress-terminal title="…">` + `<pre>`               | terminal output: `<kbd>` command, `<samp>` output, `<ins>`/`<del>`/`<mark>` colours                                        |
+| `<htmlpress-video type="youtube" url>`                   | a YouTube video player for the video at `url`                                                                              |
+| `<htmlpress-audio type="soundcloud" url>`                | a SoundCloud player for the track at `url`                                                                                 |
+| `<pre><code class="language-mermaid">`                   | a Mermaid diagram from the source in the block (escape `<` and `&`)                                                        |
 
 ## Verification
 

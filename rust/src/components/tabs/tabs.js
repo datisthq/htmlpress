@@ -1,7 +1,7 @@
 class HtmlpressTabs extends HTMLElement {
   connectedCallback() {
     if (this.querySelector(":scope > [role=tablist]")) return
-    const sections = [...this.querySelectorAll(":scope > section")]
+    const sections = [...this.querySelectorAll(":scope > htmlpress-tab")]
     const list = document.createElement("div")
     list.setAttribute("role", "tablist")
     this.titles = sections.map((section, index) => {

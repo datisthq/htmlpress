@@ -399,9 +399,9 @@ const UNLISTED_HEADINGS: &[&str] = &[
     "htmlpress-card h2",
     "htmlpress-card h3",
     "htmlpress-card h4",
-    "htmlpress-steps h2",
-    "htmlpress-steps h3",
-    "htmlpress-steps h4",
+    "h2[data-step]",
+    "h3[data-step]",
+    "h4[data-step]",
     "htmlpress-tabs h2",
     "htmlpress-tabs h3",
     "htmlpress-tabs h4",
@@ -439,6 +439,31 @@ fn prepare_content(html: &str) -> Result<String, String> {
             el.set_inner_content(&svg, ContentType::Html);
             Ok(())
         }))
+        .append_element_content_handler(element!("htmlpress-card[title]", |el| {
+            let heading = create_card_heading(el)?;
+            el.prepend(&heading, ContentType::Html);
+            for name in ["title", "href", "icon"] {
+                el.remove_attribute(name);
+            }
+            Ok(())
+        }))
+        .append_element_content_handler(element!("htmlpress-button", |el| {
+            let (href, label) = (el.get_attribute("href"), el.get_attribute("label"));
+            let (Some(href), Some(label)) = (href, label) else {
+                return Err("<htmlpress-button> needs an href and a label".into());
+            };
+            let link = format!("<a href=\"{}\">{label}</a>", href.replace('"', "&quot;"));
+            el.set_inner_content(&link, ContentType::Html);
+            el.remove_attribute("href");
+            el.remove_attribute("label");
+            Ok(())
+        }))
+        .append_element_content_handler(element!("htmlpress-video", |el| {
+            write_media_link(el, "htmlpress-video", "youtube")
+        }))
+        .append_element_content_handler(element!("htmlpress-audio", |el| {
+            write_media_link(el, "htmlpress-audio", "soundcloud")
+        }))
         .append_element_content_handler(element!("htmlpress-package-tabs *", |el| {
             el.remove_and_keep_content();
             Ok(())
@@ -459,7 +484,72 @@ fn prepare_content(html: &str) -> Result<String, String> {
             }
             Ok(())
         }));
-    rewrite_str(html, settings).map_err(|error| error.to_string())
+    let html = wrap_mermaid(html);
+    rewrite_str(&html, settings).map_err(|error| error.to_string())
+}
+
+// Livemark's diagrams are fences, so a `language-mermaid` block becomes the diagram;
+// on the string, since a rewriter's handler for `<pre>` cannot see the code inside it
+fn wrap_mermaid(html: &str) -> String {
+    const OPEN: &str = "<pre><code class=\"language-mermaid\">";
+    const CLOSE: &str = "</code></pre>";
+    let mut out = String::with_capacity(html.len());
+    let mut rest = html;
+    while let Some(start) = rest.find(OPEN) {
+        let body = &rest[start + OPEN.len()..];
+        let Some(end) = body.find(CLOSE) else { break };
+        out.push_str(&rest[..start]);
+        out.push_str("<htmlpress-mermaid><pre>");
+        out.push_str(&body[..end]);
+        out.push_str("</pre></htmlpress-mermaid>");
+        rest = &body[end + CLOSE.len()..];
+    }
+    out.push_str(rest);
+    out
+}
+
+// Written here, not in the browser, so the heading and its link reach search and the
+// Markdown copy; the icon as its SVG, since this pass never sees what it inserts
+fn create_card_heading(el: &Element) -> Result<String, String> {
+    let title = el.get_attribute("title").unwrap_or_default();
+    let icon = match el.get_attribute("icon") {
+        Some(name) => {
+            let svg = render_icon(&name).ok_or_else(|| {
+                format!(
+                    "<htmlpress-card icon=\"{name}\">: no such icon; the icons are: {}",
+                    list_icons()
+                )
+            })?;
+            format!("<htmlpress-icon name=\"{name}\">{svg}</htmlpress-icon>")
+        }
+        None => String::new(),
+    };
+    Ok(match el.get_attribute("href") {
+        Some(href) => format!(
+            "<h3><a href=\"{}\">{icon}{title}</a></h3>",
+            href.replace('"', "&quot;")
+        ),
+        None => format!("<h3>{icon}{title}</h3>"),
+    })
+}
+
+// The embed is the script's; the link it starts as keeps a page without it pointing there
+fn write_media_link(
+    el: &mut Element,
+    tag: &str,
+    kind: &str,
+) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    let found = el.get_attribute("type").unwrap_or_default();
+    if found != kind {
+        return Err(format!("<{tag}> needs type=\"{kind}\", got \"{found}\"").into());
+    }
+    let url = el.get_attribute("url").unwrap_or_default();
+    if url.is_empty() {
+        return Err(format!("<{tag} type=\"{kind}\"> needs a url").into());
+    }
+    let url = url.replace('"', "&quot;");
+    el.set_inner_content(&format!("<a href=\"{url}\">{url}</a>"), ContentType::Html);
+    Ok(())
 }
 
 // textlane writes `&`, `<`, `"` and `'` as hexadecimal references; htmlpress reads
@@ -674,7 +764,7 @@ fn create_package_tabs(commands: &str) -> String {
     for manager in MANAGERS {
         let command = convert_command(commands, manager);
         html.push_str(&format!(
-            "<section title=\"{manager}\"><pre><code>{command}</code></pre></section>"
+            "<htmlpress-tab title=\"{manager}\"><pre><code>{command}</code></pre></htmlpress-tab>"
         ));
     }
     html

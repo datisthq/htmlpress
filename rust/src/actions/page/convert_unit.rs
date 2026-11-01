@@ -22,7 +22,7 @@ fn reduces_components_to_plain_markdown() -> crate::Result<()> {
         "a.html",
         "<h1>A</h1>\
          <htmlpress-callout type=\"warning\"><p>Careful.</p></htmlpress-callout>\
-         <htmlpress-tabs><section title=\"npm\"><p>Use npm.</p></section></htmlpress-tabs>\
+         <htmlpress-tabs><htmlpress-tab title=\"npm\"><p>Use npm.</p></htmlpress-tab></htmlpress-tabs>\
          <htmlpress-mermaid><pre>graph LR</pre></htmlpress-mermaid>\
          <htmlpress-terminal><pre><kbd>ls</kbd></pre></htmlpress-terminal>\
          <script>alert(1)</script>",

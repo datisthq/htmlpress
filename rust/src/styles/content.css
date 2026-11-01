@@ -26,6 +26,28 @@ h4 {
   font-size: 1rem;
   line-height: 1.5;
 }
+/* Livemark's steps: a heading marked `data-step`, led by its number in a badge */
+main {
+  counter-reset: step;
+}
+[data-step] {
+  counter-increment: step;
+}
+[data-step]::before {
+  content: counter(step);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-right: 0.5rem;
+  border-radius: 999px;
+  background: var(--htmlpress-accent);
+  color: var(--htmlpress-accent-text);
+  font-size: 0.75rem;
+  font-weight: 600;
+  vertical-align: middle;
+}
 .htmlpress-anchor {
   display: inline-block;
   width: 0.6em;
@@ -589,4 +611,39 @@ img[data-theme="dark"] {
 ::highlight(htmlpress-search) {
   background-color: var(--htmlpress-highlight);
   color: var(--htmlpress-highlight-text);
+}
+.htmlpress-zoomable {
+  cursor: zoom-in;
+}
+.htmlpress-zoom {
+  max-width: 95vw;
+  max-height: 95vh;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: zoom-out;
+}
+.htmlpress-zoom::backdrop {
+  background: oklch(0 0 0 / 0.7);
+}
+.htmlpress-zoom img {
+  display: block;
+  max-width: 95vw;
+  max-height: 95vh;
+  object-fit: contain;
+}
+.htmlpress-sortable th {
+  cursor: pointer;
+  user-select: none;
+}
+/* As in Livemark, a column shows its arrow only once it sorts the table */
+.htmlpress-sortable th[aria-sort]::after {
+  margin-left: 0.25rem;
+  color: var(--htmlpress-muted);
+}
+.htmlpress-sortable th[aria-sort="ascending"]::after {
+  content: "↑";
+}
+.htmlpress-sortable th[aria-sort="descending"]::after {
+  content: "↓";
 }

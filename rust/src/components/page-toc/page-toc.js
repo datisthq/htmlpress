@@ -1,4 +1,4 @@
-class HtmlpressToc extends HTMLElement {
+class HtmlpressPageToc extends HTMLElement {
   connectedCallback() {
     const links = [...this.querySelectorAll("a[href^='#']")]
     const headings = links
@@ -18,4 +18,4 @@ class HtmlpressToc extends HTMLElement {
   }
 }
 
-customElements.define("htmlpress-toc", HtmlpressToc)
+customElements.define("htmlpress-page-toc", HtmlpressPageToc)

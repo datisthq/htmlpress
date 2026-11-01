@@ -48,17 +48,17 @@ folder named after it (`image-quality.html` and `image-quality/`).
 - **Metas**: `<title>`, `description` (what a reader learns, in one line), `date` (when the
   content was last true) and `order` for the pages a newcomer should read first.
 - **Lead with the answer.** The paragraph under the `<h1>` gives the conclusion or the
-  recommendation; the evidence follows. Headline numbers go in an `htmlpress-grid` of
+  recommendation; the evidence follows. Headline numbers go in an `htmlpress-cards` of
   `htmlpress-card`s right after it.
 - **Numbers carry their date and source**, near the top: a register goes stale, and the reader
   must see when it was measured and from where. Cite each source with a link.
 - **Statuses are badges** with one fixed meaning per site: `success` decided or done, `warning`
   a call still to confirm, `danger` open or blocked. Say so in a legend if a page uses them.
 - **Tables hold short cells.** A table never wraps a cell, so a row that needs prose becomes a
-  `<dl>`: the item as `<dt>`, its reasons as `<dd>`. Wrap a sortable table in `htmlpress-table`.
+  `<dl>`: the item as `<dt>`, its reasons as `<dd>`. A table with a `<thead>` sorts by a click on a header.
 - **Diagrams are inline SVG**, drawn for the real structure, in a `<figure>` with a
   `<figcaption>`, styled by a page `<style>` scoped to that figure with `--htmlpress-*` tokens
-  only, so it follows light and dark. `htmlpress-mermaid` for a quick flow.
+  only, so it follows light and dark. a `language-mermaid` code block for a quick flow.
 
 ## A decision log
 

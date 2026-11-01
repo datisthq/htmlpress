@@ -1,0 +1,12 @@
+@scope (htmlpress-column) {
+  :scope {
+    display: block;
+    min-width: 0;
+  }
+  :scope > :first-child {
+    margin-top: 0;
+  }
+  :scope > :last-child {
+    margin-bottom: 0;
+  }
+}

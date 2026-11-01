@@ -1,12 +1,9 @@
-@scope (htmlpress-grid) {
+@scope (htmlpress-columns) {
   :scope {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
-    gap: 1rem;
-    margin: 1rem 0;
-  }
-  :scope[cols="2"] {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem;
+    margin: 1rem 0;
   }
   :scope[cols="3"] {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -15,7 +12,7 @@
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
   @media (max-width: 40rem) {
-    :scope[cols] {
+    :scope {
       grid-template-columns: minmax(0, 1fr);
     }
   }

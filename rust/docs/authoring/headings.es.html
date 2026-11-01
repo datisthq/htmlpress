@@ -65,10 +65,10 @@
 <h2>Tabla de contenidos en línea</h2>
 <p>
   Un <code>&lt;htmlpress-toc&gt;</code> escrito en la página se rellena con la tabla de
-  contenidos de la página, enmarcada como una tarjeta: sus <code>&lt;h2&gt;</code> y
-  <code>&lt;h3&gt;</code> por defecto, solo los <code>&lt;h2&gt;</code> con
-  <code>level="2"</code>, y hasta los <code>&lt;h4&gt;</code> con <code>level="4"</code>.
-  Una página sin encabezados no recibe ninguna.
+  contenidos de la página, enmarcada como una tarjeta: hasta sus
+  <code>&lt;h4&gt;</code> por defecto, solo los <code>&lt;h2&gt;</code> con
+  <code>max-level="2"</code>, y hasta los <code>&lt;h3&gt;</code> con
+  <code>max-level="3"</code>. Una página sin encabezados no recibe ninguna.
 </p>
-<pre><code class="language-html">&lt;htmlpress-toc level="2"&gt;&lt;/htmlpress-toc&gt;</code></pre>
-<htmlpress-toc level="2"></htmlpress-toc>
+<pre><code class="language-html">&lt;htmlpress-toc max-level="2"&gt;&lt;/htmlpress-toc&gt;</code></pre>
+<htmlpress-toc max-level="2"></htmlpress-toc>
