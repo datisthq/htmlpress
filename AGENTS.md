@@ -11,6 +11,7 @@ Htmlpress turns a folder of HTML and Markdown pages into a site: one layout, one
 - **page** — an `.html` or `.md` file in a project, read by `rust/src/actions/page/read.rs` into title, order, head and content; a `.md` one is first compiled into HTML by `rust/src/actions/page/compile.rs`, its frontmatter into the head's metas
 - **escape** — a project file under `.htmlpress/` at a built-in asset's path (`ASSETS` in `rust/src/settings.rs`), replacing it: `layout.html`, `styles/*.css`, `scripts/*.js`, `components/<name>/<name>.{css,js}`; beside escapes a project may add its own `components/<name>/<name>.{html,css,js}` and `layouts/<name>.html`, which a page picks with `<meta name="layout">`
 - **component** — a custom element `<htmlpress-<name>>`, built in or the project's, with up to three files, `components/<name>/<name>.{html,css,js}` (the tag without its prefix): its CSS scoped with `@scope (<tag>)`, its JS defining only that element, linked only on pages that use the tag; a project's own tag adds one, and its `.html` fills the tag at build time
+- **article** / **route** — a page `include` picks, listed in the navigation, against one in `.htmlpress/routes/`, served at its path there, drawn bare and left out of the navigation and search, as Livemark's `.livemark/routes/`; `Page::is_route` tells them apart
 - **docs site** — this repo's own htmlpress project: the root's `htmlpress.yaml` and `.htmlpress/`, its pages in `rust/docs/` (`include: rust/docs/**/*.html`), built by `pnpm build:docs` and deployed to htmlpress.dev
 
 ## Rules
@@ -108,7 +109,7 @@ Dot-directories hold non-package code: `.agents/` repo skills, `.skills/` shippe
 - `package.json` script names are `verb[:object]` (`check:lint`, `build:docs`), never noun-first
 - Specs: Vitest via `vite-plus/test`, `<module>.unit.ts`, no "Arrange / Act / Assert" comments
 - Rust: edition 2024, rustfmt (90 columns), clippy with `-D warnings`; snake_case **verb_noun** functions; no `unwrap` / `expect` / `unsafe` outside tests (**`rust-development`**)
-- HTML in `rust/docs/` and `.skills/`: semantic elements and the documented `htmlpress-*` components only, no inline styles — the docs are the first project htmlpress must serve well. The exceptions are the home page, `rust/docs/index.html`, which uses the `landing` layout and the `htmlpress-landing-*` components in `.htmlpress/`, the way any project builds its own look, and the showcase pages in `rust/docs/examples/`: each is one self-contained page with its own `<style>` and `<script>` scoped under a page-specific class prefix, built on real public data with its source cited
+- HTML in `rust/docs/` and `.skills/`: semantic elements and the documented `htmlpress-*` components only, no inline styles — the docs are the first project htmlpress must serve well. The exceptions are the home page, `.htmlpress/routes/index.html`, a bare route built from the `htmlpress-landing-*` components in `.htmlpress/components/`, the way any project builds its own look, and the showcase pages in `rust/docs/examples/`: each is one self-contained page with its own `<style>` and `<script>` scoped under a page-specific class prefix, built on real public data with its source cited
 - Commits: Conventional Commits, typed by what an installer gets (below)
 
 ## Releases

@@ -469,3 +469,28 @@ fn builds_pages_with_their_includes() -> crate::Result<()> {
     assert!(build_site(&options).is_err());
     Ok(())
 }
+
+#[test]
+fn draws_a_route_bare_filling_its_layout_elements() -> crate::Result<()> {
+    let root = tempfile::tempdir().map_err(Error::io("tempdir"))?;
+    let root = root.path();
+    write_source(root, "htmlpress.yaml", "title: Docs\nbase: /repo/\n")?;
+    write_source(root, "guide.html", "<h1>Guide</h1>")?;
+    write_source(
+        root,
+        ".htmlpress/routes/index.html",
+        "<title>Home</title><htmlpress-header><htmlpress-brand></htmlpress-brand>\
+         </htmlpress-header><main><a href=\"/guide/\">Guide</a></main>",
+    )?;
+    let options = BuildOptions::new(root);
+    build_site(&options)?;
+    let read = |path: &str| std::fs::read_to_string(options.output.join(path));
+    let home = read("index.html").map_err(Error::io("index.html"))?;
+    assert!(!home.contains("htmlpress-sidebar"));
+    assert!(home.contains("<htmlpress-brand><a"));
+    assert!(home.contains("href=\"/repo/guide/\""));
+    assert!(home.contains("components/header/header.css"));
+    let search = read("_htmlpress/search.json").map_err(Error::io("search.json"))?;
+    assert!(search.contains("/guide/") && !search.contains("\"url\":\"/\""));
+    Ok(())
+}

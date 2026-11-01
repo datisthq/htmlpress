@@ -9,6 +9,10 @@ pub const PROJECT_DIR: &str = ".htmlpress";
 /// The build output, relative to the project root, unless `--out` names another.
 pub const OUTPUT_DIR: &str = ".htmlpress/build";
 
+/// Where a project's routes live: each `.html` or `.md` file under it is a page at its
+/// own path, outside `include`, the navigation and search, and drawn bare.
+pub const ROUTES_DIR: &str = ".htmlpress/routes/";
+
 /// Where builds keep what they fetched, such as GitHub releases; never published.
 pub const CACHE_DIR: &str = ".htmlpress/cache";
 

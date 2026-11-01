@@ -396,3 +396,33 @@ fn runs_the_config_plugins_and_rejects_a_bad_one() -> crate::Result<()> {
     }
     Ok(())
 }
+
+#[test]
+fn reads_routes_at_their_path_over_articles_and_out_of_the_nav() -> crate::Result<()> {
+    let root = tempfile::tempdir().map_err(Error::io("tempdir"))?;
+    let root = root.path();
+    write_file(root, "index.html", "<h1>Article</h1>")?;
+    write_file(root, "guide.html", "<h1>Guide</h1>")?;
+    write_file(root, ".htmlpress/routes/index.html", "<h1>Landing</h1>")?;
+    write_file(root, ".htmlpress/routes/pricing.md", "# Pricing\n")?;
+    write_file(root, ".htmlpress/routes/-parts/hero.html", "<p>Hero</p>")?;
+    write_file(root, ".htmlpress/routes/-draft.html", "<h1>Draft</h1>")?;
+    let site = scan_site(root)?;
+    let pages: Vec<(&str, &str, bool)> = (site.pages.iter())
+        .map(|page| (page.url.as_str(), page.title.as_str(), page.sidebar))
+        .collect();
+    assert_eq!(
+        pages,
+        [
+            ("/", "Landing", false),
+            ("/guide/", "Guide", true),
+            ("/pricing/", "Pricing", false)
+        ]
+    );
+    assert!(
+        site.pages
+            .iter()
+            .all(|page| page.is_route() != page.sidebar)
+    );
+    Ok(())
+}

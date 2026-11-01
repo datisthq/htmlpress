@@ -1,14 +1,15 @@
 use std::path::{Component, Path, PathBuf};
 
-use crate::settings::PROJECT_DIR;
+use crate::settings::{PROJECT_DIR, ROUTES_DIR};
 
 // Larger than any page, changelog or code sample; a file this big is a mistake or media
 const MAX_BYTES: u64 = 4 * 1024 * 1024;
 
 /// Resolve a path a page or the config names, relative to `root`, to the real file it
 /// reaches, refusing one that leaves the project (by `..`, an absolute path or a symlink),
-/// lives in `node_modules/` or `.htmlpress/`, or, unless `dot` allows it, a dot-entry such
-/// as `.env` or `.git/`. Whatever passes is published, so this is what keeps secrets out.
+/// lives in `node_modules/` or `.htmlpress/` outside its published `routes/`, or, unless
+/// `dot` allows it, a dot-entry such as `.env` or `.git/`. Whatever passes is published,
+/// so this is what keeps secrets out.
 pub(crate) fn contain_path(
     root: &Path,
     path: &str,
@@ -24,11 +25,18 @@ pub(crate) fn contain_path(
     let inside = real
         .strip_prefix(&root)
         .map_err(|_| format!("\"{path}\": must stay inside the project"))?;
+    let route = inside
+        .to_string_lossy()
+        .replace('\\', "/")
+        .starts_with(ROUTES_DIR);
     for part in inside.components() {
         let Component::Normal(name) = part else {
             continue;
         };
         let name = name.to_string_lossy();
+        if route && name == PROJECT_DIR {
+            continue;
+        }
         if name == "node_modules"
             || name == PROJECT_DIR
             || (!dot && name.starts_with('.'))

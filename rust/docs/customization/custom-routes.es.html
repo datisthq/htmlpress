@@ -4,7 +4,7 @@
     <title>Rutas personalizadas</title>
     <meta
       name="description"
-      content="Añade páginas con su propio marco: cualquier archivo .html es una ruta, y un layout en .htmlpress/layouts/ la viste."
+      content="Añade páginas fuera de la navegación, dibujadas vacías: cualquier archivo .html o .md en .htmlpress/routes/ se sirve en su propia URL."
     />
     <meta name="order" content="47" />
     <meta name="icon" content="route" />
@@ -12,77 +12,63 @@
   <body>
     <h1>Rutas personalizadas</h1>
     <p>
-      En htmlpress cada archivo <code>.html</code> ya es una ruta: una página se sirve en
-      una carpeta con el nombre de su archivo, sin registro ni cambios de configuración.
-      Lo que añade una ruta personalizada es su propio marco: un layout propio en
-      <code>.htmlpress/layouts/</code>, que la página elige con
-      <code>&lt;meta name="layout"&gt;</code>.
+      Los artículos son las páginas que <code>include</code> elige en
+      <code>htmlpress.yaml</code>; forman la navegación. Una ruta es una página propia:
+      cualquier archivo <code>.html</code> o <code>.md</code> en
+      <code>.htmlpress/routes/</code> se sirve en la URL correspondiente, sin registro ni
+      cambios de configuración.
     </p>
 
     <h2>Ejemplo mínimo</h2>
     <htmlpress-tabs sync="syntax">
       <htmlpress-tab title="HTML">
-        <pre><code class="language-html">&lt;!-- about.html --&gt;
-&lt;title&gt;About&lt;/title&gt;
-&lt;meta name="layout" content="landing"&gt;
+        <pre><code class="language-html">&lt;!-- .htmlpress/routes/about.html --&gt;
+&lt;title&gt;Acerca de&lt;/title&gt;
 
-&lt;h1&gt;About&lt;/h1&gt;
-&lt;p&gt;Anything you'd write in a normal HTML page, here.&lt;/p&gt;
-
-&lt;!-- .htmlpress/layouts/landing.html --&gt;
-&lt;body&gt;
-  &lt;htmlpress-header role="banner"&gt;
-    &lt;htmlpress-brand&gt;&lt;/htmlpress-brand&gt;
-    &lt;htmlpress-theme-toggle&gt;&lt;/htmlpress-theme-toggle&gt;
-  &lt;/htmlpress-header&gt;
-  &lt;main&gt;&lt;htmlpress-content&gt;&lt;/htmlpress-content&gt;&lt;/main&gt;
-&lt;/body&gt;</code></pre>
+&lt;htmlpress-header role="banner"&gt;
+  &lt;htmlpress-brand&gt;&lt;/htmlpress-brand&gt;
+  &lt;htmlpress-theme-toggle&gt;&lt;/htmlpress-theme-toggle&gt;
+&lt;/htmlpress-header&gt;
+&lt;main id="content"&gt;
+  &lt;h1&gt;Acerca de&lt;/h1&gt;
+  &lt;p&gt;Todo lo que escribirías en una página HTML normal, aquí.&lt;/p&gt;
+&lt;/main&gt;</code></pre>
       </htmlpress-tab>
       <htmlpress-tab title="Markdown">
-        <pre><code class="language-md">&lt;!-- about.md --&gt;
+        <pre><code class="language-md">&lt;!-- .htmlpress/routes/about.md --&gt;
 ---
-title: About
-layout: landing
+title: Acerca de
 ---
 
-# About
+&lt;htmlpress-header role="banner"&gt;
+  &lt;htmlpress-brand&gt;&lt;/htmlpress-brand&gt;
+  &lt;htmlpress-theme-toggle&gt;&lt;/htmlpress-theme-toggle&gt;
+&lt;/htmlpress-header&gt;
 
-Anything you'd write in a normal Markdown page, here.
+# Acerca de
 
-&lt;!-- .htmlpress/layouts/landing.html --&gt;
-&lt;body&gt;
-  &lt;htmlpress-header role="banner"&gt;
-    &lt;htmlpress-brand&gt;&lt;/htmlpress-brand&gt;
-    &lt;htmlpress-theme-toggle&gt;&lt;/htmlpress-theme-toggle&gt;
-  &lt;/htmlpress-header&gt;
-  &lt;main&gt;&lt;htmlpress-content&gt;&lt;/htmlpress-content&gt;&lt;/main&gt;
-&lt;/body&gt;</code></pre>
+Todo lo que escribirías en una página Markdown normal, aquí.</code></pre>
       </htmlpress-tab>
     </htmlpress-tabs>
     <p>
-      Guarda y visita <code>/about/</code>. Sin el meta, la página recibe el layout del
-      sitio, el mismo marco que todas las demás páginas: banner, cabecera, barra lateral,
-      tabla de contenidos y paginador.
+      Guarda y visita <code>/about/</code>. La cabecera sale de los elementos que contiene
+      la ruta: htmlpress los rellena como rellena los de un layout.
     </p>
 
     <h2>Elegir el marco</h2>
     <p>
-      Un layout es HTML simple como <code>layout.html</code>, y empieza
-      <strong>vacío</strong>: no se dibuja nada alrededor de la página hasta que lo
-      añades. Combina tantos elementos de layout como necesite la página:
+      Una ruta empieza <strong>vacía</strong>: no se dibuja barra lateral, cabecera ni pie
+      a su alrededor hasta que los añades. Combina tantos elementos de layout como
+      necesite la página, en cualquier lugar de la ruta:
     </p>
     <table>
       <thead>
         <tr>
-          <th>Lo que pones en el layout</th>
+          <th>Lo que pones en la ruta</th>
           <th>Lo que obtienes</th>
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td><code>&lt;htmlpress-content&gt;</code></td>
-          <td>el contenido de la página</td>
-        </tr>
         <tr>
           <td><code>&lt;htmlpress-brand&gt;</code></td>
           <td>
@@ -150,7 +136,7 @@ Anything you'd write in a normal Markdown page, here.
           </td>
         </tr>
         <tr>
-          <td>nada más que <code>&lt;htmlpress-content&gt;</code></td>
+          <td>ninguno de ellos</td>
           <td>una página en blanco, toda tuya</td>
         </tr>
       </tbody>
@@ -163,11 +149,12 @@ Anything you'd write in a normal Markdown page, here.
       <a href="/es/authoring/rich-elements/#layout">Layout</a>.
     </p>
     <p>
-      Htmlpress rellena el <code>&lt;head&gt;</code> del layout de la misma forma para
-      todos los layouts, así que el tema, los metadatos del sitio y las etiquetas del head
-      propias de la página siempre están ahí. Una página de inicio normalmente solo quiere
-      la cabecera, como en el ejemplo de arriba. La
-      <a href="https://github.com/datisthq/htmlpress/tree/main/.htmlpress"
+      Htmlpress rellena el <code>&lt;head&gt;</code> de una ruta como el de cualquier
+      página, así que el tema, los metadatos del sitio y las etiquetas del head propias de
+      la ruta siempre están ahí. Una página de inicio normalmente solo quiere la cabecera,
+      como en el ejemplo de arriba. La
+      <a
+        href="https://github.com/datisthq/htmlpress/blob/main/.htmlpress/routes/index.html"
         >página de inicio</a
       >
       de este sitio está construida así.
@@ -176,48 +163,65 @@ Anything you'd write in a normal Markdown page, here.
     <h2>Cómo encaja con el resto del sitio</h2>
     <ul>
       <li>
-        <strong>Las rutas son URL.</strong> Las rutas de archivo reflejan las rutas de
-        URL, cada página en su propia carpeta: <code>guide/quickstart.html</code> es
-        <code>/guide/quickstart/</code>, y <code>index.html</code> se sirve en su carpeta,
-        <code>guide/index.html</code> en <code>/guide/</code>, con cada nombre convertido
-        en slug. Los enlaces relativos entre páginas siguen funcionando.
+        <strong>Las rutas son URLs.</strong> La ruta de un archivo bajo
+        <code>.htmlpress/routes/</code> es su URL: <code>pricing.html</code> es
+        <code>/pricing/</code>, <code>guide/faq.md</code> es <code>/guide/faq/</code>, y
+        un <code>index.html</code> se sirve en su carpeta.
       </li>
       <li>
-        <strong>La ruta raíz <code>/</code>.</strong> <code>index.html</code> en la raíz
-        es la página de inicio; dale su propio layout para reemplazar el marco de la
-        documentación por una portada.
+        <strong>La ruta raíz <code>/</code>.</strong>
+        <code>.htmlpress/routes/index.html</code> es la página de inicio, en lugar de un
+        artículo <code>index.html</code>; <code>index.es.html</code> a su lado es su
+        <a href="/es/customization/translations/">traducción</a>. Sin ella, la página de
+        inicio es el primer artículo.
       </li>
       <li>
-        <strong>La navegación la sigue listando.</strong> Una página con su propio layout
-        es una página como cualquier otra: aparece en la barra lateral, en
-        <code>llms.txt</code> y en el sitemap.
+        <strong>Las rutas ganan.</strong> Una ruta ocupa el lugar de un artículo servido
+        en la misma URL, y la compilación lo advierte. No añadas una ahí salvo que quieras
+        ocultar el artículo.
       </li>
       <li>
-        <strong>Nombres de layout.</strong> Un nombre consta de letras minúsculas, dígitos
-        y guiones. Una página que nombra un layout inexistente hace fallar la compilación.
+        <strong>Fuera de la navegación.</strong> A una ruta se llega por su URL y por los
+        enlaces a ella: la barra lateral, el paginador y la búsqueda la omiten. Aun así se
+        compila con su copia Markdown y aparece en el sitemap.
       </li>
       <li>
-        <strong>No encontrado.</strong> Un <code>404.html</code> en la raíz es la página
-        que muestra un hosting para una URL inexistente; se excluye de la navegación, y un
-        proyecto sin ella obtiene un "Página no encontrada" integrado.
+        <strong>Parciales.</strong> Un archivo o carpeta cuyo nombre empieza por
+        <code>-</code>, como <code>-landing/hero.html</code>, no es una ruta: guarda ahí
+        las partes de una ruta y colócalas con
+        <a href="/es/authoring/advanced-syntax/#documentos-incluidos"
+          ><code>&lt;htmlpress-include&gt;</code></a
+        >.
+      </li>
+      <li>
+        <strong>Los layouts siguen vistiendo páginas.</strong> Un artículo o una ruta con
+        <code>&lt;meta name="layout" content="wide"&gt;</code> toma
+        <code>.htmlpress/layouts/wide.html</code>, cuyo
+        <code>&lt;htmlpress-content&gt;</code> contiene la página. Un nombre son letras
+        minúsculas, dígitos y guiones; un layout que falta hace fallar la compilación.
+      </li>
+      <li>
+        <strong>No encontrada.</strong> Un <code>404.html</code> en la raíz es la página
+        que un host muestra para una URL que falta; queda fuera de la navegación, y un
+        proyecto sin uno recibe un "Página no encontrada" integrado.
       </li>
     </ul>
 
     <h2>Importar primitivas de htmlpress</h2>
     <p>
-      Un layout y una página usan los mismos componentes que usa el propio htmlpress:
-      cualquier componente <code>htmlpress-*</code>, integrado o tuyo desde
-      <code>.htmlpress/components/</code>, se renderiza igual en ambos, enlazando sus
-      estilos y scripts solo donde se usa. Da estilo a un layout con sus propios
-      componentes, como hace la página de inicio de este sitio con los suyos
-      <code>htmlpress-landing-*</code>, o con los tokens <code>--htmlpress-*</code>.
+      Una ruta usa los mismos componentes que usa htmlpress: cualquier componente
+      <code>htmlpress-*</code>, integrado o tuyo de <code>.htmlpress/components/</code>,
+      se dibuja igual, enlazando sus estilos y scripts solo donde se usa. Da estilo a una
+      ruta con sus propios componentes, como hace la página de inicio de este sitio con
+      los suyos <code>htmlpress-landing-*</code>, o con los tokens
+      <code>--htmlpress-*</code>.
     </p>
-    <pre><code class="language-html">&lt;!-- .htmlpress/layouts/landing.html --&gt;
-&lt;body&gt;
-  &lt;htmlpress-landing-hero&gt;&lt;/htmlpress-landing-hero&gt;
-  &lt;main&gt;&lt;htmlpress-content&gt;&lt;/htmlpress-content&gt;&lt;/main&gt;
-  &lt;htmlpress-footer&gt;&lt;/htmlpress-footer&gt;
-&lt;/body&gt;</code></pre>
+    <pre><code class="language-html">&lt;!-- .htmlpress/routes/index.html --&gt;
+&lt;title&gt;Home&lt;/title&gt;
+
+&lt;htmlpress-landing-hero&gt;&lt;/htmlpress-landing-hero&gt;
+&lt;main id="content"&gt;…&lt;/main&gt;
+&lt;htmlpress-footer&gt;&lt;/htmlpress-footer&gt;</code></pre>
 
     <h2>Recursos estáticos</h2>
     <p>
@@ -232,7 +236,8 @@ Anything you'd write in a normal Markdown page, here.
     <ul>
       <li>
         <a href="/es/customization/overriding-escaping/">Sobrescritura/Escape</a>:
-        reemplaza el layout del sitio o un componente en lugar de añadir uno nuevo.
+        reemplaza el layout del sitio o un componente en lugar de dibujar una página
+        propia.
       </li>
       <li>
         <a href="/es/customization/site-metadata/">Metadatos del sitio</a>: el título y el

@@ -30,7 +30,9 @@ const MAX_TEXT: usize = 1500;
 pub(crate) fn index_site(site: &Site) -> crate::Result<String> {
     let base = site.config.read_base();
     let mut pages = vec![];
-    let pages_in = |page: &&Page| page.path != NOT_FOUND_PAGE && !page.untranslated;
+    let pages_in = |page: &&Page| {
+        page.path != NOT_FOUND_PAGE && !page.untranslated && !page.is_route()
+    };
     for page in site.pages.iter().filter(pages_in) {
         let section = find_section(&site.config.sections, &page.url)
             .and_then(|index| site.config.sections.get(index))

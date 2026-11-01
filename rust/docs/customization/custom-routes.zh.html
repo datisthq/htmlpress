@@ -4,7 +4,7 @@
     <title>自定义路由</title>
     <meta
       name="description"
-      content="添加拥有独立外观框架的页面：任何 .html 文件都是一个路由，.htmlpress/layouts/ 中的布局为它提供外观。"
+      content="添加导航之外、以空白开始的页面：.htmlpress/routes/ 中的任何 .html 或 .md 文件都在其自己的 URL 上提供。"
     />
     <meta name="order" content="47" />
     <meta name="icon" content="route" />
@@ -12,75 +12,62 @@
   <body>
     <h1>自定义路由</h1>
     <p>
-      在 htmlpress 中，每个
-      <code>.html</code>
-      文件本身就是一个路由：页面会以其文件名命名的文件夹提供服务，无需注册，也无需修改配置。自定义路由增加的是独立的外观框架：位于
-      <code>.htmlpress/layouts/</code> 中的专属布局，由页面通过
-      <code>&lt;meta name="layout"&gt;</code> 选择。
+      文章是 <code>htmlpress.yaml</code> 中
+      <code>include</code> 选中的页面，它们组成导航。路由则是独立的页面：<code
+        >.htmlpress/routes/</code
+      >
+      中的任何 <code>.html</code> 或 <code>.md</code> 文件都在对应的 URL
+      上提供，无需注册，无需修改配置。
     </p>
 
     <h2>最小示例</h2>
     <htmlpress-tabs sync="syntax">
       <htmlpress-tab title="HTML">
-        <pre><code class="language-html">&lt;!-- about.html --&gt;
-&lt;title&gt;About&lt;/title&gt;
-&lt;meta name="layout" content="landing"&gt;
+        <pre><code class="language-html">&lt;!-- .htmlpress/routes/about.html --&gt;
+&lt;title&gt;关于&lt;/title&gt;
 
-&lt;h1&gt;About&lt;/h1&gt;
-&lt;p&gt;Anything you'd write in a normal HTML page, here.&lt;/p&gt;
-
-&lt;!-- .htmlpress/layouts/landing.html --&gt;
-&lt;body&gt;
-  &lt;htmlpress-header role="banner"&gt;
-    &lt;htmlpress-brand&gt;&lt;/htmlpress-brand&gt;
-    &lt;htmlpress-theme-toggle&gt;&lt;/htmlpress-theme-toggle&gt;
-  &lt;/htmlpress-header&gt;
-  &lt;main&gt;&lt;htmlpress-content&gt;&lt;/htmlpress-content&gt;&lt;/main&gt;
-&lt;/body&gt;</code></pre>
+&lt;htmlpress-header role="banner"&gt;
+  &lt;htmlpress-brand&gt;&lt;/htmlpress-brand&gt;
+  &lt;htmlpress-theme-toggle&gt;&lt;/htmlpress-theme-toggle&gt;
+&lt;/htmlpress-header&gt;
+&lt;main id="content"&gt;
+  &lt;h1&gt;关于&lt;/h1&gt;
+  &lt;p&gt;在这里写任何你会写在普通 HTML 页面中的内容。&lt;/p&gt;
+&lt;/main&gt;</code></pre>
       </htmlpress-tab>
       <htmlpress-tab title="Markdown">
-        <pre><code class="language-md">&lt;!-- about.md --&gt;
+        <pre><code class="language-md">&lt;!-- .htmlpress/routes/about.md --&gt;
 ---
-title: About
-layout: landing
+title: 关于
 ---
 
-# About
+&lt;htmlpress-header role="banner"&gt;
+  &lt;htmlpress-brand&gt;&lt;/htmlpress-brand&gt;
+  &lt;htmlpress-theme-toggle&gt;&lt;/htmlpress-theme-toggle&gt;
+&lt;/htmlpress-header&gt;
 
-Anything you'd write in a normal Markdown page, here.
+# 关于
 
-&lt;!-- .htmlpress/layouts/landing.html --&gt;
-&lt;body&gt;
-  &lt;htmlpress-header role="banner"&gt;
-    &lt;htmlpress-brand&gt;&lt;/htmlpress-brand&gt;
-    &lt;htmlpress-theme-toggle&gt;&lt;/htmlpress-theme-toggle&gt;
-  &lt;/htmlpress-header&gt;
-  &lt;main&gt;&lt;htmlpress-content&gt;&lt;/htmlpress-content&gt;&lt;/main&gt;
-&lt;/body&gt;</code></pre>
+在这里写任何你会写在普通 Markdown 页面中的内容。</code></pre>
       </htmlpress-tab>
     </htmlpress-tabs>
     <p>
-      保存后访问 <code>/about/</code>。如果没有这个
-      meta，页面会使用站点的布局，即与其他所有页面相同的外观框架：公告栏、页眉、侧边栏、目录和翻页器。
+      保存后访问 <code>/about/</code>。页眉来自路由中放置的元素：htmlpress
+      像填充布局的元素一样填充它们。
     </p>
 
     <h2>选择外观框架</h2>
     <p>
-      布局是像 <code>layout.html</code> 一样的普通
-      HTML，并且从<strong>空白</strong>开始：在你添加之前，页面周围不会绘制任何东西。按页面需要组合任意多个布局元素：
+      路由从<strong>空白</strong>开始：在你添加之前，它周围不会绘制侧边栏、页眉或页脚。按页面需要在路由中的任意位置组合任意多个布局元素：
     </p>
     <table>
       <thead>
         <tr>
-          <th>在布局中放入</th>
+          <th>在路由中放入</th>
           <th>得到</th>
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td><code>&lt;htmlpress-content&gt;</code></td>
-          <td>页面的内容</td>
-        </tr>
         <tr>
           <td><code>&lt;htmlpress-brand&gt;</code></td>
           <td>站点标题（设置了 <code>logo</code> 时位于其后），链接到首页</td>
@@ -136,7 +123,7 @@ Anything you'd write in a normal Markdown page, here.
           <td>指向 <code>#content</code> 的"跳到内容"链接，使用页面的语言</td>
         </tr>
         <tr>
-          <td>只有 <code>&lt;htmlpress-content&gt;</code></td>
+          <td>一个都不放</td>
           <td>一个完全由你掌控的空白页面</td>
         </tr>
       </tbody>
@@ -149,58 +136,77 @@ Anything you'd write in a normal Markdown page, here.
       <a href="/zh/authoring/rich-elements/#layout">Layout</a>。
     </p>
     <p>
-      Htmlpress 对每个布局都以相同方式填充其
-      <code>&lt;head&gt;</code>，因此主题、站点元数据和页面自身的 head
+      Htmlpress 像填充每个页面一样填充路由的
+      <code>&lt;head&gt;</code>，因此主题、站点元数据和路由自身的 head
       标签总是存在。落地页通常只需要页眉，就像上面的示例那样。本站的
-      <a href="https://github.com/datisthq/htmlpress/tree/main/.htmlpress">首页</a>
+      <a
+        href="https://github.com/datisthq/htmlpress/blob/main/.htmlpress/routes/index.html"
+        >首页</a
+      >
       就是这样构建的。
     </p>
 
     <h2>与站点其余部分的配合</h2>
     <ul>
       <li>
-        <strong>路径即 URL。</strong> 文件路径与 URL
-        路径一一对应，每个页面都在自己的文件夹下： <code>guide/quickstart.html</code> 就是
-        <code>/guide/quickstart/</code>，而
-        <code>index.html</code> 在其所在文件夹处提供，<code>guide/index.html</code> 对应
-        <code>/guide/</code>，每个名称都会转换为 slug。页面之间的相对链接仍然有效。
+        <strong>路径即 URL。</strong>路由在
+        <code>.htmlpress/routes/</code> 下的路径就是它的 URL：<code>pricing.html</code> 是
+        <code>/pricing/</code>，<code>guide/faq.md</code> 是
+        <code>/guide/faq/</code>，<code>index.html</code> 在其所在文件夹提供。
       </li>
       <li>
-        <strong>根路径 <code>/</code>。</strong> 根目录下的
-        <code>index.html</code>
-        是首页；为它设置专属布局，即可用一个主视觉区替换文档外观框架。
+        <strong>根路径 <code>/</code>。</strong
+        ><code>.htmlpress/routes/index.html</code> 是首页，取代
+        <code>index.html</code> 文章；旁边的 <code>index.zh.html</code> 是它的<a
+          href="/zh/customization/translations/"
+          >翻译</a
+        >。没有它时，首页是第一篇文章。
       </li>
       <li>
-        <strong>导航中仍会列出它。</strong>
-        拥有专属布局的页面和其他页面一样：它会出现在侧边栏、<code>llms.txt</code>
-        和站点地图中。
+        <strong>路由优先。</strong>路由会取代同一 URL
+        上的文章，构建时会给出警告。除非你有意隐藏那篇文章，否则不要在那里添加路由。
       </li>
       <li>
-        <strong>布局名称。</strong>
-        名称由小写字母、数字和连字符组成。页面指定了不存在的布局会导致构建失败。
+        <strong>不在导航中。</strong>路由只能通过其 URL
+        和指向它的链接访问：侧边栏、翻页器和搜索都不包含它。它仍会连同 Markdown
+        副本一起构建，并列入站点地图。
       </li>
       <li>
-        <strong>未找到。</strong> 根目录下的 <code>404.html</code> 是托管服务在 URL
-        缺失时显示的页面；它不会出现在导航中，没有该文件的项目会获得一个内置的 "Page not
-        found" 页面。
+        <strong>片段。</strong>名称以 <code>-</code> 开头的文件或文件夹，例如
+        <code>-landing/hero.html</code>，不是路由：把路由的组成部分放在那里，并用
+        <a href="/zh/authoring/advanced-syntax/#包含文档"
+          ><code>&lt;htmlpress-include&gt;</code></a
+        >
+        放置它们。
+      </li>
+      <li>
+        <strong>布局仍可装扮页面。</strong>带有
+        <code>&lt;meta name="layout" content="wide"&gt;</code> 的文章或路由使用
+        <code>.htmlpress/layouts/wide.html</code>，其中的
+        <code>&lt;htmlpress-content&gt;</code>
+        容纳页面。名称由小写字母、数字和连字符组成；缺少布局会导致构建失败。
+      </li>
+      <li>
+        <strong>未找到。</strong>根目录下的 <code>404.html</code> 是主机在 URL
+        不存在时显示的页面；它不出现在导航中，没有它的项目会得到内置的“页面未找到”。
       </li>
     </ul>
 
     <h2>引入 htmlpress 基础组件</h2>
     <p>
-      布局和页面使用的都是 htmlpress 自身所用的组件：任何
-      <code>htmlpress-*</code> 组件，无论是内置的，还是来自
+      路由使用与 htmlpress 自身相同的组件：任何
+      <code>htmlpress-*</code> 组件，无论是内置的还是你在
       <code>.htmlpress/components/</code>
-      的自定义组件，在两者中的渲染方式都相同，且只在使用处链接其样式和脚本。可以用布局自己的组件为其设置样式，就像本站首页使用其
-      <code>htmlpress-landing-*</code> 组件那样，也可以使用
-      <code>--htmlpress-*</code> 设计令牌。
+      中的，都以相同方式渲染，并只在使用的地方链接其样式和脚本。用路由自己的组件为它设置样式，就像本站首页使用它的
+      <code>htmlpress-landing-*</code> 组件那样，或者使用
+      <code>--htmlpress-*</code> 令牌。
     </p>
-    <pre><code class="language-html">&lt;!-- .htmlpress/layouts/landing.html --&gt;
-&lt;body&gt;
-  &lt;htmlpress-landing-hero&gt;&lt;/htmlpress-landing-hero&gt;
-  &lt;main&gt;&lt;htmlpress-content&gt;&lt;/htmlpress-content&gt;&lt;/main&gt;
-  &lt;htmlpress-footer&gt;&lt;/htmlpress-footer&gt;
-&lt;/body&gt;</code></pre>
+    <pre><code class="language-html">&lt;!-- .htmlpress/routes/index.html --&gt;
+&lt;title&gt;Home&lt;/title&gt;
+
+&lt;htmlpress-landing-hero&gt;&lt;/htmlpress-landing-hero&gt;
+&lt;main id="content"&gt;…&lt;/main&gt;
+&lt;htmlpress-footer&gt;&lt;/htmlpress-footer&gt;</code></pre>
 
     <h2>静态资源</h2>
     <p>
@@ -214,7 +220,7 @@ Anything you'd write in a normal Markdown page, here.
     <ul>
       <li>
         <a href="/zh/customization/overriding-escaping/">覆盖/弹出</a
-        >：替换站点的布局或组件，而不是新增一个。
+        >：替换站点的布局或组件，而不是绘制一个自己的页面。
       </li>
       <li>
         <a href="/zh/customization/site-metadata/">站点元数据</a

@@ -73,6 +73,13 @@ pub struct Page {
     pub components: BTreeSet<String>,
 }
 
+impl Page {
+    /// Whether the page is a route, read from `.htmlpress/routes/`.
+    pub fn is_route(&self) -> bool {
+        self.source.starts_with(crate::settings::ROUTES_DIR)
+    }
+}
+
 /// One stretch of a page's text in the search index: what comes before its first
 /// heading, or one `<h2>` or `<h3>` and what follows it.
 #[derive(Debug, Clone, Default, PartialEq)]

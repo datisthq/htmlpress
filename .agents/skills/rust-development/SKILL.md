@@ -128,7 +128,10 @@ run from source: `cargo run --manifest-path rust/Cargo.toml -- build docs`.
    the same way. Markup it fills in is not walked again; an element
    with nothing to show is removed. The CSS it links is for the layout's tags and
    `Page.components`. An escaped layout or component comes out as the same elements,
-   respelled, never byte for byte. With `sections`,
+   respelled, never byte for byte. A route (`Page::is_route`, a file `add_routes` read from
+   `.htmlpress/routes/`) without `<meta name="layout">` is drawn bare: its content is its
+   layout, the one page content parsed again, so `complete_page` decorates it without the
+   base and `render_page` prefixes it whole, or every URL takes the base twice. With `sections`,
    `find_section` (longest prefix) picks the open page's section, and the nav, pager,
    brand and breadcrumbs use only its pages and its `site*` overrides. Code blocks are
    highlighted in the page pipeline (`code/highlight` builds textlane's `html.highlight`

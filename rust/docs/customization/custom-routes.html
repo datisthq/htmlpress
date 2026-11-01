@@ -4,7 +4,7 @@
     <title>Custom Routes</title>
     <meta
       name="description"
-      content="Add pages with their own chrome: any .html file is a route, and a layout in .htmlpress/layouts/ dresses it."
+      content="Add pages outside the navigation, drawn bare: any .html or .md file in .htmlpress/routes/ is served at its own URL."
     />
     <meta name="order" content="47" />
     <meta name="icon" content="route" />
@@ -12,77 +12,62 @@
   <body>
     <h1>Custom Routes</h1>
     <p>
-      In htmlpress every <code>.html</code> file is already a route: a page is served at a
-      folder named after its file, no registration, no config change. What a custom route
-      adds is its own chrome: a layout of its own in <code>.htmlpress/layouts/</code>,
-      picked by the page with <code>&lt;meta name="layout"&gt;</code>.
+      Articles are the pages <code>include</code> picks in <code>htmlpress.yaml</code>;
+      they make the navigation. A route is a page of its own: any <code>.html</code> or
+      <code>.md</code> file in <code>.htmlpress/routes/</code> is served at the matching
+      URL, no registration, no config change.
     </p>
 
     <h2>Minimal example</h2>
     <htmlpress-tabs sync="syntax">
       <htmlpress-tab title="HTML">
-        <pre><code class="language-html">&lt;!-- about.html --&gt;
+        <pre><code class="language-html">&lt;!-- .htmlpress/routes/about.html --&gt;
 &lt;title&gt;About&lt;/title&gt;
-&lt;meta name="layout" content="landing"&gt;
 
-&lt;h1&gt;About&lt;/h1&gt;
-&lt;p&gt;Anything you'd write in a normal HTML page, here.&lt;/p&gt;
-
-&lt;!-- .htmlpress/layouts/landing.html --&gt;
-&lt;body&gt;
-  &lt;htmlpress-header role="banner"&gt;
-    &lt;htmlpress-brand&gt;&lt;/htmlpress-brand&gt;
-    &lt;htmlpress-theme-toggle&gt;&lt;/htmlpress-theme-toggle&gt;
-  &lt;/htmlpress-header&gt;
-  &lt;main&gt;&lt;htmlpress-content&gt;&lt;/htmlpress-content&gt;&lt;/main&gt;
-&lt;/body&gt;</code></pre>
+&lt;htmlpress-header role="banner"&gt;
+  &lt;htmlpress-brand&gt;&lt;/htmlpress-brand&gt;
+  &lt;htmlpress-theme-toggle&gt;&lt;/htmlpress-theme-toggle&gt;
+&lt;/htmlpress-header&gt;
+&lt;main id="content"&gt;
+  &lt;h1&gt;About&lt;/h1&gt;
+  &lt;p&gt;Anything you'd write in a normal HTML page, here.&lt;/p&gt;
+&lt;/main&gt;</code></pre>
       </htmlpress-tab>
       <htmlpress-tab title="Markdown">
-        <pre><code class="language-md">&lt;!-- about.md --&gt;
+        <pre><code class="language-md">&lt;!-- .htmlpress/routes/about.md --&gt;
 ---
 title: About
-layout: landing
 ---
+
+&lt;htmlpress-header role="banner"&gt;
+  &lt;htmlpress-brand&gt;&lt;/htmlpress-brand&gt;
+  &lt;htmlpress-theme-toggle&gt;&lt;/htmlpress-theme-toggle&gt;
+&lt;/htmlpress-header&gt;
 
 # About
 
-Anything you'd write in a normal Markdown page, here.
-
-&lt;!-- .htmlpress/layouts/landing.html --&gt;
-&lt;body&gt;
-  &lt;htmlpress-header role="banner"&gt;
-    &lt;htmlpress-brand&gt;&lt;/htmlpress-brand&gt;
-    &lt;htmlpress-theme-toggle&gt;&lt;/htmlpress-theme-toggle&gt;
-  &lt;/htmlpress-header&gt;
-  &lt;main&gt;&lt;htmlpress-content&gt;&lt;/htmlpress-content&gt;&lt;/main&gt;
-&lt;/body&gt;</code></pre>
+Anything you'd write in a normal Markdown page, here.</code></pre>
       </htmlpress-tab>
     </htmlpress-tabs>
     <p>
-      Save and visit <code>/about/</code>. Without the meta, the page gets the site's
-      layout, the same chrome as every other page: banner, header, sidebar, table of
-      contents and pager. With it, the page's content carries no byline either: no author,
-      date or "Updated" line under its title.
+      Save and visit <code>/about/</code>. The header comes from the elements the route
+      holds: htmlpress fills them as it fills a layout's.
     </p>
 
     <h2>Choosing the chrome</h2>
     <p>
-      A layout is plain HTML like <code>layout.html</code>, and starts
-      <strong>bare</strong>: nothing is drawn around the page until you add it. Compose as
-      many layout elements as the page needs:
+      A route starts <strong>bare</strong>: no sidebar, header or footer is drawn around
+      it until you add it. Compose as many layout elements as the page needs, anywhere in
+      the route:
     </p>
     <table>
       <thead>
         <tr>
-          <th>You put in the layout</th>
+          <th>You put in the route</th>
           <th>You get</th>
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td><code>&lt;htmlpress-content&gt;</code></td>
-          <td>the page's content</td>
-        </tr>
         <tr>
           <td><code>&lt;htmlpress-brand&gt;</code></td>
           <td>the site title, after the <code>logo</code> when set, linking home</td>
@@ -144,7 +129,7 @@ Anything you'd write in a normal Markdown page, here.
           </td>
         </tr>
         <tr>
-          <td>nothing but <code>&lt;htmlpress-content&gt;</code></td>
+          <td>none of them</td>
           <td>a blank page, all yours</td>
         </tr>
       </tbody>
@@ -157,35 +142,55 @@ Anything you'd write in a normal Markdown page, here.
       <a href="/authoring/rich-elements/#layout">Layout</a>.
     </p>
     <p>
-      Htmlpress fills the layout's <code>&lt;head&gt;</code> the same way for every
-      layout, so the theme, the site's metadata and the page's own head tags are always
-      there. A landing page usually wants just the header, as in the example above. This
-      site's
-      <a href="https://github.com/datisthq/htmlpress/tree/main/.htmlpress">home page</a>
+      Htmlpress fills a route's <code>&lt;head&gt;</code> as it does every page's, so the
+      theme, the site's metadata and the route's own head tags are always there. A landing
+      page usually wants just the header, as in the example above. This site's
+      <a
+        href="https://github.com/datisthq/htmlpress/blob/main/.htmlpress/routes/index.html"
+        >home page</a
+      >
       is built this way.
     </p>
 
     <h2>How it fits with the rest of the site</h2>
     <ul>
       <li>
-        <strong>Paths are URLs.</strong> File paths mirror URL paths, each page at its own
-        folder: <code>guide/quickstart.html</code> is <code>/guide/quickstart/</code>, and
-        <code>index.html</code> is served at its folder, <code>guide/index.html</code> at
-        <code>/guide/</code>, every name slugified. Relative links between pages keep
-        working.
+        <strong>Paths are URLs.</strong> A route's path under
+        <code>.htmlpress/routes/</code> is its URL: <code>pricing.html</code> is
+        <code>/pricing/</code>, <code>guide/faq.md</code> is <code>/guide/faq/</code>, and
+        an <code>index.html</code> is served at its folder.
       </li>
       <li>
-        <strong>The root path <code>/</code>.</strong> <code>index.html</code> at the root
-        is the home page; give it its own layout to replace the docs chrome with a hero.
+        <strong>The root path <code>/</code>.</strong>
+        <code>.htmlpress/routes/index.html</code> is the home page, in place of an
+        <code>index.html</code> article; <code>index.es.html</code> beside it is its
+        <a href="/customization/translations/">translation</a>. Without one, the home page
+        is the first article.
       </li>
       <li>
-        <strong>The navigation still lists it.</strong> A page with its own layout is a
-        page like any other: it appears in the sidebar, <code>llms.txt</code> and the
-        sitemap.
+        <strong>Routes win.</strong> A route takes the place of an article served at the
+        same URL, and the build warns about it. Don't add one there unless you mean to
+        hide the article.
       </li>
       <li>
-        <strong>Layout names.</strong> A name is lowercase letters, digits and hyphens. A
-        page naming a layout that is not there fails the build.
+        <strong>Out of the navigation.</strong> A route is reached by its URL and by the
+        links to it: the sidebar, the pager and search leave it out. It is still built
+        with its Markdown copy and listed in the sitemap.
+      </li>
+      <li>
+        <strong>Partials.</strong> A file or folder whose name starts with <code>-</code>,
+        such as <code>-landing/hero.html</code>, is no route: keep a route's parts there
+        and place them with
+        <a href="/authoring/advanced-syntax/#included-documents"
+          ><code>&lt;htmlpress-include&gt;</code></a
+        >.
+      </li>
+      <li>
+        <strong>Layouts still dress pages.</strong> An article or a route with
+        <code>&lt;meta name="layout" content="wide"&gt;</code> takes
+        <code>.htmlpress/layouts/wide.html</code>, whose
+        <code>&lt;htmlpress-content&gt;</code> holds the page. A name is lowercase
+        letters, digits and hyphens; a missing layout fails the build.
       </li>
       <li>
         <strong>Not found.</strong> A <code>404.html</code> at the root is the page a host
@@ -196,19 +201,19 @@ Anything you'd write in a normal Markdown page, here.
 
     <h2>Importing htmlpress primitives</h2>
     <p>
-      A layout and a page both use the same components htmlpress uses itself: any
+      A route uses the same components htmlpress uses itself: any
       <code>htmlpress-*</code> component, built in or your own from
-      <code>.htmlpress/components/</code>, renders the same way in either, linking its
-      styles and scripts only where used. Style a layout with its own components, as this
-      site's home page does with its <code>htmlpress-landing-*</code> ones, or with the
+      <code>.htmlpress/components/</code>, renders the same way, linking its styles and
+      scripts only where used. Style a route with its own components, as this site's home
+      page does with its <code>htmlpress-landing-*</code> ones, or with the
       <code>--htmlpress-*</code> tokens.
     </p>
-    <pre><code class="language-html">&lt;!-- .htmlpress/layouts/landing.html --&gt;
-&lt;body&gt;
-  &lt;htmlpress-landing-hero&gt;&lt;/htmlpress-landing-hero&gt;
-  &lt;main&gt;&lt;htmlpress-content&gt;&lt;/htmlpress-content&gt;&lt;/main&gt;
-  &lt;htmlpress-footer&gt;&lt;/htmlpress-footer&gt;
-&lt;/body&gt;</code></pre>
+    <pre><code class="language-html">&lt;!-- .htmlpress/routes/index.html --&gt;
+&lt;title&gt;Home&lt;/title&gt;
+
+&lt;htmlpress-landing-hero&gt;&lt;/htmlpress-landing-hero&gt;
+&lt;main id="content"&gt;…&lt;/main&gt;
+&lt;htmlpress-footer&gt;&lt;/htmlpress-footer&gt;</code></pre>
 
     <h2>Static assets</h2>
     <p>
@@ -223,7 +228,7 @@ Anything you'd write in a normal Markdown page, here.
     <ul>
       <li>
         <a href="/customization/overriding-escaping/">Overriding/Escaping</a>: replace the
-        site's layout or a component instead of adding a new one.
+        site's layout or a component instead of drawing a page of your own.
       </li>
       <li>
         <a href="/customization/site-metadata/">Site Metadata</a>: the site title and

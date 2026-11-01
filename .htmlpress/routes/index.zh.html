@@ -1,0 +1,805 @@
+<title>首页</title>
+<meta
+  name="description"
+  content="把一个装满 Markdown 和 HTML 页面的文件夹变成站点：一个布局、一套主题、实时重载，为人类与智能体打造。"
+/>
+
+<htmlpress-skip></htmlpress-skip>
+<htmlpress-landing-page>
+  <htmlpress-banner></htmlpress-banner>
+  <htmlpress-header role="banner">
+    <htmlpress-brand></htmlpress-brand>
+    <htmlpress-links></htmlpress-links>
+    <htmlpress-search></htmlpress-search>
+    <htmlpress-theme-toggle></htmlpress-theme-toggle>
+    <htmlpress-language></htmlpress-language>
+    <htmlpress-shortcuts></htmlpress-shortcuts>
+  </htmlpress-header>
+  <main id="content">
+    <htmlpress-landing-hero>
+      <htmlpress-landing-backdrop aria-hidden="true"></htmlpress-landing-backdrop>
+      <section>
+        <div>
+          <hgroup>
+            <p>开源 · MIT 许可证</p>
+            <h1>静态站点生成器，<br />为<br /><mark>智能体时代而生。</mark></h1>
+          </hgroup>
+          <p>
+            用 Markdown 或纯 HTML 编写，htmlpress 就会添加布局、主题、导航和实时重载，基于
+            Web Components 和 CSS 构建，均可弹出。适合内部文档，也适合内容发布。
+          </p>
+          <htmlpress-landing-actions>
+            <a href="/zh/introduction/"
+              ><svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" />
+                <path
+                  d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09"
+                />
+                <path
+                  d="M9 12a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.4 22.4 0 0 1-4 2z"
+                />
+                <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 .05 5 .05" /></svg
+              >快速开始</a
+            >
+            <a href="https://github.com/datisthq/htmlpress"
+              ><svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"
+                />
+                <path d="M9 18c-4.51 2-5-2-7-2" /></svg
+              >查看源码</a
+            >
+          </htmlpress-landing-actions>
+          <ul>
+            <li>
+              <samp><b>curl -fsSL</b> https://htmlpress.dev/install.sh | sh</samp>
+            </li>
+            <li>
+              <samp><b>pip install</b> htmlpress</samp>
+            </li>
+            <li>
+              <samp><b>npm install</b> gethtmlpress</samp>
+            </li>
+            <li>
+              <samp><b>cargo install</b> htmlpress</samp>
+            </li>
+          </ul>
+        </div>
+        <htmlpress-landing-carousel label="示例">
+          <section title="创作">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M13 21h8" />
+              <path
+                d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"
+              />
+            </svg>
+            <div>
+              <img
+                src="/screenshots/author.webp"
+                data-scheme="light"
+                alt="用一个 htmlpress 页面构建的电力仪表盘，包含指标卡、堆叠柱状图和环形图"
+                width="1440"
+                height="900"
+              />
+              <img
+                src="/screenshots/author-dark.webp"
+                data-scheme="dark"
+                alt="用一个 htmlpress 页面构建的电力仪表盘，包含指标卡、堆叠柱状图和环形图"
+                width="1440"
+                height="900"
+                loading="lazy"
+              />
+            </div>
+            <figure>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"
+                />
+                <path d="M14 2v5a1 1 0 0 0 1 1h5" />
+                <path d="M10 9H8" />
+                <path d="M16 13H8" />
+                <path d="M16 17H8" />
+              </svg>
+              <figcaption>
+                <strong>任意 HTML，原样保留</strong
+                >rust/docs/examples/energy-dashboard.html
+              </figcaption>
+              <htmlpress-landing-code syntax="html">
+                <pre><code class="language-html">&lt;title&gt;Electricity dashboard&lt;/title&gt;
+&lt;style&gt;.nrg { … }&lt;/style&gt;
+&lt;div class="nrg"&gt;…&lt;/div&gt;</code></pre>
+              </htmlpress-landing-code>
+            </figure>
+          </section>
+          <section title="复用">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M7 19H4.815a1.83 1.83 0 0 1-1.57-.881 1.785 1.785 0 0 1-.004-1.784L7.196 9.5"
+              />
+              <path
+                d="M11 19h8.203a1.83 1.83 0 0 0 1.556-.89 1.784 1.784 0 0 0 0-1.775l-1.226-2.12"
+              />
+              <path d="m14 16-3 3 3 3" />
+              <path d="M8.293 13.596 7.196 9.5 3.1 10.598" />
+              <path
+                d="m9.344 5.811 1.093-1.892A1.83 1.83 0 0 1 11.985 3a1.784 1.784 0 0 1 1.546.888l3.943 6.843"
+              />
+              <path d="m13.378 9.633 4.096 1.098 1.097-4.096" />
+            </svg>
+            <div>
+              <img
+                src="/screenshots/components.webp"
+                data-scheme="light"
+                alt="htmlpress 富元素页面，展示信息、成功、警告和危险提示框"
+                width="1440"
+                height="900"
+                loading="lazy"
+              />
+              <img
+                src="/screenshots/components-dark.webp"
+                data-scheme="dark"
+                alt="htmlpress 富元素页面，展示信息、成功、警告和危险提示框"
+                width="1440"
+                height="900"
+                loading="lazy"
+              />
+            </div>
+            <figure>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"
+                />
+                <path d="M14 2v5a1 1 0 0 0 1 1h5" />
+                <path d="M10 9H8" />
+                <path d="M16 13H8" />
+                <path d="M16 17H8" />
+              </svg>
+              <figcaption>
+                <strong>用纯 HTML 编写</strong>rust/docs/authoring/rich-elements.html
+              </figcaption>
+              <htmlpress-landing-code syntax="html">
+                <pre><code class="language-html">&lt;htmlpress-callout type="tip"&gt;
+  &lt;p&gt;Every page built.&lt;/p&gt;
+&lt;/htmlpress-callout&gt;</code></pre>
+              </htmlpress-landing-code>
+            </figure>
+          </section>
+          <section title="搜索">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m21 21-4.34-4.34" />
+              <circle cx="11" cy="11" r="8" />
+            </svg>
+            <div>
+              <img
+                src="/screenshots/search.webp"
+                data-scheme="light"
+                alt="htmlpress 搜索对话框，在整个文档中匹配 deploy"
+                width="1440"
+                height="900"
+                loading="lazy"
+              />
+              <img
+                src="/screenshots/search-dark.webp"
+                data-scheme="dark"
+                alt="htmlpress 搜索对话框，在整个文档中匹配 deploy"
+                width="1440"
+                height="900"
+                loading="lazy"
+              />
+            </div>
+            <figure>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"
+                />
+                <path d="M14 2v5a1 1 0 0 0 1 1h5" />
+                <path d="M10 9H8" />
+                <path d="M16 13H8" />
+                <path d="M16 17H8" />
+              </svg>
+              <figcaption>
+                <strong>构建时建立索引</strong>rust/docs/deployment/index.html
+              </figcaption>
+              <htmlpress-landing-code syntax="html">
+                <pre><code class="language-html">&lt;h1&gt;Deployment&lt;/h1&gt;
+&lt;p&gt;&lt;code&gt;htmlpress build&lt;/code&gt;
+  produces a fully static site…&lt;/p&gt;</code></pre>
+              </htmlpress-landing-code>
+            </figure>
+          </section>
+          <section title="博客">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M15 18h-5" />
+              <path d="M18 14h-8" />
+              <path
+                d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-4 0v-9a2 2 0 0 1 2-2h2"
+              />
+              <rect width="8" height="4" x="10" y="6" rx="1" />
+            </svg>
+            <div>
+              <img
+                src="/screenshots/blog.webp"
+                data-scheme="light"
+                alt="htmlpress 博客索引，包含两篇带日期的文章、作者、最近文章和标签"
+                width="1440"
+                height="900"
+                loading="lazy"
+              />
+              <img
+                src="/screenshots/blog-dark.webp"
+                data-scheme="dark"
+                alt="htmlpress 博客索引，包含两篇带日期的文章、作者、最近文章和标签"
+                width="1440"
+                height="900"
+                loading="lazy"
+              />
+            </div>
+            <figure>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"
+                />
+                <path d="M14 2v5a1 1 0 0 0 1 1h5" />
+                <path d="M10 9H8" />
+                <path d="M16 13H8" />
+                <path d="M16 17H8" />
+              </svg>
+              <figcaption>
+                <strong>日期写在自己的 head 里</strong>rust/docs/blog/hello-world.html
+              </figcaption>
+              <htmlpress-landing-code syntax="html">
+                <pre><code class="language-html">&lt;meta name="date" content="2026-04-10" /&gt;
+&lt;meta name="author" content="Htmlpress Team" /&gt;
+&lt;meta name="keywords" content="announcement" /&gt;</code></pre>
+              </htmlpress-landing-code>
+            </figure>
+          </section>
+          <section title="移动端" phones>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <rect width="14" height="20" x="5" y="2" rx="2" ry="2" />
+              <path d="M12 18h.01" />
+            </svg>
+            <div>
+              <img
+                src="/screenshots/mobile-nav.webp"
+                data-scheme="light"
+                alt="在手机上以抽屉形式打开的 htmlpress 导航"
+                width="780"
+                height="1688"
+                loading="lazy"
+              />
+              <img
+                src="/screenshots/mobile-nav-dark.webp"
+                data-scheme="dark"
+                alt="在手机上以抽屉形式打开的 htmlpress 导航"
+                width="780"
+                height="1688"
+                loading="lazy"
+              />
+            </div>
+            <div>
+              <img
+                src="/screenshots/mobile-steps.webp"
+                data-scheme="light"
+                alt="手机上的编号步骤和代码块"
+                width="780"
+                height="1688"
+                loading="lazy"
+              />
+              <img
+                src="/screenshots/mobile-steps-dark.webp"
+                data-scheme="dark"
+                alt="手机上的编号步骤和代码块"
+                width="780"
+                height="1688"
+                loading="lazy"
+              />
+            </div>
+            <div>
+              <img
+                src="/screenshots/mobile-sheet.webp"
+                data-scheme="light"
+                alt="手机上在仪表盘之上以底部面板打开的语言选择器"
+                width="780"
+                height="1688"
+                loading="lazy"
+              />
+              <img
+                src="/screenshots/mobile-sheet-dark.webp"
+                data-scheme="dark"
+                alt="手机上在仪表盘之上以底部面板打开的语言选择器"
+                width="780"
+                height="1688"
+                loading="lazy"
+              />
+            </div>
+            <figure>
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"
+                />
+                <path d="M14 2v5a1 1 0 0 0 1 1h5" />
+                <path d="M10 9H8" />
+                <path d="M16 13H8" />
+                <path d="M16 17H8" />
+              </svg>
+              <figcaption>
+                <strong>用纯 HTML 编写</strong>rust/docs/authoring/rich-elements.html
+              </figcaption>
+              <htmlpress-landing-code syntax="html">
+                <pre><code class="language-html">&lt;h3 data-step&gt;Install&lt;/h3&gt;</code></pre>
+              </htmlpress-landing-code>
+            </figure>
+          </section>
+        </htmlpress-landing-carousel>
+      </section>
+    </htmlpress-landing-hero>
+
+    <htmlpress-landing-section>
+      <section>
+        <header>
+          <h2>绝不碍事</h2>
+          <p>
+            没有框架，没有构建配置，没有强制的目录结构。一个装满 Markdown 或 HTML
+            的文件夹本身就是一个项目。
+          </p>
+        </header>
+        <div>
+          <htmlpress-landing-points
+            ><ul>
+              <li>
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    d="M20 10a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1h-2.5a1 1 0 0 1-.8-.4l-.9-1.2A1 1 0 0 0 15 3h-2a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1Z"
+                  />
+                  <path
+                    d="M20 21a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1h-2.9a1 1 0 0 1-.88-.55l-.42-.85a1 1 0 0 0-.92-.6H13a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1Z"
+                  />
+                  <path d="M3 5a2 2 0 0 0 2 2h3" />
+                  <path d="M3 3v13a2 2 0 0 0 2 2h3" />
+                </svg>
+                <h3>任意文件结构</h3>
+                <p>
+                  页面就是任意 <code>.md</code> 或 <code>.html</code> 文件：带 frontmatter
+                  的 Markdown，或从裸片段到完整文档的 HTML。可以平铺，也可以嵌套：带有
+                  <code>index.html</code> 的文件夹会成为导航分组，其他所有文件则原样复制。
+                </p>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    d="M15.39 4.39a1 1 0 0 0 1.68-.474 2.5 2.5 0 1 1 3.014 3.015 1 1 0 0 0-.474 1.68l1.683 1.682a2.414 2.414 0 0 1 0 3.414L19.61 15.39a1 1 0 0 1-1.68-.474 2.5 2.5 0 1 0-3.014 3.015 1 1 0 0 1 .474 1.68l-1.683 1.682a2.414 2.414 0 0 1-3.414 0L8.61 19.61a1 1 0 0 0-1.68.474 2.5 2.5 0 1 1-3.014-3.015 1 1 0 0 0 .474-1.68l-1.683-1.682a2.414 2.414 0 0 1 0-3.414L4.39 8.61a1 1 0 0 1 1.68.474 2.5 2.5 0 1 0 3.014-3.015 1 1 0 0 1-.474-1.68l1.683-1.682a2.414 2.414 0 0 1 3.414 0z"
+                  />
+                </svg>
+                <h3>Web Components，light DOM</h3>
+                <p>
+                  每个组件都是标准的自定义元素：没有框架，没有 shadow DOM。你的 CSS
+                  和主题令牌可以直达内部，文本留在页面中，便于搜索和智能体读取。在
+                  <code>.htmlpress/components/</code> 中放一个文件，就能添加你自己的标签。
+                </p>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="m14.622 17.897-10.68-2.913" />
+                  <path
+                    d="M18.376 2.622a1 1 0 1 1 3.002 3.002L17.36 9.643a.5.5 0 0 0 0 .707l.944.944a2.41 2.41 0 0 1 0 3.408l-.944.944a.5.5 0 0 1-.707 0L8.354 7.348a.5.5 0 0 1 0-.707l.944-.944a2.41 2.41 0 0 1 3.408 0l.944.944a.5.5 0 0 0 .707 0z"
+                  />
+                  <path
+                    d="M9 8c-1.804 2.71-3.97 3.46-6.583 3.948a.507.507 0 0 0-.302.819l7.32 8.883a1 1 0 0 0 1.185.204C12.735 20.405 16 16.792 16 15"
+                  />
+                </svg>
+                <h3>一切皆可弹出</h3>
+                <p>
+                  在
+                  <code>.htmlpress/</code>
+                  中替换布局、主题或任意内置组件，或者把自己的页面绘制成<a
+                    href="/zh/customization/custom-routes/"
+                    >自定义路由</a
+                  >。这个落地页就是如此。
+                </p>
+              </li>
+            </ul></htmlpress-landing-points
+          >
+          <htmlpress-landing-window label="your-project"
+            ><htmlpress-landing-code syntax="tree">
+              <pre><code>.htmlpress/
+├─ routes/
+│  └─ index.html      ← this page, drawn bare
+└─ components/
+   └─ site-hero.css   ← your own component
+guides/
+├─ setup.html
+└─ faq.html
+images/               ← copied as they are
+htmlpress.yaml</code></pre>
+            </htmlpress-landing-code></htmlpress-landing-window
+          >
+        </div>
+      </section>
+    </htmlpress-landing-section>
+
+    <htmlpress-landing-section>
+      <section>
+        <header>
+          <h2>默认即精美</h2>
+          <p>精致的主题、文档所需的组件以及合理的默认设置。只需自定义你想改的部分。</p>
+        </header>
+        <htmlpress-landing-features
+          ><htmlpress-cards>
+            <htmlpress-card title="基于元素的样式"
+              ><svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"
+                />
+                <path d="M14 2v5a1 1 0 0 0 1 1h5" />
+                <path d="M10 12.5 8 15l2 2.5" />
+                <path d="m14 12.5 2 2.5-2 2.5" />
+              </svg>
+              <p>
+                标题、列表、表格、代码、<code>&lt;details&gt;</code>、<code
+                  >&lt;figure&gt;</code
+                >
+                和 <code>&lt;kbd&gt;</code> 无需任何类名即可正确呈现。
+              </p></htmlpress-card
+            >
+            <htmlpress-card title="弥补 HTML 空缺的 Web Components"
+              ><svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M10 22V7a1 1 0 0 0-1-1H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5a1 1 0 0 0-1-1H2"
+                />
+                <rect x="14" y="2" width="8" height="8" rx="1" />
+              </svg>
+              <p>
+                提示框、标签页、步骤、卡片、文件树、徽章、图标、可排序表格、Mermaid
+                图表和可缩放图片，全部以 light DOM 自定义元素的形式提供。
+              </p></htmlpress-card
+            >
+            <htmlpress-card title="代码高亮"
+              ><svg viewBox="0 0 24 24" aria-hidden="true">
+                <polyline points="16 18 22 12 16 6" />
+                <polyline points="8 6 2 12 8 18" />
+              </svg>
+              <p>
+                构建时高亮 220
+                多种语言，支持标题、标签页、差异、聚焦和行标记，并提供浅色和深色主题。
+              </p></htmlpress-card
+            >
+            <htmlpress-card title="源自文件夹的导航"
+              ><svg viewBox="0 0 24 24" aria-hidden="true">
+                <rect width="7" height="18" x="3" y="3" rx="1" />
+                <rect width="7" height="7" x="14" y="3" rx="1" />
+                <rect width="7" height="7" x="14" y="14" rx="1" />
+              </svg>
+              <p>
+                按文件夹分组，按 <code>&lt;meta name="order"&gt;</code>
+                排序，并带有目录以及上一页和下一页链接。
+              </p></htmlpress-card
+            >
+            <htmlpress-card title="内置搜索"
+              ><svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m21 21-4.34-4.34" />
+                <circle cx="11" cy="11" r="8" />
+              </svg>
+              <p>
+                构建时生成全文索引，按 <kbd>S</kbd> 打开；结果所打开的页面会高亮匹配内容。
+              </p></htmlpress-card
+            >
+            <htmlpress-card title="文档、博客和更新日志"
+              ><svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 11a9 9 0 0 1 9 9" />
+                <path d="M4 4a16 16 0 0 1 16 16" />
+                <circle cx="5" cy="19" r="1" />
+              </svg>
+              <p>
+                将站点拆分为多个分区，各有自己的标签页和侧边栏：带 RSS
+                订阅的日期文章，或从
+                <code>CHANGELOG.md</code> 生成的每版本一页。
+              </p></htmlpress-card
+            >
+            <htmlpress-card title="手机上同样自如"
+              ><svg viewBox="0 0 24 24" aria-hidden="true">
+                <rect width="14" height="20" x="5" y="2" rx="2" ry="2" />
+                <path d="M12 18h.01" />
+              </svg>
+              <p>
+                导航变为抽屉，选择器变为底部面板，没有任何内容会横向滚动。
+              </p></htmlpress-card
+            >
+            <htmlpress-card title="深色模式和主题令牌"
+              ><svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"
+                />
+              </svg>
+              <p>
+                深色主题可跟随系统或通过开关切换，每种颜色、字体和宽度都是一个
+                <code>--htmlpress-*</code> 令牌。
+              </p></htmlpress-card
+            >
+            <htmlpress-card title="多语言"
+              ><svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m5 8 6 6" />
+                <path d="m4 14 6-6 2-3" />
+                <path d="M2 5h12" />
+                <path d="M7 2h1" />
+                <path d="m22 22-5-10-5 10" />
+                <path d="M14 18h6" />
+              </svg>
+              <p>
+                在原页面旁以
+                <code>page.es.html</code>
+                翻译：每种语言都有自己的前缀、导航、搜索和界面文案。
+              </p></htmlpress-card
+            >
+            <htmlpress-card title="实时重载"
+              ><svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+                <path d="M21 3v5h-5" />
+                <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+                <path d="M8 16H3v5" />
+              </svg>
+              <p>
+                <code>htmlpress start</code>
+                在每次保存时重新构建并刷新浏览器，弹出文件和组件也不例外。
+              </p></htmlpress-card
+            >
+            <htmlpress-card title="静态输出"
+              ><svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"
+                />
+              </svg>
+              <p>
+                <code>htmlpress build</code> 将纯文件写入
+                <code>.htmlpress/build</code>，带有规范链接，可部署到任何静态托管平台。
+              </p></htmlpress-card
+            >
+            <htmlpress-card title="一个二进制文件，三个渠道"
+              ><svg viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"
+                />
+                <path d="M12 22V12" />
+                <polyline points="3.29 7 12 12 20.71 7" />
+                <path d="m7.5 4.27 9 5.15" />
+              </svg>
+              <p>
+                单个 Rust 可执行文件，可通过 npm、PyPI 或 crates.io
+                安装。无需安装其他任何东西。
+              </p></htmlpress-card
+            >
+          </htmlpress-cards></htmlpress-landing-features
+        >
+      </section>
+    </htmlpress-landing-section>
+
+    <htmlpress-landing-section tone="tint">
+      <section>
+        <header>
+          <htmlpress-landing-switch label="页面格式"
+            ><button
+              type="button"
+              id="quickstart-html-tab"
+              aria-controls="quickstart-html"
+            >
+              HTML</button
+            ><button type="button" id="quickstart-md-tab" aria-controls="quickstart-md">
+              Markdown
+            </button></htmlpress-landing-switch
+          >
+          <h2>编写 HTML 或 Markdown，发布网站。</h2>
+          <p>你的页面保持原样，其余的交给 Htmlpress。</p>
+        </header>
+        <div>
+          <htmlpress-landing-window id="quickstart-html" label="quickstart.html"
+            ><htmlpress-landing-code syntax="html">
+              <pre><code class="language-html">&lt;title&gt;Quickstart&lt;/title&gt;
+&lt;meta name="order" content="1" /&gt;
+
+&lt;h1&gt;Quickstart&lt;/h1&gt;
+&lt;p&gt;Install the binary:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;npm install -g gethtmlpress&lt;/code&gt;&lt;/pre&gt;
+
+&lt;htmlpress-callout title="Tip"&gt;
+&lt;p&gt;Run &lt;code&gt;htmlpress start&lt;/code&gt; and open the browser.&lt;/p&gt;
+&lt;/htmlpress-callout&gt;
+
+&lt;h2&gt;Features&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Fast&lt;/strong&gt; rebuilds on save&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Components&lt;/strong&gt; when HTML has none&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;Beautiful&lt;/em&gt; out of the box&lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+            </htmlpress-landing-code></htmlpress-landing-window
+          >
+          <htmlpress-landing-window id="quickstart-md" label="quickstart.md" hidden
+            ><htmlpress-landing-code syntax="md">
+              <pre><code class="language-md">---
+title: Quickstart
+order: 1
+---
+
+# Quickstart
+
+Install the binary:
+
+```sh
+npm install -g gethtmlpress
+```
+
+:::callout{label="Tip"}
+Run `htmlpress start` and open the browser.
+:::
+
+## Features
+
+- **Fast** rebuilds on save
+- **Components** when HTML has none
+- *Beautiful* out of the box</code></pre>
+            </htmlpress-landing-code></htmlpress-landing-window
+          >
+          <htmlpress-landing-window label="渲染结果">
+            <article>
+              <h3>快速开始</h3>
+              <p>安装二进制文件：</p>
+              <pre><code>npm install -g gethtmlpress</code></pre>
+              <htmlpress-callout title="提示"
+                ><p>
+                  运行 <code>htmlpress start</code> 并打开浏览器。
+                </p></htmlpress-callout
+              >
+              <h4>功能</h4>
+              <ul>
+                <li>保存时<strong>快速</strong>重新构建</li>
+                <li>HTML 没有的地方用<strong>组件</strong>补上</li>
+                <li>开箱即<em>美观</em></li>
+              </ul>
+            </article>
+          </htmlpress-landing-window>
+        </div>
+      </section>
+    </htmlpress-landing-section>
+
+    <htmlpress-landing-section>
+      <section>
+        <header>
+          <h2>为编码智能体打造</h2>
+          <p>
+            智能体对 Markdown 和 HTML 的了解远胜于任何模板语言。Htmlpress
+            让它们的工作保持简单，并让每个输出都可被机器读取。
+          </p>
+        </header>
+        <div>
+          <htmlpress-landing-window label="终端"
+            ><htmlpress-landing-code syntax="shell">
+              <pre><code class="language-sh">$ htmlpress build docs --json
+{
+  "output": "docs/.htmlpress/build",
+  "pages": 8,
+  "files": 12
+}
+
+$ htmlpress build --json '{"root":"docs","out":"dist"}'
+
+$ htmlpress --llms</code></pre>
+            </htmlpress-landing-code></htmlpress-landing-window
+          >
+          <htmlpress-landing-points
+            ><ul>
+              <li>
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"
+                  />
+                  <path d="M14 2v5a1 1 0 0 0 1 1h5" />
+                  <path d="M10 9H8" />
+                  <path d="M16 13H8" />
+                  <path d="M16 17H8" />
+                </svg>
+                <h3>输入 Markdown 或纯 HTML</h3>
+                <p>
+                  没有框架，没有需要学习的语法，没有工具类：页面提供的选择越少，所有页面看起来就越像同一个站点。
+                </p>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5c0 1.1.9 2 2 2h1"
+                  />
+                  <path
+                    d="M16 21h1a2 2 0 0 0 2-2v-5c0-1.1.9-2 2-2a2 2 0 0 1-2-2V5a2 2 0 0 0-2-2h-1"
+                  />
+                </svg>
+                <h3>每条命令都支持 JSON</h3>
+                <p>
+                  <code>--json</code> 将结果输出到 stdout，并以 JSON
+                  格式接收输入；日志和错误输出到 stderr。
+                </p>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 19h8" />
+                  <path d="m4 17 6-6-6-6" />
+                </svg>
+                <h3>一次读懂 CLI</h3>
+                <p>
+                  <code>htmlpress --llms</code> 以 MCP
+                  风格的工具列出每条命令的输入和输出模式。
+                </p>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"
+                  />
+                  <path d="M14 2v5a1 1 0 0 0 1 1h5" />
+                  <path d="M10 12.5 8 15l2 2.5" />
+                  <path d="m14 12.5 2 2.5-2 2.5" />
+                </svg>
+                <h3>每个页面的 Markdown 副本</h3>
+                <p>
+                  每个页面旁都有一份 <code>index.md</code>，并在页面 head
+                  中链接，智能体无需解析标记即可读取内容。
+                </p>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M3 5h.01" />
+                  <path d="M3 12h.01" />
+                  <path d="M3 19h.01" />
+                  <path d="M8 5h13" />
+                  <path d="M8 12h13" />
+                  <path d="M8 19h13" />
+                </svg>
+                <h3>开箱即用的 llms.txt</h3>
+                <p>
+                  一个列出所有副本的 <code>llms.txt</code> 索引，按导航分组，并通过首页的
+                  <code>Link</code> 头公布。
+                </p>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 8V4H8" />
+                  <rect width="16" height="12" x="4" y="8" rx="2" />
+                  <path d="M2 14h2" />
+                  <path d="M20 14h2" />
+                  <path d="M15 13v2" />
+                  <path d="M9 13v2" />
+                </svg>
+                <h3>为你的智能体准备的技能</h3>
+                <p>
+                  五个技能教会 Claude Code、Cursor 或 Codex
+                  <a href="/zh/agent-skills/">编写、配置、重塑样式并部署</a>站点。
+                </p>
+              </li>
+            </ul></htmlpress-landing-points
+          >
+        </div>
+        <p><a href="/zh/agent-skills/">智能体如何使用 htmlpress →</a></p>
+      </section>
+    </htmlpress-landing-section>
+
+    <htmlpress-landing-cta>
+      <section>
+        <h2>开始写作。<em>其余的交给 htmlpress。</em></h2>
+        <p>
+          把 htmlpress 指向一个 Markdown 或 HTML
+          文件夹，弹出你想掌控的部分，然后部署。全部设置就是这样。
+        </p>
+        <htmlpress-landing-actions align="center">
+          <a href="/zh/introduction/"
+            ><svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 7v14" />
+              <path
+                d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"
+              /></svg
+            >阅读文档</a
+          >
+          <a href="/zh/introduction/">安装</a>
+        </htmlpress-landing-actions>
+      </section>
+    </htmlpress-landing-cta>
+  </main>
+  <htmlpress-landing-footer></htmlpress-landing-footer>
+</htmlpress-landing-page>
+<htmlpress-back-to-top></htmlpress-back-to-top>

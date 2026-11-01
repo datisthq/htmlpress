@@ -23,7 +23,7 @@ use crate::actions::page::read::{
 use crate::actions::page::rebase::{list_links, read_root, rebase_image};
 use crate::actions::page::render::render_page;
 use crate::actions::path::contain::{contain_path, read_contained};
-use crate::actions::path::select::{read_bases, select_paths};
+use crate::actions::path::select::{Selection, is_page, read_bases, select_paths};
 use crate::actions::pipeline::create::create_pipeline;
 use crate::actions::section::generate::generate_pages;
 use crate::actions::site::localize::localize_site;
@@ -36,7 +36,7 @@ use crate::models::page::Page;
 use crate::models::pipeline::{MarkdownOptions, Pipeline, PipelineOptions};
 use crate::models::site::Site;
 use crate::models::source::{Draft, Parsed, Sources};
-use crate::settings::{ASSETS, CONFIG_FILE, NOT_FOUND_PAGE, PROJECT_DIR};
+use crate::settings::{ASSETS, CONFIG_FILE, NOT_FOUND_PAGE, PROJECT_DIR, ROUTES_DIR};
 
 /// Read a project: its config, its pages and the other files under its include bases.
 /// Dot-folders and dot-files (`.htmlpress/`, `.git/`) and `node_modules/` are skipped.
@@ -89,6 +89,7 @@ pub(crate) fn read_site(
         }
     }
     let mut selection = selection;
+    add_routes(root, &canonical, &mut selection)?;
     let assets = read_assets(root)?;
     let markdown = MarkdownOptions {
         components: list_components(&assets),
@@ -205,6 +206,10 @@ pub(crate) fn read_site(
             detect_language(page, &languages, suffixes)
                 .map_err(Error::page(&page.source))?;
         }
+        // A route is drawn bare and reached by its URL alone, as in Livemark
+        for (_, page) in facts.iter_mut().filter(|(_, page)| page.is_route()) {
+            page.sidebar = false;
+        }
         check_urls(&facts)?;
         // Before the generated pages join: a changelog's versions share its source file,
         // whose last change says nothing about when one version was written
@@ -222,7 +227,8 @@ pub(crate) fn read_site(
                 next += 1;
             }
         }
-        let bases = read_bases(&config);
+        let mut bases = read_bases(&config);
+        bases.push(ROUTES_DIR.to_owned());
         let read: Vec<Page> = facts.iter().map(|(_, page)| page.clone()).collect();
         let links = list_links(&read, &bases);
         for (_, page) in &mut facts {
@@ -539,9 +545,11 @@ fn complete_page<'a>(
     let fragments: Vec<(String, &str)> = (finish.fragments.iter())
         .map(|(tag, html)| (tag.clone(), html.as_str()))
         .collect();
+    // A bare route's content is its layout, which `render_page` prefixes whole
+    let bare = page.is_route() && page.layout.is_none();
     let decoration = Decoration {
         language,
-        base: &finish.base,
+        base: if bare { "" } else { &finish.base },
         fragments: &fragments,
     };
     finish_page(&mut page, tree, pipeline, Some(&decoration), alloc)?;
@@ -842,6 +850,38 @@ fn list_files(root: &Path, prefix: &str, paths: &mut Vec<String>) -> crate::Resu
             list_files(root, &format!("{path}/"), paths)?;
         } else if kind.is_file() {
             paths.push(path);
+        }
+    }
+    Ok(())
+}
+
+// Each `.html` and `.md` file under the routes folder, none in or named with a leading
+// `-`, is a page at its own path, in place of any article served there
+fn add_routes(
+    root: &Path,
+    canonical: &Path,
+    selection: &mut Selection,
+) -> crate::Result<()> {
+    let inside = (root.join(ROUTES_DIR).canonicalize())
+        .is_ok_and(|folder| folder.is_dir() && folder.starts_with(canonical));
+    if !inside {
+        return Ok(());
+    }
+    let mut sources = vec![];
+    list_files(root, ROUTES_DIR, &mut sources)?;
+    sources.sort();
+    for source in sources {
+        let path = &source[ROUTES_DIR.len()..];
+        if !is_page(path) || path.split('/').any(|part| part.starts_with('-')) {
+            continue;
+        }
+        let served = match path.strip_suffix(".md") {
+            Some(stem) => format!("{stem}.html"),
+            None => path.to_owned(),
+        };
+        selection.files.remove(&served);
+        if let Some(article) = selection.pages.insert(served.clone(), source.clone()) {
+            eprintln!("warning: {source} takes the place of {article} at /{served}");
         }
     }
     Ok(())

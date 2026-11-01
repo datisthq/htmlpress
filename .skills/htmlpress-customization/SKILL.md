@@ -1,6 +1,6 @@
 ---
 name: htmlpress-customization
-description: Use when changing an htmlpress site's look or chrome — overriding --htmlpress-* tokens, escaping the layout, styles or a component into .htmlpress/ with `htmlpress escape`, adding layouts and project components.
+description: Use when changing an htmlpress site's look or chrome — overriding --htmlpress-* tokens, escaping the layout, styles or a component into .htmlpress/ with `htmlpress escape`, adding routes, layouts and project components.
 ---
 
 # Htmlpress Customization
@@ -15,8 +15,8 @@ Invoke when the user asks to:
 - Rebrand: colours, fonts, widths, radius.
 - Change the header, sidebar, footer or another part of the chrome.
 - Restyle a component, or add a block the built-in components do not have.
-- Give some pages a different layout, such as a landing page without the sidebar
-  (`htmlpress-landing` covers what goes on one).
+- Add a page drawn its own way, such as a landing page without the sidebar: a route
+  (`htmlpress-landing` covers what goes on one), or a layout some pages share.
 
 Do not escape for content: a page's own needs are semantic HTML and components
 (`htmlpress-authoring`).
@@ -55,6 +55,7 @@ upgrade it misses the new defaults: escape only what you change.
 | ------------------------------------------------ | ----------------------------------------------------------------- |
 | `layout.html`                                    | the page around the content                                       |
 | `layouts/<name>.html`                            | a layout of your own, picked by `<meta name="layout">`            |
+| `routes/**/*.{html,md}`                          | nothing: a page of its own at that path, drawn bare (below)       |
 | `styles/tokens.css`, `layout.css`, `content.css` | the global theme: tokens, page globals, content elements          |
 | `favicon.svg`                                    | the icon linked when the config sets neither `favicon` nor `logo` |
 | `components/<name>/<name>.css`, `.js`            | one component, `<htmlpress-<name>>` without its prefix            |
@@ -85,8 +86,30 @@ crossfades with the content.
 The frame is elements too, never classes: `<htmlpress-shell>`, `-sidebar`, `-main`, `-header`,
 `-page`, `-aside`, `-skip`, each a component whose `.css` can be escaped.
 
-A page with `<meta name="layout" content="landing">` takes `layouts/landing.html` instead. It
-starts bare: only the layout elements you put in it are drawn. A missing layout fails the build.
+A page with `<meta name="layout" content="wide">` takes `layouts/wide.html` instead, its
+`<htmlpress-content>` holding the page. It starts bare: only the layout elements you put in it
+are drawn. A missing layout fails the build.
+
+## Routes
+
+Articles are the pages `include` picks; routes are pages of their own, as in Livemark. Each
+`.html` or `.md` file in `.htmlpress/routes/` is served at its path there (`pricing.html` at
+`/pricing/`, `index.html` at `/`, `index.es.html` its translation), outside `include` and
+`exclude`:
+
+```html
+<!-- .htmlpress/routes/pricing.html -->
+<title>Pricing</title>
+<htmlpress-header role="banner"><htmlpress-brand></htmlpress-brand></htmlpress-header>
+<main id="content"><h1>Pricing</h1></main>
+```
+
+- A route is drawn **bare**: no layout around it, only the layout elements it holds, filled
+  as in a layout. `<meta name="layout">` dresses it in a layout instead
+- It wins over an article served at the same URL, with a warning, so `routes/index.html`
+  replaces the home page; the sidebar, pager and search leave it out, the sitemap keeps it
+- A file or folder named with a leading `-` (`-landing/hero.html`) is no route: a partial the
+  route places with `<htmlpress-include>`
 
 ## Project components
 
@@ -142,4 +165,4 @@ at once.
 ## References
 
 - Overriding: https://htmlpress.dev/customization/overriding-escaping/
-- Layouts: https://htmlpress.dev/customization/custom-routes/
+- Routes and layouts: https://htmlpress.dev/customization/custom-routes/

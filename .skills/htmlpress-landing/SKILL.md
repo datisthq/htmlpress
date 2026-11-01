@@ -1,11 +1,11 @@
 ---
 name: htmlpress-landing
-description: Use when designing or rewriting an htmlpress project's landing page — a layout of its own, hero, sections, screenshots and calls to action as project components, taking htmlpress.dev's own landing as the reference.
+description: Use when designing or rewriting an htmlpress project's landing page at .htmlpress/routes/index.html — a bare route, hero, sections, screenshots and calls to action as project components, taking htmlpress.dev's own landing as the reference.
 ---
 
 # Htmlpress Landing
 
-Guidance for designing the page at `/` of an htmlpress project. The mechanics of a layout and a
+Guidance for designing the page at `/` of an htmlpress project. The mechanics of a route and a
 project component are in `htmlpress-customization`; this skill is about what goes on the page.
 
 ## When to use this skill
@@ -18,12 +18,12 @@ Invoke when the user asks to:
 
 ## Start from the reference
 
-htmlpress.dev's landing is itself an htmlpress page with its own layout and a set of project
+htmlpress.dev's landing is itself an htmlpress route, drawn bare, and a set of project
 components. Read it before writing anything, see it live, and borrow its structure:
 
 - Live: https://htmlpress.dev/
-- Page: https://github.com/datisthq/htmlpress/blob/main/rust/docs/index.html
-- Layout and components: https://github.com/datisthq/htmlpress/tree/main/.htmlpress
+- Route: https://github.com/datisthq/htmlpress/blob/main/.htmlpress/routes/index.html
+- Components: https://github.com/datisthq/htmlpress/tree/main/.htmlpress/components
 
 None of it is in the packages, so fetch it from GitHub. Take the patterns, not the content:
 rewrite every heading and line of copy for the project, and use the project's own screenshots
@@ -31,40 +31,35 @@ and links. Shipping htmlpress' copy, screenshots or Datist credit on someone els
 
 ## Skeleton
 
+A route starts bare: it draws only the layout elements it holds, so the header, banner and
+footer are the route's own markup.
+
 ```html
-<!-- index.html -->
+<!-- .htmlpress/routes/index.html -->
 <title>Home</title>
 <meta name="description" content="What the project does, in one line." />
-<meta name="layout" content="landing" />
-<meta name="sidebar" content="false" />
 
-<htmlpress-landing-hero>…</htmlpress-landing-hero>
-<htmlpress-landing-section>…</htmlpress-landing-section>
-<htmlpress-landing-cta>…</htmlpress-landing-cta>
+<htmlpress-skip></htmlpress-skip>
+<htmlpress-landing-page>
+  <htmlpress-banner></htmlpress-banner>
+  <htmlpress-header role="banner">
+    <htmlpress-brand></htmlpress-brand>
+    <htmlpress-links></htmlpress-links>
+    <htmlpress-search></htmlpress-search>
+    <htmlpress-theme-toggle></htmlpress-theme-toggle>
+  </htmlpress-header>
+  <main id="content">
+    <htmlpress-landing-hero>…</htmlpress-landing-hero>
+    <htmlpress-landing-section>…</htmlpress-landing-section>
+    <htmlpress-landing-cta>…</htmlpress-landing-cta>
+  </main>
+  <htmlpress-landing-footer></htmlpress-landing-footer>
+</htmlpress-landing-page>
+<htmlpress-back-to-top></htmlpress-back-to-top>
 ```
 
-```html
-<!-- .htmlpress/layouts/landing.html -->
-<!doctype html>
-<html lang="en">
-  <head></head>
-  <body>
-    <htmlpress-skip><a href="#content">Skip to content</a></htmlpress-skip>
-    <htmlpress-landing-page>
-      <htmlpress-banner></htmlpress-banner>
-      <htmlpress-header role="banner">
-        <htmlpress-brand></htmlpress-brand>
-        <htmlpress-links></htmlpress-links>
-        <htmlpress-search></htmlpress-search>
-        <htmlpress-theme-toggle></htmlpress-theme-toggle>
-      </htmlpress-header>
-      <main id="content"><htmlpress-content></htmlpress-content></main>
-      <htmlpress-landing-footer></htmlpress-landing-footer>
-    </htmlpress-landing-page>
-    <htmlpress-back-to-top></htmlpress-back-to-top>
-  </body>
-</html>
-```
+A translation sits beside it as `index.<code>.html`. Long sections can live in
+`.htmlpress/routes/-landing/`, which is no route, placed with `<htmlpress-include>`.
 
 The reference runs hero → a differentiator ("Stays out of your way") → a feature grid → an
 audience section (agents) → a final call to action → a credit footer. Pick the sections the
@@ -99,8 +94,8 @@ project has something real to say in; three strong ones beat seven thin ones.
 - Links are root-relative (`/introduction/`, or the file, `/introduction.html`); `base` is added
   at build time.
 - The landing has exactly one `<h1>`, in the hero; every section below starts at `<h2>`.
-- Keep the landing out of the sidebar (`sidebar` false) but give it a real `<title>` and
-  `description`: it is the site's social preview.
+- A route is out of the sidebar, the pager and search already, but give it a real `<title>`
+  and `description`: it is the site's social preview.
 - Every component must read well with its JS off: the slides are already in the HTML.
 - Check phone width first; a two-column section must fall back to one.
 
@@ -112,5 +107,5 @@ be reachable by keyboard.
 
 ## References
 
-- Layouts: https://htmlpress.dev/customization/custom-routes/
+- Routes: https://htmlpress.dev/customization/custom-routes/
 - Overriding: https://htmlpress.dev/customization/overriding-escaping/

@@ -38,15 +38,17 @@ pub(crate) fn render_page(
     reload: bool,
 ) -> crate::Result<String> {
     let fail = |error: String| Error::page(&page.source)(error);
-    let layout = match &page.layout {
-        Some(name) => format!("layouts/{name}.html"),
-        None => "layout.html".to_owned(),
+    // A route without a layout of its own is drawn bare: its content is its layout, and
+    // the only page content parsed twice, since its layout elements must be filled
+    let bare = page.is_route() && page.layout.is_none();
+    let layout = match (&page.layout, bare) {
+        (_, true) => format!("{BARE_START}{}{BARE_END}", page.content),
+        (Some(name), false) => read_layout(site, &format!("layouts/{name}.html"))
+            .ok_or_else(|| fail(format!("no layout layouts/{name}.html")))?,
+        (None, false) => read_layout(site, "layout.html")
+            .ok_or_else(|| fail("no layout layout.html".to_owned()))?,
     };
-    let layout = site
-        .assets
-        .get(&layout)
-        .ok_or_else(|| fail(format!("no layout {layout}")))?
-        .as_str();
+    let layout = layout.as_str();
     let fragments = list_fragments(&site.assets);
     let language = site.read_language(&page.language);
     let alloc = Allocator::new();
@@ -102,6 +104,7 @@ pub(crate) fn render_page(
                 element.children.extend(raw(&page.head));
                 return Ok(Step::Skip);
             }
+            "htmlpress-content" if bare => return Ok(Step::Remove),
             "htmlpress-content" => return Ok(Step::Replace(raw(&page.content))),
             "htmlpress-brand" => Some(create_brand(site, page)),
             "htmlpress-skip" => {
@@ -148,6 +151,13 @@ pub(crate) fn render_page(
         prefix_urls(&mut root.children, &base, &alloc);
     }
     write_nodes(root.children).map_err(fail)
+}
+
+const BARE_START: &str = "<!doctype html><html><head></head><body>";
+const BARE_END: &str = "</body></html>";
+
+fn read_layout(site: &Site, path: &str) -> Option<String> {
+    site.assets.get(path).cloned()
 }
 
 fn create_head(

@@ -15,6 +15,7 @@ fn create_project() -> Result<tempfile::TempDir, String> {
     write("project/node_modules/x/README.md", b"x")?;
     write("project/.htmlpress/build/index.html", b"<h1>A</h1>")?;
     write("project/.skills/a/SKILL.md", b"---")?;
+    write("project/.htmlpress/routes/-parts/hero.html", b"<p>Hero</p>")?;
     write("project/binary.dat", &[0xff, 0xfe, 0x00])?;
     write("outside.md", b"secret")?;
     Ok(dir)
@@ -65,5 +66,15 @@ fn refuses_a_symlink_that_leads_outside() -> Result<(), String> {
     std::os::unix::fs::symlink(dir.path().join("outside.md"), root.join("docs/link.md"))
         .map_err(|error| error.to_string())?;
     assert!(read_contained(&root, "docs/link.md", false).is_err());
+    Ok(())
+}
+
+#[test]
+fn reads_a_route_partial_but_no_other_project_file() -> Result<(), String> {
+    let dir = create_project()?;
+    let root = dir.path().join("project");
+    let partial = ".htmlpress/routes/-parts/hero.html";
+    assert_eq!(read_contained(&root, partial, false)?, "<p>Hero</p>");
+    assert!(read_contained(&root, ".htmlpress/build/index.html", false).is_err());
     Ok(())
 }
