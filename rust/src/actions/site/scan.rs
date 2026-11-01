@@ -2,14 +2,12 @@ use std::collections::hash_map::Entry;
 use std::collections::{BTreeMap, HashMap};
 use std::path::Path;
 
-use textlane::TreeKind;
-
 use crate::actions::config::load::load_config;
 use crate::actions::git::read::read_dates;
 use crate::actions::include::list::list_includes;
 use crate::actions::language::detect::{create_key, detect_language};
 use crate::actions::language::resolve::resolve_languages;
-use crate::actions::page::compile::compile_markdown;
+use crate::actions::page::compile::{compile_markdown, create_processor};
 use crate::actions::page::include::resolve_includes;
 use crate::actions::page::patch::patch_page;
 use crate::actions::page::read::{finish_page, is_layout_name, read_source};
@@ -17,7 +15,6 @@ use crate::actions::page::rebase::{list_links, read_root, rebase_image};
 use crate::actions::path::contain::read_contained;
 use crate::actions::path::select::{Selection, read_bases, select_paths};
 use crate::actions::pipeline::create::create_pipeline;
-use crate::actions::plugin::load::load_plugins;
 use crate::actions::section::generate::generate_pages;
 use crate::actions::skill::load::load_skills;
 use crate::models::asset::{COMPONENT_PREFIX, read_component_path};
@@ -73,11 +70,9 @@ pub fn scan_site(root: &Path) -> crate::Result<Site> {
         plugins: config.plugins.md.clone(),
     };
     // Up front, so a bad plugin is the config's error, not the first Markdown page's
-    load_plugins(TreeKind::Mdast, &markdown.plugins).map_err(|message| {
-        Error::Config {
-            path: root.join(CONFIG_FILE),
-            message,
-        }
+    create_processor(&markdown).map_err(|message| Error::Config {
+        path: root.join(CONFIG_FILE),
+        message,
     })?;
     let mut pages = vec![];
     for (path, source) in &selection.pages {

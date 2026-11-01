@@ -16,14 +16,15 @@ use crate::models::pipeline::{Pipeline, PipelineOptions};
 use crate::settings::NOT_FOUND_PAGE;
 
 thread_local! {
-    static DEFAULT: Result<Pipeline, String> = create_pipeline(&PipelineOptions::default());
+    static DEFAULT: RefCell<Result<Pipeline, String>> =
+        RefCell::new(create_pipeline(&PipelineOptions::default()));
 }
 
 /// Split one HTML source into a [`Page`]. `path` is relative to the project root. A full
 /// document and a bare fragment both work: the wrappers are dropped, the content kept.
 pub fn read_page(path: &str, html: &str) -> crate::Result<Page> {
     let mut page = read_source(path, html)?;
-    DEFAULT.with(|pipeline| match pipeline {
+    DEFAULT.with_borrow_mut(|pipeline| match pipeline {
         Ok(pipeline) => finish_page(&mut page, pipeline),
         Err(message) => Err(Error::page(path)(message.clone())),
     })?;
@@ -75,20 +76,21 @@ pub(crate) fn read_source(path: &str, html: &str) -> crate::Result<Page> {
 /// Make a page read by [`read_source`] whole, parsing its source once: the pipeline's
 /// prose, math, heading ids, links and code colors, then its content and extra head tags,
 /// its table of contents and its Markdown copy, all from that one tree.
-pub(crate) fn finish_page(page: &mut Page, pipeline: &Pipeline) -> crate::Result<()> {
+pub(crate) fn finish_page(page: &mut Page, pipeline: &mut Pipeline) -> crate::Result<()> {
     let path = page.source.clone();
     let fail = |message: String| Error::page(&path)(message);
     let source = std::mem::take(&mut page.content);
     let prepared = prepare_content(&source).map_err(fail)?;
     let document = is_document(&source);
+    let failed = |error: textlane::Error| error.message;
     let processor = match document {
-        true => &pipeline.document,
-        false => &pipeline.fragment,
+        true => pipeline.document.freeze(),
+        false => pipeline.fragment.freeze(),
     };
+    let processor = processor.map_err(failed).map_err(fail)?;
     let alloc = Allocator::new();
     let mut file = File::new();
     file.path = Some(page.source.clone());
-    let failed = |error: textlane::Error| error.message;
     let tree = processor
         .parse(&prepared, &mut file, &alloc)
         .map_err(failed)
@@ -123,11 +125,12 @@ pub(crate) fn finish_page(page: &mut Page, pipeline: &Pipeline) -> crate::Result
             .collect(),
         false => vec![],
     };
+    let markdown = pipeline.markdown.freeze().map_err(failed).map_err(fail)?;
     let mut file = File::new();
-    let tree = (pipeline.markdown.run_sync(tree, &mut file, &alloc))
+    let tree = (markdown.run_sync(tree, &mut file, &alloc))
         .map_err(failed)
         .map_err(fail)?;
-    let body = (pipeline.markdown.stringify(&tree, &mut file))
+    let body = (markdown.stringify(&tree, &mut file))
         .map_err(failed)
         .map_err(fail)?;
     let mut parts = vec![format!("# {}", page.title)];

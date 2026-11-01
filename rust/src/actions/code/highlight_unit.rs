@@ -10,7 +10,7 @@ fn highlight_code(html: &str, light: &str, dark: &str) -> Result<String, String>
         ..PipelineOptions::default()
     };
     let mut page = read_source("a.html", html).map_err(|e| e.to_string())?;
-    finish_page(&mut page, &create_pipeline(&options)?).map_err(|e| e.to_string())?;
+    finish_page(&mut page, &mut create_pipeline(&options)?).map_err(|e| e.to_string())?;
     Ok(page.content)
 }
 

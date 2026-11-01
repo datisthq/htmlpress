@@ -172,8 +172,9 @@
             <a href="https://textlane.dev">Textlane</a> 插件，每项为名称或
             <code>{ name, options }</code>：<code>md</code> 作用于 Markdown
             页面在指令之后的语法树，<code>html</code> 作用于每个页面在生成标题 id
-            之前的语法树。不改变其挂载点语法树的插件（如 <code>md.gfm</code> 或
-            <code>md.toHtml</code>）会使构建失败。
+            之前的语法树。htmlpress 已运行的插件（如 <code>md.gfm</code> 或
+            <code>html.slug</code>）会用你的选项重新配置，而不会运行两次；参见
+            <a href="/zh/customization/plugins/">插件</a>。
           </td>
         </tr>
         <tr>

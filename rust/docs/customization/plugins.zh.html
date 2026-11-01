@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="zh">
+  <head>
+    <title>插件</title>
+    <meta
+      name="description"
+      content="把 textlane 的 Markdown 与 HTML 插件加入每个页面构建所经的流水线。"
+    />
+    <meta name="order" content="52" />
+    <meta name="icon" content="puzzle" />
+  </head>
+  <body>
+    <h1>插件</h1>
+    <p>
+      每个页面都由 <a href="https://textlane.dev">textlane</a> 构建，这是一条用 Rust
+      编写的 Markdown 与 HTML 流水线。<code>htmlpress.yaml</code> 的
+      <code>plugins</code> 键把 textlane 自带的插件加入其中，分两个挂载点：
+    </p>
+    <ul>
+      <li><code>md</code> 作用于 Markdown 页面的语法树（mdast）</li>
+      <li><code>html</code> 作用于每个页面的语法树（hast），HTML 与 Markdown 页面皆然</li>
+    </ul>
+    <pre data-title="htmlpress.yaml"><code class="language-yaml">plugins:
+  md:
+    - name: md.shiftHeading
+      options: { shift: 1 }
+  html:
+    - name: html.externalLinks
+      options: { target: _blank }</code></pre>
+
+    <h2>插件可以是什么</h2>
+    <p>每个挂载点是一个列表，其条目与 textlane 的 <code>use</code> 接受的形式相同：</p>
+    <ul>
+      <li>
+        <strong>一个名称</strong>：textlane 自带的插件之一，如
+        <code>html.externalLinks</code> 或 <code>md.toc</code>，使用其默认选项。
+      </li>
+      <li>
+        <strong>带选项的名称</strong>：<code>{ name, options }</code>，选项按 textlane
+        对该插件的说明填写。
+      </li>
+    </ul>
+    <p>
+      htmlpress 是单个二进制文件，所以挂载点只接受内置的插件，不像 Livemark 那样接受
+      JavaScript 插件。如需自己的标记，请改用
+      <a href="/zh/customization/overriding-escaping/">项目组件</a>：一个
+      <code>:::name</code> 指令或 <code>&lt;htmlpress-name&gt;</code> 标签，由你的
+      <code>components/&lt;name&gt;/</code> 文件填充。
+    </p>
+
+    <h2>各挂载点在哪里运行</h2>
+    <pre><code class="language-text">Markdown 页面：解析 → frontmatter、GFM、定义列表、数学公式、指令
+  → md 插件 → 标题 id、组件 → HTML
+每个页面：     解析 → 表情、链接、数学公式 → KaTeX → html 插件
+  → 标题 slug → 路径重写 → 语法高亮</code></pre>
+    <ul>
+      <li>
+        <code>md</code> 插件在 htmlpress
+        把指令渲染为组件<strong>之前</strong>运行，因此能看到所有指令。
+      </li>
+      <li>
+        <code>html</code> 插件在生成标题 slug
+        <strong>之前</strong
+        >运行，因此插件添加的标题会获得锚点，并出现在“本页内容”目录中。它们也在语法高亮之前运行，因此代码块仍是纯文本。
+      </li>
+    </ul>
+
+    <h2>htmlpress 已运行的插件</h2>
+    <p>
+      指定一个流水线中已有的插件，如 <code>md.gfm</code> 或
+      <code>html.slug</code>，会重新配置它，而不是运行两次：你的选项会与 htmlpress
+      的选项合并，正如 textlane 的 <code>use</code>
+      合并再次使用的插件。若 htmlpress
+      设置了同一选项，则以它的值为准，因为它的插件在你的之后加入。
+    </p>
+    <pre data-title="htmlpress.yaml"><code class="language-yaml">plugins:
+  html:
+    - name: html.slug
+      options: { prefix: doc- }</code></pre>
+    <p>
+      这里每个自动生成的标题 id 都带上 <code>doc-</code> 前缀，且每个标题仍只获得一次 id。
+    </p>
+
+    <h2>错误与重建</h2>
+    <p>
+      未知的名称或错误的选项会使构建失败，并报出 <code>plugins.md</code> 或
+      <code>plugins.html</code> 错误；语法树与挂载点不符的插件（如放在
+      <code>html</code> 下的 <code>md.toHtml</code>）同样如此。在
+      <code>htmlpress start</code> 运行时编辑 <code>htmlpress.yaml</code>
+      会用新插件重建所有页面。
+    </p>
+
+    <h2>另请参阅</h2>
+    <ul>
+      <li><a href="/zh/customization/configuration-file/">配置</a>：其余所有配置键。</li>
+      <li><a href="https://textlane.dev">textlane</a>：插件及其选项。</li>
+    </ul>
+  </body>
+</html>

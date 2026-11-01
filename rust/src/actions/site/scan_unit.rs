@@ -387,10 +387,10 @@ fn runs_the_config_plugins_and_rejects_a_bad_one() -> crate::Result<()> {
         "{}",
         guide.content
     );
-    write_file(root, CONFIG_FILE, "plugins:\n  md: [md.gfm]\n")?;
+    write_file(root, CONFIG_FILE, "plugins:\n  md: [md.toHtml]\n")?;
     match scan_site(root) {
         Err(Error::Config { message, .. }) => {
-            assert!(message.contains("\"md.gfm\" adds no step"), "{message}")
+            assert!(message.starts_with("plugins.md: "), "{message}")
         }
         other => panic!("{other:?}"),
     }

@@ -174,8 +174,10 @@
             <a href="https://textlane.dev">Textlane</a> plugins added to the page
             pipeline, each a name or <code>{ name, options }</code>: <code>md</code> on a
             Markdown page's tree after its directives, <code>html</code> on every page's
-            tree before heading ids. A plugin that does not change its hook's tree, such
-            as <code>md.gfm</code> or <code>md.toHtml</code>, fails the build.
+            tree before heading ids. A plugin htmlpress already runs, such as
+            <code>md.gfm</code> or <code>html.slug</code>, is reconfigured with your
+            options instead of running twice; see
+            <a href="/customization/plugins/">Plugins</a>.
           </td>
         </tr>
         <tr>

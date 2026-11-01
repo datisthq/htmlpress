@@ -23,7 +23,7 @@ fn finish(
         themes: None,
         plugins: vec![],
     };
-    finish_page(&mut page, &create_pipeline(&options)?).map_err(|e| e.to_string())?;
+    finish_page(&mut page, &mut create_pipeline(&options)?).map_err(|e| e.to_string())?;
     Ok(page)
 }
 

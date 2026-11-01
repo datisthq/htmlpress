@@ -2,9 +2,10 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 
 use serde_json::{Map, Value, json};
-use textlane::{FrozenProcessor, Processor, TreeKind, html, md};
+use textlane::{Api, File, ProcessJob};
 
-use crate::actions::plugin::load::load_plugins;
+use crate::actions::pipeline::create::{use_native, use_plugins};
+use crate::actions::plugin::add::add_plugins;
 use crate::models::pipeline::MarkdownOptions;
 use crate::models::plugin::AnnotateCode;
 
@@ -32,7 +33,7 @@ pub(crate) const FRONTMATTER_KEYS: &[&str] = &[
 ];
 
 thread_local! {
-    static PROCESSORS: RefCell<HashMap<(Vec<String>, String), FrozenProcessor>> =
+    static PROCESSORS: RefCell<HashMap<(Vec<String>, String), ProcessJob>> =
         RefCell::new(HashMap::new());
 }
 
@@ -58,12 +59,14 @@ pub(crate) fn compile_markdown(
                 processors.entry(key).or_insert(processor)
             }
         };
-        let output = processor.process(markdown).map_err(|error| error.message)?;
-        let html = mark_inline_code(&output.value);
+        let mut file = File::new();
+        let output =
+            (processor.process(markdown, &mut file)).map_err(|error| error.message)?;
+        let html = mark_inline_code(&output);
         if !page {
             return Ok(html);
         }
-        let matter = match output.file.data.get("matter") {
+        let matter = match file.data.get("matter") {
             Some(Value::Object(matter)) => matter.clone(),
             _ => Map::new(),
         };
@@ -75,52 +78,54 @@ pub(crate) fn compile_markdown(
     })
 }
 
-fn create_processor(options: &MarkdownOptions) -> Result<FrozenProcessor, String> {
-    let component: md::Component =
-        serde_json::from_value(create_rules(&options.components))
-            .map_err(|error| error.to_string())?;
-    let heading_id: md::HeadingId = serde_json::from_value(json!({
+/// The Markdown pipeline as one job; also what the config's `md` plugins are checked
+/// against before any page compiles.
+pub(crate) fn create_processor(options: &MarkdownOptions) -> Result<ProcessJob, String> {
+    let heading_id = json!({
         "attributes": true,
         "markers": {
             "[step]": { "data-step": true },
             "[!toc]": { "data-toc": "false" },
             "[toc]": { "data-toc": "only" },
         },
-    }))
-    .map_err(|error| error.to_string())?;
-    let mut processor = Processor::new()
-        .with(md::Parse::default())
-        .with(md::Frontmatter {
-            data: true,
-            strip: true,
-            ..md::Frontmatter::default()
-        })
-        .with(md::Gfm::default())
-        .with(md::DefinitionList)
-        .with(md::Math::default())
-        .with(md::Directive::default());
+    });
+    let mut pipeline = textlane::Pipeline::new();
+    use_plugins(
+        &mut pipeline,
+        json!([
+            "md.parse",
+            ["md.frontmatter", { "data": true, "strip": true }],
+            "md.gfm",
+            "md.definitionList",
+            "md.math",
+            "md.directive",
+        ]),
+    )?;
     // Before md.component, which renders an unknown directive as its source text
-    if let Some(plugins) = load_plugins(TreeKind::Mdast, &options.plugins)? {
-        processor = processor.with(plugins);
-    }
-    processor
-        .with(heading_id)
-        .with(component)
-        .with(md::ToHtml {
-            allow_dangerous_html: true,
-            jsx_elements: true,
-            ..md::ToHtml::default()
-        })
-        // Before the reparse, which keeps no node's `data`, where the fence's meta waits
-        .with(AnnotateCode)
-        .with(html::Raw::default())
-        .with(html::Stringify {
-            allow_dangerous_html: true,
-            close_empty_elements: true,
-            ..html::Stringify::default()
-        })
-        .freeze()
-        .map_err(|error| error.message)
+    add_plugins(&mut pipeline, "md", &options.plugins)?;
+    use_plugins(
+        &mut pipeline,
+        json!([
+            ["md.headingId", heading_id],
+            ["md.component", create_rules(&options.components)],
+            ["md.toHtml", { "allowDangerousHtml": true, "jsxElements": true }],
+        ]),
+    )?;
+    // Before the reparse, which keeps no node's `data`, where the fence's meta waits
+    use_native(&mut pipeline, "htmlpress.annotateCode", AnnotateCode)?;
+    use_plugins(
+        &mut pipeline,
+        json!([
+            "html.raw",
+            ["html.stringify", { "allowDangerousHtml": true, "closeEmptyElements": true }],
+        ]),
+    )?;
+    let fail = |error: textlane::Error| match options.plugins.is_empty() {
+        true => error.message,
+        false => format!("plugins.md: {}", error.message),
+    };
+    pipeline.freeze().map_err(fail)?;
+    pipeline.prepare_process(Api::Sync).map_err(fail)
 }
 
 // Livemark's directives, alerts and fences, as its `create.ts` declares them, onto

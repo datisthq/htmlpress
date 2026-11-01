@@ -1,7 +1,5 @@
 use std::collections::BTreeMap;
 
-use textlane::FrozenProcessor;
-
 use crate::models::config::PluginEntry;
 
 /// What a site's page pipeline does beside the prose, math and heading ids every page gets.
@@ -26,10 +24,10 @@ pub(crate) struct MarkdownOptions {
     pub plugins: Vec<PluginEntry>,
 }
 
-/// The textlane processors a page goes through once: one for a full document, one for a
-/// fragment, and one that turns the same tree into the page's Markdown copy.
+/// The textlane pipelines a page goes through once, each frozen: one for a full document,
+/// one for a fragment, and one that turns the same tree into the page's Markdown copy.
 pub(crate) struct Pipeline {
-    pub document: FrozenProcessor,
-    pub fragment: FrozenProcessor,
-    pub markdown: FrozenProcessor,
+    pub document: textlane::Pipeline,
+    pub fragment: textlane::Pipeline,
+    pub markdown: textlane::Pipeline,
 }

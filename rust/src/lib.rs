@@ -49,7 +49,7 @@ mod actions {
         pub(crate) mod create;
     }
     pub(crate) mod plugin {
-        pub(crate) mod load;
+        pub(crate) mod add;
     }
     pub(crate) mod package {
         pub(crate) mod convert;

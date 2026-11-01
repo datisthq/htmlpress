@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <title>Plugins</title>
+    <meta
+      name="description"
+      content="Añade los plugins de Markdown y HTML de textlane al pipeline por el que se construye cada página."
+    />
+    <meta name="order" content="52" />
+    <meta name="icon" content="puzzle" />
+  </head>
+  <body>
+    <h1>Plugins</h1>
+    <p>
+      Cada página se construye con <a href="https://textlane.dev">textlane</a>, un
+      pipeline de Markdown y HTML escrito en Rust. La clave <code>plugins</code> de
+      <code>htmlpress.yaml</code> le añade los plugins propios de textlane, en dos puntos:
+    </p>
+    <ul>
+      <li><code>md</code> se ejecuta sobre el árbol de una página Markdown (mdast)</li>
+      <li>
+        <code>html</code> se ejecuta sobre el árbol de cada página (hast), sea HTML o
+        Markdown
+      </li>
+    </ul>
+    <pre data-title="htmlpress.yaml"><code class="language-yaml">plugins:
+  md:
+    - name: md.shiftHeading
+      options: { shift: 1 }
+  html:
+    - name: html.externalLinks
+      options: { target: _blank }</code></pre>
+
+    <h2>Qué puede ser un plugin</h2>
+    <p>
+      Cada punto es una lista cuyas entradas toman las mismas formas que el
+      <code>use</code> de textlane:
+    </p>
+    <ul>
+      <li>
+        <strong>Un nombre</strong>: uno de los plugins que trae textlane, como
+        <code>html.externalLinks</code> o <code>md.toc</code>, con sus valores por
+        defecto.
+      </li>
+      <li>
+        <strong>Un nombre con opciones</strong>: <code>{ name, options }</code>, con las
+        opciones que textlane documenta para ese plugin.
+      </li>
+    </ul>
+    <p>
+      Htmlpress es un único binario, así que un punto solo acepta los plugins que lleva
+      dentro, no plugins de JavaScript como Livemark. Para un marcado propio, añade un
+      <a href="/es/customization/overriding-escaping/">componente del proyecto</a>: una
+      directiva <code>:::name</code> o una etiqueta
+      <code>&lt;htmlpress-name&gt;</code> que rellenan tus archivos de
+      <code>components/&lt;name&gt;/</code>.
+    </p>
+
+    <h2>Dónde se ejecuta cada punto</h2>
+    <pre><code class="language-text">Página Markdown: parseo → frontmatter, GFM, listas de definición, matemáticas, directivas
+  → plugins md → ids de encabezados, componentes → HTML
+Cada página:     parseo → emoji, enlaces, matemáticas → KaTeX → plugins html
+  → slugs de encabezados → reescritura de rutas → resaltado de sintaxis</code></pre>
+    <ul>
+      <li>
+        Los plugins <code>md</code> se ejecutan <strong>antes</strong> de que htmlpress
+        convierta las directivas en componentes, así que ven todas las directivas.
+      </li>
+      <li>
+        Los plugins <code>html</code> se ejecutan <strong>antes</strong> de los slugs de
+        los encabezados, así que un encabezado que añada un plugin recibe un ancla y
+        aparece en el índice «En esta página». Van antes del resaltado de sintaxis, así
+        que los bloques de código conservan su texto plano.
+      </li>
+    </ul>
+
+    <h2>Un plugin que htmlpress ya ejecuta</h2>
+    <p>
+      Nombrar un plugin que ya está en el pipeline, como <code>md.gfm</code> o
+      <code>html.slug</code>, lo reconfigura en lugar de ejecutarlo dos veces: tus
+      opciones se combinan con las de htmlpress, como el <code>use</code> de textlane
+      combina un plugin usado de nuevo. Cuando htmlpress fija la misma opción, gana su
+      valor, porque sus plugins se añaden después de los tuyos.
+    </p>
+    <pre data-title="htmlpress.yaml"><code class="language-yaml">plugins:
+  html:
+    - name: html.slug
+      options: { prefix: doc- }</code></pre>
+    <p>
+      Aquí cada id de encabezado generado lleva el prefijo <code>doc-</code>, y cada
+      encabezado sigue recibiendo su id una sola vez.
+    </p>
+
+    <h2>Errores y recompilaciones</h2>
+    <p>
+      Un nombre desconocido o unas opciones incorrectas hacen fallar la compilación con un
+      error de <code>plugins.md</code> o <code>plugins.html</code>, igual que un plugin
+      cuyo árbol no encaja en su punto, como <code>md.toHtml</code> en <code>html</code>.
+      Editar <code>htmlpress.yaml</code> mientras corre
+      <code>htmlpress start</code> recompila todas las páginas con los nuevos plugins.
+    </p>
+
+    <h2>Véase también</h2>
+    <ul>
+      <li>
+        <a href="/es/customization/configuration-file/">Configuración</a>: todas las demás
+        claves.
+      </li>
+      <li><a href="https://textlane.dev">textlane</a>: los plugins y sus opciones.</li>
+    </ul>
+  </body>
+</html>

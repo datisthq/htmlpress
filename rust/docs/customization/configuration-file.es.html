@@ -186,8 +186,9 @@
             páginas, cada uno un nombre o <code>{ name, options }</code>:
             <code>md</code> sobre el árbol de una página Markdown tras sus directivas,
             <code>html</code> sobre el árbol de cada página antes de los ids de los
-            encabezados. Un plugin que no cambia el árbol de su punto, como
-            <code>md.gfm</code> o <code>md.toHtml</code>, hace fallar la compilación.
+            encabezados. Un plugin que htmlpress ya ejecuta, como <code>md.gfm</code> o
+            <code>html.slug</code>, se reconfigura con tus opciones en lugar de ejecutarse
+            dos veces; consulta <a href="/es/customization/plugins/">Plugins</a>.
           </td>
         </tr>
         <tr>

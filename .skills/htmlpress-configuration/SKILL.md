@@ -64,9 +64,10 @@ head:
 - `edit` — a URL prefix for an "Edit on GitHub" link.
 - `plugins` — textlane plugins added to the page pipeline, as Livemark's: `md` on a Markdown
   page's tree after its directives, before heading ids and components; `html` on every page's
-  tree before heading ids. An entry is a name or `{ name, options }`. Only a plugin that changes
-  its hook's tree is accepted: a syntax extension (`md.gfm`, `md.math`), a parser, a compiler
-  or a bridge such as `md.toHtml` fails the build, and one htmlpress already runs runs again.
+  tree before heading ids. An entry is a name or `{ name, options }`. A plugin htmlpress already
+  runs (`md.gfm`, `html.slug`) is that plugin reconfigured, its options merged, not a second
+  run; an unknown name, or one whose tree does not fit the hook (`md.toHtml` at `html`), fails
+  the build.
 
 ## Sections
 
@@ -129,6 +130,7 @@ misspelt key fails here with its name.
 ## References
 
 - Configuration: https://htmlpress.dev/customization/configuration-file/
+- Plugins: https://htmlpress.dev/customization/plugins/
 - Sections: https://htmlpress.dev/customization/article-sections/
 - Translations: https://htmlpress.dev/customization/translations/
 - Versioning: https://htmlpress.dev/customization/versioning/

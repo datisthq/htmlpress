@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Plugins</title>
+    <meta
+      name="description"
+      content="Add textlane's Markdown and HTML plugins to the pipeline every page builds through."
+    />
+    <meta name="order" content="52" />
+    <meta name="icon" content="puzzle" />
+  </head>
+  <body>
+    <h1>Plugins</h1>
+    <p>
+      Every page builds through <a href="https://textlane.dev">textlane</a>, a Rust
+      Markdown and HTML pipeline. The <code>plugins</code> key of
+      <code>htmlpress.yaml</code> adds textlane's own plugins to it, in two slots:
+    </p>
+    <ul>
+      <li><code>md</code> runs on a Markdown page's tree (mdast)</li>
+      <li><code>html</code> runs on every page's tree (hast), HTML and Markdown alike</li>
+    </ul>
+    <pre data-title="htmlpress.yaml"><code class="language-yaml">plugins:
+  md:
+    - name: md.shiftHeading
+      options: { shift: 1 }
+  html:
+    - name: html.externalLinks
+      options: { target: _blank }</code></pre>
+
+    <h2>What a plugin can be</h2>
+    <p>
+      Each slot is a list whose entries take the same forms as textlane's
+      <code>use</code>:
+    </p>
+    <ul>
+      <li>
+        <strong>A name</strong>: one of the plugins textlane ships, such as
+        <code>html.externalLinks</code> or <code>md.toc</code>, with its defaults.
+      </li>
+      <li>
+        <strong>A name with options</strong>: <code>{ name, options }</code>, the options
+        as textlane documents them for that plugin.
+      </li>
+    </ul>
+    <p>
+      Htmlpress is one binary, so a slot takes only the plugins built into it, and no
+      JavaScript plugins as Livemark does. For markup of your own, add a
+      <a href="/customization/overriding-escaping/">project component</a> instead: a
+      <code>:::name</code> directive or an <code>&lt;htmlpress-name&gt;</code> tag that
+      your <code>components/&lt;name&gt;/</code> files fill.
+    </p>
+
+    <h2>Where each slot runs</h2>
+    <pre><code class="language-text">Markdown page: parse → frontmatter, GFM, definition lists, math, directives
+  → md plugins → heading ids, components → HTML
+Every page:    parse → emoji, links, math → KaTeX → html plugins
+  → heading slugs → path rewrites → syntax highlighting</code></pre>
+    <ul>
+      <li>
+        <code>md</code> plugins run <strong>before</strong> htmlpress renders directives
+        as components, so they see every directive.
+      </li>
+      <li>
+        <code>html</code> plugins run <strong>before</strong> heading slugs, so a heading
+        a plugin adds gets an anchor and appears in the "On this page" outline. They run
+        before syntax highlighting, so code blocks still hold their plain text.
+      </li>
+    </ul>
+
+    <h2>A plugin htmlpress already runs</h2>
+    <p>
+      Naming a plugin that is already in the pipeline, such as <code>md.gfm</code> or
+      <code>html.slug</code>, reconfigures it rather than running it twice: your options
+      are merged into htmlpress' own, as textlane's <code>use</code> merges a plugin used
+      again. Where htmlpress sets the same option, its value wins, since its plugins are
+      added after yours.
+    </p>
+    <pre data-title="htmlpress.yaml"><code class="language-yaml">plugins:
+  html:
+    - name: html.slug
+      options: { prefix: doc- }</code></pre>
+    <p>
+      Here every generated heading id gets the <code>doc-</code> prefix, and headings
+      still get their ids once.
+    </p>
+
+    <h2>Errors and rebuilds</h2>
+    <p>
+      An unknown name or bad options fail the build with a <code>plugins.md</code> or
+      <code>plugins.html</code> error, and so does a plugin whose tree does not fit its
+      slot, such as <code>md.toHtml</code> under <code>html</code>. Editing
+      <code>htmlpress.yaml</code> while <code>htmlpress start</code> runs rebuilds every
+      page with the new plugins.
+    </p>
+
+    <h2>See also</h2>
+    <ul>
+      <li>
+        <a href="/customization/configuration-file/">Configuration</a>: every other key.
+      </li>
+      <li><a href="https://textlane.dev">textlane</a>: the plugins and their options.</li>
+    </ul>
+  </body>
+</html>
