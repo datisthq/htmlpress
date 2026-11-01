@@ -38,8 +38,7 @@ pub fn serve_site(
     let inputs = report_build(&options, &state, false).unwrap_or_default();
 
     let (sender, events) = channel();
-    let mut watcher = notify::recommended_watcher(sender)
-        .map_err(|error| Error::Usage(format!("cannot watch files: {error}")))?;
+    let mut watcher = create_watcher(sender)?;
     // The real path: events name paths under the folder watched, and the filter compares
     // them with real ones, so a symlinked root would match nothing
     watcher
@@ -157,6 +156,17 @@ fn report_build(
 }
 
 type Events = Receiver<notify::Result<notify::Event>>;
+
+// Symlinks are not followed: inotify gives a folder one watch however many paths reach it,
+// so pnpm's `node_modules/.pnpm/node_modules/<package>` link to a workspace folder renamed
+// every event under it into `node_modules/`, which the filter drops, and nothing rebuilt
+fn create_watcher(
+    sender: std::sync::mpsc::Sender<notify::Result<notify::Event>>,
+) -> crate::Result<notify::RecommendedWatcher> {
+    let config = notify::Config::default().with_follow_symlinks(false);
+    notify::RecommendedWatcher::new(sender, config)
+        .map_err(|error| Error::Usage(format!("cannot watch files: {error}")))
+}
 
 const SETTLE: Duration = Duration::from_millis(100);
 

@@ -225,3 +225,37 @@ fn finds_exact_redirects_only() -> crate::Result<()> {
     assert_eq!(find_redirect(output, "/guide/"), None);
     Ok(())
 }
+
+#[cfg(unix)]
+#[test]
+fn names_a_change_by_its_real_path_beside_links_to_it() -> crate::Result<()> {
+    let project = tempfile::tempdir().map_err(Error::io("tempdir"))?;
+    let root = project
+        .path()
+        .canonicalize()
+        .map_err(Error::io("canonicalize"))?;
+    std::fs::create_dir_all(root.join("docs")).map_err(Error::io("docs"))?;
+    // Many links beside the folder: readdir order decides which path a shared watch keeps
+    let links: Vec<PathBuf> = (0..12).map(|n| root.join(format!("link-{n}"))).collect();
+    for link in &links {
+        std::os::unix::fs::symlink(root.join("docs"), link)
+            .map_err(Error::io("symlink"))?;
+    }
+    let (sender, events) = channel();
+    let mut watcher = create_watcher(sender)?;
+    watcher
+        .watch(&root, RecursiveMode::Recursive)
+        .map_err(|error| Error::Usage(error.to_string()))?;
+    let page = root.join("docs").join("index.html");
+    std::fs::write(&page, "<title>A</title>").map_err(Error::io("page"))?;
+    let mut paths = vec![];
+    while let Ok(event) = events.recv_timeout(Duration::from_millis(500)) {
+        paths.extend(event.map(|event| event.paths).unwrap_or_default());
+    }
+    let pages: Vec<&PathBuf> = (paths.iter())
+        .filter(|path| path.ends_with("index.html"))
+        .collect();
+    assert!(!pages.is_empty(), "no event named the page");
+    assert!(pages.iter().all(|path| **path == page), "{pages:?}");
+    Ok(())
+}

@@ -222,7 +222,10 @@ naming `htmlpress.yaml`: that read makes access events of its own, and parsing t
 each of a build's thousands of output events held the next edit back by seconds. Only a
 source event extends the 100 ms settle, or a `cargo build` beside the docs delays every
 rebuild until it ends. The watcher watches the root's real path, since the filter compares
-real paths and `start <symlink>` otherwise matched nothing.
+real paths and `start <symlink>` otherwise matched nothing. It never follows symlinks
+(`create_watcher`): inotify keeps one watch per folder and notify names its events by the
+last path that reached it, so pnpm's `node_modules/.pnpm/node_modules/htmlpress-rust` link
+to `rust/` turned every `rust/docs` edit into a `node_modules/` path the filter dropped.
 
 ## The CLI
 
