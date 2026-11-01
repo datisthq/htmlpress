@@ -14,7 +14,14 @@
 
 <h2>内部图片</h2>
 <p>引用项目中的图片；所有非页面文件都会复制到输出中的相同路径：</p>
-<pre><code class="language-html">&lt;img src="/screenshots/docs.webp" alt="An htmlpress docs page"&gt;</code></pre>
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;img src="/screenshots/docs.webp" alt="An htmlpress docs page"&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">![An htmlpress docs page](/screenshots/docs.webp)</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>
   相对的 <code>src</code>、<code>srcset</code> 或 <code>poster</code>
   从页面的源文件解析，因此无论是在页面的文件夹 URL、语言前缀之下，还是另一个
@@ -33,7 +40,14 @@
 
 <h2>外部图片</h2>
 <p>引用外部 URL 的图片：</p>
-<pre><code class="language-html">&lt;img src="https://picsum.photos/seed/htmlpress/800/300" alt="Placeholder"&gt;</code></pre>
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;img src="https://picsum.photos/seed/htmlpress/800/300" alt="Placeholder"&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">![Placeholder](https://picsum.photos/seed/htmlpress/800/300)</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>渲染为：</p>
 <p>
   <img
@@ -46,7 +60,14 @@
 
 <h2>Base64 图片</h2>
 <p>使用 data URI 直接嵌入小图片：</p>
-<pre><code class="language-html">&lt;img src="data:image/png;base64,iVBORw0KGgo…" alt="banner"&gt;</code></pre>
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;img src="data:image/png;base64,iVBORw0KGgo…" alt="banner"&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">![banner](data:image/png;base64,iVBORw0KGgo…)</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>渲染为：</p>
 <p>
   <img
@@ -65,8 +86,16 @@
   <code>src</code> 结尾 <code>#light</code> 和
   <code>#dark</code> 同样有效。把两张图片并排放置：
 </p>
-<pre><code class="language-html">&lt;img src="/screenshots/docs.webp" alt="The docs" data-theme="light"&gt;
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;img src="/screenshots/docs.webp" alt="The docs" data-theme="light"&gt;
 &lt;img src="/screenshots/docs-dark.webp" alt="The docs" data-theme="dark"&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">![The docs](/screenshots/docs.webp#light)
+![The docs](/screenshots/docs-dark.webp#dark)</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>渲染为（切换主题即可看到变化）：</p>
 <p>
   <img src="/screenshots/docs.webp" alt="浅色模式下的文档站点" data-theme="light" />
@@ -79,7 +108,14 @@
   页面中的每张图片点击后都会全屏打开，被链接包住的除外；点击任意位置即可关闭。内部图片、外部图片和
   base64 图片都适用。
 </p>
-<pre><code class="language-html">&lt;img src="screenshot.png" alt="The docs site"&gt;</code></pre>
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;img src="screenshot.png" alt="The docs site"&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">![The docs site](screenshot.png)</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>渲染为（点击试试）：</p>
 <p>
   <img
@@ -97,7 +133,14 @@
   <code>watch</code>、<code>youtu.be</code>、<code>embed</code>、<code>shorts</code> 或
   <code>live</code> URL）；没有脚本时它仍是一个链接：
 </p>
-<pre><code class="language-html">&lt;htmlpress-video type="youtube" url="https://www.youtube.com/watch?v=dQw4w9WgXcQ"&gt;&lt;/htmlpress-video&gt;</code></pre>
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;htmlpress-video type="youtube" url="https://www.youtube.com/watch?v=dQw4w9WgXcQ"&gt;&lt;/htmlpress-video&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">::video{type="youtube" url="https://www.youtube.com/watch?v=dQw4w9WgXcQ"}</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>渲染为：</p>
 <htmlpress-video
   type="youtube"
@@ -109,7 +152,14 @@
   <code>&lt;htmlpress-audio type="soundcloud" url&gt;</code>
   播放其 <code>url</code> 指向的曲目；没有脚本时它仍是一个链接：
 </p>
-<pre><code class="language-html">&lt;htmlpress-audio type="soundcloud" url="https://soundcloud.com/flume/never-be-like-you-feat-kai"&gt;&lt;/htmlpress-audio&gt;</code></pre>
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;htmlpress-audio type="soundcloud" url="https://soundcloud.com/flume/never-be-like-you-feat-kai"&gt;&lt;/htmlpress-audio&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">::audio{type="soundcloud" url="https://soundcloud.com/flume/never-be-like-you-feat-kai"}</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>渲染为：</p>
 <htmlpress-audio
   type="soundcloud"

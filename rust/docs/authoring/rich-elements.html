@@ -20,10 +20,19 @@
   A <code>&lt;table&gt;</code> is styled as it is, and one with a
   <code>&lt;thead&gt;</code> sorts by any header clicked:
 </p>
-<pre><code class="language-html">&lt;table&gt;
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;table&gt;
   &lt;thead&gt;&lt;tr&gt;&lt;th&gt;Language&lt;/th&gt;&lt;th&gt;Year&lt;/th&gt;&lt;th&gt;Typing&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
   &lt;tbody&gt;&lt;tr&gt;&lt;td&gt;TypeScript&lt;/td&gt;&lt;td&gt;2012&lt;/td&gt;&lt;td&gt;Static&lt;/td&gt;&lt;/tr&gt;…&lt;/tbody&gt;
 &lt;/table&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">| Language | Year | Typing |
+| --- | --- | --- |
+| TypeScript | 2012 | Static |</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>Renders as:</p>
 <table>
   <thead>
@@ -63,11 +72,24 @@
   default), <code>note</code>, <code>tip</code>, <code>warning</code> or
   <code>danger</code>, and <code>title</code> replaces the heading the type gives:
 </p>
-<pre><code class="language-html">&lt;htmlpress-callout&gt;&lt;p&gt;This is a note.&lt;/p&gt;&lt;/htmlpress-callout&gt;
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;htmlpress-callout&gt;&lt;p&gt;This is a note.&lt;/p&gt;&lt;/htmlpress-callout&gt;
 
 &lt;htmlpress-callout type="warning" title="Breaking Change"&gt;
   &lt;p&gt;This API has been removed in v2.&lt;/p&gt;
 &lt;/htmlpress-callout&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">:::info
+This is a note.
+:::
+
+:::warning[Breaking Change]
+This API has been removed in v2.
+:::</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>Renders as:</p>
 <htmlpress-callout><p>This is a note.</p></htmlpress-callout>
 <htmlpress-callout type="tip"><p>Every page built.</p></htmlpress-callout>
@@ -82,10 +104,19 @@
 
 <h2>Expandable</h2>
 <p>No component needed: the theme styles a plain <code>&lt;details&gt;</code>.</p>
-<pre><code class="language-html">&lt;details&gt;
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;details&gt;
   &lt;summary&gt;Click to expand&lt;/summary&gt;
   &lt;p&gt;Hidden content here with &lt;strong&gt;HTML&lt;/strong&gt; support.&lt;/p&gt;
 &lt;/details&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">:::details[Click to expand]
+Hidden content here with **Markdown** support.
+:::</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>Renders as:</p>
 <details>
   <summary>Click to expand</summary>
@@ -103,10 +134,23 @@ title: Htmlpress</code></pre>
   Tabs that hold only code blocks join into one framed block. Each
   <code>&lt;section&gt;</code> is a tab, named by its <code>title</code>:
 </p>
-<pre><code class="language-html">&lt;htmlpress-tabs sync="lang"&gt;
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;htmlpress-tabs sync="lang"&gt;
   &lt;htmlpress-tab title="JavaScript"&gt;&lt;pre&gt;&lt;code&gt;console.log("hello")&lt;/code&gt;&lt;/pre&gt;&lt;/htmlpress-tab&gt;
   &lt;htmlpress-tab title="Python"&gt;&lt;pre&gt;&lt;code&gt;print("hello")&lt;/code&gt;&lt;/pre&gt;&lt;/htmlpress-tab&gt;
 &lt;/htmlpress-tabs&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">```js tab="JavaScript" sync="lang"
+console.log("hello")
+```
+
+```python tab="Python"
+print("hello")
+```</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>Renders as:</p>
 <htmlpress-tabs sync="lang">
   <htmlpress-tab title="JavaScript">
@@ -132,11 +176,28 @@ title: Htmlpress</code></pre>
   switches to the matching tab, and the choice is remembered across pages in
   <code>localStorage</code>.
 </p>
-<pre><code class="language-html">&lt;htmlpress-tabs sync="channel"&gt;
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;htmlpress-tabs sync="channel"&gt;
   &lt;htmlpress-tab title="cargo"&gt;&lt;p&gt;From crates.io, built on your machine.&lt;/p&gt;&lt;/htmlpress-tab&gt;
   &lt;htmlpress-tab title="npm"&gt;&lt;p&gt;A prebuilt binary per platform.&lt;/p&gt;&lt;/htmlpress-tab&gt;
   &lt;htmlpress-tab title="pip"&gt;&lt;p&gt;A binary wheel.&lt;/p&gt;&lt;/htmlpress-tab&gt;
 &lt;/htmlpress-tabs&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">:::tab{title="cargo" sync="channel"}
+From crates.io, built on your machine.
+:::
+
+:::tab{title="npm"}
+A prebuilt binary per platform.
+:::
+
+:::tab{title="pip"}
+A binary wheel.
+:::</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>Renders as (both groups share <code>sync="channel"</code>; switch one):</p>
 <htmlpress-tabs sync="channel">
   <htmlpress-tab title="cargo">
@@ -163,10 +224,23 @@ title: Htmlpress</code></pre>
   the page; its content follows it as usual. Those headings stay out of the page's table
   of contents.
 </p>
-<pre><code class="language-html">&lt;h3 data-step&gt;Install&lt;/h3&gt;
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;h3 data-step&gt;Install&lt;/h3&gt;
 &lt;p&gt;…&lt;/p&gt;
 &lt;h3 data-step&gt;Write a page&lt;/h3&gt;
 &lt;p&gt;…&lt;/p&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">### Install [step]
+
+…
+
+### Write a page [step]
+
+…</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>Renders as:</p>
 <h3 data-step>Install</h3>
 <p>Pick a channel from the tabs above.</p>
@@ -182,12 +256,25 @@ title: Htmlpress</code></pre>
   clickable, an <code>icon</code> shows before the title in the accent colour, and its
   content is the card's body.
 </p>
-<pre><code class="language-html">&lt;htmlpress-cards&gt;
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;htmlpress-cards&gt;
   &lt;htmlpress-card title="Getting Started" href="/introduction/" icon="rocket"&gt;
     &lt;p&gt;Learn how to set up your first project.&lt;/p&gt;
   &lt;/htmlpress-card&gt;
   &lt;htmlpress-card title="Plain HTML"&gt;&lt;p&gt;…&lt;/p&gt;&lt;/htmlpress-card&gt;
 &lt;/htmlpress-cards&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">:::card{title="Getting Started" href="/introduction/" icon="rocket"}
+Learn how to set up your first project.
+:::
+
+:::card{title="Plain HTML"}
+…
+:::</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>Renders as:</p>
 <htmlpress-cards>
   <htmlpress-card title="Getting Started" href="/introduction/" icon="rocket">
@@ -220,8 +307,15 @@ title: Htmlpress</code></pre>
   <code>warning</code> or <code>destructive</code> for a tone; without it, solid in the
   accent.
 </p>
-<pre><code class="language-html">&lt;htmlpress-badge&gt;New&lt;/htmlpress-badge&gt;
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;htmlpress-badge&gt;New&lt;/htmlpress-badge&gt;
 &lt;htmlpress-badge variant="positive"&gt;Stable&lt;/htmlpress-badge&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">:badge[New] :badge[Stable]{variant="positive"}</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>
   Renders as:
   <htmlpress-badge>New</htmlpress-badge>
@@ -240,8 +334,17 @@ title: Htmlpress</code></pre>
   <code>warning</code> or <code>destructive</code> for a toned one; <code>size</code> is
   <code>sm</code> or <code>lg</code>.
 </p>
-<pre><code class="language-html">&lt;htmlpress-button href="/introduction/" label="Get Started"&gt;&lt;/htmlpress-button&gt;
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;htmlpress-button href="/introduction/" label="Get Started"&gt;&lt;/htmlpress-button&gt;
 &lt;htmlpress-button href="…" label="GitHub" variant="secondary"&gt;&lt;/htmlpress-button&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">::button[Get Started]{href="/introduction/"}
+
+::button[GitHub]{href="…" variant="secondary"}</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>Renders as:</p>
 <p>
   <htmlpress-button href="/introduction/" label="Get Started"></htmlpress-button>
@@ -266,7 +369,14 @@ title: Htmlpress</code></pre>
   same names go in the <code>icon</code> of a link or a section. An unknown name fails the
   build. These are the 114 built in:
 </p>
-<pre><code class="language-html">&lt;htmlpress-icon name="rocket"&gt;&lt;/htmlpress-icon&gt; Get started</code></pre>
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;htmlpress-icon name="rocket"&gt;&lt;/htmlpress-icon&gt; Get started</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">:icon{name="rocket"} Get started</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <htmlpress-columns cols="4">
   <p><htmlpress-icon name="activity"></htmlpress-icon> activity</p>
   <p><htmlpress-icon name="archive"></htmlpress-icon> archive</p>
@@ -391,12 +501,23 @@ title: Htmlpress</code></pre>
   A nested list inside <code>&lt;htmlpress-filetree&gt;</code>; an item holding a list is
   a folder.
 </p>
-<pre><code class="language-html">&lt;htmlpress-filetree&gt;
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;htmlpress-filetree&gt;
   &lt;ul&gt;
     &lt;li&gt;docs&lt;ul&gt;&lt;li&gt;index.html&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;
     &lt;li&gt;htmlpress.yaml&lt;/li&gt;
   &lt;/ul&gt;
 &lt;/htmlpress-filetree&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">:::filetree
+- docs
+  - index.html
+- htmlpress.yaml
+:::</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>Renders as:</p>
 <htmlpress-filetree>
   <ul>
@@ -422,10 +543,23 @@ title: Htmlpress</code></pre>
   default and up to four with <code>cols</code>, each
   <code>&lt;htmlpress-column&gt;</code> one column:
 </p>
-<pre><code class="language-html">&lt;htmlpress-columns cols="2"&gt;
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;htmlpress-columns cols="2"&gt;
   &lt;htmlpress-column&gt;&lt;p&gt;&lt;strong&gt;Left column&lt;/strong&gt; with content.&lt;/p&gt;&lt;/htmlpress-column&gt;
   &lt;htmlpress-column&gt;&lt;p&gt;&lt;strong&gt;Right column&lt;/strong&gt; with more content.&lt;/p&gt;&lt;/htmlpress-column&gt;
 &lt;/htmlpress-columns&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">:::column
+**Left column** with content.
+:::
+
+:::column
+**Right column** with more content.
+:::</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>Renders as:</p>
 <htmlpress-columns cols="2">
   <htmlpress-column>

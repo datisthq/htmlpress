@@ -10,7 +10,14 @@
 <p>Headings automatically get anchor IDs for linking.</p>
 
 <h2>Auto-generated IDs</h2>
-<pre><code class="language-html">&lt;h2&gt;My Heading&lt;/h2&gt;</code></pre>
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;h2&gt;My Heading&lt;/h2&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">## My Heading</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>
   Renders as <code>&lt;h2 id="my-heading"&gt;My Heading&lt;/h2&gt;</code>. Every
   <code>&lt;h2&gt;</code> to <code>&lt;h6&gt;</code> without an <code>id</code> gets one
@@ -20,7 +27,14 @@
 
 <h2 id="custom-ids">Custom Heading IDs</h2>
 <p>Give the heading its own <code>id</code> and htmlpress keeps it:</p>
-<pre><code class="language-html">&lt;h2 id="custom-id"&gt;My Heading&lt;/h2&gt;</code></pre>
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;h2 id="custom-id"&gt;My Heading&lt;/h2&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">## My Heading {#custom-id}</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>
   Link to it with <code>#custom-id</code>. Ids written in the page are reserved first, so
   a generated slug never takes one a link elsewhere points at. Give a heading an
@@ -52,8 +66,17 @@
   landmark for a stretch of the page that has no visible title. Any other value fails the
   build.
 </p>
-<pre><code class="language-html">&lt;h2 data-toc="false"&gt;Shown, not listed&lt;/h2&gt;
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;h2 data-toc="false"&gt;Shown, not listed&lt;/h2&gt;
 &lt;h2 data-toc="only"&gt;Listed, not shown&lt;/h2&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">## Shown, not listed [!toc]
+
+## Listed, not shown [toc]</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 
 <h2>Anchor Links on Hover</h2>
 <p>
@@ -69,5 +92,12 @@
   <code>&lt;h3&gt;</code>s with <code>max-level="3"</code>. A page without headings gets
   none.
 </p>
-<pre><code class="language-html">&lt;htmlpress-toc max-level="2"&gt;&lt;/htmlpress-toc&gt;</code></pre>
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;htmlpress-toc max-level="2"&gt;&lt;/htmlpress-toc&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">::toc{maxLevel="2"}</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <htmlpress-toc max-level="2"></htmlpress-toc>

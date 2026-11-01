@@ -30,13 +30,30 @@
   <code>&lt;head&gt;</code>。页面的 <code>&lt;link&gt;</code>、<code>&lt;style&gt;</code>
   和 <code>&lt;script&gt;</code> 会被保留，并添加到布局的 head 中，位于主题之后：
 </p>
-<pre><code class="language-html">&lt;title&gt;Version&lt;/title&gt;
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;title&gt;Version&lt;/title&gt;
 &lt;script type="module"&gt;
   document.querySelector("#version").textContent = "2.0.0"
 &lt;/script&gt;
 
 &lt;h1&gt;Version&lt;/h1&gt;
 &lt;p&gt;The current version is &lt;strong id="version"&gt;&lt;/strong&gt;.&lt;/p&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">---
+title: Version
+---
+
+&lt;script type="module"&gt;
+  document.querySelector("#version").textContent = "2.0.0"
+&lt;/script&gt;
+
+# Version
+
+The current version is &lt;strong id="version"&gt;&lt;/strong&gt;.</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>
   这是为高级用例准备的逃生舱。对于在多个页面之间共享的标记，请使用
   <a href="#包含文档">项目组件</a>。
@@ -47,8 +64,19 @@
   美元符号之间的 LaTeX 会在构建时渲染为 MathML，由浏览器原生绘制，无需脚本或 Web
   字体。单个美元符号表示行内公式，双美元符号表示居中的块级公式：
 </p>
-<pre><code class="language-html">&lt;p&gt;Inline: $E = mc^2$, with $x$, $\alpha$ or $\sum_{i=1}^{n} i$.&lt;/p&gt;
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;p&gt;Inline: $E = mc^2$, with $x$, $\alpha$ or $\sum_{i=1}^{n} i$.&lt;/p&gt;
 &lt;p&gt;$$\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}$$&lt;/p&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">Inline: $E = mc^2$, with $x$, $\alpha$ or $\sum_{i=1}^{n} i$.
+
+$$
+\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}
+$$</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>渲染为：</p>
 <p>行内：$E = mc^2$，以及 $x$、$\alpha$ 或 $\sum_{i=1}^{n} i$。</p>
 <p>$$\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}$$</p>
@@ -69,7 +97,16 @@
   <code>&lt;htmlpress-math&gt;</code> 无需美元符号即可写出同样的公式；
   <code>display</code> 让它成为块级公式：
 </p>
-<pre><code class="language-html">&lt;htmlpress-math display&gt;a^2 + b^2 = c^2&lt;/htmlpress-math&gt;</code></pre>
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;htmlpress-math display&gt;a^2 + b^2 = c^2&lt;/htmlpress-math&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">$$
+a^2 + b^2 = c^2
+$$</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <htmlpress-math display>a^2 + b^2 = c^2</htmlpress-math>
 <p>
   无效的 LaTeX 会导致构建失败，并给出解析器的报错信息。页面的 Markdown 副本保留
@@ -84,16 +121,39 @@
   <code>&amp;</code> 需要转义。只有包含图表的页面才会从 jsDelivr
   加载该库；离线时则显示源码。
 </p>
-<pre><code class="language-html">&lt;pre&gt;&lt;code class="language-mermaid"&gt;flowchart LR
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;pre&gt;&lt;code class="language-mermaid"&gt;flowchart LR
   pages[HTML pages] --&amp;gt; build[htmlpress build] --&amp;gt; site[Static site]&lt;/code&gt;&lt;/pre&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">```mermaid
+flowchart LR
+  pages[HTML pages] --&gt; build[htmlpress build] --&gt; site[Static site]
+```</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>渲染为：</p>
 <pre><code class="language-mermaid">flowchart LR
   pages[HTML pages] --&gt; build[htmlpress build] --&gt; site[Static site]</code></pre>
-<pre><code class="language-html">&lt;pre&gt;&lt;code class="language-mermaid"&gt;pie title Languages
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;pre&gt;&lt;code class="language-mermaid"&gt;pie title Languages
   "Rust" : 45
   "TypeScript" : 30
   "Python" : 15
   "Other" : 10&lt;/code&gt;&lt;/pre&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">```mermaid
+pie title Languages
+  "Rust" : 45
+  "TypeScript" : 30
+  "Python" : 15
+  "Other" : 10
+```</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>渲染为：</p>
 <pre><code class="language-mermaid">pie title Languages
   "Rust" : 45
@@ -129,11 +189,22 @@
     <li>guide.html</li>
   </ul>
 </htmlpress-filetree>
-<pre><code class="language-html">&lt;!-- .htmlpress/components/disclaimer/disclaimer.html --&gt;
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;!-- .htmlpress/components/disclaimer/disclaimer.html --&gt;
 &lt;aside&gt;&lt;p&gt;Provided as-is, without warranty.&lt;/p&gt;&lt;/aside&gt;
 
 &lt;!-- guide.html --&gt;
 &lt;htmlpress-disclaimer&gt;&lt;/htmlpress-disclaimer&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">&lt;!-- .htmlpress/components/disclaimer/disclaimer.html --&gt;
+&lt;aside&gt;&lt;p&gt;Provided as-is, without warranty.&lt;/p&gt;&lt;/aside&gt;
+
+&lt;!-- guide.md --&gt;
+::disclaimer</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <ul>
   <li>
     它的 <code>.css</code> 和
@@ -158,14 +229,28 @@
   文件取其 body，<code>.md</code>
   文件会被渲染（去掉其前置元数据），其他任何文件则作为代码块，以文件名为标题，并按扩展名进行高亮。
 </p>
-<pre><code class="language-html">&lt;htmlpress-include src="../includes/disclaimer.md"&gt;&lt;/htmlpress-include&gt;</code></pre>
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;htmlpress-include src="../includes/disclaimer.md"&gt;&lt;/htmlpress-include&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">::include{file="../includes/disclaimer.md"}</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>渲染为：</p>
 <htmlpress-include src="../includes/disclaimer.md"></htmlpress-include>
 <p>
   代码文件接受代码块属性，例如 <code>data-lines</code>、<code>data-line-numbers</code> 或
   <code>data-title</code>（它会替换文件名）：
 </p>
-<pre><code class="language-html">&lt;htmlpress-include src="../includes/build.ts" data-lines="3"&gt;&lt;/htmlpress-include&gt;</code></pre>
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;htmlpress-include src="../includes/build.ts" data-lines="3"&gt;&lt;/htmlpress-include&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-html">&lt;htmlpress-include src="../includes/build.ts" data-lines="3"&gt;&lt;/htmlpress-include&gt;</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>渲染为：</p>
 <htmlpress-include src="../includes/build.ts" data-lines="3"></htmlpress-include>
 <ul>

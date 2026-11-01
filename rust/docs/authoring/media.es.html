@@ -18,7 +18,14 @@
   Referencia imágenes de tu proyecto; cada archivo que no es una página se copia a la
   salida en la misma ruta:
 </p>
-<pre><code class="language-html">&lt;img src="/screenshots/docs.webp" alt="An htmlpress docs page"&gt;</code></pre>
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;img src="/screenshots/docs.webp" alt="An htmlpress docs page"&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">![An htmlpress docs page](/screenshots/docs.webp)</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>
   Un <code>src</code>, <code>srcset</code> o <code>poster</code> relativo se resuelve
   desde el archivo fuente de la página, así que sigue funcionando en la URL de carpeta de
@@ -37,7 +44,14 @@
 
 <h2>Imágenes externas</h2>
 <p>Referencia imágenes desde URL externas:</p>
-<pre><code class="language-html">&lt;img src="https://picsum.photos/seed/htmlpress/800/300" alt="Placeholder"&gt;</code></pre>
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;img src="https://picsum.photos/seed/htmlpress/800/300" alt="Placeholder"&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">![Placeholder](https://picsum.photos/seed/htmlpress/800/300)</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>Se renderiza como:</p>
 <p>
   <img
@@ -50,7 +64,14 @@
 
 <h2>Imágenes en Base64</h2>
 <p>Incrusta imágenes pequeñas directamente con URI de datos:</p>
-<pre><code class="language-html">&lt;img src="data:image/png;base64,iVBORw0KGgo…" alt="banner"&gt;</code></pre>
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;img src="data:image/png;base64,iVBORw0KGgo…" alt="banner"&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">![banner](data:image/png;base64,iVBORw0KGgo…)</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>Se renderiza como:</p>
 <p>
   <img
@@ -69,8 +90,16 @@
   <code>#light</code> y <code>#dark</code> de Livemark en el <code>src</code> también
   funcionan. Pon la pareja una junto a otra:
 </p>
-<pre><code class="language-html">&lt;img src="/screenshots/docs.webp" alt="The docs" data-theme="light"&gt;
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;img src="/screenshots/docs.webp" alt="The docs" data-theme="light"&gt;
 &lt;img src="/screenshots/docs-dark.webp" alt="The docs" data-theme="dark"&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">![The docs](/screenshots/docs.webp#light)
+![The docs](/screenshots/docs-dark.webp#dark)</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>Se renderiza como (cambia el tema para alternar):</p>
 <p>
   <img
@@ -92,7 +121,14 @@
   envuelve un enlace; un clic en cualquier sitio la cierra. Funciona igual con imágenes
   internas, externas y en base64.
 </p>
-<pre><code class="language-html">&lt;img src="screenshot.png" alt="The docs site"&gt;</code></pre>
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;img src="screenshot.png" alt="The docs site"&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">![The docs site](screenshot.png)</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>Se renderiza como (haz clic):</p>
 <p>
   <img
@@ -109,7 +145,14 @@
   <code>url</code> (una URL <code>watch</code>, <code>youtu.be</code>, <code>embed</code>,
   <code>shorts</code> o <code>live</code>); sin el script sigue siendo un enlace:
 </p>
-<pre><code class="language-html">&lt;htmlpress-video type="youtube" url="https://www.youtube.com/watch?v=dQw4w9WgXcQ"&gt;&lt;/htmlpress-video&gt;</code></pre>
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;htmlpress-video type="youtube" url="https://www.youtube.com/watch?v=dQw4w9WgXcQ"&gt;&lt;/htmlpress-video&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">::video{type="youtube" url="https://www.youtube.com/watch?v=dQw4w9WgXcQ"}</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>Se renderiza como:</p>
 <htmlpress-video
   type="youtube"
@@ -121,7 +164,14 @@
   <code>&lt;htmlpress-audio type="soundcloud" url&gt;</code> reproduce la pista de su
   <code>url</code>; sin el script sigue siendo un enlace:
 </p>
-<pre><code class="language-html">&lt;htmlpress-audio type="soundcloud" url="https://soundcloud.com/flume/never-be-like-you-feat-kai"&gt;&lt;/htmlpress-audio&gt;</code></pre>
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;htmlpress-audio type="soundcloud" url="https://soundcloud.com/flume/never-be-like-you-feat-kai"&gt;&lt;/htmlpress-audio&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">::audio{type="soundcloud" url="https://soundcloud.com/flume/never-be-like-you-feat-kai"}</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>Se renderiza como:</p>
 <htmlpress-audio
   type="soundcloud"

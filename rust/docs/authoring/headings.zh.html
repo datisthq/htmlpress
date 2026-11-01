@@ -7,7 +7,14 @@
 <p>标题会自动获得用于链接的锚点 ID。</p>
 
 <h2>自动生成的 ID</h2>
-<pre><code class="language-html">&lt;h2&gt;My Heading&lt;/h2&gt;</code></pre>
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;h2&gt;My Heading&lt;/h2&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">## My Heading</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>
   渲染为 <code>&lt;h2 id="my-heading"&gt;My Heading&lt;/h2&gt;</code>。每个没有
   <code>id</code> 的 <code>&lt;h2&gt;</code> 到
@@ -18,7 +25,14 @@
 
 <h2 id="custom-ids">自定义标题 ID</h2>
 <p>为标题设置自己的 <code>id</code>，htmlpress 会保留它：</p>
-<pre><code class="language-html">&lt;h2 id="custom-id"&gt;My Heading&lt;/h2&gt;</code></pre>
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;h2 id="custom-id"&gt;My Heading&lt;/h2&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">## My Heading {#custom-id}</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>
   用 <code>#custom-id</code> 链接到它。页面中手写的 ID 会被优先保留，因此生成的 slug
   永远不会占用其他地方链接所指向的 ID。只有当某个链接需要固定的 ID 时，才为标题设置
@@ -47,8 +61,17 @@
   <code>data-toc="false"</code> 让标题留在页面上但不进入目录；<code>data-toc="only"</code>
   则把标题列入目录但不在页面上显示，用作页面中没有可见标题的一段内容的地标。其他任何值都会导致构建失败。
 </p>
-<pre><code class="language-html">&lt;h2 data-toc="false"&gt;Shown, not listed&lt;/h2&gt;
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;h2 data-toc="false"&gt;Shown, not listed&lt;/h2&gt;
 &lt;h2 data-toc="only"&gt;Listed, not shown&lt;/h2&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">## Shown, not listed [!toc]
+
+## Listed, not shown [toc]</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 
 <h2>悬停时的锚点链接</h2>
 <p>
@@ -65,5 +88,12 @@
   <code>&lt;h2&gt;</code>，<code>max-level="3"</code> 则包含到
   <code>&lt;h3&gt;</code>。没有标题的页面不会生成目录。
 </p>
-<pre><code class="language-html">&lt;htmlpress-toc max-level="2"&gt;&lt;/htmlpress-toc&gt;</code></pre>
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;htmlpress-toc max-level="2"&gt;&lt;/htmlpress-toc&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">::toc{maxLevel="2"}</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <htmlpress-toc max-level="2"></htmlpress-toc>

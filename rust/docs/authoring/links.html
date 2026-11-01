@@ -17,8 +17,16 @@
 
 <h2>Internal Links</h2>
 <p>Link to other pages in your documentation, root-relative or relative to the page:</p>
-<pre><code class="language-html">&lt;a href="/introduction/"&gt;Introduction&lt;/a&gt;
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;a href="/introduction/"&gt;Introduction&lt;/a&gt;
 &lt;a href="headings.html"&gt;Headings&lt;/a&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">[Introduction](/introduction/)
+[Headings](headings.html)</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>Renders as: <a href="/introduction/">Introduction</a></p>
 <p>
   With <code>base</code> set in <code>htmlpress.yaml</code>, every root-relative URL in
@@ -37,12 +45,26 @@
 
 <h2>External Links</h2>
 <p>Link to external resources:</p>
-<pre><code class="language-html">&lt;a href="https://github.com"&gt;GitHub&lt;/a&gt;</code></pre>
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;a href="https://github.com"&gt;GitHub&lt;/a&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">[GitHub](https://github.com)</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>Renders as: <a href="https://github.com">GitHub</a></p>
 
 <h2>Anchor Links</h2>
 <p>Link to a specific heading on the current page by its id:</p>
-<pre><code class="language-html">&lt;a href="#internal-links"&gt;See Internal Links&lt;/a&gt;</code></pre>
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;a href="#internal-links"&gt;See Internal Links&lt;/a&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">[See Internal Links](#internal-links)</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>Renders as: <a href="#internal-links">See Internal Links</a></p>
 <p>
   A heading on another page is its URL plus the id:
@@ -56,10 +78,24 @@
   <code>http://</code> and <code>https://</code> URLs, <code>www.</code> addresses and
   emails. Trailing punctuation stays outside the link.
 </p>
-<pre><code class="language-html">&lt;p&gt;See https://htmlpress.dev, or mail team@example.com.&lt;/p&gt;</code></pre>
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;p&gt;See https://htmlpress.dev, or mail team@example.com.&lt;/p&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">See https://htmlpress.dev, or mail team@example.com.</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>Renders as: See https://htmlpress.dev, or mail team@example.com.</p>
 <p>
   Text in links, code, code blocks and terminals stays as written, and so does any element
   with <code>data-literal</code>, for prose that must show a raw URL:
 </p>
-<pre><code class="language-html">&lt;p data-literal&gt;Type https://htmlpress.dev in the address bar.&lt;/p&gt;</code></pre>
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;p data-literal&gt;Type https://htmlpress.dev in the address bar.&lt;/p&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-html">&lt;p data-literal&gt;Type https://htmlpress.dev in the address bar.&lt;/p&gt;</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>

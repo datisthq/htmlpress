@@ -17,8 +17,16 @@
 
 <h2>内部链接</h2>
 <p>链接到文档中的其他页面，可以相对于根目录，也可以相对于当前页面：</p>
-<pre><code class="language-html">&lt;a href="/introduction/"&gt;Introduction&lt;/a&gt;
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;a href="/introduction/"&gt;Introduction&lt;/a&gt;
 &lt;a href="headings.html"&gt;Headings&lt;/a&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">[Introduction](/introduction/)
+[Headings](headings.html)</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>渲染为：<a href="/zh/introduction/">简介</a></p>
 <p>
   在 <code>htmlpress.yaml</code> 中设置 <code>base</code> 后，构建中的每个根相对 URL（位于
@@ -36,12 +44,26 @@
 
 <h2>外部链接</h2>
 <p>链接到外部资源：</p>
-<pre><code class="language-html">&lt;a href="https://github.com"&gt;GitHub&lt;/a&gt;</code></pre>
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;a href="https://github.com"&gt;GitHub&lt;/a&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">[GitHub](https://github.com)</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>渲染为：<a href="https://github.com">GitHub</a></p>
 
 <h2>锚点链接</h2>
 <p>通过 ID 链接到当前页面的某个标题：</p>
-<pre><code class="language-html">&lt;a href="#internal-links"&gt;See Internal Links&lt;/a&gt;</code></pre>
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;a href="#internal-links"&gt;See Internal Links&lt;/a&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">[See Internal Links](#internal-links)</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>渲染为：<a href="#内部链接">参见内部链接</a></p>
 <p>
   其他页面上的标题就是该页 URL 加上 ID：
@@ -55,10 +77,24 @@
   <code>http://</code> 和 <code>https://</code> URL、<code>www.</code>
   地址以及电子邮件地址。末尾的标点留在链接之外。
 </p>
-<pre><code class="language-html">&lt;p&gt;See https://htmlpress.dev, or mail team@example.com.&lt;/p&gt;</code></pre>
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;p&gt;See https://htmlpress.dev, or mail team@example.com.&lt;/p&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">See https://htmlpress.dev, or mail team@example.com.</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>渲染为：详见 https://htmlpress.dev ，或发邮件至 team@example.com 。</p>
 <p>
   链接、代码、代码块和终端中的文本保持原样，任何带
   <code>data-literal</code> 的元素也是如此，适用于必须显示原始 URL 的正文：
 </p>
-<pre><code class="language-html">&lt;p data-literal&gt;Type https://htmlpress.dev in the address bar.&lt;/p&gt;</code></pre>
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;p data-literal&gt;Type https://htmlpress.dev in the address bar.&lt;/p&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-html">&lt;p data-literal&gt;Type https://htmlpress.dev in the address bar.&lt;/p&gt;</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>

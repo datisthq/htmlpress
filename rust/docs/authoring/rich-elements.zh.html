@@ -18,10 +18,19 @@
   <code>&lt;table&gt;</code> 会直接应用样式，带有 <code>&lt;thead&gt;</code>
   的表格点击任意表头即可按该列排序：
 </p>
-<pre><code class="language-html">&lt;table&gt;
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;table&gt;
   &lt;thead&gt;&lt;tr&gt;&lt;th&gt;Language&lt;/th&gt;&lt;th&gt;Year&lt;/th&gt;&lt;th&gt;Typing&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
   &lt;tbody&gt;&lt;tr&gt;&lt;td&gt;TypeScript&lt;/td&gt;&lt;td&gt;2012&lt;/td&gt;&lt;td&gt;Static&lt;/td&gt;&lt;/tr&gt;…&lt;/tbody&gt;
 &lt;/table&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">| Language | Year | Typing |
+| --- | --- | --- |
+| TypeScript | 2012 | Static |</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>渲染为：</p>
 <table>
   <thead>
@@ -63,11 +72,24 @@
   >
   会替换该类型自带的标题：
 </p>
-<pre><code class="language-html">&lt;htmlpress-callout&gt;&lt;p&gt;This is a note.&lt;/p&gt;&lt;/htmlpress-callout&gt;
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;htmlpress-callout&gt;&lt;p&gt;This is a note.&lt;/p&gt;&lt;/htmlpress-callout&gt;
 
 &lt;htmlpress-callout type="warning" title="Breaking Change"&gt;
   &lt;p&gt;This API has been removed in v2.&lt;/p&gt;
 &lt;/htmlpress-callout&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">:::info
+This is a note.
+:::
+
+:::warning[Breaking Change]
+This API has been removed in v2.
+:::</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>渲染为：</p>
 <htmlpress-callout><p>这是一条注释。</p></htmlpress-callout>
 <htmlpress-callout type="tip"><p>所有页面均已构建。</p></htmlpress-callout>
@@ -82,10 +104,19 @@
 
 <h2>可展开内容</h2>
 <p>无需组件：主题会为普通的 <code>&lt;details&gt;</code> 设置样式。</p>
-<pre><code class="language-html">&lt;details&gt;
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;details&gt;
   &lt;summary&gt;Click to expand&lt;/summary&gt;
   &lt;p&gt;Hidden content here with &lt;strong&gt;HTML&lt;/strong&gt; support.&lt;/p&gt;
 &lt;/details&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">:::details[Click to expand]
+Hidden content here with **Markdown** support.
+:::</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>渲染为：</p>
 <details>
   <summary>点击展开</summary>
@@ -103,10 +134,23 @@ title: Htmlpress</code></pre>
   只包含代码块的标签页会合并为一个带边框的块。每个
   <code>&lt;section&gt;</code> 是一个标签页，以其 <code>title</code> 命名：
 </p>
-<pre><code class="language-html">&lt;htmlpress-tabs sync="lang"&gt;
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;htmlpress-tabs sync="lang"&gt;
   &lt;htmlpress-tab title="JavaScript"&gt;&lt;pre&gt;&lt;code&gt;console.log("hello")&lt;/code&gt;&lt;/pre&gt;&lt;/htmlpress-tab&gt;
   &lt;htmlpress-tab title="Python"&gt;&lt;pre&gt;&lt;code&gt;print("hello")&lt;/code&gt;&lt;/pre&gt;&lt;/htmlpress-tab&gt;
 &lt;/htmlpress-tabs&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">```js tab="JavaScript" sync="lang"
+console.log("hello")
+```
+
+```python tab="Python"
+print("hello")
+```</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>渲染为：</p>
 <htmlpress-tabs sync="lang">
   <htmlpress-tab title="JavaScript">
@@ -130,11 +174,28 @@ title: Htmlpress</code></pre>
   <code>sync</code> 键的其他组都会切换到对应的标签页，并且该选择会通过
   <code>localStorage</code> 在页面之间记住。
 </p>
-<pre><code class="language-html">&lt;htmlpress-tabs sync="channel"&gt;
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;htmlpress-tabs sync="channel"&gt;
   &lt;htmlpress-tab title="cargo"&gt;&lt;p&gt;From crates.io, built on your machine.&lt;/p&gt;&lt;/htmlpress-tab&gt;
   &lt;htmlpress-tab title="npm"&gt;&lt;p&gt;A prebuilt binary per platform.&lt;/p&gt;&lt;/htmlpress-tab&gt;
   &lt;htmlpress-tab title="pip"&gt;&lt;p&gt;A binary wheel.&lt;/p&gt;&lt;/htmlpress-tab&gt;
 &lt;/htmlpress-tabs&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">:::tab{title="cargo" sync="channel"}
+From crates.io, built on your machine.
+:::
+
+:::tab{title="npm"}
+A prebuilt binary per platform.
+:::
+
+:::tab{title="pip"}
+A binary wheel.
+:::</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>渲染为（两个组共享 <code>sync="channel"</code>；切换其中一个试试）：</p>
 <htmlpress-tabs sync="channel">
   <htmlpress-tab title="cargo">
@@ -158,10 +219,23 @@ title: Htmlpress</code></pre>
   带 <code>data-step</code> 的标题是一个带编号的步骤，步骤在整个页面中依次计数；
   其内容照常跟在后面。这些标题不会进入页面目录。
 </p>
-<pre><code class="language-html">&lt;h3 data-step&gt;Install&lt;/h3&gt;
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;h3 data-step&gt;Install&lt;/h3&gt;
 &lt;p&gt;…&lt;/p&gt;
 &lt;h3 data-step&gt;Write a page&lt;/h3&gt;
 &lt;p&gt;…&lt;/p&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">### Install [step]
+
+…
+
+### Write a page [step]
+
+…</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>渲染为：</p>
 <h3 data-step>安装</h3>
 <p>从上面的标签页中选择一个渠道。</p>
@@ -176,12 +250,25 @@ title: Htmlpress</code></pre>
   <code>title</code> 是它的标题，<code>href</code> 让整张卡片可点击，<code>icon</code>
   以强调色显示在标题前，卡片的内容就是它的正文。
 </p>
-<pre><code class="language-html">&lt;htmlpress-cards&gt;
-  &lt;htmlpress-card title="Getting Started" href="/introduction/"&gt;
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;htmlpress-cards&gt;
+  &lt;htmlpress-card title="Getting Started" href="/introduction/" icon="rocket"&gt;
     &lt;p&gt;Learn how to set up your first project.&lt;/p&gt;
   &lt;/htmlpress-card&gt;
   &lt;htmlpress-card title="Plain HTML"&gt;&lt;p&gt;…&lt;/p&gt;&lt;/htmlpress-card&gt;
 &lt;/htmlpress-cards&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">:::card{title="Getting Started" href="/introduction/" icon="rocket"}
+Learn how to set up your first project.
+:::
+
+:::card{title="Plain HTML"}
+…
+:::</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>渲染为：</p>
 <htmlpress-cards>
   <htmlpress-card title="快速开始" href="/zh/introduction/">
@@ -205,8 +292,15 @@ title: Htmlpress</code></pre>
   <code>outline</code> 时样式更朴素，为 <code>positive</code>、<code>warning</code> 或
   <code>destructive</code> 时带有色调；不设置时使用强调色。
 </p>
-<pre><code class="language-html">&lt;htmlpress-badge&gt;New&lt;/htmlpress-badge&gt;
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;htmlpress-badge&gt;New&lt;/htmlpress-badge&gt;
 &lt;htmlpress-badge variant="positive"&gt;Stable&lt;/htmlpress-badge&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">:badge[New] :badge[Stable]{variant="positive"}</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>
   渲染为：
   <htmlpress-badge>新</htmlpress-badge>
@@ -226,8 +320,17 @@ title: Htmlpress</code></pre>
   <code>destructive</code> 时带有色调；<code>size</code> 可以是 <code>sm</code> 或
   <code>lg</code>。
 </p>
-<pre><code class="language-html">&lt;htmlpress-button href="/introduction/" label="Get Started"&gt;&lt;/htmlpress-button&gt;
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;htmlpress-button href="/introduction/" label="Get Started"&gt;&lt;/htmlpress-button&gt;
 &lt;htmlpress-button href="…" label="GitHub" variant="secondary"&gt;&lt;/htmlpress-button&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">::button[Get Started]{href="/introduction/"}
+
+::button[GitHub]{href="…" variant="secondary"}</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>渲染为：</p>
 <p>
   <htmlpress-button href="/zh/introduction/" label="快速开始"></htmlpress-button>
@@ -252,7 +355,14 @@ title: Htmlpress</code></pre>
   图标，使用文本的颜色和大小；同样的名称也可用于链接或分区的
   <code>icon</code>。未知的名称会导致构建失败。以下是全部 114 个内置图标：
 </p>
-<pre><code class="language-html">&lt;htmlpress-icon name="rocket"&gt;&lt;/htmlpress-icon&gt; Get started</code></pre>
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;htmlpress-icon name="rocket"&gt;&lt;/htmlpress-icon&gt; Get started</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">:icon{name="rocket"} Get started</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <htmlpress-columns cols="4">
   <p><htmlpress-icon name="activity"></htmlpress-icon> activity</p>
   <p><htmlpress-icon name="archive"></htmlpress-icon> archive</p>
@@ -374,12 +484,23 @@ title: Htmlpress</code></pre>
 
 <h2>文件树</h2>
 <p><code>&lt;htmlpress-filetree&gt;</code> 中的嵌套列表；包含列表的项即为文件夹。</p>
-<pre><code class="language-html">&lt;htmlpress-filetree&gt;
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;htmlpress-filetree&gt;
   &lt;ul&gt;
     &lt;li&gt;docs&lt;ul&gt;&lt;li&gt;index.html&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;
     &lt;li&gt;htmlpress.yaml&lt;/li&gt;
   &lt;/ul&gt;
 &lt;/htmlpress-filetree&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">:::filetree
+- docs
+  - index.html
+- htmlpress.yaml
+:::</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>渲染为：</p>
 <htmlpress-filetree>
   <ul>
@@ -404,10 +525,23 @@ title: Htmlpress</code></pre>
   <code>&lt;htmlpress-columns&gt;</code> 把子元素并排布局，默认两列，用
   <code>cols</code> 最多四列，每个 <code>&lt;htmlpress-column&gt;</code> 是一列：
 </p>
-<pre><code class="language-html">&lt;htmlpress-columns cols="2"&gt;
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;htmlpress-columns cols="2"&gt;
   &lt;htmlpress-column&gt;&lt;p&gt;&lt;strong&gt;Left column&lt;/strong&gt; with content.&lt;/p&gt;&lt;/htmlpress-column&gt;
   &lt;htmlpress-column&gt;&lt;p&gt;&lt;strong&gt;Right column&lt;/strong&gt; with more content.&lt;/p&gt;&lt;/htmlpress-column&gt;
 &lt;/htmlpress-columns&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">:::column
+**Left column** with content.
+:::
+
+:::column
+**Right column** with more content.
+:::</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>渲染为：</p>
 <htmlpress-columns cols="2">
   <htmlpress-column>

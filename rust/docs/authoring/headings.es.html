@@ -10,7 +10,14 @@
 <p>Los encabezados reciben automáticamente ID de ancla para poder enlazarlos.</p>
 
 <h2>ID generados automáticamente</h2>
-<pre><code class="language-html">&lt;h2&gt;My Heading&lt;/h2&gt;</code></pre>
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;h2&gt;My Heading&lt;/h2&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">## My Heading</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>
   Se renderiza como <code>&lt;h2 id="my-heading"&gt;My Heading&lt;/h2&gt;</code>. Cada
   <code>&lt;h2&gt;</code> a <code>&lt;h6&gt;</code> sin <code>id</code> recibe uno a
@@ -21,7 +28,14 @@
 
 <h2 id="custom-ids">ID de encabezado personalizados</h2>
 <p>Dale al encabezado su propio <code>id</code> y htmlpress lo conserva:</p>
-<pre><code class="language-html">&lt;h2 id="custom-id"&gt;My Heading&lt;/h2&gt;</code></pre>
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;h2 id="custom-id"&gt;My Heading&lt;/h2&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">## My Heading {#custom-id}</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>
   Enlázalo con <code>#custom-id</code>. Los id escritos en la página se reservan primero,
   así que un slug generado nunca ocupa uno al que apunta un enlace desde otro sitio. Dale
@@ -53,8 +67,17 @@
   mostrarlo, como punto de referencia para un tramo de la página que no tiene título
   visible. Cualquier otro valor hace fallar la compilación.
 </p>
-<pre><code class="language-html">&lt;h2 data-toc="false"&gt;Shown, not listed&lt;/h2&gt;
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;h2 data-toc="false"&gt;Shown, not listed&lt;/h2&gt;
 &lt;h2 data-toc="only"&gt;Listed, not shown&lt;/h2&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">## Shown, not listed [!toc]
+
+## Listed, not shown [toc]</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 
 <h2>Enlaces de ancla al pasar el ratón</h2>
 <p>
@@ -70,5 +93,12 @@
   <code>max-level="2"</code>, y hasta los <code>&lt;h3&gt;</code> con
   <code>max-level="3"</code>. Una página sin encabezados no recibe ninguna.
 </p>
-<pre><code class="language-html">&lt;htmlpress-toc max-level="2"&gt;&lt;/htmlpress-toc&gt;</code></pre>
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;htmlpress-toc max-level="2"&gt;&lt;/htmlpress-toc&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">::toc{maxLevel="2"}</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <htmlpress-toc max-level="2"></htmlpress-toc>

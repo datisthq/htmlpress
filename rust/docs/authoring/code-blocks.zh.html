@@ -12,7 +12,16 @@
   <code>&amp;amp;</code>。代码块的标签页在
   <a href="/zh/authoring/rich-elements/">代码标签页</a>中介绍。
 </p>
-<pre><code class="language-html">&lt;pre&gt;&lt;code&gt;const greeting = "&amp;lt;hello&amp;gt;"&lt;/code&gt;&lt;/pre&gt;</code></pre>
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;pre&gt;&lt;code&gt;const greeting = "&amp;lt;hello&amp;gt;"&lt;/code&gt;&lt;/pre&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">```
+const greeting = "&lt;hello&gt;"
+```</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>渲染为：</p>
 <pre><code>const greeting = "&lt;hello&gt;"</code></pre>
 <h2>语法高亮</h2>
@@ -22,9 +31,20 @@
   <a href="/zh/customization/syntax-themes/">语法主题</a>）。内置支持 220
   多种语言及其常用别名（<code>ts</code>、<code>sh</code>、<code>yml</code>）；未知语言或自带标记的代码块保持纯文本。
 </p>
-<pre><code class="language-html">&lt;pre&gt;&lt;code class="language-rust"&gt;fn main() {
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;pre&gt;&lt;code class="language-rust"&gt;fn main() {
     println!("hello");
 }&lt;/code&gt;&lt;/pre&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">```rust
+fn main() {
+    println!("hello");
+}
+```</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>渲染为：</p>
 <pre><code class="language-rust">fn main() {
     println!("hello");
@@ -35,7 +55,16 @@
   <code>&lt;pre&gt;</code> 上的
   <code>data-title</code> 会为代码块添加标题栏，通常是文件名；无论代码块是否高亮都有效。
 </p>
-<pre><code class="language-html">&lt;pre data-title="htmlpress.yaml"&gt;&lt;code class="language-yaml"&gt;title: Htmlpress&lt;/code&gt;&lt;/pre&gt;</code></pre>
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;pre data-title="htmlpress.yaml"&gt;&lt;code class="language-yaml"&gt;title: Htmlpress&lt;/code&gt;&lt;/pre&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">```yaml title="htmlpress.yaml"
+title: Htmlpress
+```</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>渲染为：</p>
 <pre data-title="htmlpress.yaml"><code class="language-yaml">title: Htmlpress</code></pre>
 
@@ -44,7 +73,16 @@
   高亮代码块上的 <code>data-lines</code> 用于标记行，从 1
   开始计数：可以是单行或范围，以逗号分隔。
 </p>
-<pre><code class="language-html">&lt;pre&gt;&lt;code class="language-js" data-lines="2"&gt;…&lt;/code&gt;&lt;/pre&gt;</code></pre>
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;pre&gt;&lt;code class="language-js" data-lines="2"&gt;…&lt;/code&gt;&lt;/pre&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">```js lines="2"
+…
+```</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <pre><code class="language-js" data-lines="2">const a = 1
 const b = 2
 const c = 3</code></pre>
@@ -55,7 +93,16 @@ const c = 3</code></pre>
   <code>data-words</code>
   会标记每个逗号分隔单词的所有出现位置。被语法拆分成两个词法单元的单词不会被标记。
 </p>
-<pre><code class="language-html">&lt;pre&gt;&lt;code class="language-js" data-words="greeting"&gt;…&lt;/code&gt;&lt;/pre&gt;</code></pre>
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;pre&gt;&lt;code class="language-js" data-words="greeting"&gt;…&lt;/code&gt;&lt;/pre&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">```js words="greeting"
+…
+```</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <pre><code class="language-js" data-words="greeting">const greeting = "hello"
 console.log(greeting)</code></pre>
 
@@ -74,7 +121,16 @@ const b = 2</code></pre>
   <code>−</code>。在<a href="#终端">终端</a>中，<code>&lt;ins&gt;</code> 和
   <code>&lt;del&gt;</code> 会把输出着色为绿色和红色。
 </p>
-<pre><code class="language-html">&lt;pre&gt;&lt;code class="language-js" data-remove="1" data-add="2"&gt;…&lt;/code&gt;&lt;/pre&gt;</code></pre>
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;pre&gt;&lt;code class="language-js" data-remove="1" data-add="2"&gt;…&lt;/code&gt;&lt;/pre&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">```js remove="1" add="2"
+…
+```</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <pre><code class="language-js" data-remove="1" data-add="2">const port = 8080
 const port = 8000
 serve(port)</code></pre>
@@ -99,16 +155,36 @@ const unused = 1</code></pre>
   用 <code>&lt;details&gt;</code> 包裹较长的代码块，可将其隐藏在
   <code>&lt;summary&gt;</code> 之后：
 </p>
-<pre><code class="language-html">&lt;details&gt;
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;details&gt;
   &lt;summary&gt;The full config&lt;/summary&gt;
   &lt;pre&gt;&lt;code&gt;…&lt;/code&gt;&lt;/pre&gt;
 &lt;/details&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">:::details[The full config]
+```
+…
+```
+:::</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>
   <code>&lt;pre&gt;</code> 上的
   <code>data-collapse</code>
   只显示前几行，代码块下方会出现一个“展开”栏用于显示其余部分；没有脚本时，代码块改为可滚动。不超过该高度的代码块不会出现展开栏。
 </p>
-<pre><code class="language-html">&lt;pre data-collapse="5"&gt;&lt;code class="language-yaml"&gt;…&lt;/code&gt;&lt;/pre&gt;</code></pre>
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;pre data-collapse="5"&gt;&lt;code class="language-yaml"&gt;…&lt;/code&gt;&lt;/pre&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">```yaml collapse="5"
+…
+```</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <pre data-collapse="5"><code class="language-yaml">steps:
   build: 1
   build: 2
@@ -130,8 +206,16 @@ const unused = 1</code></pre>
   <code>&amp;#27;</code>：支持 16 色、256
   色和真彩色形式，以及粗体、暗淡、斜体、下划线和删除线。其他转义序列会被丢弃。
 </p>
-<pre><code class="language-html">&lt;pre&gt;&lt;code class="language-ansi"&gt;&amp;#27;[32m✓&amp;#27;[0m built 48 pages
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;pre&gt;&lt;code class="language-ansi"&gt;&amp;#27;[32m✓&amp;#27;[0m built 48 pages
 &amp;#27;[1;31merror&amp;#27;[0m: index.html: no title&lt;/code&gt;&lt;/pre&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-html">&lt;pre&gt;&lt;code class="language-ansi"&gt;&amp;#27;[32m✓&amp;#27;[0m built 48 pages
+&amp;#27;[1;31merror&amp;#27;[0m: index.html: no title&lt;/code&gt;&lt;/pre&gt;</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>渲染为：</p>
 <pre><code class="language-ansi">&#27;[32m✓&#27;[0m built 48 pages
 &#27;[1;31merror&#27;[0m: index.html: no title</code></pre>
@@ -159,9 +243,18 @@ const unused = 1</code></pre>
   <code>npx</code> 命令，构建时会把它转换为 npm、pnpm、yarn 和 bun
   的标签页，并在全站同步。其他行保持原样。
 </p>
-<pre><code class="language-html">&lt;htmlpress-package-tabs&gt;
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;htmlpress-package-tabs&gt;
   &lt;pre&gt;&lt;code&gt;npm install --save-dev gethtmlpress&lt;/code&gt;&lt;/pre&gt;
 &lt;/htmlpress-package-tabs&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">```npm
+npm install --save-dev gethtmlpress
+```</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>渲染为：</p>
 <htmlpress-package-tabs>
   <pre><code>npm install --save-dev gethtmlpress</code></pre>
@@ -176,11 +269,22 @@ const unused = 1</code></pre>
   表示普通输出，<code>&lt;ins&gt;</code>、<code>&lt;del&gt;</code> 和
   <code>&lt;mark&gt;</code> 分别表示绿色、红色和黄色的输出。
 </p>
-<pre><code class="language-html">&lt;htmlpress-terminal title="zsh"&gt;
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;htmlpress-terminal title="zsh"&gt;
   &lt;pre&gt;&lt;kbd&gt;htmlpress build docs&lt;/kbd&gt;
 &lt;samp&gt;built 7 pages…&lt;/samp&gt;
 &lt;ins&gt;✓ ready&lt;/ins&gt;&lt;/pre&gt;
 &lt;/htmlpress-terminal&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-html">&lt;htmlpress-terminal title="zsh"&gt;
+  &lt;pre&gt;&lt;kbd&gt;htmlpress build docs&lt;/kbd&gt;
+&lt;samp&gt;built 7 pages…&lt;/samp&gt;
+&lt;ins&gt;✓ ready&lt;/ins&gt;&lt;/pre&gt;
+&lt;/htmlpress-terminal&gt;</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>渲染为：</p>
 <htmlpress-terminal title="zsh">
   <pre><kbd>htmlpress build docs</kbd>

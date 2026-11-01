@@ -21,10 +21,19 @@
   Una <code>&lt;table&gt;</code> recibe estilo tal cual, y una con
   <code>&lt;thead&gt;</code> se ordena por la cabecera en la que se haga clic:
 </p>
-<pre><code class="language-html">&lt;table&gt;
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;table&gt;
   &lt;thead&gt;&lt;tr&gt;&lt;th&gt;Language&lt;/th&gt;&lt;th&gt;Year&lt;/th&gt;&lt;th&gt;Typing&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
   &lt;tbody&gt;&lt;tr&gt;&lt;td&gt;TypeScript&lt;/td&gt;&lt;td&gt;2012&lt;/td&gt;&lt;td&gt;Static&lt;/td&gt;&lt;/tr&gt;…&lt;/tbody&gt;
 &lt;/table&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">| Language | Year | Typing |
+| --- | --- | --- |
+| TypeScript | 2012 | Static |</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>Se renderiza como:</p>
 <table>
   <thead>
@@ -64,11 +73,24 @@
   predeterminado), <code>note</code>, <code>tip</code>, <code>warning</code> o
   <code>danger</code>, y <code>title</code> sustituye al encabezado que da el tipo:
 </p>
-<pre><code class="language-html">&lt;htmlpress-callout&gt;&lt;p&gt;This is a note.&lt;/p&gt;&lt;/htmlpress-callout&gt;
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;htmlpress-callout&gt;&lt;p&gt;This is a note.&lt;/p&gt;&lt;/htmlpress-callout&gt;
 
 &lt;htmlpress-callout type="warning" title="Breaking Change"&gt;
   &lt;p&gt;This API has been removed in v2.&lt;/p&gt;
 &lt;/htmlpress-callout&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">:::info
+This is a note.
+:::
+
+:::warning[Breaking Change]
+This API has been removed in v2.
+:::</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>Se renderiza como:</p>
 <htmlpress-callout><p>Esto es una nota.</p></htmlpress-callout>
 <htmlpress-callout type="tip"><p>Todas las páginas compiladas.</p></htmlpress-callout>
@@ -88,10 +110,19 @@
   No hace falta ningún componente: el tema da estilo a un
   <code>&lt;details&gt;</code> simple.
 </p>
-<pre><code class="language-html">&lt;details&gt;
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;details&gt;
   &lt;summary&gt;Click to expand&lt;/summary&gt;
   &lt;p&gt;Hidden content here with &lt;strong&gt;HTML&lt;/strong&gt; support.&lt;/p&gt;
 &lt;/details&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">:::details[Click to expand]
+Hidden content here with **Markdown** support.
+:::</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>Se renderiza como:</p>
 <details>
   <summary>Haz clic para expandir</summary>
@@ -110,10 +141,23 @@ title: Htmlpress</code></pre>
   Cada <code>&lt;section&gt;</code> es una pestaña, con el nombre de su
   <code>title</code>:
 </p>
-<pre><code class="language-html">&lt;htmlpress-tabs sync="lang"&gt;
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;htmlpress-tabs sync="lang"&gt;
   &lt;htmlpress-tab title="JavaScript"&gt;&lt;pre&gt;&lt;code&gt;console.log("hello")&lt;/code&gt;&lt;/pre&gt;&lt;/htmlpress-tab&gt;
   &lt;htmlpress-tab title="Python"&gt;&lt;pre&gt;&lt;code&gt;print("hello")&lt;/code&gt;&lt;/pre&gt;&lt;/htmlpress-tab&gt;
 &lt;/htmlpress-tabs&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">```js tab="JavaScript" sync="lang"
+console.log("hello")
+```
+
+```python tab="Python"
+print("hello")
+```</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>Se renderiza como:</p>
 <htmlpress-tabs sync="lang">
   <htmlpress-tab title="JavaScript">
@@ -139,11 +183,28 @@ title: Htmlpress</code></pre>
   grupos con la misma clave <code>sync</code> cambian a la pestaña correspondiente, y la
   elección se recuerda entre páginas en <code>localStorage</code>.
 </p>
-<pre><code class="language-html">&lt;htmlpress-tabs sync="channel"&gt;
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;htmlpress-tabs sync="channel"&gt;
   &lt;htmlpress-tab title="cargo"&gt;&lt;p&gt;From crates.io, built on your machine.&lt;/p&gt;&lt;/htmlpress-tab&gt;
   &lt;htmlpress-tab title="npm"&gt;&lt;p&gt;A prebuilt binary per platform.&lt;/p&gt;&lt;/htmlpress-tab&gt;
   &lt;htmlpress-tab title="pip"&gt;&lt;p&gt;A binary wheel.&lt;/p&gt;&lt;/htmlpress-tab&gt;
 &lt;/htmlpress-tabs&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">:::tab{title="cargo" sync="channel"}
+From crates.io, built on your machine.
+:::
+
+:::tab{title="npm"}
+A prebuilt binary per platform.
+:::
+
+:::tab{title="pip"}
+A binary wheel.
+:::</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>Se renderiza como (ambos grupos comparten <code>sync="channel"</code>; cambia uno):</p>
 <htmlpress-tabs sync="channel">
   <htmlpress-tab title="cargo">
@@ -172,10 +233,23 @@ title: Htmlpress</code></pre>
   lo largo de la página; su contenido lo sigue como siempre. Esos encabezados quedan fuera
   de la tabla de contenidos de la página.
 </p>
-<pre><code class="language-html">&lt;h3 data-step&gt;Install&lt;/h3&gt;
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;h3 data-step&gt;Install&lt;/h3&gt;
 &lt;p&gt;…&lt;/p&gt;
 &lt;h3 data-step&gt;Write a page&lt;/h3&gt;
 &lt;p&gt;…&lt;/p&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">### Install [step]
+
+…
+
+### Write a page [step]
+
+…</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>Se renderiza como:</p>
 <h3 data-step>Instala</h3>
 <p>Elige un canal en las pestañas de arriba.</p>
@@ -191,12 +265,25 @@ title: Htmlpress</code></pre>
   <code>href</code> hace clicable toda la tarjeta, un <code>icon</code> se muestra antes
   del título en el color de acento, y su contenido es el cuerpo de la tarjeta.
 </p>
-<pre><code class="language-html">&lt;htmlpress-cards&gt;
-  &lt;htmlpress-card title="Getting Started" href="/introduction/"&gt;
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;htmlpress-cards&gt;
+  &lt;htmlpress-card title="Getting Started" href="/introduction/" icon="rocket"&gt;
     &lt;p&gt;Learn how to set up your first project.&lt;/p&gt;
   &lt;/htmlpress-card&gt;
   &lt;htmlpress-card title="Plain HTML"&gt;&lt;p&gt;…&lt;/p&gt;&lt;/htmlpress-card&gt;
 &lt;/htmlpress-cards&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">:::card{title="Getting Started" href="/introduction/" icon="rocket"}
+Learn how to set up your first project.
+:::
+
+:::card{title="Plain HTML"}
+…
+:::</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>Se renderiza como:</p>
 <htmlpress-cards>
   <htmlpress-card title="Primeros pasos" href="/es/introduction/">
@@ -224,8 +311,15 @@ title: Htmlpress</code></pre>
   <code>warning</code> o <code>destructive</code> para un tono; sin él, el color de
   acento.
 </p>
-<pre><code class="language-html">&lt;htmlpress-badge&gt;New&lt;/htmlpress-badge&gt;
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;htmlpress-badge&gt;New&lt;/htmlpress-badge&gt;
 &lt;htmlpress-badge variant="positive"&gt;Stable&lt;/htmlpress-badge&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">:badge[New] :badge[Stable]{variant="positive"}</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>
   Se renderiza como:
   <htmlpress-badge>Nuevo</htmlpress-badge>
@@ -244,8 +338,17 @@ title: Htmlpress</code></pre>
   <code>positive</code>, <code>warning</code> o <code>destructive</code> para uno con
   tono; <code>size</code> es <code>sm</code> o <code>lg</code>.
 </p>
-<pre><code class="language-html">&lt;htmlpress-button href="/introduction/" label="Get Started"&gt;&lt;/htmlpress-button&gt;
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;htmlpress-button href="/introduction/" label="Get Started"&gt;&lt;/htmlpress-button&gt;
 &lt;htmlpress-button href="…" label="GitHub" variant="secondary"&gt;&lt;/htmlpress-button&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">::button[Get Started]{href="/introduction/"}
+
+::button[GitHub]{href="…" variant="secondary"}</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>Se renderiza como:</p>
 <p>
   <htmlpress-button href="/es/introduction/" label="Empezar"></htmlpress-button>
@@ -270,7 +373,14 @@ title: Htmlpress</code></pre>
   nombres van en el <code>icon</code> de un enlace o de una sección. Un nombre desconocido
   hace fallar la compilación. Estos son los 114 integrados:
 </p>
-<pre><code class="language-html">&lt;htmlpress-icon name="rocket"&gt;&lt;/htmlpress-icon&gt; Get started</code></pre>
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;htmlpress-icon name="rocket"&gt;&lt;/htmlpress-icon&gt; Get started</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">:icon{name="rocket"} Get started</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <htmlpress-columns cols="4">
   <p><htmlpress-icon name="activity"></htmlpress-icon> activity</p>
   <p><htmlpress-icon name="archive"></htmlpress-icon> archive</p>
@@ -395,12 +505,23 @@ title: Htmlpress</code></pre>
   Una lista anidada dentro de <code>&lt;htmlpress-filetree&gt;</code>; un elemento que
   contiene una lista es una carpeta.
 </p>
-<pre><code class="language-html">&lt;htmlpress-filetree&gt;
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;htmlpress-filetree&gt;
   &lt;ul&gt;
     &lt;li&gt;docs&lt;ul&gt;&lt;li&gt;index.html&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;
     &lt;li&gt;htmlpress.yaml&lt;/li&gt;
   &lt;/ul&gt;
 &lt;/htmlpress-filetree&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">:::filetree
+- docs
+  - index.html
+- htmlpress.yaml
+:::</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>Se renderiza como:</p>
 <htmlpress-filetree>
   <ul>
@@ -426,10 +547,23 @@ title: Htmlpress</code></pre>
   defecto y hasta cuatro con <code>cols</code>, cada <code>&lt;htmlpress-column&gt;</code>
   una columna:
 </p>
-<pre><code class="language-html">&lt;htmlpress-columns cols="2"&gt;
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;htmlpress-columns cols="2"&gt;
   &lt;htmlpress-column&gt;&lt;p&gt;&lt;strong&gt;Left column&lt;/strong&gt; with content.&lt;/p&gt;&lt;/htmlpress-column&gt;
   &lt;htmlpress-column&gt;&lt;p&gt;&lt;strong&gt;Right column&lt;/strong&gt; with more content.&lt;/p&gt;&lt;/htmlpress-column&gt;
 &lt;/htmlpress-columns&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">:::column
+**Left column** with content.
+:::
+
+:::column
+**Right column** with more content.
+:::</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>Se renderiza como:</p>
 <htmlpress-columns cols="2">
   <htmlpress-column>

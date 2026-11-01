@@ -13,14 +13,28 @@
 </p>
 
 <h2>粗体和斜体</h2>
-<pre><code class="language-html">&lt;strong&gt;bold text&lt;/strong&gt; and &lt;em&gt;italic text&lt;/em&gt; and &lt;strong&gt;&lt;em&gt;bold italic&lt;/em&gt;&lt;/strong&gt;</code></pre>
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;strong&gt;bold text&lt;/strong&gt; and &lt;em&gt;italic text&lt;/em&gt; and &lt;strong&gt;&lt;em&gt;bold italic&lt;/em&gt;&lt;/strong&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">**bold text** and *italic text* and ***bold italic***</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>
   渲染为：<strong>粗体文本</strong>、<em>斜体文本</em>和
   <strong><em>粗斜体</em></strong>
 </p>
 
 <h2>删除线</h2>
-<pre><code class="language-html">&lt;s&gt;deleted text&lt;/s&gt;</code></pre>
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;s&gt;deleted text&lt;/s&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">~~deleted text~~</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>渲染为：<s>已删除的文本</s></p>
 
 <h2>行内代码</h2>
@@ -33,11 +47,25 @@
   带有 <code>language-*</code> 类的行内
   <code>&lt;code&gt;</code> 会像代码块一样高亮，使用相同的浅色和深色主题。
 </p>
-<pre><code class="language-html">Run &lt;code class="language-js"&gt;await build("docs")&lt;/code&gt; first.</code></pre>
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">Run &lt;code class="language-js"&gt;await build("docs")&lt;/code&gt; first.</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">Run `await build("docs"){:js}` first.</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>渲染为：先运行 <code class="language-js">await build("docs")</code>。</p>
 
 <h2>引用块</h2>
-<pre><code class="language-html">&lt;blockquote&gt;&lt;p&gt;This is a blockquote.&lt;/p&gt;&lt;/blockquote&gt;</code></pre>
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;blockquote&gt;&lt;p&gt;This is a blockquote.&lt;/p&gt;&lt;/blockquote&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">&gt; This is a blockquote.</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>渲染为：</p>
 <blockquote><p>这是一个引用块。</p></blockquote>
 
@@ -57,18 +85,38 @@
   <li>第二步</li>
   <li>第三步</li>
 </ol>
-<pre><code class="language-html">&lt;ul&gt;
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;ul&gt;
   &lt;li&gt;First item&lt;/li&gt;
   &lt;li&gt;Second item&lt;ul&gt;&lt;li&gt;Nested item&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;
 &lt;/ul&gt;
 &lt;ol&gt;&lt;li&gt;Step one&lt;/li&gt;&lt;li&gt;Step two&lt;/li&gt;&lt;/ol&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">- First item
+- Second item
+  - Nested item
+
+1. Step one
+2. Step two</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 
 <h2>任务列表</h2>
 <p>以禁用复选框开头的列表项：</p>
-<pre><code class="language-html">&lt;ul&gt;
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;ul&gt;
   &lt;li&gt;&lt;input type="checkbox" checked disabled&gt; Completed task&lt;/li&gt;
   &lt;li&gt;&lt;input type="checkbox" disabled&gt; Pending task&lt;/li&gt;
 &lt;/ul&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">- [x] Completed task
+- [ ] Pending task</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>渲染为：</p>
 <ul>
   <li><input type="checkbox" checked disabled /> 已完成的任务</li>
@@ -76,7 +124,14 @@
 </ul>
 
 <h2>水平分隔线</h2>
-<pre><code class="language-html">&lt;hr&gt;</code></pre>
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;hr&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">---</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <hr />
 
 <h2>脚注</h2>
@@ -103,13 +158,25 @@
 
 <h2>定义列表</h2>
 <p>为术语给出描述：</p>
-<pre><code class="language-html">&lt;dl&gt;
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">&lt;dl&gt;
   &lt;dt&gt;Page&lt;/dt&gt;
   &lt;dd&gt;An .html file in a project&lt;/dd&gt;
   &lt;dt&gt;Escape&lt;/dt&gt;
   &lt;dd&gt;A project file that replaces a built-in asset&lt;/dd&gt;
   &lt;dd&gt;Kept under .htmlpress/&lt;/dd&gt;
 &lt;/dl&gt;</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">Page
+: An .html file in a project
+
+Escape
+: A project file that replaces a built-in asset
+: Kept under .htmlpress/</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>渲染为：</p>
 <dl>
   <dt>页面</dt>
@@ -138,5 +205,12 @@
   GitHub 的短代码会在构建时变成 emoji；未知的短代码，以及代码或
   <code>data-literal</code> 元素中的任何内容，都保持原样：
 </p>
-<pre><code class="language-html">Ship it :rocket: :tada:</code></pre>
+<htmlpress-tabs sync="syntax">
+  <htmlpress-tab title="HTML">
+    <pre><code class="language-html">Ship it :rocket: :tada:</code></pre>
+  </htmlpress-tab>
+  <htmlpress-tab title="Markdown">
+    <pre><code class="language-md">Ship it :rocket: :tada:</code></pre>
+  </htmlpress-tab>
+</htmlpress-tabs>
 <p>渲染为：发布吧 :rocket: :tada:</p>
