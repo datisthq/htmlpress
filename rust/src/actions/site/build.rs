@@ -260,10 +260,16 @@ fn create_sitemap(site: &Site) -> Option<String> {
 pub(crate) fn check_output(root: &Path, output: &Path) -> crate::Result<()> {
     let root = std::path::absolute(root).map_err(Error::io(root))?;
     let output = std::path::absolute(output).map_err(Error::io(output))?;
-    if root.starts_with(&output) {
+    // The build removes the folders it writes beside the output too, so a project at
+    // `site.next` built into `site` would be deleted
+    let (staging, previous) = create_build_paths(&output);
+    if let Some(folder) = [&output, &staging, &previous]
+        .into_iter()
+        .find(|folder| root.starts_with(folder))
+    {
         return Err(Error::Usage(format!(
             "output {} would hold the project {}; pick a folder inside or beside it",
-            output.display(),
+            folder.display(),
             root.display(),
         )));
     }

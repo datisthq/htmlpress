@@ -25,7 +25,8 @@ in it.
 **Security — reported only when reachable**
 
 - Path traversal in the dev server (`resolve_file`): a URL that escapes the output folder.
-- An output folder that holds the project: `build_site` wipes it first.
+- An output folder, or its `.next`/`.previous` siblings, that holds the project: `build_site`
+  removes all three.
 - Template injection: page text reaching the layout unescaped outside `content` and `head`,
   which are passed through on purpose.
 - Secrets in code, logs or CI; a workflow step with more permissions than it uses.

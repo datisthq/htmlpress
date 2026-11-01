@@ -35,6 +35,20 @@ fn swaps_the_output_in_whole_and_reports_what_it_read() -> crate::Result<()> {
 }
 
 #[test]
+fn refuses_an_output_whose_build_folders_hold_the_project() -> crate::Result<()> {
+    let parent = tempfile::tempdir().map_err(Error::io("tempdir"))?;
+    let root = parent.path().join("site.next");
+    write_source(&root, "index.html", "<h1>Home</h1>")?;
+    let options = BuildOptions {
+        output: parent.path().join("site"),
+        ..BuildOptions::new(&root)
+    };
+    assert!(build_site(&options).is_err());
+    assert!(root.join("index.html").is_file());
+    Ok(())
+}
+
+#[test]
 fn builds_pages_files_and_assets() -> crate::Result<()> {
     let root = tempfile::tempdir().map_err(Error::io("tempdir"))?;
     let root = root.path();
