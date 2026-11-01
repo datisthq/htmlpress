@@ -1,6 +1,7 @@
 site: https://htmlpress.dev
 title: Htmlpress
 logo: /logo.svg
+favicon: /logo.png
 description:
   en: Static site generator
   es: Generador de sitios estáticos
