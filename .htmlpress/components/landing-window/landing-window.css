@@ -9,6 +9,9 @@
     border-radius: var(--htmlpress-radius);
     background: var(--htmlpress-bg);
   }
+  :scope[hidden] {
+    display: none;
+  }
   :scope::before {
     content: attr(label);
     display: block;

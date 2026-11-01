@@ -1,0 +1,35 @@
+/* A segmented switch: one pill per button, the selected one filled */
+@scope (htmlpress-landing-switch) {
+  :scope {
+    display: inline-flex;
+    gap: 0.25rem;
+    margin-bottom: 1.5rem;
+    padding: 0.25rem;
+    border: 1px solid var(--htmlpress-border);
+    border-radius: 9999px;
+    background: var(--htmlpress-bg);
+  }
+  button {
+    padding: 0.25rem 0.875rem;
+    border: 0;
+    border-radius: 9999px;
+    background: none;
+    color: var(--htmlpress-muted);
+    font: 500 0.875rem/1.25rem var(--htmlpress-font);
+    cursor: pointer;
+    transition:
+      background 0.2s,
+      color 0.2s;
+  }
+  button:hover {
+    color: var(--htmlpress-text);
+  }
+  button[aria-selected="true"] {
+    background: var(--htmlpress-accent);
+    color: var(--htmlpress-accent-text);
+  }
+  button:focus-visible {
+    outline: 2px solid var(--htmlpress-accent);
+    outline-offset: 2px;
+  }
+}
