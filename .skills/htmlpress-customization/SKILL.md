@@ -64,7 +64,9 @@ upgrade it misses the new defaults: escape only what you change.
 
 `layout.html` is plain HTML: htmlpress fills its `<head>` and replaces `<htmlpress-content>`,
 `<htmlpress-brand>`, `<htmlpress-banner>`, `<htmlpress-nav>`, `<htmlpress-links>`,
-`<htmlpress-breadcrumbs>`, `<htmlpress-page-toc>`, `<htmlpress-pager>`, `<htmlpress-edit>`,
+`<htmlpress-breadcrumbs>`, `<htmlpress-title>` (the page's leading `<h1>`, moved out of the
+content, else one from `<title>`, then the byline; a layout without it keeps the heading in
+the content and shows no byline), `<htmlpress-page-toc>`, `<htmlpress-pager>`, `<htmlpress-edit>`,
 `<htmlpress-toolbar>`, `<htmlpress-footer>`, `<htmlpress-language>` (the language picker) and
 `<htmlpress-skip>` at build time, every string in the page's language. The interactive ones,
 `<htmlpress-nav-toggle>`, `<htmlpress-search>`, `<htmlpress-theme-toggle>`, `<htmlpress-toc-bar>`

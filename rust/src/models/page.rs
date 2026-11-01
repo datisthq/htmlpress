@@ -59,6 +59,10 @@ pub struct Page {
     pub head: String,
     /// The page's body, without the `<html>`, `<head>` and `<body>` wrappers.
     pub content: String,
+    /// The content's leading `<h1>`, taken out of it for the layout's `<htmlpress-title>`
+    /// once decorated; empty when it has none.
+    #[serde(skip)]
+    pub heading: String,
     /// The `<h2>` to `<h4>` headings, in order, for the page's table of contents.
     pub toc: Vec<Heading>,
     /// The page as the Markdown agents read: its title and description, then its content.

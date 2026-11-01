@@ -419,6 +419,7 @@ fn read_facts(page: &Page) -> Page {
     Page {
         head: String::new(),
         content: String::new(),
+        heading: String::new(),
         toc: vec![],
         markdown: String::new(),
         chunks: vec![],

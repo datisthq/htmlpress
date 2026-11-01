@@ -109,9 +109,14 @@ run from source: `cargo run --manifest-path rust/Cargo.toml -- build docs`.
    as a browser parses them), reads the search chunks (`site/index`'s `read_chunks`), and
    runs a `copy_node` of it through `SimplifyPage` and `html.toMarkdown` into
    `Page.markdown`, the agent copy. Then `decorate_page` turns the content into what the
-   layout shows: the byline after the first `<h1>`, the page's own `<htmlpress-toc>`s,
+   layout shows: the page's own `<htmlpress-toc>`s,
    callout titles in the page's language, `code/title`, project components filled (their
-   tags read first, into `Page.components`) and, with `base`, `page/prefix`. Generated and
+   tags read first, into `Page.components`), with `base`, `page/prefix`, and last its
+   leading top-level `<h1>` moved into `Page.heading`. `render_page` puts that heading (or an
+   `<h1>` of the title when the content has none) and the byline where the layout holds
+   `<htmlpress-title>`, as Livemark's `Article` draws title and byline; a layout without the
+   element, a bare route's included, gets the heading back before the content and no
+   byline, so an older escaped `layout.html` renders as before minus the byline. Generated and
    patched pages take the same steps; the public `read_page` has no links, colors or
    decoration. Only then is the tree written, once: textlane writes `&`, `<`, `"` and `'` as
    hex references, which `name_references` names again. Never add a stage that parses

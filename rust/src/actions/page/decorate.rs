@@ -8,7 +8,7 @@ use crate::actions::code::title::add_titles;
 use crate::actions::node::parse::parse_fragment;
 use crate::actions::node::walk::{Step, walk_nodes};
 use crate::actions::page::prefix::prefix_urls;
-use crate::actions::page::render::{create_byline, create_toc_up_to};
+use crate::actions::page::render::create_toc_up_to;
 use crate::models::asset::read_component_path;
 use crate::models::language::SiteLanguage;
 use crate::models::page::Page;
@@ -22,25 +22,18 @@ pub(crate) struct Decoration<'d> {
 }
 
 /// The content as its layout shows it, after its search text and Markdown copy were
-/// read: the byline under its title, its own `<htmlpress-toc>`s filled, each callout's
-/// title in the page's language, code blocks framed, project components filled and, with
-/// a base, every root-relative URL under it. Gives back the tags it holds (see
-/// [`list_tags`]), read before the components are filled.
+/// read: its own `<htmlpress-toc>`s filled, each callout's title in the page's language,
+/// code blocks framed, project components filled, with a base every root-relative URL
+/// under it, and its leading `<h1>` moved out into `heading`. Gives back the tags it
+/// holds (see [`list_tags`]), read before the components are filled.
 pub(crate) fn decorate_page<'a>(
     nodes: &mut ArenaVec<'a, Node<'a>>,
+    heading: &mut ArenaVec<'a, Node<'a>>,
     page: &Page,
     decoration: &Decoration,
     alloc: &'a Allocator,
 ) -> Result<BTreeSet<String>, String> {
     let language = decoration.language;
-    if let Some(byline) = create_byline(page, language) {
-        let byline = parse_fragment(&byline, alloc);
-        if let Some(byline) = place_after_heading(nodes, byline) {
-            for (index, node) in byline.into_iter().enumerate() {
-                nodes.insert(index, node);
-            }
-        }
-    }
     walk_nodes(nodes, &mut |element| match element.tag_name {
         "htmlpress-toc" => {
             let level = match read_attribute(element, "max-level")
@@ -94,6 +87,7 @@ pub(crate) fn decorate_page<'a>(
     if !decoration.base.is_empty() {
         prefix_urls(nodes, decoration.base, alloc);
     }
+    take_heading(nodes, heading);
     Ok(tags)
 }
 
@@ -156,26 +150,19 @@ pub(crate) fn fill_components<'a>(
     });
 }
 
-// Right after the first <h1>, where a reader looks for it; handed back without one
-fn place_after_heading<'a>(
+// The first element, when it is an `<h1>`, as Livemark drops a body's leading one
+fn take_heading<'a>(
     nodes: &mut ArenaVec<'a, Node<'a>>,
-    byline: ArenaVec<'a, Node<'a>>,
-) -> Option<ArenaVec<'a, Node<'a>>> {
-    let mut byline = Some(byline);
-    let mut index = 0;
-    while index < nodes.len() {
-        let Some(Node::Element(element)) = nodes.get_mut(index) else {
-            index += 1;
-            continue;
-        };
-        if element.tag_name == "h1" {
-            for (offset, node) in byline.take()?.into_iter().enumerate() {
-                nodes.insert(index + 1 + offset, node);
-            }
-            return None;
-        }
-        byline = Some(place_after_heading(&mut element.children, byline?)?);
-        index += 1;
+    heading: &mut ArenaVec<'a, Node<'a>>,
+) {
+    let first = nodes.iter().position(|node| match node {
+        Node::Text(text) => !text.value.trim().is_empty(),
+        Node::Comment(_) => false,
+        _ => true,
+    });
+    if let Some(at) = first
+        && matches!(nodes.get(at), Some(Node::Element(element)) if element.tag_name == "h1")
+    {
+        heading.push(nodes.remove(at));
     }
-    byline
 }

@@ -42,13 +42,22 @@ pub(crate) fn render_page(
     // the only page content parsed twice, since its layout elements must be filled
     let bare = page.is_route() && page.layout.is_none();
     let layout = match (&page.layout, bare) {
-        (_, true) => format!("{BARE_START}{}{BARE_END}", page.content),
+        (_, true) => match page.content.contains(TITLE_TAG) {
+            true => format!("{BARE_START}{}{BARE_END}", page.content),
+            false => format!("{BARE_START}{}{}{BARE_END}", page.heading, page.content),
+        },
         (Some(name), false) => read_layout(site, &format!("layouts/{name}.html"))
             .ok_or_else(|| fail(format!("no layout layouts/{name}.html")))?,
         (None, false) => read_layout(site, "layout.html")
             .ok_or_else(|| fail("no layout layout.html".to_owned()))?,
     };
     let layout = layout.as_str();
+    // Like Livemark's article header: the title and byline sit where the layout puts
+    // `<htmlpress-title>`, and a layout without one gets the page's heading back
+    let content = match bare || layout.contains(TITLE_TAG) {
+        true => page.content.clone(),
+        false => format!("{}{}", page.heading, page.content),
+    };
     let fragments = list_fragments(&site.assets);
     let language = site.read_language(&page.language);
     let alloc = Allocator::new();
@@ -63,6 +72,9 @@ pub(crate) fn render_page(
     };
     let mut tags = list_tags(&root.children, &fragments);
     tags.extend(page.components.iter().cloned());
+    if tags.contains("htmlpress-title") {
+        tags.insert("htmlpress-byline".to_owned());
+    }
     if SHEET_HOSTS.iter().any(|host| tags.contains(*host)) {
         tags.insert("htmlpress-sheet".to_owned());
     }
@@ -105,7 +117,13 @@ pub(crate) fn render_page(
                 return Ok(Step::Skip);
             }
             "htmlpress-content" if bare => return Ok(Step::Remove),
-            "htmlpress-content" => return Ok(Step::Replace(raw(&page.content))),
+            "htmlpress-content" => return Ok(Step::Replace(raw(&content))),
+            "htmlpress-title" => {
+                return Ok(match create_title(page, language) {
+                    Some(html) => Step::Replace(raw(&html)),
+                    None => Step::Remove,
+                });
+            }
             "htmlpress-brand" => Some(create_brand(site, page)),
             "htmlpress-skip" => {
                 let text = escape_html(language.read_message("nav.skip"));
@@ -1122,12 +1140,22 @@ fn find_neighbours<'a>(
     (prev, pages.get(index + 1).copied())
 }
 
+const TITLE_TAG: &str = "<htmlpress-title";
+
+// The page's heading, else an `<h1>` of its title when its content has none, then its
+// byline; the heading's URLs were prefixed with the content's
+fn create_title(page: &Page, language: &SiteLanguage) -> Option<String> {
+    let heading = match (page.heading.is_empty(), page.content.contains("<h1")) {
+        (false, _) => page.heading.clone(),
+        (true, false) => format!("<h1>{}</h1>", escape_html(&page.title)),
+        (true, true) => String::new(),
+    };
+    let html = heading + &create_byline(page, language).unwrap_or_default();
+    (!html.is_empty()).then_some(html)
+}
+
 // Authors, published and updated dates, as one line under the page's title
-// A page with its own layout is a custom route, which carries no byline, as in Livemark
 pub(crate) fn create_byline(page: &Page, language: &SiteLanguage) -> Option<String> {
-    if page.layout.is_some() {
-        return None;
-    }
     let mut parts = vec![];
     if !page.authors.is_empty() {
         let icon = create_icon(Some("user"));

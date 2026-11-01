@@ -97,6 +97,7 @@ pub(crate) fn read_source(path: &str, tree: &Node<'_>) -> crate::Result<Page> {
         layout: facts.layout,
         head: String::new(),
         content: String::new(),
+        heading: String::new(),
         toc: vec![],
         markdown: String::new(),
         chunks: vec![],
@@ -169,10 +170,11 @@ pub(crate) fn finish_page<'a>(
         parts.push(body.trim().to_owned());
     }
     page.markdown = format!("{}\n", parts.join("\n\n"));
+    let mut heading = ArenaVec::new_in(alloc);
     let components = match decoration {
         Some(decoration) => {
-            let tags =
-                decorate_page(&mut content, page, decoration, alloc).map_err(fail)?;
+            let tags = decorate_page(&mut content, &mut heading, page, decoration, alloc)
+                .map_err(fail)?;
             if !decoration.base.is_empty() {
                 prefix_urls(&mut head, decoration.base, alloc);
             }
@@ -185,6 +187,11 @@ pub(crate) fn finish_page<'a>(
         .map_err(fail)?
         .trim()
         .to_owned();
+    if !heading.is_empty() {
+        page.heading = (write_root(processor, heading, &mut file).map_err(fail)?)
+            .trim()
+            .to_owned();
+    }
     let mut lines = vec![];
     for node in head {
         if matches!(&node, Node::Text(text) if text.value.trim().is_empty()) {

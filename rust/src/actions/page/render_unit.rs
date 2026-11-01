@@ -88,23 +88,51 @@ fn groups_the_navigation_by_folder() -> crate::Result<()> {
 }
 
 #[test]
-fn leaves_the_byline_off_a_page_with_its_own_layout() -> crate::Result<()> {
+fn draws_title_and_byline_only_where_the_layout_holds_htmlpress_title()
+-> crate::Result<()> {
     let mut site = create_site()?;
-    let guide = "<title>Guide</title><p>Read me.</p><h2>Setup</h2>";
+    let guide = "<title>Guide</title><h1>Guide</h1><p>Read me.</p><h2>Setup</h2>";
     let updated = |page: &mut Page| page.updated = Some("2026-10-20".to_owned());
     site.pages[1] = read_with(&site, "guide.html", guide, updated)?;
     let html = render_page(&site, &site.pages[1], false)?;
-    assert!(html.contains("<htmlpress-byline>"));
+    let (title, byline) = (html.find("<h1>Guide</h1>"), html.find("<htmlpress-byline>"));
+    assert!(title.is_some() && title < byline, "{html}");
+    assert!(html.contains("components/byline/byline.css"));
+    assert_eq!(html.matches("<h1>").count(), 1);
     site.assets.insert(
-        "layouts/landing.html".to_owned(),
-        site.assets["layout.html"].clone(),
+        "layouts/plain.html".to_owned(),
+        "<main><htmlpress-content></htmlpress-content></main>".to_owned(),
     );
     site.pages[1] = read_with(&site, "guide.html", guide, |page| {
         updated(page);
-        page.layout = Some("landing".to_owned());
+        page.layout = Some("plain".to_owned());
     })?;
     let html = render_page(&site, &site.pages[1], false)?;
+    assert!(
+        html.contains("<main><h1>Guide</h1><p>Read me.</p>"),
+        "{html}"
+    );
     assert!(!html.contains("<htmlpress-byline>"));
+    site.pages[1] = read_with(&site, "guide.html", guide, |page| {
+        updated(page);
+        page.source = ".htmlpress/routes/guide.html".to_owned();
+    })?;
+    let html = render_page(&site, &site.pages[1], false)?;
+    assert!(html.contains("<h1>Guide</h1>") && !html.contains("<htmlpress-byline>"));
+    Ok(())
+}
+
+#[test]
+fn titles_a_page_without_an_h1_from_its_title() -> crate::Result<()> {
+    let mut site = create_site()?;
+    site.pages[1] = read_with(
+        &site,
+        "guide.html",
+        "<title>A &amp; B</title><p>x</p>",
+        |_| {},
+    )?;
+    let html = render_page(&site, &site.pages[1], false)?;
+    assert!(html.contains("<h1>A &amp; B</h1>"), "{html}");
     Ok(())
 }
 
