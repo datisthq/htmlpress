@@ -59,19 +59,34 @@ head: &lt;link rel="alternate" type="application/rss+xml" href="/feed.xml"&gt;</
 <p>
   Una directiva es un componente: <code>:::nombre</code> envuelve un bloque,
   <code>::nombre</code> ocupa una línea propia y <code>:nombre[etiqueta]</code> va dentro
-  del texto. Los atributos van entre llaves.
+  del texto. Los atributos van entre llaves. Las directivas son las de
+  <a href="https://livemark.dev">Livemark</a>, así que una página de Livemark se lee igual
+  aquí.
 </p>
-<pre><code class="language-md">:::callout{type="warning"}
-Back up the folder first.
+<pre><code class="language-md">:::warning[Back up first]
+The build wipes its output folder.
 :::
 
-The API is :badge[beta]{tone="info"}.</code></pre>
+:::card{title="Install" href="/install/" icon="rocket"}
+One command.
+:::
+
+The API is :badge[beta]{variant="warning"}.
+
+### Write a page [step]</code></pre>
 <p>
-  Cada una se convierte en el componente de ese nombre,
-  <code>&lt;htmlpress-callout type="warning"&gt;</code> y
-  <code>&lt;htmlpress-badge tone="info"&gt;</code>, integrado o del proyecto. Una
-  directiva de bloque que no nombra ningún componente hace fallar la compilación; dentro
-  del texto, algo como <code>note:important</code> sigue siendo texto.
+  <code>:::note</code>, <code>tip</code>, <code>info</code>, <code>warning</code> y
+  <code>danger</code> son avisos, con la etiqueta como título, y también lo es una alerta
+  de GitHub, <code>&gt; [!NOTE]</code>. <code>:::card</code>, <code>:::column</code> y
+  <code>:::tab</code> seguidos se agrupan en tarjetas, columnas y pestañas;
+  <code>:::details</code>, <code>:::filetree</code>, <code>::button</code>,
+  <code>::toc</code>, <code>::video{type="youtube"}</code>,
+  <code>::audio{type="soundcloud"}</code>, <code>:badge</code>, <code>:icon</code> y
+  <code>:abbr</code> son el resto. Un encabezado admite <code>{#id}</code>,
+  <code>[step]</code>, <code>[!toc]</code> (fuera del índice) y <code>[toc]</code> (solo
+  en el índice). Cualquier otra directiva es el componente de ese nombre, también los del
+  proyecto; una de bloque que no nombra ningún componente hace fallar la compilación, y
+  dentro del texto algo como <code>note:important</code> sigue siendo texto.
 </p>
 
 <h2>Bloques de código</h2>

@@ -117,3 +117,119 @@ fn keeps_raw_html_components_with_markdown_inside() -> Result<(), String> {
     );
     Ok(())
 }
+
+fn assert_contains(page: &Page, parts: &[&str]) {
+    for part in parts {
+        assert!(
+            page.content.contains(part),
+            "missing {part}\nin {}",
+            page.content
+        );
+    }
+}
+
+#[test]
+fn reads_livemark_callouts_and_details() -> Result<(), String> {
+    let page = compile(
+        ":::note\nA note.\n:::\n\n:::warning[Breaking Change]\nGone.\n:::\n\n\
+         > [!TIP]\n> GitHub syntax.\n\n:::details[Click to expand]\nHidden **md**.\n:::",
+    )?;
+    assert_contains(
+        &page,
+        &[
+            r#"<htmlpress-callout type="note"><p>A note.</p></htmlpress-callout>"#,
+            r#"<htmlpress-callout type="warning" title="Breaking Change">"#,
+            r#"<htmlpress-callout type="tip"><p>GitHub syntax.</p></htmlpress-callout>"#,
+            "<details><summary>Click to expand</summary><p>Hidden <strong>md</strong>.</p>",
+        ],
+    );
+    Ok(())
+}
+
+#[test]
+fn groups_livemark_cards_columns_and_tabs() -> Result<(), String> {
+    let page = compile(
+        ":::card{title=\"Go\" href=\"/go/\" icon=\"rocket\"}\nLearn.\n:::\n\n\
+         :::card{title=\"Plain\"}\nTwo.\n:::\n\n:::column\nLeft\n:::\n\n:::column\nRight\n:::\n\n\
+         :::tab{title=\"npm\" sync=\"pm\"}\nUse npm.\n:::\n\n:::tab{title=\"pip\"}\nUse pip.\n:::",
+    )?;
+    assert_contains(
+        &page,
+        &[
+            r#"<htmlpress-cards><htmlpress-card><h3 id="go"><a href="/go/"><htmlpress-icon name="rocket">"#,
+            r#"<htmlpress-card><h3 id="plain">Plain</h3><p>Two.</p></htmlpress-card></htmlpress-cards>"#,
+            "<htmlpress-columns><htmlpress-column><p>Left</p></htmlpress-column>",
+            r#"<htmlpress-tabs sync="pm"><htmlpress-tab title="npm" sync="pm"><p>Use npm.</p>"#,
+        ],
+    );
+    Ok(())
+}
+
+#[test]
+fn reads_livemark_inline_and_leaf_directives() -> Result<(), String> {
+    let page = compile(
+        ":badge[Beta] :badge[Stable]{variant=\"positive\"} \
+         :abbr[HTML]{title=\"HyperText Markup Language\"}\n\n\
+         ::button[Start]{href=\"/intro/\" variant=\"outline\" size=\"lg\"}\n\n\
+         ::toc{maxLevel=\"2\"}\n\n## One\n\n\
+         ::video{type=\"youtube\" url=\"https://youtu.be/x\"}\n\n\
+         ::audio{type=\"soundcloud\" url=\"https://soundcloud.com/a/b\"}",
+    )?;
+    assert_contains(
+        &page,
+        &[
+            r#"<htmlpress-badge>Beta</htmlpress-badge> <htmlpress-badge variant="positive">"#,
+            r#"<abbr title="HyperText Markup Language">HTML</abbr>"#,
+            r#"<htmlpress-button variant="outline" size="lg"><a href="/intro/">Start</a>"#,
+            r#"<htmlpress-toc max-level="2"></htmlpress-toc>"#,
+            r#"<htmlpress-video type="youtube" url="https://youtu.be/x"><a href="https://youtu.be/x">"#,
+            r#"<htmlpress-audio type="soundcloud" url="https://soundcloud.com/a/b"><a "#,
+        ],
+    );
+    Ok(())
+}
+
+#[test]
+fn reads_livemark_heading_markers_and_definition_lists() -> Result<(), String> {
+    let page = compile(
+        "## Custom {#custom-id}\n\n### Install [step]\n\n## Hidden [!toc]\n\n\
+         ## Only [toc]\n\nTerm\n: Its definition.",
+    )?;
+    assert_contains(
+        &page,
+        &[
+            r#"<h2 id="custom-id">Custom</h2>"#,
+            r#"<h3 data-step="" id="install">Install</h3>"#,
+            r#"data-toc="false""#,
+            r#"data-toc="only""#,
+            "<dt>Term</dt>",
+        ],
+    );
+    let ids: Vec<_> = page.toc.iter().map(|heading| heading.id.as_str()).collect();
+    assert_eq!(ids, ["custom-id", "only"]);
+    Ok(())
+}
+
+#[test]
+fn reads_livemark_code_tabs_package_commands_and_inline_code() -> Result<(), String> {
+    let page = compile(
+        "```js tab=\"JavaScript\" sync=\"lang\"\nconsole.log(1)\n```\n\n\
+         ```python tab=\"Python\"\nprint(1)\n```\n\n```npm\nnpm install livemark\n```\n\n\
+         ```mermaid\nflowchart LR\n  a --> b\n```\n\nUse `const x = 1{:ts}` and `a{b}`.\n\n\
+         ![Dark](https://x.dev/a.png#dark)",
+    )?;
+    assert_contains(
+        &page,
+        &[
+            r#"<htmlpress-tabs sync="lang"><htmlpress-tab title="JavaScript"><pre"#,
+            r#"<htmlpress-tab title="Python"><pre"#,
+            r#"<htmlpress-tabs sync="package-manager"><htmlpress-tab title="npm">"#,
+            "<htmlpress-mermaid><pre>flowchart LR",
+            r#"<code class="language-ts"#,
+            "<code>a{b}</code>",
+            r#"<img src="https://x.dev/a.png" alt="Dark" data-theme="dark">"#,
+        ],
+    );
+    assert!(!page.content.contains("{:ts}"), "{}", page.content);
+    Ok(())
+}

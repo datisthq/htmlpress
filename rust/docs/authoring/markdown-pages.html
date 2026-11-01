@@ -55,18 +55,32 @@ head: &lt;link rel="alternate" type="application/rss+xml" href="/feed.xml"&gt;</
 <p>
   A directive is a component: <code>:::name</code> wraps a block,
   <code>::name</code> stands on a line of its own and <code>:name[label]</code> sits
-  inside text. Attributes go in braces.
+  inside text. Attributes go in braces. The directives are
+  <a href="https://livemark.dev">Livemark</a>'s, so a Livemark page reads the same here.
 </p>
-<pre><code class="language-md">:::callout{type="warning"}
-Back up the folder first.
+<pre><code class="language-md">:::warning[Back up first]
+The build wipes its output folder.
 :::
 
-The API is :badge[beta]{tone="info"}.</code></pre>
+:::card{title="Install" href="/install/" icon="rocket"}
+One command.
+:::
+
+The API is :badge[beta]{variant="warning"}.
+
+### Write a page [step]</code></pre>
 <p>
-  Each becomes the component of that name,
-  <code>&lt;htmlpress-callout type="warning"&gt;</code> and
-  <code>&lt;htmlpress-badge tone="info"&gt;</code>, a built-in one or the project's own. A
-  block directive that names no component fails the build; inside text, something like
+  <code>:::note</code>, <code>tip</code>, <code>info</code>, <code>warning</code> and
+  <code>danger</code> are callouts, a label their title, and so is a GitHub alert,
+  <code>&gt; [!NOTE]</code>. <code>:::card</code>, <code>:::column</code> and
+  <code>:::tab</code> in a row group into cards, columns and tabs;
+  <code>:::details</code>, <code>:::filetree</code>, <code>::button</code>,
+  <code>::toc</code>, <code>::video{type="youtube"}</code>,
+  <code>::audio{type="soundcloud"}</code>, <code>:badge</code>, <code>:icon</code> and
+  <code>:abbr</code> are the rest. A heading takes <code>{#id}</code>,
+  <code>[step]</code>, <code>[!toc]</code> (listed nowhere) and <code>[toc]</code> (listed
+  only). Any other directive is the component of that name, the project's own too; a block
+  one that names no component fails the build, and inside text something like
   <code>note:important</code> stays text.
 </p>
 

@@ -34,8 +34,9 @@ thread_local! {
         RefCell::new(HashMap::new());
 }
 
-/// Turn Markdown into HTML: `:::name` directives as `<htmlpress-name>` of one of
-/// `components`, a fence's meta as its block's `data-*` attributes. A `page` takes its
+/// Turn Markdown into HTML: Livemark's directives, alerts and fences as htmlpress'
+/// elements, any other `:::name` as `<htmlpress-name>` of one of `components`, and a
+/// fence's meta as its block's `data-*` attributes. A `page` takes its
 /// frontmatter as the head's `<title>` and metas; a partial's is dropped, unread.
 pub(crate) fn compile_markdown(
     markdown: &str,
@@ -52,8 +53,9 @@ pub(crate) fn compile_markdown(
             }
         };
         let output = processor.process(markdown).map_err(|error| error.message)?;
+        let html = mark_inline_code(&output.value);
         if !page {
-            return Ok(output.value);
+            return Ok(html);
         }
         let matter = match output.file.data.get("matter") {
             Some(Value::Object(matter)) => matter.clone(),
@@ -62,15 +64,21 @@ pub(crate) fn compile_markdown(
         Ok(format!(
             "<!doctype html>\n<html>\n<head>\n{}</head>\n<body>\n{}</body>\n</html>\n",
             create_head(&matter)?,
-            output.value
+            html
         ))
     })
 }
 
 fn create_processor(components: &[String]) -> Result<FrozenProcessor, String> {
-    let component: md::Component = serde_json::from_value(json!({
-        "directives": [{ "name": components, "component": "htmlpress-{name}" }],
-        "unknownDirectives": "error",
+    let component: md::Component = serde_json::from_value(create_rules(components))
+        .map_err(|error| error.to_string())?;
+    let heading_id: md::HeadingId = serde_json::from_value(json!({
+        "attributes": true,
+        "markers": {
+            "[step]": { "data-step": true },
+            "[!toc]": { "data-toc": "false" },
+            "[toc]": { "data-toc": "only" },
+        },
     }))
     .map_err(|error| error.to_string())?;
     Processor::new()
@@ -81,8 +89,10 @@ fn create_processor(components: &[String]) -> Result<FrozenProcessor, String> {
             ..md::Frontmatter::default()
         })
         .with(md::Gfm::default())
+        .with(md::DefinitionList)
         .with(md::Math::default())
         .with(md::Directive::default())
+        .with(heading_id)
         .with(component)
         .with(md::ToHtml {
             allow_dangerous_html: true,
@@ -99,6 +109,166 @@ fn create_processor(components: &[String]) -> Result<FrozenProcessor, String> {
         })
         .freeze()
         .map_err(|error| error.message)
+}
+
+// Livemark's directives, alerts and fences, as its `create.ts` declares them, onto
+// htmlpress' elements; any other directive naming a component becomes that component
+fn create_rules(components: &[String]) -> Value {
+    json!({
+        "directives": [
+            {
+                "name": ["note", "tip", "info", "warning", "danger"],
+                "kind": "container",
+                "component": "htmlpress-callout",
+                "nameAs": "type",
+                "labelAs": "title",
+                "attributes": [],
+            },
+            {
+                "name": "card",
+                "kind": "container",
+                "component": "htmlpress-card",
+                "attributes": [{ "name": "title", "default": "" }, "href", "icon"],
+                "group": { "component": "htmlpress-cards" },
+            },
+            {
+                "name": "column",
+                "kind": "container",
+                "component": "htmlpress-column",
+                "attributes": [],
+                "group": { "component": "htmlpress-columns" },
+            },
+            {
+                "name": "tab",
+                "kind": "container",
+                "component": "htmlpress-tab",
+                "attributes": [{ "name": "title", "default": "" }, "sync"],
+                "group": { "component": "htmlpress-tabs", "min": 1, "inherit": ["sync"] },
+            },
+            {
+                "name": "details",
+                "kind": "container",
+                "component": "details",
+                "labelAs": "summary",
+                "labelDefault": "Details",
+                "attributes": [],
+            },
+            {
+                "name": "filetree",
+                "kind": "container",
+                "component": "htmlpress-filetree",
+                "attributes": [],
+            },
+            {
+                "name": "badge",
+                "kind": "text",
+                "component": "htmlpress-badge",
+                "attributes": ["variant"],
+            },
+            {
+                "name": "button",
+                "kind": "leaf",
+                "component": "htmlpress-button",
+                "labelAs": "label",
+                "attributes": ["href", "label", "variant", "size"],
+                "required": ["href", "label"],
+            },
+            {
+                "name": "icon",
+                "kind": "text",
+                "component": "htmlpress-icon",
+                "attributes": ["name"],
+                "required": ["name"],
+            },
+            {
+                "name": "abbr",
+                "kind": "text",
+                "component": "abbr",
+                "attributes": [{ "name": "title", "default": "" }],
+            },
+            {
+                "name": "toc",
+                "kind": "leaf",
+                "component": "htmlpress-toc",
+                "attributes": [{ "name": "maxLevel", "rename": "max-level" }],
+            },
+            {
+                "name": "video",
+                "kind": "leaf",
+                "where": { "type": "youtube" },
+                "component": "htmlpress-video",
+                "attributes": ["type", "url"],
+                "required": ["url"],
+            },
+            {
+                "name": "audio",
+                "kind": "leaf",
+                "where": { "type": "soundcloud" },
+                "component": "htmlpress-audio",
+                "attributes": ["type", "url"],
+                "required": ["url"],
+            },
+            {
+                "name": "include",
+                "kind": "leaf",
+                "component": "htmlpress-include",
+                "attributes": [{ "name": "file", "rename": "src" }],
+            },
+            { "name": components, "component": "htmlpress-{name}" },
+        ],
+        "alerts": {
+            "component": "htmlpress-callout",
+            "typeAs": "type",
+            "types": {
+                "NOTE": "note",
+                "TIP": "tip",
+                "WARNING": "warning",
+                "CAUTION": "danger",
+                "IMPORTANT": "info",
+            },
+        },
+        "codes": [
+            { "lang": "npm", "component": "htmlpress-package-tabs" },
+            {
+                "meta": "tab",
+                "group": { "component": "htmlpress-tabs", "collect": "tabs", "inherit": ["sync"] },
+            },
+        ],
+        "unknownDirectives": "error",
+    })
+}
+
+// Livemark's inline `code{:lang}`, as the `language-*` class the highlighter reads; only
+// a bare `<code>`, since a block's carries its own class or sits in a `<pre>`
+fn mark_inline_code(html: &str) -> String {
+    let mut out = String::with_capacity(html.len());
+    let mut rest = html;
+    while let Some(start) = rest.find("<code>") {
+        let body = &rest[start + "<code>".len()..];
+        let Some(end) = body.find("</code>") else {
+            break;
+        };
+        let code = &body[..end];
+        out.push_str(&rest[..start]);
+        let lang = code
+            .strip_suffix('}')
+            .and_then(|code| code.rsplit_once("{:"))
+            .filter(|(_, lang)| {
+                !lang.is_empty()
+                    && lang
+                        .chars()
+                        .all(|char| char.is_ascii_alphanumeric() || "+#-".contains(char))
+            });
+        match lang {
+            Some((code, lang)) if !out.ends_with("<pre>") => {
+                out.push_str(&format!("<code class=\"language-{lang}\">{code}</code>"))
+            }
+            _ => out.push_str(&format!("<code>{code}</code>")),
+        }
+        rest = &body[end + "</code>".len()..];
+    }
+    out.push_str(rest);
+    out
 }
 
 fn create_head(matter: &Map<String, Value>) -> Result<String, String> {

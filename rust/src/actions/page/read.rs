@@ -1,4 +1,5 @@
 use std::cell::{Cell, RefCell};
+use std::collections::VecDeque;
 use std::rc::Rc;
 
 use lol_html::html_content::ContentType;
@@ -411,6 +412,8 @@ const UNLISTED_HEADINGS: &[&str] = &[
 // are colored like any other, icons into their SVG, and themed images into the attribute
 fn prepare_content(html: &str) -> Result<String, String> {
     let commands = Rc::new(RefCell::new(String::new()));
+    let titles = Rc::new(RefCell::new(VecDeque::<String>::new()));
+    let tab_titles = titles.clone();
     let settings = RewriteStrSettings::new()
         // Expanded here, not in the browser, so the tabs component and the copy buttons
         // treat each manager's command like any other code block
@@ -437,6 +440,33 @@ fn prepare_content(html: &str) -> Result<String, String> {
                 )
             })?;
             el.set_inner_content(&svg, ContentType::Html);
+            Ok(())
+        }))
+        // A Markdown run of `tab="…"` fences arrives as one block per tab and their titles
+        .append_element_content_handler(element!("htmlpress-tabs[tabs]", |el| {
+            let list = el.get_attribute("tabs").unwrap_or_default();
+            let list = list.replace("&#x22;", "\"").replace("&quot;", "\"");
+            let list: Vec<String> = serde_json::from_str(&list)
+                .map_err(|error| format!("<htmlpress-tabs tabs>: {error}"))?;
+            *titles.borrow_mut() = list.into();
+            el.remove_attribute("tabs");
+            Ok(())
+        }))
+        .append_element_content_handler(element!("htmlpress-tabs > pre", |el| {
+            if let Some(title) = tab_titles.borrow_mut().pop_front() {
+                let title = title.replace('&', "&amp;").replace('"', "&quot;");
+                el.before(
+                    &format!("<htmlpress-tab title=\"{title}\">"),
+                    ContentType::Html,
+                );
+                el.after("</htmlpress-tab>", ContentType::Html);
+            }
+            Ok(())
+        }))
+        .append_element_content_handler(element!("details[summary]", |el| {
+            let summary = el.get_attribute("summary").unwrap_or_default();
+            el.prepend(&format!("<summary>{summary}</summary>"), ContentType::Html);
+            el.remove_attribute("summary");
             Ok(())
         }))
         .append_element_content_handler(element!("htmlpress-card[title]", |el| {

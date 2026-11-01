@@ -56,7 +56,7 @@ run from source: `cargo run --manifest-path rust/Cargo.toml -- build docs`.
    back into files the `.md` pages a page includes (`include/list`), as before Markdown pages.
    A `.md` page is served at its `.html` path and compiled first
    (`page/compile`: frontmatter checked against `FRONTMATTER_KEYS` into the head's metas,
-   `:::name` directives into `htmlpress-name` of a known component, a fence's meta onto
+   Livemark's directives, alerts and fences onto htmlpress' elements (`create_rules`, ported from Livemark's `create.ts`), any other `:::name` into `htmlpress-name` of a known component, a fence's meta onto
    `data-*` by the `AnnotateCode` plugin, before `html.raw`, which drops nodes' `data`). Every path is served
    without its base, so `Page.path` is the page's path without it (`guides/build.html`) and `Page.source`
    the file's. The nav, breadcrumbs and Markdown copies nest by `Page.path`; a page is

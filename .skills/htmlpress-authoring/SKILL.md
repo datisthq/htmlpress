@@ -61,8 +61,8 @@ order: 1
 
 # Getting started
 
-:::callout{type="warning"}
-Back up first.
+:::warning[Back up first]
+The build wipes its output folder.
 :::
 
 ```js title="build.js" lines="2"
@@ -73,12 +73,19 @@ await build("docs")
 - The frontmatter keys are the page metas by the same names (`title`, `description`, `order`,
   `layout`, `icon`, `label`, `sidebar`, `date`, `author`, `keywords`, …) plus `head`, raw HTML
   for `<head>`; `author` and `keywords` take a list. Any other key fails the build.
-- `:::name{attrs}`, `::name{attrs}` and `:name[label]{attrs}` are the component
-  `<htmlpress-name attrs>`; a name that is no component fails the build, except inline, where
-  `note:important` stays text. Raw `<htmlpress-*>` HTML works too, with Markdown inside after a
-  blank line.
+- The syntax is Livemark's: `:::note|tip|info|warning|danger[title]` and `> [!NOTE]` alerts are
+  callouts; `:::card{title href icon}`, `:::column` and `:::tab{title sync}` in a row group into
+  cards, columns and tabs; `:::details[summary]`, `:::filetree`, `::button[label]{href variant
+size}`, `::toc{maxLevel}`, `::video{type="youtube" url}`, `::audio{type="soundcloud" url}`,
+  `:badge[label]{variant}`, `:icon{name}`, `:abbr[text]{title}`. Headings take `{#id}`,
+  `[step]`, `[!toc]` and `[toc]`; `Term` then `: definition` is a definition list.
+- Any other `:::name{attrs}` is the component `<htmlpress-name attrs>`; a block one that names
+  no component fails the build, while inline `note:important` stays text. Raw `<htmlpress-*>`
+  HTML works too, with Markdown inside after a blank line.
 - A fence's meta is the code block attributes without `data-`: `title`, `collapse`, `lines`,
-  `line-numbers`, `add`, `remove`, `focus`, `error`, `warning`, `words`.
+  `line-numbers`, `add`, `remove`, `focus`, `error`, `warning`, `words`; adjacent fences with
+  `tab="…"` (and `sync`) are code tabs, ` ```npm ` is package-manager tabs, ` ```mermaid `
+  a diagram, and inline `` `code{:ts}` `` is highlighted.
 - GitHub Markdown (tables, task lists, footnotes, autolinks), `$…$` math and `:emoji:` work.
   Link to another page by its file, `[Setup](setup.md)`.
 - Never pages: an `.md` beside its `.html` page (that page's own Markdown copy for agents),

@@ -52,23 +52,34 @@ head: &lt;link rel="alternate" type="application/rss+xml" href="/feed.xml"&gt;</
 
 <h2>组件</h2>
 <p>
-  指令就是组件：<code>:::name</code> 包裹一个区块，<code>::name</code> 独占一行，<code
-    >:name[label]</code
-  >
-  位于文本之中。属性写在花括号里。
+  指令就是组件：<code>:::name</code> 包裹一个区块，<code>::name</code> 独占一行，
+  <code>:name[label]</code> 位于文本之中。属性写在花括号里。这些指令与
+  <a href="https://livemark.dev">Livemark</a> 的相同，所以 Livemark
+  页面在这里也能照样读取。
 </p>
-<pre><code class="language-md">:::callout{type="warning"}
-Back up the folder first.
+<pre><code class="language-md">:::warning[Back up first]
+The build wipes its output folder.
 :::
 
-The API is :badge[beta]{tone="info"}.</code></pre>
+:::card{title="Install" href="/install/" icon="rocket"}
+One command.
+:::
+
+The API is :badge[beta]{variant="warning"}.
+
+### Write a page [step]</code></pre>
 <p>
-  每个指令都会变成同名组件，即
-  <code>&lt;htmlpress-callout type="warning"&gt;</code> 和
-  <code>&lt;htmlpress-badge tone="info"&gt;</code
-  >，可以是内置组件，也可以是项目自己的组件。
-  没有对应组件的区块指令会使构建失败；在文本中，像 <code>note:important</code>
-  这样的内容仍保持为文本。
+  <code>:::note</code>、<code>tip</code>、<code>info</code>、<code>warning</code> 和
+  <code>danger</code> 是提示框，标签即标题，GitHub 提醒
+  <code>&gt; [!NOTE]</code> 也是。连续的 <code>:::card</code>、<code>:::column</code> 和
+  <code>:::tab</code> 会分别组成卡片、分栏和标签页；其余还有 <code>:::details</code>、
+  <code>:::filetree</code>、<code>::button</code>、<code>::toc</code>、
+  <code>::video{type="youtube"}</code>、<code>::audio{type="soundcloud"}</code>、
+  <code>:badge</code>、<code>:icon</code> 和 <code>:abbr</code>。标题可加
+  <code>{#id}</code>、<code>[step]</code>、<code>[!toc]</code>（不进目录）和
+  <code>[toc]</code
+  >（只进目录）。其他指令就是同名组件，包括项目自己的组件；没有对应组件的区块指令会使构建失败，在文本中像
+  <code>note:important</code> 这样的内容仍保持为文本。
 </p>
 
 <h2>代码块</h2>
