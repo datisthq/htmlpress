@@ -5,10 +5,7 @@
     --landing-code-dim: #8c8fa1;
     --landing-code-key: #8839ef;
     --landing-code-string: #40a02b;
-    --landing-code-tag: #d20f39;
-    --landing-code-flag: #df8e1d;
     --landing-code-folder: #179299;
-    --landing-code-number: #fe640b;
     display: block;
     min-width: 0;
   }
@@ -23,32 +20,22 @@
     font-size: 0.875rem;
     line-height: 1.625;
   }
+  /* The content stylesheet frames every Shiki block with `!important` */
+  pre.shiki {
+    background: none !important;
+  }
   [data-token="dim"],
-  [data-token="note"],
-  [data-token="punct"],
-  [data-token="comment"] {
+  [data-token="note"] {
     color: var(--landing-code-dim);
   }
-  [data-token="tag"] {
-    color: var(--landing-code-tag);
-  }
-  [data-token="attr"],
-  [data-token="key"],
-  [data-token="command"] {
+  [data-token="key"] {
     color: var(--landing-code-key);
   }
-  [data-token="string"],
   [data-token="page"] {
     color: var(--landing-code-string);
   }
-  [data-token="flag"] {
-    color: var(--landing-code-flag);
-  }
   [data-token="folder"] {
     color: var(--landing-code-folder);
-  }
-  [data-token="number"] {
-    color: var(--landing-code-number);
   }
   @media (max-width: 40rem) {
     [data-token="note"] {
@@ -63,10 +50,7 @@
     --landing-code-dim: #7f849c;
     --landing-code-key: #cba6f7;
     --landing-code-string: #a6e3a1;
-    --landing-code-tag: #f38ba8;
-    --landing-code-flag: #f9e2af;
     --landing-code-folder: #94e2d5;
-    --landing-code-number: #fab387;
   }
 }
 :root[data-theme="dark"] htmlpress-landing-code {
@@ -74,8 +58,5 @@
   --landing-code-dim: #7f849c;
   --landing-code-key: #cba6f7;
   --landing-code-string: #a6e3a1;
-  --landing-code-tag: #f38ba8;
-  --landing-code-flag: #f9e2af;
   --landing-code-folder: #94e2d5;
-  --landing-code-number: #fab387;
 }

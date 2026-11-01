@@ -15,19 +15,19 @@
   :scope::before {
     content: attr(label);
     display: block;
-    padding: 0.5rem 1rem 0.5rem 4.25rem;
+    padding: 0.5rem 1rem 0.5rem 4.875rem;
     border-bottom: 1px solid
       color-mix(in oklab, var(--htmlpress-accent) 20%, var(--htmlpress-border));
     background:
       radial-gradient(circle closest-side, oklch(0.7 0.19 22 / 0.6) 92%, #0000) 1rem 50% /
         0.625rem 0.625rem no-repeat,
-      radial-gradient(circle closest-side, oklch(0.85 0.17 90 / 0.6) 92%, #0000) 1.5rem
+      radial-gradient(circle closest-side, oklch(0.85 0.17 90 / 0.6) 92%, #0000) 2.125rem
         50% / 0.625rem 0.625rem no-repeat,
-      radial-gradient(circle closest-side, oklch(0.8 0.18 150 / 0.6) 92%, #0000) 2rem 50%
-        / 0.625rem 0.625rem no-repeat,
+      radial-gradient(circle closest-side, oklch(0.8 0.18 150 / 0.6) 92%, #0000) 3.25rem
+        50% / 0.625rem 0.625rem no-repeat,
       var(--htmlpress-surface);
     color: var(--htmlpress-muted);
-    font: 0.75rem/1.5 var(--htmlpress-mono);
+    font: 0.75rem/1rem var(--htmlpress-mono);
   }
   :scope > htmlpress-landing-code {
     padding: 1.25rem;
