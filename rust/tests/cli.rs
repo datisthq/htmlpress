@@ -384,10 +384,12 @@ fn keeps_changelog_sources_and_markdown_partials_out_of_the_pages() -> TestResul
         "sections:\n  - { title: Changelog, prefix: /changelog/, type: changelog, source: CHANGELOG.md }\n",
     )?;
     let path = root.path().to_string_lossy().into_owned();
-    let (code, _) = run_cli(&["build", &path, "--json"])?;
+    let (code, out) = run_cli(&["build", &path, "--json"])?;
     assert_eq!(code, 0);
+    // Counted, not looked up: macOS' case-insensitive disk finds `CHANGELOG` in `changelog/`
+    let report: serde_json::Value = serde_json::from_str(&out)?;
+    assert_eq!(report["pages"], 3);
     let build = root.path().join(".htmlpress/build");
-    assert!(!build.join("CHANGELOG").exists());
     assert!(!build.join("parts/note").exists());
     assert!(build.join("changelog/1-0-0/index.html").is_file());
     let home = std::fs::read_to_string(build.join("index.html"))?;
