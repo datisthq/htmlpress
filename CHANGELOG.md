@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.7.1](https://github.com/datisthq/htmlpress/compare/v0.7.0...v0.7.1) (2026-11-01)
+
+
+### Bug Fixes
+
+* build each page from one hast tree, parsed once ([3fadc38](https://github.com/datisthq/htmlpress/commit/3fadc38308dcc78104c137afb5341439bb252e2b))
+* link the favicon as icon and shortcut icon with its type, as Livemark does ([dc028a7](https://github.com/datisthq/htmlpress/commit/dc028a7ca3adf11f7f4a076388b2eb28b588bb74))
+* make live reload survive restarts, symlinks, outside inputs and busy folders ([d49df4e](https://github.com/datisthq/htmlpress/commit/d49df4ebd0d694c513a098a563e2e9e9de65c901))
+* refuse an output whose build folders beside it hold the project ([26008cc](https://github.com/datisthq/htmlpress/commit/26008cc2ce20f2b089fcdd60a4e31b67356ac928))
+* write the layout's own markup as built, unparsed unless a base needs it ([4074180](https://github.com/datisthq/htmlpress/commit/40741806f9d02d94f9bb83eb5269858319f0ae09))
+
 ## [0.7.0](https://github.com/datisthq/htmlpress/compare/v0.6.0...v0.7.0) (2026-11-01)
 
 
