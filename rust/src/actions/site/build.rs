@@ -1,7 +1,8 @@
 use std::path::{Path, PathBuf};
 
 use crate::actions::date::format::format_feed_date;
-use crate::actions::page::read::{create_output_path, read_page};
+use crate::actions::page::decorate::{Decoration, list_fragments};
+use crate::actions::page::read::{create_output_path, read_decorated_page};
 use crate::actions::page::render::render_page;
 use crate::actions::section::generate::list_posts;
 use crate::actions::site::describe::{describe_language, describe_site};
@@ -79,7 +80,16 @@ fn write_site(options: &BuildOptions, site: &Site) -> crate::Result<()> {
         }
     }
     if !site.pages.iter().any(|page| page.path == NOT_FOUND_PAGE) {
-        let page = read_page(NOT_FOUND_PAGE, &create_not_found(site.read_language("")))?;
+        let language = site.read_language("");
+        let base = site.config.read_base();
+        let fragments = list_fragments(&site.assets);
+        let decoration = Decoration {
+            language,
+            base: &base,
+            fragments: &fragments,
+        };
+        let html = create_not_found(language);
+        let page = read_decorated_page(NOT_FOUND_PAGE, &html, Some(&decoration))?;
         let mut built_in = site.clone();
         built_in.config.edit = None;
         let html = render_page(&built_in, &page, options.reload)?;

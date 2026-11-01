@@ -5,36 +5,47 @@ use crate::actions::changelog::fetch::{fetch_releases, is_github_source};
 use crate::actions::changelog::split::split_changelog;
 use crate::actions::date::format::format_date;
 use crate::actions::language::detect::create_key;
+use crate::actions::page::parse::parse_html_source;
 use crate::actions::page::read::read_source;
 use crate::actions::path::contain::read_contained;
 use crate::models::config::{Section, SectionKind};
 use crate::models::error::Error;
 use crate::models::language::SiteLanguage;
 use crate::models::page::{Page, SourceAction};
+use crate::models::source::{Draft, Sources};
 use crate::settings::CONFIG_FILE;
 
 /// The pages blog and changelog sections build themselves: a blog's index and one page per
 /// tag, a changelog's page per version and its index. A section's own index page wins over
 /// the generated one, and no generated page replaces a page the project has.
-pub(crate) fn generate_pages(
+pub(crate) fn generate_pages<'a>(
     root: &Path,
     language: &SiteLanguage,
     pages: &[Page],
-) -> crate::Result<Vec<Page>> {
+    sources: &mut Sources<'a>,
+) -> crate::Result<Vec<Draft<'a>>> {
     let mut generated = vec![];
     for section in &language.config.sections {
         let Some(prefix) = section.prefix.as_deref() else {
             continue;
         };
         let created = match section.kind {
-            SectionKind::Blog => create_blog(section, prefix, pages, language)?,
-            SectionKind::Changelog => create_changelog(root, section, prefix, language)?,
+            SectionKind::Blog => create_blog(section, prefix, pages, language, sources)?,
+            SectionKind::Changelog => {
+                create_changelog(root, section, prefix, language, sources)?
+            }
             SectionKind::Article | SectionKind::Custom => vec![],
         };
         let taken = |page: &Page| {
-            (pages.iter().chain(&generated)).any(|other: &Page| other.url == page.url)
+            (pages
+                .iter()
+                .chain(generated.iter().map(|draft: &Draft| &draft.page)))
+            .any(|other: &Page| other.url == page.url)
         };
-        let fresh: Vec<Page> = created.into_iter().filter(|page| !taken(page)).collect();
+        let fresh: Vec<Draft> = created
+            .into_iter()
+            .filter(|draft| !taken(&draft.page))
+            .collect();
         generated.extend(fresh);
     }
     Ok(generated)
@@ -56,12 +67,13 @@ pub(crate) fn create_tag_url(prefix: &str, tag: &str) -> String {
     format!("{prefix}tags/{}/", create_slug(tag))
 }
 
-fn create_blog(
+fn create_blog<'a>(
     section: &Section,
     prefix: &str,
     pages: &[Page],
     language: &SiteLanguage,
-) -> crate::Result<Vec<Page>> {
+    sources: &mut Sources<'a>,
+) -> crate::Result<Vec<Draft<'a>>> {
     let all: Vec<&Page> = pages.iter().collect();
     let mut posts = list_posts(prefix, &all);
     // Another language's blog lists the default posts it has no translation of, as its
@@ -85,9 +97,9 @@ fn create_blog(
     let mut index = format!("<title>{title}</title>\n<h1>{title}</h1>\n");
     index.push_str(&create_post_list(&posts, language));
     // Its tags are the sidebar's; as in Livemark, the index is as new as its newest post
-    let mut page = create_page(&format!("{folder}index.html"), &index, "")?;
-    page.updated = read_newest(&posts);
-    let mut created = vec![page];
+    let mut draft = create_page(&format!("{folder}index.html"), &index, "", sources)?;
+    draft.page.updated = read_newest(&posts);
+    let mut created = vec![draft];
     for tag in tags {
         let tagged: Vec<&Page> = posts
             .iter()
@@ -103,9 +115,9 @@ fn create_blog(
             "{}index.html",
             create_tag_url(prefix, tag).trim_start_matches('/')
         );
-        let mut page = create_page(&path, &html, "")?;
-        page.updated = read_newest(&tagged);
-        created.push(page);
+        let mut draft = create_page(&path, &html, "", sources)?;
+        draft.page.updated = read_newest(&tagged);
+        created.push(draft);
     }
     Ok(created)
 }
@@ -149,12 +161,13 @@ fn create_post_list(posts: &[&Page], language: &SiteLanguage) -> String {
     html
 }
 
-fn create_changelog(
+fn create_changelog<'a>(
     root: &Path,
     section: &Section,
     prefix: &str,
     language: &SiteLanguage,
-) -> crate::Result<Vec<Page>> {
+    sources: &mut Sources<'a>,
+) -> crate::Result<Vec<Draft<'a>>> {
     let source = section.source.as_deref().unwrap_or_default();
     let fail = |message: String| Error::Config {
         path: root.join(CONFIG_FILE),
@@ -181,16 +194,17 @@ fn create_changelog(
             "<title>{version}</title>\n<meta name=\"order\" content=\"{order}\">\n{meta}<h1>{version}</h1>\n{}",
             release.html
         );
-        let mut page = create_page(
+        let mut draft = create_page(
             &format!("{folder}{}/index.html", release.slug),
             &html,
             source,
+            sources,
         )?;
         if let Some(url) = &release.url {
-            page.source_url = Some(url.clone());
-            page.source_action = SourceAction::View;
+            draft.page.source_url = Some(url.clone());
+            draft.page.source_action = SourceAction::View;
         }
-        created.push(page);
+        created.push(draft);
         let when = date.map_or(String::new(), |date| {
             format!(
                 "<p><span>{}</span></p>",
@@ -204,9 +218,9 @@ fn create_changelog(
         );
     }
     index.push_str("</section>\n");
-    let mut page = create_page(&format!("{folder}index.html"), &index, source)?;
-    page.updated = releases.iter().find_map(|release| release.date.clone());
-    created.insert(0, page);
+    let mut draft = create_page(&format!("{folder}index.html"), &index, source, sources)?;
+    draft.page.updated = releases.iter().find_map(|release| release.date.clone());
+    created.insert(0, draft);
     Ok(created)
 }
 
@@ -214,11 +228,23 @@ fn read_newest(posts: &[&Page]) -> Option<String> {
     posts.iter().filter_map(|post| post.date.clone()).max()
 }
 
-fn create_page(path: &str, html: &str, source: &str) -> crate::Result<Page> {
-    let page = read_source(path, html)?;
-    Ok(Page {
-        source: source.to_owned(),
-        ..page
+// A generated page's markup, parsed once into the build's arena like a source's
+fn create_page<'a>(
+    path: &str,
+    html: &str,
+    source: &str,
+    sources: &mut Sources<'a>,
+) -> crate::Result<Draft<'a>> {
+    let text = sources.alloc.alloc_str(html);
+    let tree = parse_html_source(&mut sources.parser, path, text, sources.alloc)
+        .map_err(Error::page(path))?;
+    let page = read_source(path, &tree)?;
+    Ok(Draft {
+        page: Page {
+            source: source.to_owned(),
+            ..page
+        },
+        tree,
     })
 }
 

@@ -46,6 +46,14 @@ mod actions {
     pub(crate) mod nav {
         pub(crate) mod build;
     }
+    pub(crate) mod node {
+        pub(crate) mod collect;
+        pub(crate) mod copy;
+        pub(crate) mod create;
+        pub(crate) mod parse;
+        pub(crate) mod walk;
+        pub(crate) mod write;
+    }
     pub(crate) mod pipeline {
         pub(crate) mod create;
     }
@@ -64,9 +72,12 @@ mod actions {
     pub(crate) mod page {
         pub(crate) mod compile;
         pub(crate) mod convert;
+        pub(crate) mod decorate;
         pub(crate) mod include;
+        pub(crate) mod parse;
         pub(crate) mod patch;
         pub(crate) mod prefix;
+        pub(crate) mod prepare;
         pub(crate) mod read;
         pub(crate) mod rebase;
         pub(crate) mod render;
@@ -109,6 +120,7 @@ mod models {
     pub(crate) mod plugin;
     pub(crate) mod site;
     pub(crate) mod skill;
+    pub(crate) mod source;
 }
 mod flags;
 mod icons;

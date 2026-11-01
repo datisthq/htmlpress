@@ -53,11 +53,14 @@ run from source: `cargo run --manifest-path rust/Cargo.toml -- build docs`.
    unset) and `exclude` (dropped); other files under a base, `.html` outside `include` too,
    are copied, and so are an `.md` beside its `.html` page (the project's own Markdown
    copy), a changelog section's `source` and the `skills` files; `keep_partials` then turns
-   back into files the `.md` pages a page includes (`include/list`), as before Markdown pages.
-   A `.md` page is served at its `.html` path and compiled first
-   (`page/compile`: frontmatter checked against `FRONTMATTER_KEYS` into the head's metas,
+   back into files the `.md` pages a page includes (`include/list`, read from each source's
+   tree, where Markdown's `::include` is already `<htmlpress-include>`), as before Markdown pages.
+   A `.md` page is served at its `.html` path and compiled into hast
+   (`page/compile`, no stringify: `create_document` makes its frontmatter, checked against
+   `FRONTMATTER_KEYS`, the head's `<title>` and metas, a raw `head` parsed there,
    Livemark's directives, alerts and fences onto htmlpress' elements (`create_rules`, ported from Livemark's `create.ts`), any other `:::name` into `htmlpress-name` of a known component, the config's `plugins.md` after `md.directive` (`plugin/add`; every page pipeline is a textlane `Pipeline`, its textlane plugins by name and htmlpress' own through `use_native`, so a project's entry naming one merges into it as in Livemark; never build with `Processor::with`, which runs a duplicate twice), a fence's meta onto
-   `data-*` by the `AnnotateCode` plugin, before `html.raw`, which drops nodes' `data`). Every path is served
+   `data-*` by the `AnnotateCode` plugin, before `html.raw`, which drops nodes' `data`, and
+   `code{:lang}` marked by `MarkInlineCode` after it). Every path is served
    without its base and slugified as Livemark routes it (`path/slugify`, each dot part of the
    name on its own so a `.es` suffix survives), so `Page.path` is the page's path without it
    (`guides/build.html`) and `Page.source` the file's. The nav, breadcrumbs and Markdown copies nest by `Page.path`; a page is
@@ -71,36 +74,45 @@ run from source: `cargo run --manifest-path rust/Cargo.toml -- build docs`.
    them as Livemark's `buildArticleTree` does, under their folder's `index.html` only, for the
    sidebar and the pager: a folder without one makes no entry.
    `scan_site` resolves `<htmlpress-include>` (`page/include`, through `path/contain`) in a
-   page's source before `read_page`, which has no filesystem access, so included content
-   reaches the TOC, search and the Markdown copies like the page's own.
-2. A page is parsed **once**. `scan_site` reads every page's facts first with `read_source`
-   (lol_html over the source: title, metas, URL; `content` holds the source meanwhile), since
-   links need every page's URL, then `finish_page` runs the site's `Pipeline`
+   page's tree before `read_source`, splicing in the partial's nodes, so included content
+   reaches the facts, TOC, search and the Markdown copies like the page's own.
+2. A page is parsed **once**, into one tree that lives from its parse to its content: no
+   stage writes HTML that a later one parses again. `scan_site` holds one `Allocator` for
+   the build and a `Sources` cache (`models/source.rs`, `page/parse`): every page, partial
+   and generated page is parsed into that arena once (`html.parse` through the project's
+   `html` plugins, as a document when `is_document`, or compiled), and each use takes a
+   `copy_node` of it, so a partial included twice stays as parsed. `read_source` reads the
+   facts (title, metas, URL) from the tree, each page held as a `Draft` with its tree, since
+   links need every page's URL; then `finish_page` runs `prepare_page` (package tabs,
+   icons, fence tabs, `details[summary]`, cards, buttons, media links, themed images and
+   mermaid blocks, each into plain markup), then the site's `Pipeline` with `run_sync`
    (`pipeline/create`, one per include base): `html.gemoji`, `html.linkify` and
    `html.math` on text outside links, code and `data-literal`, htmlpress' `WrapMath`
    (every formula into its `<htmlpress-math>`, the LaTeX in `data-latex`), `html.katex`
    (MathML), the config's `plugins.html`, `html.slug` (h2–h6, ids already in the page reserved), `html.pathRewrite` and
-   `html.highlight`; the same tree then goes through `SimplifyPage` and `html.toMarkdown`
-   into `Page.markdown`, the agent copy. Generated and patched pages take the same two steps;
-   the public `read_page` is both, with no links or colors. Never add a stage that parses
-   `page.content` again. textlane writes `&`, `<`, `"` and `'` as hex references, which
-   `name_references` turns back, since the lol_html passes read attributes as written. Then lol_html over the result three times — facts (title, first `<h1>`, metas,
-   whether a `<head>` exists), content (wrappers and layout-owned tags removed) and the extra
-   head tags. lol_html builds no tree and adds no implied `<head>` or `<body>`, so for a
-   fragment both passes split at its first content (`read_lead`): the head tags before it
-   go to the head, as a browser would parse them, and leave the content.
-   The content pass also expands `htmlpress-package-tabs` into `htmlpress-tabs`: its text
-   is collected, removed, and the sections are written from an end-tag handler, since the
-   text is only complete there; the asset loader then sees the `htmlpress-tabs` tag
-3. `render_page` runs lol_html over the layout, which is plain HTML: `layout.html`, or
+   `html.highlight`. From the same tree it reads the headings, writes the missing ids, splits
+   the head from the content (`split_page`; a fragment's leading head tags go to the head,
+   as a browser parses them), reads the search chunks (`site/index`'s `read_chunks`), and
+   runs a `copy_node` of it through `SimplifyPage` and `html.toMarkdown` into
+   `Page.markdown`, the agent copy. Then `decorate_page` turns the content into what the
+   layout shows: the byline after the first `<h1>`, the page's own `<htmlpress-toc>`s,
+   callout titles in the page's language, `code/title`, project components filled (their
+   tags read first, into `Page.components`) and, with `base`, `page/prefix`. Generated and
+   patched pages take the same steps; the public `read_page` has no links, colors or
+   decoration. Only then is the tree written, once: textlane writes `&`, `<`, `"` and `'` as
+   hex references, which `name_references` names again. Never add a stage that parses
+   `page.content` again, or one that reads a page's text instead of its tree.
+3. `render_page` parses the layout, a template, into a tree of its own: `layout.html`, or
    `layouts/<name>.html` for a page with `<meta name="layout">` (`scan_site` fails a page
-   naming a missing one). The page's own project component tags are filled first, since
-   its content goes in unparsed, but the tags it links CSS for are read before that; a
-   project component keeps its tag, so its CSS scopes to it. It
-   fills `<head>` and
-   swaps each layout element (`htmlpress-content`, `htmlpress-nav`, `htmlpress-page-toc`, `htmlpress-pager`, …) for markup
-   built from the site. Inserted markup is never re-parsed, so a page's own `htmlpress-*` tags
-   are left to the browser; an element with nothing to show is removed. With `sections`,
+   naming a missing one), as a fragment unless it is a document, so a bare layout gains no
+   `<html>` or `<body>`. It fills `<head>`, each project component's tag with its `.html`,
+   and swaps each layout element (`htmlpress-nav`, `htmlpress-page-toc`, `htmlpress-pager`,
+   …) for markup built from the site (`parse_fragment`); `htmlpress-content` becomes the
+   page's content as a raw node, written as the page pipeline left it, and the page's
+   extra head tags go in the same way. Markup it fills in is not walked again; an element
+   with nothing to show is removed. The CSS it links is for the layout's tags and
+   `Page.components`. An escaped layout or component comes out as the same elements,
+   respelled, never byte for byte. With `sections`,
    `find_section` (longest prefix) picks the open page's section, and the nav, pager,
    brand and breadcrumbs use only its pages and its `site*` overrides. Code blocks are
    highlighted in the page pipeline (`code/highlight` builds textlane's `html.highlight`
@@ -117,19 +129,22 @@ run from source: `cargo run --manifest-path rust/Cargo.toml -- build docs`.
    one URL, then adds the pages blog and
    changelog sections build (`section/generate`: a blog's index and tag pages, a page per
    `changelog/split` release) after reading git's dates (`git/read`, one `git log`), so a
-   generated page never borrows its source file's date. With `base`, a last
-   pass (`page/prefix`) prefixes every root-relative URL attribute of the finished page,
-   so no URL builder needs to know the base; absolute URLs take it through
-   `Config::read_origin`, and the text outputs through `Config::read_base`
+   generated page never borrows its source file's date. With `base`, `page/prefix` prefixes
+   every root-relative URL attribute, on the page's tree in `decorate_page` and on the
+   layout's in `render_page`, which skips the raw content already done, so no URL builder
+   needs to know the base; absolute URLs take it through `Config::read_origin`, and the text
+   outputs through `Config::read_base`. The built-in `404.html` is read with the default
+   language's decoration, so its links take the base too
 4. `build_site` refuses an output that holds the project or sits visible inside it, since it
    writes into `<output>.next` and swaps it in whole (`create_build_paths`), since the dev
    server answers while it rebuilds and a half-written output serves pages without their CSS;
    it writes pages, copies files and adds `_htmlpress/` assets,
    `robots.txt`, `sitemap.xml` and, when the project has none, the built-in `404.html`
    (`NOT_FOUND`), which the nav and pager never list. `index_site` writes `_htmlpress/search.json`
-   (each page's text split at its `h2`/`h3`, words separated at element starts since
-   lol_html may cut one text node into several chunks; `<pre>` is skipped by depth, since a
-   text handler sees only its own element), which `htmlpress-search` fetches on first open.
+   (`Page.chunks`, read in the pipeline: each page's text split at its `h2[id]`/`h3[id]`,
+   words separated at element starts, a heading's text its chunk's heading only, and
+   `<h1>`, `<pre>`, scripts, styles and SVGs left out), which `htmlpress-search` fetches on
+   first open.
    The widget mirrors Livemark's: a result links `?highlight=<query>`, and the opened page
    paints the matches with the CSS Custom Highlight API, so the DOM stays untouched. `describe_site` adds the agent files:
    each page's `Page.markdown` (made in the pipeline: `page/simplify` reduces `htmlpress-*`

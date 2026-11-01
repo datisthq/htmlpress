@@ -2,6 +2,7 @@ use textlane::{Allocator, Attach, Error, File, Plugin, Transform, Tree, TreeKind
 
 use crate::actions::code::annotate::annotate_code;
 use crate::actions::math::wrap::wrap_math;
+use crate::actions::page::compile::mark_inline_code;
 use crate::actions::page::simplify::simplify_page;
 
 /// htmlpress' own step of the page pipeline, between textlane's `html.math` and
@@ -79,6 +80,46 @@ impl Transform for AnnotateCode {
             _ => Err(Error::new(
                 "invalid-stage",
                 "htmlpress' code step takes hast",
+            )),
+        }
+    }
+}
+
+/// htmlpress' own step after `html.raw` in the Markdown pipeline: Livemark's inline
+/// `code{:lang}` as the class the highlighter reads (see `mark_inline_code`).
+#[derive(Clone, Debug, Default)]
+pub(crate) struct MarkInlineCode;
+
+impl Plugin for MarkInlineCode {
+    fn attach(&self, context: &mut Attach) -> Result<(), Error> {
+        context.add_transform(Box::new(MarkInlineCode));
+        Ok(())
+    }
+}
+
+impl Transform for MarkInlineCode {
+    fn input(&self) -> TreeKind {
+        TreeKind::Hast
+    }
+
+    fn output(&self) -> TreeKind {
+        TreeKind::Hast
+    }
+
+    fn run<'a>(
+        &self,
+        tree: Tree<'a>,
+        _file: &mut File,
+        alloc: &'a Allocator,
+    ) -> Result<Tree<'a>, Error> {
+        match tree {
+            Tree::Hast(mut node) => {
+                mark_inline_code(&mut node, alloc);
+                Ok(Tree::Hast(node))
+            }
+            _ => Err(Error::new(
+                "invalid-stage",
+                "htmlpress' inline code step takes hast",
             )),
         }
     }

@@ -1,4 +1,15 @@
+use textlane::Allocator;
+
 use super::*;
+use crate::actions::node::parse::parse_fragment;
+use crate::actions::node::write::write_nodes;
+
+fn prefix(html: &str, base: &str) -> Result<String, String> {
+    let alloc = Allocator::new();
+    let mut nodes = parse_fragment(html, &alloc);
+    prefix_urls(&mut nodes, base, &alloc);
+    write_nodes(nodes)
+}
 
 #[test]
 fn prefixes_only_root_relative_urls() -> Result<(), String> {
@@ -9,7 +20,7 @@ fn prefixes_only_root_relative_urls() -> Result<(), String> {
         r#"<script data-endpoint="/_htmlpress/reload"></script>"#,
     );
     assert_eq!(
-        prefix_urls(html, "/repo")?,
+        prefix(html, "/repo")?,
         concat!(
             r#"<a href="/repo/guide.html">a</a><a href="guide.html">b</a>"#,
             r##"<a href="https://x.dev/">c</a><a href="//cdn.dev/x.js">d</a><a href="#top">e</a>"##,

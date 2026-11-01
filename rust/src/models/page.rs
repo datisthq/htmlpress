@@ -1,3 +1,5 @@
+use std::collections::BTreeSet;
+
 use serde::Serialize;
 
 /// One HTML source page, split into what the layout needs.
@@ -62,6 +64,23 @@ pub struct Page {
     /// The page as the Markdown agents read: its title and description, then its content.
     #[serde(skip)]
     pub markdown: String,
+    /// The content's text as search reads it, split at its `<h2>` and `<h3>` headings.
+    #[serde(skip)]
+    pub chunks: Vec<SearchChunk>,
+    /// Every tag the content holds, its project components' own included: the components
+    /// whose CSS and JS the page links.
+    #[serde(skip)]
+    pub components: BTreeSet<String>,
+}
+
+/// One stretch of a page's text in the search index: what comes before its first
+/// heading, or one `<h2>` or `<h3>` and what follows it.
+#[derive(Debug, Clone, Default, PartialEq)]
+pub struct SearchChunk {
+    /// The heading's `id`.
+    pub id: Option<String>,
+    pub heading: Option<String>,
+    pub text: String,
 }
 
 /// What the page's source link offers.

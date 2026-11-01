@@ -1,8 +1,12 @@
 use std::path::PathBuf;
 
 use super::*;
-use crate::actions::page::read::read_page;
+use crate::actions::page::decorate::Decoration;
+use crate::actions::page::parse::parse_html_source;
+use crate::actions::page::read::{finish_page, read_page, read_source};
+use crate::actions::pipeline::create::create_pipeline;
 use crate::models::config::{Config, Link, Position, Section, SectionKind};
+use crate::models::pipeline::PipelineOptions;
 use crate::settings::ASSETS;
 
 fn create_site() -> crate::Result<Site> {
@@ -31,17 +35,43 @@ fn create_site() -> crate::Result<Site> {
     })
 }
 
+// A page as the scan reads it for `site`: `edit` sets what the scan learns besides its
+// source, such as its git date, before its content is decorated in its language
+fn read_with(
+    site: &Site,
+    path: &str,
+    html: &str,
+    edit: impl FnOnce(&mut Page),
+) -> crate::Result<Page> {
+    let mut pipeline =
+        create_pipeline(&PipelineOptions::default()).map_err(Error::Usage)?;
+    let alloc = Allocator::new();
+    let tree = parse_html_source(&mut pipeline, path, alloc.alloc_str(html), &alloc)
+        .map_err(Error::Usage)?;
+    let mut page = read_source(path, &tree)?;
+    edit(&mut page);
+    let base = site.config.read_base();
+    let fragments = list_fragments(&site.assets);
+    let decoration = Decoration {
+        language: site.read_language(&page.language),
+        base: &base,
+        fragments: &fragments,
+    };
+    finish_page(&mut page, tree, &mut pipeline, Some(&decoration), &alloc)?;
+    Ok(page)
+}
+
 #[test]
 fn renders_the_page_in_the_layout() -> crate::Result<()> {
     let site = create_site()?;
     let html = render_page(&site, &site.pages[1], false)?;
     assert!(html.starts_with("<!doctype html>"));
-    assert!(html.contains("<title>Guide · Docs &lt;&amp;&gt;</title>"));
+    assert!(html.contains("<title>Guide · Docs &lt;&amp;></title>"));
     assert!(html.contains("<p>Read me.</p>"));
     assert!(html.contains(r#"<a href="/guide/" aria-current="page">Guide</a>"#));
     assert!(html.contains(r#"<a href="/">Home</a>"#));
     assert!(html.contains(
-        r#"<htmlpress-brand><a href="/">Docs &lt;&amp;&gt;</a></htmlpress-brand>"#
+        r#"<htmlpress-brand><a href="/">Docs &lt;&amp;></a></htmlpress-brand>"#
     ));
     assert!(!html.contains("<htmlpress-content>") && !html.contains(RELOAD_PATH));
     Ok(())
@@ -60,14 +90,19 @@ fn groups_the_navigation_by_folder() -> crate::Result<()> {
 #[test]
 fn leaves_the_byline_off_a_page_with_its_own_layout() -> crate::Result<()> {
     let mut site = create_site()?;
-    site.pages[1].updated = Some("2026-10-20".to_owned());
+    let guide = "<title>Guide</title><p>Read me.</p><h2>Setup</h2>";
+    let updated = |page: &mut Page| page.updated = Some("2026-10-20".to_owned());
+    site.pages[1] = read_with(&site, "guide.html", guide, updated)?;
     let html = render_page(&site, &site.pages[1], false)?;
     assert!(html.contains("<htmlpress-byline>"));
-    site.pages[1].layout = Some("landing".to_owned());
     site.assets.insert(
         "layouts/landing.html".to_owned(),
         site.assets["layout.html"].clone(),
     );
+    site.pages[1] = read_with(&site, "guide.html", guide, |page| {
+        updated(page);
+        page.layout = Some("landing".to_owned());
+    })?;
     let html = render_page(&site, &site.pages[1], false)?;
     assert!(!html.contains("<htmlpress-byline>"));
     Ok(())
@@ -77,7 +112,9 @@ fn leaves_the_byline_off_a_page_with_its_own_layout() -> crate::Result<()> {
 fn labels_the_navigation_and_its_links() -> crate::Result<()> {
     let mut site = create_site()?;
     let html = render_page(&site, &site.pages[0], false)?;
-    assert!(html.contains(r#"<nav aria-label="Pages"><p data-label>Articles</p><ul>"#));
+    assert!(
+        html.contains(r#"<nav aria-label="Pages"><p data-label="">Articles</p><ul>"#)
+    );
     site.config.links = vec![Link {
         title: "Chat".into(),
         url: "https://chat.x".to_owned(),
@@ -85,7 +122,7 @@ fn labels_the_navigation_and_its_links() -> crate::Result<()> {
         ..Link::default()
     }];
     let html = render_page(&site, &site.pages[0], false)?;
-    assert!(html.contains(r#"<p data-label>Links</p><ul data-links>"#));
+    assert!(html.contains(r#"<p data-label="">Links</p><ul data-links="">"#));
     Ok(())
 }
 
@@ -191,7 +228,7 @@ fn uses_the_layout_a_page_names() -> crate::Result<()> {
     let html = render_page(&site, &site.pages[0], false)?;
     assert_eq!(
         html,
-        r#"<header><htmlpress-brand><a href="/">Docs &lt;&amp;&gt;</a></htmlpress-brand></header><main><h1>Home</h1></main>"#
+        r#"<header><htmlpress-brand><a href="/">Docs &lt;&amp;></a></htmlpress-brand></header><main><h1>Home</h1></main>"#
     );
     let other = render_page(&site, &site.pages[1], false)?;
     assert!(other.contains("<htmlpress-nav>"));
@@ -256,33 +293,25 @@ fn renders_the_theme_toggle_as_a_menu() -> crate::Result<()> {
 fn fills_a_project_component_tag_with_its_html() -> crate::Result<()> {
     let mut site = create_site()?;
     let footer = "<footer><htmlpress-badge>v1</htmlpress-badge></footer>";
-    site.assets.insert(
-        "components/site-footer/site-footer.html".to_owned(),
-        footer.to_owned(),
-    );
-    site.assets.insert(
-        "components/site-footer/site-footer.css".to_owned(),
-        "footer {}".to_owned(),
-    );
-    site.assets.insert(
-        "components/brand/brand.html".to_owned(),
-        "<b>Mine</b>".to_owned(),
-    );
-    site.pages[0] = read_page(
+    for (path, text) in [
+        ("components/site-footer/site-footer.html", footer),
+        ("components/site-footer/site-footer.css", "footer {}"),
+        ("components/brand/brand.html", "<b>Mine</b>"),
+        (
+            "components/site-header/site-header.html",
+            "<header></header>",
+        ),
+        ("components/site-header/site-header.css", "header {}"),
+    ] {
+        site.assets.insert(path.to_owned(), text.to_owned());
+    }
+    site.pages[0] = read_with(
+        &site,
         "index.html",
-        "<h1>Home</h1><htmlpress-site-footer></htmlpress-site-footer>",
+        "<h1>Home</h1><htmlpress-site-footer></htmlpress-site-footer>\
+         <htmlpress-site-header></htmlpress-site-header>",
+        |_| {},
     )?;
-    site.assets.insert(
-        "components/site-header/site-header.html".to_owned(),
-        "<header></header>".to_owned(),
-    );
-    site.assets.insert(
-        "components/site-header/site-header.css".to_owned(),
-        "header {}".to_owned(),
-    );
-    site.pages[0]
-        .content
-        .push_str("<htmlpress-site-header></htmlpress-site-header>");
     let layout = "<head></head><htmlpress-brand></htmlpress-brand><htmlpress-content></htmlpress-content><htmlpress-site-footer></htmlpress-site-footer>";
     site.assets
         .insert("layout.html".to_owned(), layout.to_owned());
@@ -325,7 +354,7 @@ fn adds_the_favicon_social_tags_and_head_from_the_config() -> crate::Result<()> 
         r#"<meta property="og:image" content="https://example.com/cover.png">"#
     ));
     assert!(html.contains(r#"<meta name="twitter:card" content="summary_large_image">"#));
-    assert!(html.contains(r#"<script defer="" src="/stats.js"></script>"#));
+    assert!(html.contains(r#"<script defer src="/stats.js"></script>"#));
     assert!(html.contains(r#"<meta content="article" property="og:type">"#));
     assert!(!html.contains(r#"content="website""#));
     assert!(!html.contains(r#"<meta name="image""#));
@@ -358,7 +387,7 @@ fn puts_the_description_under_the_brand_title() -> crate::Result<()> {
     site.config.description = Some("Notes <&>".into());
     let html = render_page(&site, &site.pages[0], false)?;
     assert!(html.contains(
-        r#"<a href="/"><span>Docs &lt;&amp;&gt;<small>Notes &lt;&amp;&gt;</small></span></a>"#
+        r#"<a href="/"><span>Docs &lt;&amp;><small>Notes &lt;&amp;></small></span></a>"#
     ));
     Ok(())
 }
@@ -384,7 +413,7 @@ fn puts_each_link_in_its_position() -> crate::Result<()> {
     ];
     let html = render_page(&site, &site.pages[0], false)?;
     assert!(html.contains(r#"<nav aria-label="Links"><a href="https://github.com/x">"#));
-    assert!(html.contains(r#"<ul data-links><li><a href="https://chat.x">Chat</a>"#));
+    assert!(html.contains(r#"<ul data-links=""><li><a href="https://chat.x">Chat</a>"#));
     Ok(())
 }
 
@@ -397,11 +426,11 @@ fn fills_the_breadcrumbs_from_the_folders() -> crate::Result<()> {
     assert!(!home.contains("<htmlpress-breadcrumbs"));
     let auth = render_page(&site, &site.pages[4], false)?;
     assert!(auth.contains(
-        r#"<ol><li><a href="/">Docs &lt;&amp;&gt;</a></li><li><a href="/api/">API</a></li><li>v1</li><li aria-current="page">Auth</li></ol>"#
+        r#"<ol><li><a href="/">Docs &lt;&amp;></a></li><li><a href="/api/">API</a></li><li>v1</li><li aria-current="page">Auth</li></ol>"#
     ));
     let index = render_page(&site, &site.pages[2], false)?;
     assert!(index.contains(
-        r#"<li><a href="/">Docs &lt;&amp;&gt;</a></li><li aria-current="page">API</li>"#
+        r#"<li><a href="/">Docs &lt;&amp;></a></li><li aria-current="page">API</li>"#
     ));
     Ok(())
 }
@@ -465,27 +494,32 @@ fn create_sectioned_site() -> crate::Result<Site> {
 fn shows_only_the_open_sections_pages_with_its_brand() -> crate::Result<()> {
     let site = create_sectioned_site()?;
     let cli = render_page(&site, &site.pages[3], false)?;
-    assert!(cli.contains(r#"<a href="/api/" data-section aria-current="page">API</a>"#));
-    assert!(cli.contains(r#"<a href="/" data-section>Docs</a>"#));
+    assert!(
+        cli.contains(r#"<a href="/api/" data-section="" aria-current="page">API</a>"#)
+    );
+    assert!(cli.contains(r#"<a href="/" data-section="">Docs</a>"#));
     assert!(cli.contains(r#"<htmlpress-brand><a href="/api/">API Reference</a>"#));
     assert!(!cli.contains(r#"<a href="/guide/""#), "{cli}");
     assert!(cli.contains(r#"<a rel="prev" href="/api/"><small>Previous</small>API</a>"#));
     assert!(!cli.contains(r#"rel="next""#));
     assert!(!cli.contains("<details open>"), "{cli}");
-    assert!(
-        cli.contains("<div data-sections><p data-label>Sections</p><details><summary>")
-    );
+    assert!(cli.contains(
+        r#"<div data-sections=""><p data-label="">Sections</p><details><summary>"#
+    ));
     assert!(cli.contains("<span>API</span></summary>"));
 
     let guide = render_page(&site, &site.pages[1], false)?;
-    assert!(guide.contains(r#"<a href="/" data-section aria-current="page">Docs</a>"#));
+    assert!(
+        guide.contains(r#"<a href="/" data-section="" aria-current="page">Docs</a>"#)
+    );
     assert!(!guide.contains(r#"href="/api/cli/""#));
     assert!(guide.contains(
-        r#"<li data-position="sidebar"><a href="https://github.com/x" data-section>GitHub</a></li>"#
+        r#"<li data-position="sidebar"><a href="https://github.com/x" data-section="">GitHub</a></li>"#
     ));
     assert!(
-        !guide
-            .contains(r#"<a href="https://github.com/x" data-section>GitHub</a></nav>"#)
+        !guide.contains(
+            r#"<a href="https://github.com/x" data-section="">GitHub</a></nav>"#
+        )
     );
     Ok(())
 }
@@ -517,7 +551,7 @@ fn puts_icons_before_link_and_section_titles() -> crate::Result<()> {
         prefix: None,
     }];
     let html = render_page(&site, &site.pages[0], false)?;
-    assert!(html.contains(r#"<a href="/api/" data-section><svg viewBox="0 0 24 24""#));
+    assert!(html.contains(r#"<a href="/api/" data-section=""><svg viewBox="0 0 24 24""#));
     assert!(html.contains(r#"<a href="https://chat.x"><svg viewBox="0 0 24 24""#));
     Ok(())
 }
@@ -541,12 +575,13 @@ fn shows_a_prefixed_link_only_under_its_folder() -> crate::Result<()> {
 #[test]
 fn puts_the_byline_under_the_title() -> crate::Result<()> {
     let mut site = create_site()?;
-    let mut page = read_page(
+    let page = read_with(
+        &site,
         "post.html",
         "<title>Post</title><meta name=\"date\" content=\"2026-10-01\">\
          <meta name=\"author\" content=\"Ann\"><h1>Post</h1><p>Hi.</p>",
+        |page| page.updated = Some("2026-10-20".to_owned()),
     )?;
-    page.updated = Some("2026-10-20".to_owned());
     site.pages.push(page);
     let html = render_page(&site, &site.pages[4], false)?;
     let title = html.find("<h1>Post</h1>").unwrap_or(usize::MAX);
@@ -641,8 +676,12 @@ fn writes_the_ui_in_the_pages_language() -> crate::Result<()> {
     })?;
     site.languages =
         crate::actions::language::resolve::resolve_languages(&config, "Docs");
-    site.pages[1].language = "es".to_owned();
-    site.pages[1].date = Some("2026-10-01".to_owned());
+    let spanish = |page: &mut Page| {
+        page.language = "es".to_owned();
+        page.date = Some("2026-10-01".to_owned());
+    };
+    let guide = "<title>Guide</title><p>Read me.</p><h2>Setup</h2>";
+    site.pages[1] = read_with(&site, "guide.html", guide, spanish)?;
     let html = render_page(&site, &site.pages[1], false)?;
     assert!(html.contains(r#"<html lang="es">"#));
     assert!(html.contains(r#"<htmlpress-brand><a href="/es/">"#));
@@ -653,8 +692,9 @@ fn writes_the_ui_in_the_pages_language() -> crate::Result<()> {
     );
     assert!(html.contains(r#"<a rel="prev" href="/"><small>Anterior</small>Home</a>"#));
     assert!(html.contains(r#""search.label":"Buscar""#));
-    site.pages[1].content = r#"<htmlpress-callout type="warning"><p>!</p></htmlpress-callout><htmlpress-callout title="A &amp; B"></htmlpress-callout>"#.to_owned();
-    let callouts = render_page(&site, &site.pages[1], false)?;
+    let html = r#"<htmlpress-callout type="warning"><p>!</p></htmlpress-callout><htmlpress-callout title="A &amp; B"></htmlpress-callout>"#;
+    let page = read_with(&site, "guide.html", html, spanish)?;
+    let callouts = render_page(&site, &page, false)?;
     assert!(
         callouts
             .contains(r#"<htmlpress-callout type="warning" data-title="Advertencia">"#)
@@ -683,30 +723,31 @@ fn leads_a_custom_section_to_the_pages_translation() -> crate::Result<()> {
     site.translations.insert("/guide/".to_owned(), versions);
     site.pages[0].language = "es".to_owned();
     let html = render_page(&site, &site.pages[0], false)?;
-    assert!(html.contains(r#"<a href="/es/guide/" data-section>Start</a>"#));
+    assert!(html.contains(r#"<a href="/es/guide/" data-section="">Start</a>"#));
     Ok(())
 }
 
 #[test]
 fn fills_an_inline_toc_written_in_the_page() -> crate::Result<()> {
     let mut site = create_site()?;
-    site.pages[1] = read_page(
+    site.pages[1] = read_with(
+        &site,
         "guide.html",
         "<title>Guide</title><htmlpress-toc max-level=\"2\"></htmlpress-toc><h2>One</h2><h3>Sub</h3>",
+        |_| {},
     )?;
     let html = render_page(&site, &site.pages[1], false)?;
     assert!(html.contains(r##"<htmlpress-toc max-level="2"><p>Contents</p><ul><li><a href="#one" data-level="2">One</a></li></ul></htmlpress-toc>"##), "{html}");
-    site.pages[1] = read_page(
+    site.pages[1] = read_with(
+        &site,
         "guide.html",
         "<title>Guide</title><htmlpress-toc></htmlpress-toc><p>No headings.</p>",
+        |_| {},
     )?;
     let html = render_page(&site, &site.pages[1], false)?;
     assert!(!html.contains("<htmlpress-toc>"));
-    site.pages[1] = read_page(
-        "guide.html",
-        "<htmlpress-toc max-level=\"5\"></htmlpress-toc><h2>A</h2>",
-    )?;
-    assert!(render_page(&site, &site.pages[1], false).is_err());
+    let html = "<htmlpress-toc max-level=\"5\"></htmlpress-toc><h2>A</h2>";
+    assert!(read_with(&site, "guide.html", html, |_| {}).is_err());
     Ok(())
 }
 
@@ -721,7 +762,7 @@ fn builds_the_header_buttons_into_the_page() -> crate::Result<()> {
     assert!(html.contains(r#"data-icon="system""#));
     assert!(html.contains(r#"aria-controls="htmlpress-sidebar" aria-keyshortcuts="M""#));
     assert!(html.contains(
-        r#"<button type="button" data-key="L" data-targeted><span>Next page</span><kbd>L</kbd>"#
+        r#"<button type="button" data-key="L" data-targeted=""><span>Next page</span><kbd>L</kbd>"#
     ));
     assert!(html.contains("root.dataset.scripted"));
     Ok(())

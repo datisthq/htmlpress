@@ -1,6 +1,7 @@
 use std::collections::BTreeMap;
 
 use super::*;
+use crate::actions::page::parse::parse_html_source;
 use crate::actions::page::read::{finish_page, read_source};
 use crate::actions::pipeline::create::create_pipeline;
 use crate::models::pipeline::PipelineOptions;
@@ -12,18 +13,22 @@ fn finish(
     html: &str,
     links: BTreeMap<String, String>,
 ) -> Result<Page, String> {
-    let mut page = Page {
-        source: source.into(),
-        ..read_source(path, html).map_err(|e| e.to_string())?
-    };
-    rebase_image(&mut page, &["docs/".to_owned()]);
     let options = PipelineOptions {
         rebase: Some("docs".into()),
         links,
         themes: None,
         plugins: vec![],
     };
-    finish_page(&mut page, &mut create_pipeline(&options)?).map_err(|e| e.to_string())?;
+    let mut pipeline = create_pipeline(&options)?;
+    let alloc = textlane::Allocator::new();
+    let tree = parse_html_source(&mut pipeline, path, alloc.alloc_str(html), &alloc)?;
+    let mut page = Page {
+        source: source.into(),
+        ..read_source(path, &tree).map_err(|e| e.to_string())?
+    };
+    rebase_image(&mut page, &["docs/".to_owned()]);
+    finish_page(&mut page, tree, &mut pipeline, None, &alloc)
+        .map_err(|e| e.to_string())?;
     Ok(page)
 }
 
@@ -60,7 +65,14 @@ fn rebases_the_urls_of_a_page_served_at_its_folder() -> Result<(), String> {
 #[test]
 fn links_a_page_file_to_its_url() -> Result<(), String> {
     let read = |path: &str, source: &str| -> Result<Page, String> {
-        let page = read_source(path, "");
+        let alloc = textlane::Allocator::new();
+        let tree = textlane::hast::Node::Root(textlane::hast::Root {
+            children: textlane::ArenaVec::new_in(&alloc),
+            position: None,
+            data: None,
+            quirks_mode: None,
+        });
+        let page = read_source(path, &tree);
         Ok(Page {
             source: source.into(),
             ..page.map_err(|e| e.to_string())?

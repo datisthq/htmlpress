@@ -1,16 +1,32 @@
-use super::compile_markdown;
-use crate::actions::page::read::read_page;
+use textlane::Allocator;
+
+use super::{compile_markdown, create_document};
+use crate::actions::node::write::write_nodes;
+use crate::actions::page::read::{finish_page, read_source};
+use crate::actions::pipeline::create::create_pipeline;
 use crate::models::config::{PluginEntry, PluginOptions};
 use crate::models::page::Page;
-use crate::models::pipeline::MarkdownOptions;
+use crate::models::pipeline::{MarkdownOptions, PipelineOptions};
 
+// A Markdown page as the scan reads it: compiled, then through the page pipeline
 fn compile(markdown: &str) -> Result<Page, String> {
     let options = MarkdownOptions {
         components: vec!["callout".to_owned(), "badge".to_owned()],
         ..MarkdownOptions::default()
     };
-    let html = compile_markdown(markdown, &options, true)?;
-    read_page("guide.html", &html).map_err(|error| error.to_string())
+    let alloc = Allocator::new();
+    let tree = create_document(compile_markdown(markdown, &options, &alloc)?, &alloc)?;
+    let mut page = read_source("guide.html", &tree).map_err(|error| error.to_string())?;
+    let mut pipeline = create_pipeline(&PipelineOptions::default())?;
+    finish_page(&mut page, tree, &mut pipeline, None, &alloc)
+        .map_err(|error| error.to_string())?;
+    Ok(page)
+}
+
+// A partial's Markdown as the HTML it compiles into
+fn compile_partial(markdown: &str, options: &MarkdownOptions) -> Result<String, String> {
+    let alloc = Allocator::new();
+    write_nodes(compile_markdown(markdown, options, &alloc)?.body)
 }
 
 #[test]
@@ -248,7 +264,7 @@ fn runs_the_project_md_plugins_before_heading_ids() -> Result<(), String> {
         })],
         ..MarkdownOptions::default()
     };
-    let html = compile_markdown("## Usage [step]", &options, false)?;
+    let html = compile_partial("## Usage [step]", &options)?;
     assert!(html.contains("<h3 data-step"), "{html}");
     Ok(())
 }

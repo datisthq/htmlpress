@@ -1,21 +1,25 @@
-use std::cell::RefCell;
 use std::collections::BTreeSet;
 use std::fmt::Write;
 
-use lol_html::html_content::ContentType;
-use lol_html::{RewriteStrSettings, element, rewrite_str};
+use textlane::hast::{Node, Raw};
+use textlane::html::{Parse, parse_html, write_attribute};
+use textlane::{Allocator, ArenaVec, File};
 
-use crate::actions::code::title::add_titles;
 use crate::actions::date::format::format_date;
 use crate::actions::icon::render::render_icon;
 use crate::actions::nav::build::build_nav;
+use crate::actions::node::parse::parse_fragment;
+use crate::actions::node::walk::{Step, walk_nodes};
+use crate::actions::node::write::write_nodes;
 use crate::actions::page::convert::create_markdown_path;
+use crate::actions::page::decorate::{list_fragments, list_tags};
+use crate::actions::page::parse::is_document;
 use crate::actions::page::prefix::prefix_urls;
 use crate::actions::section::find::{find_section, is_custom_current};
 use crate::actions::section::generate::{create_tag_url, list_posts};
 use crate::actions::site::index::create_search_path;
 use crate::flags::FLAGS;
-use crate::models::asset::{create_component_path, read_component_path};
+use crate::models::asset::create_component_path;
 use crate::models::config::{Link, Position, Section, SectionKind};
 use crate::models::error::Error;
 use crate::models::language::{Direction, SiteLanguage};
@@ -26,7 +30,8 @@ use crate::models::site::Site;
 use crate::settings::{ASSETS_DIR, NOT_FOUND_PAGE, RELOAD_PATH};
 
 /// Wrap one page of the site in its layout, filling its `<head>`, each project
-/// component's tag with its `.html`, and every `htmlpress-*` layout element.
+/// component's tag with its `.html`, and every `htmlpress-*` layout element; the page's
+/// content goes in as the markup its pipeline wrote, never parsed again.
 pub(crate) fn render_page(
     site: &Site,
     page: &Page,
@@ -42,250 +47,104 @@ pub(crate) fn render_page(
         .get(&layout)
         .ok_or_else(|| fail(format!("no layout {layout}")))?
         .as_str();
-    let fragments: Vec<(String, &str)> = site
-        .assets
-        .iter()
-        .filter_map(|(path, html)| {
-            let (tag, extension) = read_component_path(path)?;
-            (extension == "html").then_some((tag, html.as_str()))
-        })
-        .collect();
+    let fragments = list_fragments(&site.assets);
     let language = site.read_language(&page.language);
-    let content =
-        add_byline(&page.content, create_byline(page, language)).map_err(fail)?;
-    let content = fill_inline_tocs(&content, page, language).map_err(fail)?;
-    let content = label_callouts(&content, language).map_err(fail)?;
-    let content = add_titles(&content).map_err(fail)?;
-    let mut tags = list_tags(&[layout, &content], &fragments).map_err(fail)?;
+    let alloc = Allocator::new();
+    // A bare layout stays bare: parsed as a document, it would gain `<html>` and `<body>`
+    let options = Parse {
+        fragment: !is_document(layout),
+        ..Parse::default()
+    };
+    let Node::Root(mut root) = parse_html(layout, &options, &mut File::new(), &alloc)
+    else {
+        return Err(fail("the layout did not parse into a document".to_owned()));
+    };
+    let mut tags = list_tags(&root.children, &fragments);
+    tags.extend(page.components.iter().cloned());
     if SHEET_HOSTS.iter().any(|host| tags.contains(*host)) {
         tags.insert("htmlpress-sheet".to_owned());
     }
-    let content = swap_components(&content, &fragments).map_err(fail)?;
     let head = create_head(site, page, &tags, reload);
     let nav = create_nav(site, page);
-    let replaced = |tag: &str| fragments.iter().any(|(name, _)| *name == tag);
-
-    let mut settings = RewriteStrSettings::new()
-        .append_element_content_handler(element!("html", |el| {
-            el.set_attribute("lang", &language.locale)?;
-            if language.dir == Direction::Rtl {
-                el.set_attribute("dir", "rtl")?;
-            }
-            Ok(())
-        }))
-        .append_element_content_handler(element!("head", |el| {
-            el.prepend(&head, ContentType::Html);
-            el.append(&page.head, ContentType::Html);
-            Ok(())
+    let raw = |html: &str| {
+        let mut nodes = ArenaVec::new_in(&alloc);
+        nodes.push(Node::Raw(Raw {
+            value: alloc.alloc_str(html),
+            position: None,
+            data: None,
         }));
-    for (tag, html) in &fragments {
-        settings = settings.append_element_content_handler(element!(tag, |el| {
-            el.set_inner_content(html, ContentType::Html);
-            Ok(())
-        }));
-    }
-    if !replaced("htmlpress-content") {
-        settings = settings.append_element_content_handler(element!(
-            "htmlpress-content",
-            |el| {
-                el.replace(&content, ContentType::Html);
-                Ok(())
-            }
-        ));
-    }
-    if !replaced("htmlpress-brand") {
-        settings =
-            settings.append_element_content_handler(element!("htmlpress-brand", |el| {
-                el.set_inner_content(&create_brand(site, page), ContentType::Html);
-                Ok(())
-            }));
-    }
-    if !replaced("htmlpress-skip") {
-        settings =
-            settings.append_element_content_handler(element!("htmlpress-skip", |el| {
-                let text = escape_html(language.read_message("nav.skip"));
-                el.set_inner_content(
-                    &format!("<a href=\"#content\">{text}</a>"),
-                    ContentType::Html,
-                );
-                Ok(())
-            }));
-    }
-    if !replaced("htmlpress-banner") {
-        settings =
-            settings.append_element_content_handler(element!("htmlpress-banner", |el| {
-                fill_element(el, site.config.banner.as_deref().map(str::to_owned));
-                Ok(())
-            }));
-    }
-    if !replaced("htmlpress-breadcrumbs") {
-        settings = settings.append_element_content_handler(element!(
-            "htmlpress-breadcrumbs",
-            |el| {
-                fill_element(el, create_breadcrumbs(site, page));
-                Ok(())
-            }
-        ));
-    }
-    if !replaced("htmlpress-footer") {
-        settings =
-            settings.append_element_content_handler(element!("htmlpress-footer", |el| {
-                el.set_inner_content(&create_footer(language), ContentType::Html);
-                Ok(())
-            }));
-    }
-    if !replaced("htmlpress-nav") {
-        settings =
-            settings.append_element_content_handler(element!("htmlpress-nav", |el| {
-                el.set_inner_content(&nav, ContentType::Html);
-                Ok(())
-            }));
-    }
-    if !replaced("htmlpress-links") {
-        settings =
-            settings.append_element_content_handler(element!("htmlpress-links", |el| {
-                fill_element(el, create_links(site, page));
-                Ok(())
-            }));
-    }
-    if !replaced("htmlpress-pager") {
-        settings =
-            settings.append_element_content_handler(element!("htmlpress-pager", |el| {
-                fill_element(el, create_pager(site, page));
-                Ok(())
-            }));
-    }
-    if !replaced("htmlpress-page-toc") {
-        settings = settings.append_element_content_handler(element!(
-            "htmlpress-page-toc",
-            |el| {
-                fill_element(el, create_toc(page, language));
-                Ok(())
-            }
-        ));
-    }
-    if !replaced("htmlpress-search") {
-        settings =
-            settings.append_element_content_handler(element!("htmlpress-search", |el| {
-                let index = create_search_path(site.read_language(&page.language));
-                el.set_attribute("data-index", &format!("/{ASSETS_DIR}/{index}"))?;
-                el.set_inner_content(&create_search_button(language), ContentType::Html);
-                Ok(())
-            }));
-    }
-    if !replaced("htmlpress-theme-toggle") {
-        settings = settings.append_element_content_handler(element!(
-            "htmlpress-theme-toggle",
-            |el| {
-                el.set_inner_content(&create_theme_toggle(language), ContentType::Html);
-                Ok(())
-            }
-        ));
-    }
-    if !replaced("htmlpress-nav-toggle") {
-        settings = settings.append_element_content_handler(element!(
-            "htmlpress-nav-toggle",
-            |el| {
-                el.set_inner_content(&create_nav_toggle(language), ContentType::Html);
-                Ok(())
-            }
-        ));
-    }
-    if !replaced("htmlpress-language") {
-        settings = settings.append_element_content_handler(element!(
-            "htmlpress-language",
-            |el| {
-                fill_element(el, create_language_picker(site, page));
-                Ok(())
-            }
-        ));
-    }
-    if !replaced("htmlpress-shortcuts") {
-        settings = settings.append_element_content_handler(element!(
-            "htmlpress-shortcuts",
-            |el| {
-                el.set_inner_content(&create_shortcuts(language), ContentType::Html);
-                Ok(())
-            }
-        ));
-    }
-    if !replaced("htmlpress-toolbar") {
-        settings = settings.append_element_content_handler(element!(
-            "htmlpress-toolbar",
-            |el| {
-                fill_element(el, create_toolbar(site, page, language));
-                Ok(())
-            }
-        ));
-    }
-    if !replaced("htmlpress-edit") {
-        settings =
-            settings.append_element_content_handler(element!("htmlpress-edit", |el| {
-                fill_element(el, create_edit(site, page));
-                Ok(())
-            }));
-    }
-    let html = rewrite_str(layout, settings).map_err(|error| fail(error.to_string()))?;
-    let base = site.config.read_base();
-    match base.is_empty() {
-        true => Ok(html),
-        false => prefix_urls(&html, &base).map_err(fail),
-    }
-}
-
-// The page's content is pasted into the layout unparsed, so its own project component tags
-// are swapped here, before it goes in.
-fn swap_components(
-    content: &str,
-    fragments: &[(String, &str)],
-) -> Result<String, String> {
-    let mut settings = RewriteStrSettings::new();
-    for (tag, html) in fragments {
-        settings = settings.append_element_content_handler(element!(tag, |el| {
-            el.set_inner_content(html, ContentType::Html);
-            Ok(())
-        }));
-    }
-    rewrite_str(content, settings).map_err(|error| error.to_string())
-}
-
-// A component's .html is pasted in after parsing, so the tags inside it are read here
-// too; one level deep, since pasted markup is never rewritten again.
-fn list_tags(
-    sources: &[&str],
-    fragments: &[(String, &str)],
-) -> Result<BTreeSet<String>, String> {
-    let mut tags = BTreeSet::new();
-    for source in sources {
-        read_tags(source, &mut tags)?;
-    }
-    for (tag, html) in fragments {
-        if tags.contains(tag) {
-            read_tags(html, &mut tags)?;
+        nodes
+    };
+    walk_nodes(&mut root.children, &mut |element| {
+        if let Some((_, html)) = fragments.iter().find(|(tag, _)| tag == element.tag_name)
+        {
+            element.children = parse_fragment(html, &alloc);
+            return Ok::<_, String>(Step::Skip);
         }
+        let fill = match element.tag_name {
+            "html" => {
+                write_attribute(element, "lang", &language.locale, &alloc);
+                if language.dir == Direction::Rtl {
+                    write_attribute(element, "dir", "rtl", &alloc);
+                }
+                return Ok(Step::Continue);
+            }
+            "head" => {
+                let own = std::mem::replace(
+                    &mut element.children,
+                    parse_fragment(&head, &alloc),
+                );
+                element.children.extend(own);
+                element.children.extend(raw(&page.head));
+                return Ok(Step::Skip);
+            }
+            "htmlpress-content" => return Ok(Step::Replace(raw(&page.content))),
+            "htmlpress-brand" => Some(create_brand(site, page)),
+            "htmlpress-skip" => {
+                let text = escape_html(language.read_message("nav.skip"));
+                Some(format!("<a href=\"#content\">{text}</a>"))
+            }
+            "htmlpress-banner" => site.config.banner.as_deref().map(str::to_owned),
+            "htmlpress-breadcrumbs" => create_breadcrumbs(site, page),
+            "htmlpress-footer" => Some(create_footer(language)),
+            "htmlpress-nav" => Some(nav.clone()),
+            "htmlpress-links" => create_links(site, page),
+            "htmlpress-pager" => create_pager(site, page),
+            "htmlpress-page-toc" => create_toc(page, language),
+            "htmlpress-search" => {
+                let index = create_search_path(site.read_language(&page.language));
+                write_attribute(
+                    element,
+                    "data-index",
+                    &format!("/{ASSETS_DIR}/{index}"),
+                    &alloc,
+                );
+                Some(create_search_button(language))
+            }
+            "htmlpress-theme-toggle" => Some(create_theme_toggle(language)),
+            "htmlpress-nav-toggle" => Some(create_nav_toggle(language)),
+            "htmlpress-language" => create_language_picker(site, page),
+            "htmlpress-shortcuts" => Some(create_shortcuts(language)),
+            "htmlpress-toolbar" => create_toolbar(site, page, language),
+            "htmlpress-edit" => create_edit(site, page),
+            _ => return Ok(Step::Continue),
+        };
+        // A placeholder with nothing to show is removed, so a layout can style or hide
+        // the box around it with `:empty` or `:has()`
+        Ok(match fill {
+            Some(html) => {
+                element.children = parse_fragment(&html, &alloc);
+                Step::Skip
+            }
+            None => Step::Remove,
+        })
+    })
+    .map_err(fail)?;
+    let base = site.config.read_base();
+    if !base.is_empty() {
+        prefix_urls(&mut root.children, &base, &alloc);
     }
-    Ok(tags)
-}
-
-fn read_tags(html: &str, tags: &mut BTreeSet<String>) -> Result<(), String> {
-    let found = RefCell::new(BTreeSet::new());
-    let settings =
-        RewriteStrSettings::new().append_element_content_handler(element!("*", |el| {
-            found.borrow_mut().insert(el.tag_name());
-            Ok(())
-        }));
-    rewrite_str(html, settings).map_err(|error| error.to_string())?;
-    tags.extend(found.into_inner());
-    Ok(())
-}
-
-// A placeholder with nothing to show is removed, so a layout can style or hide the
-// box around it with `:empty` or `:has()`.
-fn fill_element(el: &mut lol_html::html_content::Element, html: Option<String>) {
-    match html {
-        Some(html) => el.set_inner_content(&html, ContentType::Html),
-        None => el.remove(),
-    }
+    write_nodes(root.children).map_err(fail)
 }
 
 fn create_head(
@@ -1235,7 +1094,7 @@ fn find_neighbours<'a>(
 
 // Authors, published and updated dates, as one line under the page's title
 // A page with its own layout is a custom route, which carries no byline, as in Livemark
-fn create_byline(page: &Page, language: &SiteLanguage) -> Option<String> {
+pub(crate) fn create_byline(page: &Page, language: &SiteLanguage) -> Option<String> {
     if page.layout.is_some() {
         return None;
     }
@@ -1274,96 +1133,15 @@ fn create_byline(page: &Page, language: &SiteLanguage) -> Option<String> {
     }
 }
 
-// A page's own <htmlpress-toc> goes in unparsed, so the layout's handler never fills it;
-// it is filled here, `max-level="2"` keeping only the <h2>s
-fn fill_inline_tocs(
-    content: &str,
-    page: &Page,
-    language: &SiteLanguage,
-) -> Result<String, String> {
-    if !content.contains("<htmlpress-toc") {
-        return Ok(content.to_owned());
-    }
-    let settings = RewriteStrSettings::new().append_element_content_handler(element!(
-        "htmlpress-toc",
-        |el| {
-            let level = match el.get_attribute("max-level").as_deref().map(str::trim) {
-                None => 4,
-                Some("2") => 2,
-                Some("3") => 3,
-                Some("4") => 4,
-                Some(other) => {
-                    return Err(format!(
-                        "<htmlpress-toc max-level> must be 2, 3 or 4, got \"{other}\""
-                    )
-                    .into());
-                }
-            };
-            match create_toc_up_to(page, level, language) {
-                Some(html) => el.set_inner_content(&html, ContentType::Html),
-                None => el.remove(),
-            }
-            Ok(())
-        }
-    ));
-    rewrite_str(content, settings).map_err(|error| error.to_string())
-}
-
-// A callout's default title is CSS, which cannot know the page's language, so each gets
-// its own or its type's in that language; as `data-title`, since `title` is a tooltip
-fn label_callouts(content: &str, language: &SiteLanguage) -> Result<String, String> {
-    if !content.contains("<htmlpress-callout") {
-        return Ok(content.to_owned());
-    }
-    let settings = RewriteStrSettings::new().append_element_content_handler(element!(
-        "htmlpress-callout",
-        |el| {
-            let title = match el.get_attribute("title") {
-                Some(title) => title,
-                None => {
-                    let key = match el.get_attribute("type").as_deref().map(str::trim) {
-                        Some("note") => "callout.note",
-                        Some("tip") => "callout.tip",
-                        Some("warning") => "callout.warning",
-                        Some("danger") => "callout.danger",
-                        _ => "callout.info",
-                    };
-                    language.read_message(key).to_owned()
-                }
-            };
-            el.remove_attribute("title");
-            el.set_attribute("data-title", &title)?;
-            Ok(())
-        }
-    ));
-    rewrite_str(content, settings).map_err(|error| error.to_string())
-}
-
-// Right after the first <h1>, where a reader looks for it; first without one
-fn add_byline(content: &str, byline: Option<String>) -> Result<String, String> {
-    let Some(byline) = byline else {
-        return Ok(content.to_owned());
-    };
-    let placed = std::cell::Cell::new(false);
-    let settings =
-        RewriteStrSettings::new().append_element_content_handler(element!("h1", |el| {
-            if !placed.replace(true) {
-                el.after(&byline, ContentType::Html);
-            }
-            Ok(())
-        }));
-    let html = rewrite_str(content, settings).map_err(|error| error.to_string())?;
-    match placed.get() {
-        true => Ok(html),
-        false => Ok(format!("{byline}{html}")),
-    }
-}
-
 fn create_toc(page: &Page, language: &SiteLanguage) -> Option<String> {
     create_toc_up_to(page, 4, language)
 }
 
-fn create_toc_up_to(page: &Page, level: u8, language: &SiteLanguage) -> Option<String> {
+pub(crate) fn create_toc_up_to(
+    page: &Page,
+    level: u8,
+    language: &SiteLanguage,
+) -> Option<String> {
     let headings: Vec<_> = page
         .toc
         .iter()

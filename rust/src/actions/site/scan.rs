@@ -2,18 +2,23 @@ use std::collections::hash_map::Entry;
 use std::collections::{BTreeMap, BTreeSet, HashMap};
 use std::path::Path;
 
+use textlane::Allocator;
+use textlane::hast::Node;
+
 use crate::actions::changelog::fetch::is_github_source;
 use crate::actions::config::load::load_config;
 use crate::actions::git::read::read_dates;
 use crate::actions::include::list::list_includes;
 use crate::actions::language::detect::{create_key, detect_language};
 use crate::actions::language::resolve::resolve_languages;
-use crate::actions::page::compile::{compile_markdown, create_processor};
+use crate::actions::page::compile::create_processor;
+use crate::actions::page::decorate::{Decoration, list_fragments};
 use crate::actions::page::include::resolve_includes;
+use crate::actions::page::parse::{create_page_tree, load_source};
 use crate::actions::page::patch::patch_page;
 use crate::actions::page::read::{finish_page, is_layout_name, read_source};
 use crate::actions::page::rebase::{list_links, read_root, rebase_image};
-use crate::actions::path::contain::read_contained;
+use crate::actions::path::contain::{contain_path, read_contained};
 use crate::actions::path::select::{Selection, read_bases, select_paths};
 use crate::actions::pipeline::create::create_pipeline;
 use crate::actions::section::generate::generate_pages;
@@ -24,6 +29,7 @@ use crate::models::error::Error;
 use crate::models::page::Page;
 use crate::models::pipeline::{MarkdownOptions, Pipeline, PipelineOptions};
 use crate::models::site::Site;
+use crate::models::source::{Draft, Parsed, Sources};
 use crate::settings::{ASSETS, CONFIG_FILE, NOT_FOUND_PAGE, PROJECT_DIR};
 
 /// Read a project: its config, its pages and the other files under its include bases.
@@ -64,92 +70,119 @@ pub fn scan_site(root: &Path) -> crate::Result<Site> {
         }
     }
     let mut selection = selection;
-    let mut inputs = keep_partials(root, &mut selection)?;
     let assets = read_assets(root)?;
     let markdown = MarkdownOptions {
         components: list_components(&assets),
         plugins: config.plugins.md.clone(),
     };
-    // Up front, so a bad plugin is the config's error, not the first Markdown page's
-    create_processor(&markdown).map_err(|message| Error::Config {
+    let config_error = |message: String| Error::Config {
         path: root.join(CONFIG_FILE),
         message,
-    })?;
-    let mut pages = vec![];
+    };
+    // Up front, so a bad plugin is the config's error, not the first Markdown page's
+    create_processor(&markdown).map_err(config_error)?;
+    let parser = PipelineOptions {
+        plugins: config.plugins.html.clone(),
+        ..PipelineOptions::default()
+    };
+    // One arena for the build: every source is parsed into it once, and each page's tree
+    // lives there from its parse to its content
+    let alloc = Allocator::new();
+    let mut sources = Sources {
+        alloc: &alloc,
+        markdown,
+        parser: create_pipeline(&parser).map_err(config_error)?,
+        files: HashMap::new(),
+        sizes: HashMap::new(),
+    };
+    let mut inputs = keep_partials(root, &mut selection, &mut sources)?;
+    let mut drafts = vec![];
     for (path, source) in &selection.pages {
-        let file = root.join(source);
-        let html = std::fs::read_to_string(&file).map_err(Error::io(&file))?;
-        let html = match source.ends_with(".md") {
-            true => {
-                compile_markdown(&html, &markdown, true).map_err(Error::page(source))?
+        let tree =
+            read_page_tree(root, source, &mut sources).map_err(Error::page(source))?;
+        let tree = match tree {
+            Some(tree) => tree,
+            None => {
+                let file = root.join(source);
+                let error = (std::fs::read_to_string(&file).err())
+                    .unwrap_or_else(|| std::io::Error::other("cannot be read"));
+                return Err(Error::io(&file)(error));
             }
-            false => html,
         };
-        let html = resolve_includes(root, source, &html, &markdown)
-            .map_err(Error::page(source))?;
-        let page = read_source(path, &html).map_err(|error| match error {
+        let page = read_source(path, &tree).map_err(|error| match error {
             Error::Page { message, .. } => Error::Page {
                 path: source.clone(),
                 message,
             },
             error => error,
         })?;
-        pages.push(Page {
+        let page = Page {
             source: source.clone(),
             ..page
-        });
+        };
+        drafts.push(Draft { page, tree });
     }
     let files = selection.files;
-    apply_patches(root, &config, &markdown, &mut pages)?;
+    apply_patches(root, &config, &mut drafts, &mut sources)?;
     let suffixes = !config.languages.is_empty();
-    for page in &mut pages {
+    for draft in &mut drafts {
+        let page = &mut draft.page;
         detect_language(page, &languages, suffixes).map_err(Error::page(&page.source))?;
     }
-    check_urls(&pages)?;
+    check_urls(&drafts)?;
     // Before the generated pages join: a changelog's versions share its source file, whose
     // last change says nothing about when one version was written
     let dates = read_dates(root);
-    for page in &mut pages {
-        page.updated = dates.get(&page.source).cloned();
+    for draft in &mut drafts {
+        draft.page.updated = dates.get(&draft.page.source).cloned();
     }
     let mut generated = vec![];
     for language in &languages {
-        for mut page in generate_pages(root, language, &pages)? {
-            page.key = create_key(&page.url, language);
-            page.language = language.code.clone();
-            generated.push(page);
+        let read: Vec<Page> = drafts.iter().map(|draft| draft.page.clone()).collect();
+        for mut draft in generate_pages(root, language, &read, &mut sources)? {
+            draft.page.key = create_key(&draft.page.url, language);
+            draft.page.language = language.code.clone();
+            generated.push(draft);
         }
     }
-    pages.extend(generated);
+    drafts.extend(generated);
     let bases = read_bases(&config);
-    let links = list_links(&pages, &bases);
-    // One parse a page, now that every page's URL is known for the links between them
+    let read: Vec<Page> = drafts.iter().map(|draft| draft.page.clone()).collect();
+    let links = list_links(&read, &bases);
+    // One pipeline a page, now that every page's URL is known for the links between them
     let (light, dark) = config.read_code_themes();
+    let base = config.read_base();
+    let fragments = list_fragments(&assets);
     let mut pipelines: HashMap<Option<String>, Pipeline> = HashMap::new();
-    for page in &mut pages {
-        rebase_image(page, &bases);
-        let base = match page.source.is_empty() {
+    let mut pages = vec![];
+    for Draft { mut page, tree } in drafts {
+        rebase_image(&mut page, &bases);
+        let root_base = match page.source.is_empty() {
             true => None,
             false => Some(read_root(&page.source, &bases).unwrap_or_default()),
         };
-        let pipeline = match pipelines.entry(base.clone()) {
+        let pipeline = match pipelines.entry(root_base.clone()) {
             Entry::Occupied(entry) => entry.into_mut(),
             Entry::Vacant(entry) => {
                 let options = PipelineOptions {
-                    rebase: base,
+                    rebase: root_base,
                     links: links.clone(),
                     themes: Some((light.to_owned(), dark.to_owned())),
                     plugins: config.plugins.html.clone(),
                 };
-                entry.insert(create_pipeline(&options).map_err(|message| {
-                    Error::Config {
-                        path: root.join(CONFIG_FILE),
-                        message,
-                    }
-                })?)
+                entry.insert(create_pipeline(&options).map_err(config_error)?)
             }
         };
-        finish_page(page, pipeline)?;
+        let language = (languages.iter())
+            .find(|language| language.code == page.language)
+            .unwrap_or(language);
+        let decoration = Decoration {
+            language,
+            base: &base,
+            fragments: &fragments,
+        };
+        finish_page(&mut page, tree, pipeline, Some(&decoration), &alloc)?;
+        pages.push(page);
     }
     sort_pages(&mut pages);
 
@@ -194,11 +227,11 @@ pub fn scan_site(root: &Path) -> crate::Result<Site> {
 
 // A patch names a page by its source; a patched `.md` file, not a page until now, is
 // rendered from Markdown and built beside where it sits, as an `.html` page
-fn apply_patches(
+fn apply_patches<'a>(
     root: &Path,
     config: &Config,
-    markdown: &MarkdownOptions,
-    pages: &mut Vec<Page>,
+    drafts: &mut Vec<Draft<'a>>,
+    sources: &mut Sources<'a>,
 ) -> crate::Result<()> {
     let bases = read_bases(config);
     for patch in &config.patches {
@@ -206,43 +239,82 @@ fn apply_patches(
             path: root.join(CONFIG_FILE),
             message: format!("patch \"{}\": {message}", patch.file),
         };
-        let page = match pages.iter().position(|page| page.source == patch.file) {
-            Some(index) => pages.remove(index),
+        let draft = match drafts
+            .iter()
+            .position(|draft| draft.page.source == patch.file)
+        {
+            Some(index) => drafts.remove(index),
             None => {
-                read_patched_file(root, &bases, markdown, &patch.file).map_err(fail)?
+                read_patched_file(root, &bases, &patch.file, sources).map_err(fail)?
             }
         };
-        pages.push(patch_page(page, &patch.article).map_err(fail)?);
+        let page = patch_page(draft.page, &patch.article).map_err(fail)?;
+        drafts.push(Draft {
+            page,
+            tree: draft.tree,
+        });
     }
     Ok(())
 }
 
-fn read_patched_file(
+fn read_patched_file<'a>(
     root: &Path,
     bases: &[String],
-    markdown: &MarkdownOptions,
     file: &str,
-) -> Result<Page, String> {
+    sources: &mut Sources<'a>,
+) -> Result<Draft<'a>, String> {
     let stem = match (file.strip_suffix(".md"), file.strip_suffix(".html")) {
         (Some(stem), _) | (_, Some(stem)) => stem,
         _ => return Err("a patched file is an .html page or a .md file".to_owned()),
     };
-    let text = read_contained(root, file, false)?;
-    let html = match file.ends_with(".md") {
-        true => compile_markdown(&text, markdown, true)?,
-        false => text,
-    };
-    let html = resolve_includes(root, file, &html, markdown)?;
+    let key = contain_path(root, file, false)?;
+    let read = || read_contained(root, file, false);
+    let alloc = sources.alloc;
+    let parsed = load_source(sources, key, file, file.ends_with(".md"), read)?;
+    let mut tree = create_page_tree(parsed, alloc)?;
+    resolve_includes(root, file, &mut tree, sources)?;
     let output = (bases.iter())
         .filter(|base| !base.is_empty())
         .find_map(|base| stem.strip_prefix(&format!("{base}/")))
         .unwrap_or(stem);
-    let page = read_source(&format!("{output}.html"), &html)
+    let page = read_source(&format!("{output}.html"), &tree)
         .map_err(|error| error.to_string())?;
-    Ok(Page {
-        source: file.to_owned(),
-        ..page
+    Ok(Draft {
+        page: Page {
+            source: file.to_owned(),
+            ..page
+        },
+        tree,
     })
+}
+
+// A page's source as its own tree, its includes resolved; None when it cannot be read
+fn read_page_tree<'a>(
+    root: &Path,
+    source: &str,
+    sources: &mut Sources<'a>,
+) -> Result<Option<Node<'a>>, String> {
+    let alloc = sources.alloc;
+    let Some(parsed) = read_page_source(root, source, sources)? else {
+        return Ok(None);
+    };
+    let mut tree = create_page_tree(parsed, alloc)?;
+    resolve_includes(root, source, &mut tree, sources)?;
+    Ok(Some(tree))
+}
+
+// A page's source parsed, by its canonical path, so an include of it shares the parse
+fn read_page_source<'s, 'a>(
+    root: &Path,
+    source: &str,
+    sources: &'s mut Sources<'a>,
+) -> Result<Option<&'s Parsed<'a>>, String> {
+    let file = root.join(source);
+    let (Ok(key), Ok(text)) = (file.canonicalize(), std::fs::read_to_string(&file))
+    else {
+        return Ok(None);
+    };
+    load_source(sources, key, source, source.ends_with(".md"), || Ok(text)).map(Some)
 }
 
 fn list_translations(pages: &[Page]) -> BTreeMap<String, BTreeMap<String, String>> {
@@ -272,9 +344,10 @@ pub(crate) fn sort_pages(pages: &mut [Page]) {
 }
 
 // Two pages on one URL would overwrite each other's output without a word
-fn check_urls(pages: &[Page]) -> crate::Result<()> {
-    for (index, page) in pages.iter().enumerate() {
-        if let Some(other) = pages[..index].iter().find(|other| other.url == page.url) {
+fn check_urls(drafts: &[Draft]) -> crate::Result<()> {
+    for (index, page) in drafts.iter().map(|draft| &draft.page).enumerate() {
+        let earlier = drafts[..index].iter().map(|draft| &draft.page);
+        if let Some(other) = earlier.clone().find(|other| other.url == page.url) {
             return Err(Error::page(&page.source)(format!(
                 "builds to {} like {}; give one a different path",
                 page.url, other.source
@@ -285,10 +358,13 @@ fn check_urls(pages: &[Page]) -> crate::Result<()> {
 }
 
 // A Markdown file another page includes is a partial, as before Markdown pages: copied
-// as a file, never built into a page of its own, nor listed. Returns every included path
+// as a file, never built into a page of its own, nor listed. Each file read here is
+// parsed into `sources`, where the pages and includes read it from. Returns every
+// included path
 fn keep_partials(
     root: &Path,
     selection: &mut Selection,
+    sources: &mut Sources<'_>,
 ) -> crate::Result<BTreeSet<String>> {
     let mut pending: Vec<String> = selection.pages.values().cloned().collect();
     let mut seen: Vec<String> = vec![];
@@ -298,10 +374,15 @@ fn keep_partials(
             continue;
         }
         seen.push(source.clone());
-        let Ok(text) = std::fs::read_to_string(root.join(&source)) else {
+        // A file that cannot be read or parsed fails where a page or include reads it
+        let Ok(Some(parsed)) = read_page_source(root, &source, sources) else {
             continue;
         };
-        for path in list_includes(&source, &text).map_err(Error::page(&source))? {
+        let nodes = match parsed {
+            Parsed::Html(node) => std::slice::from_ref(node),
+            Parsed::Markdown(compiled) => &compiled.body[..],
+        };
+        for path in list_includes(&source, nodes) {
             if path.ends_with(".md") && !partials.contains(&path) {
                 partials.push(path.clone());
             }

@@ -1,5 +1,5 @@
 use super::has_theme;
-use crate::actions::page::read::{finish_page, read_source};
+use crate::actions::page::read::read_page_with;
 use crate::actions::pipeline::create::create_pipeline;
 use crate::models::pipeline::PipelineOptions;
 
@@ -9,8 +9,8 @@ fn highlight_code(html: &str, light: &str, dark: &str) -> Result<String, String>
         themes: Some((light.to_owned(), dark.to_owned())),
         ..PipelineOptions::default()
     };
-    let mut page = read_source("a.html", html).map_err(|e| e.to_string())?;
-    finish_page(&mut page, &mut create_pipeline(&options)?).map_err(|e| e.to_string())?;
+    let page = read_page_with("a.html", html, &mut create_pipeline(&options)?, None)
+        .map_err(|e| e.to_string())?;
     Ok(page.content)
 }
 

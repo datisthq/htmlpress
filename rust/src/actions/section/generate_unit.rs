@@ -1,7 +1,41 @@
+use std::collections::HashMap;
+
+use textlane::Allocator;
+use textlane::hast::Node;
+
 use super::*;
 use crate::actions::language::resolve::resolve_english;
+use crate::actions::node::write::write_nodes;
 use crate::actions::page::read::read_page;
+use crate::actions::pipeline::create::create_pipeline;
 use crate::models::config::Config;
+use crate::models::pipeline::{MarkdownOptions, PipelineOptions};
+
+// The generated pages, each with its markup as its content
+fn generate(
+    root: &Path,
+    language: &SiteLanguage,
+    pages: &[Page],
+) -> crate::Result<Vec<Page>> {
+    let alloc = Allocator::new();
+    let mut sources = Sources {
+        alloc: &alloc,
+        markdown: MarkdownOptions::default(),
+        parser: create_pipeline(&PipelineOptions::default()).map_err(Error::Usage)?,
+        files: HashMap::new(),
+        sizes: HashMap::new(),
+    };
+    let drafts = generate_pages(root, language, pages, &mut sources)?;
+    let mut generated = vec![];
+    for Draft { page, tree } in drafts {
+        let Node::Root(root) = tree else {
+            return Err(Error::Usage("no root".to_owned()));
+        };
+        let content = write_nodes(root.children).map_err(Error::Usage)?;
+        generated.push(Page { content, ..page });
+    }
+    Ok(generated)
+}
 
 fn create_post(path: &str, date: &str, tags: &str) -> crate::Result<Page> {
     read_page(
@@ -33,8 +67,7 @@ fn builds_a_blog_index_and_tag_pages() -> crate::Result<()> {
         sections: vec![create_section(SectionKind::Blog, "/blog/")],
         ..Config::default()
     };
-    let generated =
-        generate_pages(Path::new("."), &resolve_english(&config, "Docs"), &pages)?;
+    let generated = generate(Path::new("."), &resolve_english(&config, "Docs"), &pages)?;
     let urls: Vec<&str> = generated.iter().map(|page| page.url.as_str()).collect();
     assert_eq!(urls, ["/blog/", "/blog/tags/rust/", "/blog/tags/web/"]);
     let index = &generated[0].content;
@@ -62,8 +95,7 @@ fn keeps_the_projects_own_index() -> crate::Result<()> {
         ..Config::default()
     };
     assert!(
-        generate_pages(Path::new("."), &resolve_english(&config, "Docs"), &pages)?
-            .is_empty()
+        generate(Path::new("."), &resolve_english(&config, "Docs"), &pages)?.is_empty()
     );
     Ok(())
 }
@@ -80,7 +112,7 @@ fn builds_a_page_per_changelog_version() -> crate::Result<()> {
         sections: vec![create_section(SectionKind::Changelog, "/changelog/")],
         ..Config::default()
     };
-    let generated = generate_pages(root.path(), &resolve_english(&config, "Docs"), &[])?;
+    let generated = generate(root.path(), &resolve_english(&config, "Docs"), &[])?;
     let urls: Vec<&str> = generated.iter().map(|page| page.url.as_str()).collect();
     assert_eq!(
         urls,

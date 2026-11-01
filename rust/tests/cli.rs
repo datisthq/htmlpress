@@ -167,7 +167,7 @@ fn builds_every_language_with_its_picker_and_fallbacks() -> TestResult {
     assert!(guide.contains(r#"<link rel="alternate" hreflang="x-default" href="https://docs.example.com/guide/">"#));
     assert!(guide.contains(r#"<a href="/guide/" hreflang="en" lang="en">"#));
     assert!(guide.contains(r#"<a href="/zh/" hreflang="zh" lang="zh">"#));
-    assert!(guide.contains(r#"<a href="/install/" hreflang="en" title="Aún sin traducir" data-untranslated>Install<small>en</small></a>"#));
+    assert!(guide.contains(r#"<a href="/install/" hreflang="en" title="Aún sin traducir" data-untranslated="">Install<small>en</small></a>"#));
     assert!(!guide.contains(r#"href="/zh/start/""#));
     assert!(read("es/install/index.html").is_err());
     assert!(read("guide/index.html")?.contains("<title>Guide · Docs</title>"));
@@ -334,7 +334,7 @@ fn builds_markdown_pages_beside_html_ones() -> TestResult {
 }
 
 #[test]
-fn fills_an_escaped_layout_and_component_as_written() -> TestResult {
+fn fills_an_escaped_layout_and_component() -> TestResult {
     let root = tempfile::tempdir()?;
     let layout = std::fs::read_to_string(
         std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("src/layout.html"),
@@ -359,8 +359,10 @@ fn fills_an_escaped_layout_and_component_as_written() -> TestResult {
     let (code, _) = run_cli(&["build", &path, "--json"])?;
     assert_eq!(code, 0);
     let home = std::fs::read_to_string(root.path().join(".htmlpress/build/index.html"))?;
-    assert!(home.contains(chrome), "{home}");
-    assert!(home.contains("<span class='hi'  >Hi</span>"), "{home}");
+    // Both go through the layout's tree, so they come out as the same elements, respelled
+    let kept = r#"<footer class="mine" data-k="1"><b>kept</b></footer>"#;
+    assert!(home.contains(kept), "{home}");
+    assert!(home.contains(r#"<span class="hi">Hi</span>"#), "{home}");
     Ok(())
 }
 

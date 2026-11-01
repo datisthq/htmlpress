@@ -1,13 +1,20 @@
 use std::cell::RefCell;
 use std::collections::HashMap;
+use std::collections::hash_map::Entry;
 
 use serde_json::{Map, Value, json};
-use textlane::{Api, File, ProcessJob};
+use textlane::hast::{Doctype, Node, Root};
+use textlane::html::{Visit, visit_elements, write_attribute};
+use textlane::{Allocator, ArenaVec, File, Tree};
 
+use crate::actions::node::collect::collect_text;
+use crate::actions::node::create::{create_element, create_text};
+use crate::actions::node::parse::parse_fragment;
 use crate::actions::pipeline::create::{use_native, use_plugins};
 use crate::actions::plugin::add::add_plugins;
 use crate::models::pipeline::MarkdownOptions;
-use crate::models::plugin::AnnotateCode;
+use crate::models::plugin::{AnnotateCode, MarkInlineCode};
+use crate::models::source::Compiled;
 
 /// The frontmatter keys a Markdown page may set: `title`, `head`, and every
 /// `<meta name>` an HTML page's head may carry, by the same names.
@@ -33,54 +40,82 @@ pub(crate) const FRONTMATTER_KEYS: &[&str] = &[
 ];
 
 thread_local! {
-    static PROCESSORS: RefCell<HashMap<(Vec<String>, String), ProcessJob>> =
+    static PIPELINES: RefCell<HashMap<(Vec<String>, String), textlane::Pipeline>> =
         RefCell::new(HashMap::new());
 }
 
-/// Turn Markdown into HTML: Livemark's directives, alerts and fences as htmlpress'
+/// Turn Markdown into hast: Livemark's directives, alerts and fences as htmlpress'
 /// elements, any other `:::name` as `<htmlpress-name>` of one of the project's components,
 /// the project's `md` plugins after the directives, and a fence's meta as its block's
-/// `data-*` attributes. A `page` takes its
-/// frontmatter as the head's `<title>` and metas; a partial's is dropped, unread.
-pub(crate) fn compile_markdown(
-    markdown: &str,
+/// `data-*` attributes. A page's frontmatter becomes its head with [`create_document`];
+/// a partial's is dropped, unread.
+pub(crate) fn compile_markdown<'a>(
+    markdown: &'a str,
     options: &MarkdownOptions,
-    page: bool,
-) -> Result<String, String> {
-    PROCESSORS.with(|processors| {
-        let mut processors = processors.borrow_mut();
+    alloc: &'a Allocator,
+) -> Result<Compiled<'a>, String> {
+    PIPELINES.with(|pipelines| {
+        let mut pipelines = pipelines.borrow_mut();
         let plugins =
             serde_json::to_string(&options.plugins).map_err(|e| e.to_string())?;
-        let key = (options.components.clone(), plugins);
-        let processor = match processors.get(&key) {
-            Some(processor) => processor,
-            None => {
-                let processor = create_processor(options)?;
-                processors.entry(key).or_insert(processor)
-            }
+        let pipeline = match pipelines.entry((options.components.clone(), plugins)) {
+            Entry::Occupied(entry) => entry.into_mut(),
+            Entry::Vacant(entry) => entry.insert(create_processor(options)?),
         };
+        let processor = pipeline.freeze().map_err(|error| error.message)?;
         let mut file = File::new();
-        let output =
-            (processor.process(markdown, &mut file)).map_err(|error| error.message)?;
-        let html = mark_inline_code(&output);
-        if !page {
-            return Ok(html);
-        }
+        let tree = (processor.parse(markdown, &mut file, alloc))
+            .and_then(|tree| processor.run_sync(tree, &mut file, alloc))
+            .map_err(|error| error.message)?;
+        let body = match tree {
+            Tree::Hast(Node::Root(root)) => root.children,
+            Tree::Hast(node) => {
+                let mut nodes = ArenaVec::new_in(alloc);
+                nodes.push(node);
+                nodes
+            }
+            _ => return Err("the Markdown pipeline did not end in HTML".to_owned()),
+        };
         let matter = match file.data.get("matter") {
             Some(Value::Object(matter)) => matter.clone(),
             _ => Map::new(),
         };
-        Ok(format!(
-            "<!doctype html>\n<html>\n<head>\n{}</head>\n<body>\n{}</body>\n</html>\n",
-            create_head(&matter)?,
-            html
-        ))
+        Ok(Compiled { body, matter })
     })
 }
 
-/// The Markdown pipeline as one job; also what the config's `md` plugins are checked
+/// A compiled page as the document an HTML page would be: its frontmatter as the head's
+/// `<title>` and metas, then the frontmatter's raw `head`, its body as the body.
+pub(crate) fn create_document<'a>(
+    compiled: Compiled<'a>,
+    alloc: &'a Allocator,
+) -> Result<Node<'a>, String> {
+    let mut head = create_element("head", &[], alloc);
+    head.children = create_head(&compiled.matter, alloc)?;
+    let mut body = create_element("body", &[], alloc);
+    body.children = compiled.body;
+    let mut html = create_element("html", &[], alloc);
+    html.children.push(Node::Element(head));
+    html.children.push(Node::Element(body));
+    let mut children = ArenaVec::new_in(alloc);
+    children.push(Node::Doctype(Doctype {
+        position: None,
+        data: None,
+    }));
+    children.push(Node::Element(html));
+    Ok(Node::Root(Root {
+        children,
+        position: None,
+        data: None,
+        quirks_mode: None,
+    }))
+}
+
+/// The Markdown pipeline, frozen; also what the config's `md` plugins are checked
 /// against before any page compiles.
-pub(crate) fn create_processor(options: &MarkdownOptions) -> Result<ProcessJob, String> {
+pub(crate) fn create_processor(
+    options: &MarkdownOptions,
+) -> Result<textlane::Pipeline, String> {
     let heading_id = json!({
         "attributes": true,
         "markers": {
@@ -113,19 +148,14 @@ pub(crate) fn create_processor(options: &MarkdownOptions) -> Result<ProcessJob, 
     )?;
     // Before the reparse, which keeps no node's `data`, where the fence's meta waits
     use_native(&mut pipeline, "htmlpress.annotateCode", AnnotateCode)?;
-    use_plugins(
-        &mut pipeline,
-        json!([
-            "html.raw",
-            ["html.stringify", { "allowDangerousHtml": true, "closeEmptyElements": true }],
-        ]),
-    )?;
+    use_plugins(&mut pipeline, json!(["html.raw"]))?;
+    use_native(&mut pipeline, "htmlpress.markInlineCode", MarkInlineCode)?;
     let fail = |error: textlane::Error| match options.plugins.is_empty() {
         true => error.message,
         false => format!("plugins.md: {}", error.message),
     };
     pipeline.freeze().map_err(fail)?;
-    pipeline.prepare_process(Api::Sync).map_err(fail)
+    Ok(pipeline)
 }
 
 // Livemark's directives, alerts and fences, as its `create.ts` declares them, onto
@@ -255,19 +285,19 @@ fn create_rules(components: &[String]) -> Value {
     })
 }
 
-// Livemark's inline `code{:lang}`, as the `language-*` class the highlighter reads; only
-// a bare `<code>`, since a block's carries its own class or sits in a `<pre>`
-fn mark_inline_code(html: &str) -> String {
-    let mut out = String::with_capacity(html.len());
-    let mut rest = html;
-    while let Some(start) = rest.find("<code>") {
-        let body = &rest[start + "<code>".len()..];
-        let Some(end) = body.find("</code>") else {
-            break;
-        };
-        let code = &body[..end];
-        out.push_str(&rest[..start]);
-        let lang = code
+/// Livemark's inline `code{:lang}`, as the `language-*` class the highlighter reads; only
+/// a bare `<code>`, since a block's carries its own class or sits in a `<pre>`.
+pub(crate) fn mark_inline_code<'a>(node: &mut Node<'a>, alloc: &'a Allocator) {
+    visit_elements(node, |element, ancestors| {
+        let bare = element.tag_name == "code"
+            && element.properties.is_empty()
+            && ancestors.last() != Some(&"pre")
+            && (element.children.iter()).all(|child| matches!(child, Node::Text(_)));
+        if !bare {
+            return Visit::Continue;
+        }
+        let text = collect_text(&element.children);
+        let lang = text
             .strip_suffix('}')
             .and_then(|code| code.rsplit_once("{:"))
             .filter(|(_, lang)| {
@@ -276,21 +306,21 @@ fn mark_inline_code(html: &str) -> String {
                         .chars()
                         .all(|char| char.is_ascii_alphanumeric() || "+#-".contains(char))
             });
-        match lang {
-            Some((code, lang)) if !out.ends_with("<pre>") => {
-                out.push_str(&format!("<code class=\"language-{lang}\">{code}</code>"))
-            }
-            _ => out.push_str(&format!("<code>{code}</code>")),
+        if let Some((code, lang)) = lang {
+            write_attribute(element, "class", &format!("language-{lang}"), alloc);
+            element.children.clear();
+            element.children.push(create_text(code, alloc));
         }
-        rest = &body[end + "</code>".len()..];
-    }
-    out.push_str(rest);
-    out
+        Visit::Skip
+    });
 }
 
-fn create_head(matter: &Map<String, Value>) -> Result<String, String> {
-    let mut head = String::new();
-    let mut raw = String::new();
+fn create_head<'a>(
+    matter: &Map<String, Value>,
+    alloc: &'a Allocator,
+) -> Result<ArenaVec<'a, Node<'a>>, String> {
+    let mut head = ArenaVec::new_in(alloc);
+    let mut raw = vec![];
     for (key, value) in matter {
         if !FRONTMATTER_KEYS.contains(&key.as_str()) {
             return Err(format!(
@@ -312,17 +342,24 @@ fn create_head(matter: &Map<String, Value>) -> Result<String, String> {
         for text in texts {
             match key.as_str() {
                 "title" => {
-                    head.push_str(&format!("<title>{}</title>\n", escape_html(&text)))
+                    let mut title = create_element("title", &[], alloc);
+                    title.children.push(create_text(&text, alloc));
+                    head.push(Node::Element(title));
                 }
-                "head" => raw.push_str(&format!("{text}\n")),
-                key => head.push_str(&format!(
-                    "<meta name=\"{key}\" content=\"{}\">\n",
-                    escape_html(&text)
-                )),
+                // Raw HTML the author wrote, parsed here for the first time
+                "head" => raw.push(text),
+                key => head.push(Node::Element(create_element(
+                    "meta",
+                    &[("name", key), ("content", &text)],
+                    alloc,
+                ))),
             }
         }
     }
-    Ok(head + &raw)
+    for text in raw {
+        head.extend(parse_fragment(&text, alloc));
+    }
+    Ok(head)
 }
 
 fn read_text(value: &Value) -> String {
@@ -330,13 +367,6 @@ fn read_text(value: &Value) -> String {
         Value::String(text) => text.clone(),
         value => value.to_string(),
     }
-}
-
-fn escape_html(text: &str) -> String {
-    text.replace('&', "&amp;")
-        .replace('<', "&lt;")
-        .replace('>', "&gt;")
-        .replace('"', "&quot;")
 }
 
 #[cfg(test)]

@@ -1,4 +1,40 @@
+use std::collections::HashMap;
+
+use textlane::hast::{Node, Root};
+
 use super::*;
+use crate::actions::node::parse::parse_fragment;
+use crate::actions::node::write::write_nodes;
+use crate::actions::pipeline::create::create_pipeline;
+use crate::models::pipeline::{MarkdownOptions, PipelineOptions};
+
+// A fragment's includes resolved, as HTML
+fn resolve(
+    root: &Path,
+    source: &str,
+    html: &str,
+    markdown: &MarkdownOptions,
+) -> Result<String, String> {
+    let alloc = Allocator::new();
+    let mut sources = Sources {
+        alloc: &alloc,
+        markdown: markdown.clone(),
+        parser: create_pipeline(&PipelineOptions::default())?,
+        files: HashMap::new(),
+        sizes: HashMap::new(),
+    };
+    let mut tree = Node::Root(Root {
+        children: parse_fragment(html, &alloc),
+        position: None,
+        data: None,
+        quirks_mode: None,
+    });
+    resolve_includes(root, source, &mut tree, &mut sources)?;
+    let Node::Root(root) = tree else {
+        return Err("no root".to_owned());
+    };
+    write_nodes(root.children)
+}
 
 fn create_project(files: &[(&str, &str)]) -> Result<tempfile::TempDir, String> {
     let dir = tempfile::tempdir().map_err(|error| error.to_string())?;
@@ -28,7 +64,7 @@ fn inlines_html_markdown_and_code_files() -> Result<(), String> {
     let html = "<htmlpress-include src=\"includes/note.html\"></htmlpress-include>\
         <htmlpress-include src=\"includes/list.md\"></htmlpress-include>\
         <htmlpress-include src=\"/examples/server.ts\" data-lines=\"1\" data-title=\"server\"></htmlpress-include>";
-    let resolved = resolve_includes(
+    let resolved = resolve(
         dir.path(),
         "docs/page.html",
         html,
@@ -57,7 +93,7 @@ fn nests_and_refuses_cycles_escapes_and_missing_files() -> Result<(), String> {
         ),
         (".env", "TOKEN=1"),
     ])?;
-    let nested = resolve_includes(
+    let nested = resolve(
         dir.path(),
         "page.html",
         "<htmlpress-include src=\"a.html\"></htmlpress-include>",
@@ -67,12 +103,11 @@ fn nests_and_refuses_cycles_escapes_and_missing_files() -> Result<(), String> {
     for src in ["loop.html", "missing.html", "../outside.html", ".env", ""] {
         let html = format!("<htmlpress-include src=\"{src}\"></htmlpress-include>");
         assert!(
-            resolve_includes(dir.path(), "page.html", &html, &MarkdownOptions::default())
-                .is_err(),
+            resolve(dir.path(), "page.html", &html, &MarkdownOptions::default()).is_err(),
             "{src}"
         );
     }
-    let unclosed = resolve_includes(
+    let unclosed = resolve(
         dir.path(),
         "page.html",
         "<htmlpress-include src=\"b.html\"><p>After</p>",
@@ -96,7 +131,7 @@ fn refuses_includes_that_fan_out_past_the_budget() -> Result<(), String> {
         ("c.html", &ten("d.html")),
         ("d.html", "<p>leaf</p>"),
     ])?;
-    let error = resolve_includes(
+    let error = resolve(
         dir.path(),
         "page.html",
         &ten("a.html"),
@@ -116,7 +151,7 @@ fn compiles_an_included_markdown_partial_with_its_directives() -> Result<(), Str
         "---\nanything: 1\n---\n:::callout\nHi\n:::",
     )
     .map_err(|error| error.to_string())?;
-    let html = resolve_includes(
+    let html = resolve(
         root.path(),
         "index.html",
         "<htmlpress-include src=\"part.md\"></htmlpress-include>",
