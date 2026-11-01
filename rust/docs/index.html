@@ -351,8 +351,9 @@
             <h3>Any folder of pages</h3>
             <p>
               A page is any <code>.md</code> or <code>.html</code> file, Markdown with
-              frontmatter or HTML from a bare fragment to a full document. Folders become
-              navigation groups, and every other file is copied as it is.
+              frontmatter or HTML from a bare fragment to a full document. Keep them flat
+              or nest them: subfolders become navigation groups, and every other file is
+              copied as it is.
             </p>
           </li>
           <li>
@@ -570,17 +571,38 @@ htmlpress.yaml</code></pre>
   <section>
     <header>
       <htmlpress-landing-switch label="Page format"
-        ><button type="button" id="quickstart-md-tab" aria-controls="quickstart-md">
-          Markdown</button
         ><button type="button" id="quickstart-html-tab" aria-controls="quickstart-html">
-          HTML
+          HTML</button
+        ><button type="button" id="quickstart-md-tab" aria-controls="quickstart-md">
+          Markdown
         </button></htmlpress-landing-switch
       >
-      <h2>Write Markdown or HTML. Ship a website.</h2>
+      <h2>Write HTML or Markdown. Ship a website.</h2>
       <p>Your pages stay as they are. Htmlpress does the rest.</p>
     </header>
     <div>
-      <htmlpress-landing-window id="quickstart-md" label="quickstart.md"
+      <htmlpress-landing-window id="quickstart-html" label="quickstart.html"
+        ><htmlpress-landing-code syntax="html">
+          <pre><code class="language-html">&lt;title&gt;Quickstart&lt;/title&gt;
+&lt;meta name="order" content="1" /&gt;
+
+&lt;h1&gt;Quickstart&lt;/h1&gt;
+&lt;p&gt;Install the binary:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;npm install -g gethtmlpress&lt;/code&gt;&lt;/pre&gt;
+
+&lt;htmlpress-callout title="Tip"&gt;
+&lt;p&gt;Run &lt;code&gt;htmlpress start&lt;/code&gt; and open the browser.&lt;/p&gt;
+&lt;/htmlpress-callout&gt;
+
+&lt;h2&gt;Features&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Fast&lt;/strong&gt; rebuilds on save&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Components&lt;/strong&gt; when HTML has none&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;Beautiful&lt;/em&gt; out of the box&lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+        </htmlpress-landing-code></htmlpress-landing-window
+      >
+      <htmlpress-landing-window id="quickstart-md" label="quickstart.md" hidden
         ><htmlpress-landing-code syntax="md">
           <pre><code class="language-md">---
 title: Quickstart
@@ -604,27 +626,6 @@ Run `htmlpress start` and open the browser.
 - **Fast** rebuilds on save
 - **Components** when HTML has none
 - *Beautiful* out of the box</code></pre>
-        </htmlpress-landing-code></htmlpress-landing-window
-      >
-      <htmlpress-landing-window id="quickstart-html" label="quickstart.html" hidden
-        ><htmlpress-landing-code syntax="html">
-          <pre><code class="language-html">&lt;title&gt;Quickstart&lt;/title&gt;
-&lt;meta name="order" content="1" /&gt;
-
-&lt;h1&gt;Quickstart&lt;/h1&gt;
-&lt;p&gt;Install the binary:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;npm install -g gethtmlpress&lt;/code&gt;&lt;/pre&gt;
-
-&lt;htmlpress-callout title="Tip"&gt;
-&lt;p&gt;Run &lt;code&gt;htmlpress start&lt;/code&gt; and open the browser.&lt;/p&gt;
-&lt;/htmlpress-callout&gt;
-
-&lt;h2&gt;Features&lt;/h2&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Fast&lt;/strong&gt; rebuilds on save&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Components&lt;/strong&gt; when HTML has none&lt;/li&gt;
-&lt;li&gt;&lt;em&gt;Beautiful&lt;/em&gt; out of the box&lt;/li&gt;
-&lt;/ul&gt;</code></pre>
         </htmlpress-landing-code></htmlpress-landing-window
       >
       <htmlpress-landing-window label="rendered">
