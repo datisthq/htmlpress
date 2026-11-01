@@ -106,22 +106,16 @@ fn group_pages<'a>(
         .collect()
 }
 
-// The top pages first, then each top folder under its index page's title, else its name
+// The top pages first, then each top folder under its index page's title
 fn group_folders<'a>(pages: &[&'a Page], folder: &str) -> Vec<(&'a str, Vec<&'a Page>)> {
     let mut groups = vec![("Pages", vec![])];
     for node in build_nav(pages, folder, false) {
         let items = NavNode::flatten(std::slice::from_ref(&node));
-        let Some(first) = items.first() else {
-            continue;
-        };
         if node.children.is_empty() {
             groups[0].1.extend(items);
             continue;
         }
-        let relative = first.path.strip_prefix(folder).unwrap_or(&first.path);
-        let name = relative.split('/').next().unwrap_or(relative);
-        let title = node.page.map_or(name, |page| page.title.as_str());
-        groups.push((title, items));
+        groups.push((node.page.title.as_str(), items));
     }
     groups.retain(|(_, items)| !items.is_empty());
     groups

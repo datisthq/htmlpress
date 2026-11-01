@@ -10,7 +10,9 @@
 <p>
   每个页面都在它自己的文件夹 URL 上提供：<code>guides/build.html</code> 对应
   <code>/guides/build/</code>，<code>index.html</code> 则在其所在文件夹提供，
-  <code>guides/index.html</code> 对应 <code>/guides/</code>。可以按 URL
+  <code>guides/index.html</code> 对应 <code>/guides/</code>。与 Livemark
+  一样，每个文件夹名和文件名都会转换为 slug：<code>User Guide/Getting Started.html</code>
+  对应 <code>/user-guide/getting-started/</code>。可以按 URL
   链接页面，也可以按文件链接：指向页面文件的链接，无论是相对的还是根相对的，都会被改写为该页面的
   URL，其他相对 URL 则从源文件所在位置解析。
 </p>
@@ -37,9 +39,9 @@
   <code>preview</code> 同样在基础路径下提供站点，并把 <code>/</code> 重定向到那里。
 </p>
 <p>
-  导航按顶层文件夹对页面分组，组名取自该文件夹
-  <code>index.html</code>
-  的标题，否则使用文件夹名。组名链接到该索引页，旁边的箭头可以折叠该组。根目录下的页面不分组。
+  导航把一个文件夹的页面归到它的 <code>index.html</code>
+  之下，组名取自该页面的标题。组名链接到该索引页，旁边的箭头可以折叠该组。没有
+  <code>index.html</code> 的文件夹不构成分组：其页面与根目录的页面一起位于顶层。
 </p>
 
 <h2>外部链接</h2>

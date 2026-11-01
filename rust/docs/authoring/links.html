@@ -10,9 +10,11 @@
 <p>
   Each page is served at its own folder URL: <code>guides/build.html</code> at
   <code>/guides/build/</code>, and <code>index.html</code> at its folder,
-  <code>guides/index.html</code> at <code>/guides/</code>. Link to a page by its URL or by
-  its file: a link naming a page's file, relative or root-relative, is rewritten to the
-  page's URL, and any other relative URL resolves from the source file.
+  <code>guides/index.html</code> at <code>/guides/</code>. Every folder and file name is
+  slugified, as in Livemark: <code>User Guide/Getting Started.html</code> is served at
+  <code>/user-guide/getting-started/</code>. Link to a page by its URL or by its file: a
+  link naming a page's file, relative or root-relative, is rewritten to the page's URL,
+  and any other relative URL resolves from the source file.
 </p>
 
 <h2>Internal Links</h2>
@@ -38,9 +40,10 @@
   <code>preview</code> serve the site under the base too, and send <code>/</code> there.
 </p>
 <p>
-  The navigation groups pages by their top folder, named by the folder's
-  <code>index.html</code> title, else the folder's name. A group's name links to that
-  index page, and the chevron beside it folds the group. Pages at the root come ungrouped.
+  The navigation groups the pages of a folder under its <code>index.html</code>, named by
+  that page's title. A group's name links to that index page, and the chevron beside it
+  folds the group. A folder without an <code>index.html</code> makes no group: its pages
+  sit at the top, beside the root's.
 </p>
 
 <h2>External Links</h2>

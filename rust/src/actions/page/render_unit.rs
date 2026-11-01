@@ -101,16 +101,17 @@ fn keeps_a_page_ordered_after_a_folder_below_it() -> crate::Result<()> {
 }
 
 #[test]
-fn links_a_group_to_its_index_page() -> crate::Result<()> {
+fn links_a_group_to_its_index_page_and_lists_its_pages_flat_without_it()
+-> crate::Result<()> {
     let mut site = create_site()?;
     let api = render_page(&site, &site.pages[2], false)?;
     assert!(api.contains(r#"<summary><a href="/api/" aria-current="page">API</a>"#));
     site.pages.retain(|item| item.path != "api/index.html");
     let html = render_page(&site, &site.pages[0], false)?;
-    assert!(
-        html.contains(r#"<details open><summary>api</summary>"#),
-        "{html}"
-    );
+    assert!(html.contains(concat!(
+        r#"<li><a href="/guide/">Guide</a></li>"#,
+        r#"<li><a href="/api/cli/">CLI</a></li></ul></nav>"#,
+    )));
     Ok(())
 }
 
@@ -617,10 +618,11 @@ fn nests_folders_inside_folders_and_pages_them_in_order() -> crate::Result<()> {
     let html = render_page(&site, &site.pages[0], false)?;
     assert!(html.contains(concat!(
         r#"<li><details open><summary><a href="/api/auth/">Auth</a></summary><ul>"#,
-        r#"<li><a href="/api/auth/login/">Login</a></li>"#,
-        r#"<li><details open><summary>oauth</summary><ul>"#,
-        r#"<li><a href="/api/auth/oauth/token/">Token</a></li></ul></details></li>"#,
+        r#"<li><a href="/api/auth/login/">Login</a></li></ul></details></li>"#,
     )));
+    // As in Livemark, a page under a folder without an index goes to the top
+    assert!(!html.contains("<summary>oauth</summary>"));
+    assert!(html.contains(r#"</details><ul><li><a href="/api/auth/oauth/token/">"#));
     let token = render_page(&site, &site.pages[6], false)?;
     assert!(token.contains(r#"<a rel="next" href="/zed/">"#));
     Ok(())

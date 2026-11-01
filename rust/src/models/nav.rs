@@ -1,12 +1,10 @@
 use crate::models::page::Page;
 
-/// One sidebar entry: a page, a folder, or a folder with its index page, holding the
-/// entries nested under it.
+/// One sidebar entry: a page, holding the pages of its folder when it is that folder's
+/// `index.html`.
 #[derive(Debug)]
 pub(crate) struct NavNode<'a> {
-    pub page: Option<&'a Page>,
-    /// The `index.html` path a folder's entry stands for; None for a plain page.
-    pub folder: Option<String>,
+    pub page: &'a Page,
     pub children: Vec<NavNode<'a>>,
 }
 
@@ -15,7 +13,7 @@ impl<'a> NavNode<'a> {
     pub(crate) fn flatten(nodes: &[NavNode<'a>]) -> Vec<&'a Page> {
         let mut pages = vec![];
         for node in nodes {
-            pages.extend(node.page);
+            pages.push(node.page);
             pages.extend(Self::flatten(&node.children));
         }
         pages

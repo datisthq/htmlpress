@@ -278,16 +278,18 @@ sections:
       "Other"; sin <code>sections</code>, por carpeta de primer nivel.
     </p>
     <p>
-      Dentro de una navegación, una página pertenece al grupo de su carpeta, y el grupo de
-      una carpeta al de su carpeta padre: <code>guides/cli/run.html</code> queda en el
-      grupo <code>cli</code> dentro de "Guides". Las páginas se ordenan por
+      Dentro de una navegación, una página pertenece al grupo del
+      <code>index.html</code> de su carpeta, y ese índice al de su carpeta padre:
+      <code>guides/cli/run.html</code> queda en el grupo <code>cli</code> dentro de
+      "Guides". Una carpeta sin <code>index.html</code> no forma grupo, y sus páginas
+      quedan arriba. Las páginas se ordenan por
       <code>&lt;meta name="order"&gt;</code> entre sus hermanas: el
       <code>index.html</code> raíz siempre va primero, los órdenes de 0 o más siguen en
       orden ascendente, después las páginas sin orden por ruta, y luego los órdenes
-      negativos, con <code>-1</code> al final. Los grupos conservan el orden de su primera
-      página, así que da un orden al <code>index.html</code> de una carpeta para colocar
-      todo el grupo. El paginador recorre la barra lateral de arriba abajo, con el índice
-      de cada grupo antes de sus páginas.
+      negativos, con <code>-1</code> al final. Un grupo se coloca donde se ordena su
+      <code>index.html</code>, así que dale un orden para colocar todo el grupo. El
+      paginador recorre la barra lateral de arriba abajo, con el índice de cada grupo
+      antes de sus páginas.
     </p>
     <p>
       Un <code>404.html</code> en la raíz se excluye de la barra lateral; es la página que

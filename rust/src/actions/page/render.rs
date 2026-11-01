@@ -976,37 +976,20 @@ fn create_list(site: &Site, nodes: &[NavNode], page: &Page, top: bool) -> String
     }
     let mut html = String::from("<ul>");
     for node in nodes {
-        match (node.page, node.children.is_empty()) {
-            (Some(item), true) => {
-                let _ = write!(html, "<li>{}</li>", create_entry(site, item, page, top));
-            }
-            _ => {
-                let _ =
-                    write!(html, "<li>{}</li>", create_group(site, node, page, false));
-            }
-        }
+        let item = match node.children.is_empty() {
+            true => create_entry(site, node.page, page, top),
+            false => create_group(site, node, page, false),
+        };
+        let _ = write!(html, "<li>{item}</li>");
     }
     html.push_str("</ul>");
     html
 }
 
-// A listed index is the group's own link, as in Livemark: its title leads to the page
-// and only the chevron beside it toggles, as a link in a summary does not toggle its
-// details. A folder without one is titled by its index page anyway, else its name
+// The index is the group's own link, as in Livemark: its title leads to the page and only
+// the chevron beside it toggles, as a link in a summary does not toggle its details
 fn create_group(site: &Site, node: &NavNode, page: &Page, top: bool) -> String {
-    let path = node.folder.as_deref().unwrap_or_default();
-    let label = match node.page {
-        Some(item) => create_entry(site, item, page, top),
-        None => {
-            let index = site.pages.iter().find(|item| item.path == path);
-            let name = (path.trim_end_matches("/index.html").rsplit('/').next())
-                .unwrap_or_default();
-            let title = escape_html(index.map_or(name, |item| item.title.as_str()));
-            let icon =
-                create_icon(index.and_then(|item| item.icon.as_deref()).filter(|_| top));
-            format!("{icon}{title}")
-        }
-    };
+    let label = create_entry(site, node.page, page, top);
     let list = create_list(site, &node.children, page, false);
     format!("<details open><summary>{label}</summary>{list}</details>")
 }

@@ -10,7 +10,7 @@ fn read_pages(paths: &[&str]) -> crate::Result<Vec<Page>> {
 fn list_paths(nodes: &[NavNode]) -> Vec<String> {
     let mut paths = vec![];
     for node in nodes {
-        let path = node.page.map_or("-", |page| page.path.as_str());
+        let path = node.page.path.as_str();
         let children = list_paths(&node.children);
         paths.push(match children.is_empty() {
             true => path.to_owned(),
@@ -48,7 +48,30 @@ fn nests_pages_under_their_folders_index_at_any_depth() -> crate::Result<()> {
 }
 
 #[test]
-fn keeps_a_folder_without_an_index_as_an_entry_of_its_own() -> crate::Result<()> {
+fn keeps_the_pages_of_a_folder_without_an_index_at_the_top() -> crate::Result<()> {
+    let pages = read_pages(&[
+        "index.html",
+        "plain/a.html",
+        "guide/index.html",
+        "guide/deep/b.html",
+        "plain/c.html",
+    ])?;
+    let pages: Vec<&Page> = pages.iter().collect();
+    assert_eq!(
+        list_paths(&build_nav(&pages, "", false)),
+        [
+            "index.html",
+            "plain/a.html",
+            "guide/index.html",
+            "guide/deep/b.html",
+            "plain/c.html"
+        ]
+    );
+    Ok(())
+}
+
+#[test]
+fn nests_under_an_index_that_sorts_after_its_pages() -> crate::Result<()> {
     let pages = read_pages(&[
         "api/auth/login.html",
         "api/index.html",
@@ -58,11 +81,8 @@ fn keeps_a_folder_without_an_index_as_an_entry_of_its_own() -> crate::Result<()>
     let nav = build_nav(&pages, "/api/", false);
     assert_eq!(
         list_paths(&nav),
-        ["api/auth/index.html[api/auth/login.html]", "api/index.html"]
+        ["api/index.html", "api/auth/index.html[api/auth/login.html]"]
     );
-    let orphan = build_nav(&pages[..1], "/api/", false);
-    assert_eq!(orphan[0].folder.as_deref(), Some("api/auth/index.html"));
-    assert_eq!(list_paths(&orphan), ["-[api/auth/login.html]"]);
     Ok(())
 }
 

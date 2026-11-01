@@ -9,6 +9,7 @@ use textlane::{Allocator, File};
 
 use crate::actions::icon::render::{list_icons, render_icon};
 use crate::actions::package::convert::{MANAGERS, convert_command};
+use crate::actions::path::slugify::slugify_path;
 use crate::actions::pipeline::create::create_pipeline;
 use crate::models::error::Error;
 use crate::models::page::{Heading, Page, SourceAction};
@@ -37,7 +38,7 @@ pub(crate) fn read_source(path: &str, html: &str) -> crate::Result<Page> {
     let facts = read_facts(html).map_err(Error::page(path))?;
     let output = match &facts.route {
         Some(route) => create_route_path(route).map_err(Error::page(path))?,
-        None => path.to_owned(),
+        None => slugify_path(path),
     };
     let title = [facts.title, facts.heading]
         .into_iter()

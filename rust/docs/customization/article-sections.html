@@ -260,14 +260,16 @@ sections:
       folder.
     </p>
     <p>
-      Within a navigation, a page belongs to the group of its folder, and a folder's group
-      to its parent's: <code>guides/cli/run.html</code> sits in the <code>cli</code> group
-      inside "Guides". Pages sort by <code>&lt;meta name="order"&gt;</code> among their
-      siblings: the root <code>index.html</code> always leads, orders of 0 or more follow
-      ascending, then the unordered pages by path, then negative orders, with
-      <code>-1</code> last. Groups keep the order their first page has, so give a folder's
-      <code>index.html</code> an order to place the whole group. The pager walks the
-      sidebar top to bottom, each group's index before its pages.
+      Within a navigation, a page belongs to the group of its folder's
+      <code>index.html</code>, and that index to its parent folder's:
+      <code>guides/cli/run.html</code> sits in the <code>cli</code> group inside "Guides".
+      A folder without an <code>index.html</code> makes no group, and its pages sit at the
+      top. Pages sort by <code>&lt;meta name="order"&gt;</code> among their siblings: the
+      root <code>index.html</code> always leads, orders of 0 or more follow ascending,
+      then the unordered pages by path, then negative orders, with <code>-1</code> last. A
+      group sits where its <code>index.html</code> sorts, so give it an order to place the
+      whole group. The pager walks the sidebar top to bottom, each group's index before
+      its pages.
     </p>
     <p>
       A <code>404.html</code> at the root is left out of the sidebar; it is the page a

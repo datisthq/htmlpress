@@ -58,8 +58,9 @@ run from source: `cargo run --manifest-path rust/Cargo.toml -- build docs`.
    (`page/compile`: frontmatter checked against `FRONTMATTER_KEYS` into the head's metas,
    Livemark's directives, alerts and fences onto htmlpress' elements (`create_rules`, ported from Livemark's `create.ts`), any other `:::name` into `htmlpress-name` of a known component, the config's `plugins.md` after `md.directive` (`plugin/add`; every page pipeline is a textlane `Pipeline`, its textlane plugins by name and htmlpress' own through `use_native`, so a project's entry naming one merges into it as in Livemark; never build with `Processor::with`, which runs a duplicate twice), a fence's meta onto
    `data-*` by the `AnnotateCode` plugin, before `html.raw`, which drops nodes' `data`). Every path is served
-   without its base, so `Page.path` is the page's path without it (`guides/build.html`) and `Page.source`
-   the file's. The nav, breadcrumbs and Markdown copies nest by `Page.path`; a page is
+   without its base and slugified as Livemark routes it (`path/slugify`, each dot part of the
+   name on its own so a `.es` suffix survives), so `Page.path` is the page's path without it
+   (`guides/build.html`) and `Page.source` the file's. The nav, breadcrumbs and Markdown copies nest by `Page.path`; a page is
    written to `create_output_path` (`guides/build/index.html`) and served at `create_url`
    (`/guides/build/`), the root `404.html` excepted. Relative URLs become root-relative
    from the source folder (textlane's `html.pathRewrite` in the page pipeline, rooted at the
@@ -67,7 +68,8 @@ run from source: `cargo run --manifest-path rust/Cargo.toml -- build docs`.
    deeper, and a link naming a page's file takes its URL; `page/rebase` does the same for
    the `image` meta, which no tree holds. Pages sort `index.html`
    first, then by `<meta name="order">` (negatives last), then by path; `nav/build` nests
-   them by folder for the sidebar and the pager.
+   them as Livemark's `buildArticleTree` does, under their folder's `index.html` only, for the
+   sidebar and the pager: a folder without one makes no entry.
    `scan_site` resolves `<htmlpress-include>` (`page/include`, through `path/contain`) in a
    page's source before `read_page`, which has no filesystem access, so included content
    reaches the TOC, search and the Markdown copies like the page's own.

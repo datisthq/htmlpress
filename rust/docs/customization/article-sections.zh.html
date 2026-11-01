@@ -247,15 +247,17 @@ sections:
       <code>sections</code> 时，按顶层文件夹分组。
     </p>
     <p>
-      在一个导航中，页面属于其所在文件夹的分组，文件夹的分组属于其父文件夹的分组：<code
+      在一个导航中，页面属于其所在文件夹
+      <code>index.html</code> 的分组，该索引页属于其父文件夹的分组：<code
         >guides/cli/run.html</code
       >
-      位于 "Guides" 内的 <code>cli</code> 分组中。页面在同级之间按
+      位于 "Guides" 内的 <code>cli</code> 分组中。没有 <code>index.html</code>
+      的文件夹不构成分组，其页面位于顶层。页面在同级之间按
       <code>&lt;meta name="order"&gt;</code> 排序：根目录的
       <code>index.html</code> 始终排在最前，随后是按升序排列的 0 及以上的
       order，然后是按路径排序的无 order 页面，最后是负 order，<code>-1</code>
-      排在最末。分组保持其第一个页面的顺序，因此给文件夹的 <code>index.html</code> 设置
-      order 即可放置整个分组。翻页器从上到下遍历侧边栏，每个分组的索引页排在其页面之前。
+      排在最末。分组位于其 <code>index.html</code> 排序所在的位置，因此给它设置 order
+      即可放置整个分组。翻页器从上到下遍历侧边栏，每个分组的索引页排在其页面之前。
     </p>
     <p>
       根目录下的 <code>404.html</code> 不会出现在侧边栏中；它是托管服务在 URL

@@ -25,6 +25,7 @@ mod actions {
     pub(crate) mod path {
         pub(crate) mod contain;
         pub(crate) mod select;
+        pub(crate) mod slugify;
     }
     pub(crate) mod date {
         pub(crate) mod format;

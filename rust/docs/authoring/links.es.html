@@ -10,10 +10,13 @@
 <p>
   Cada página se sirve en la URL de su propia carpeta: <code>guides/build.html</code> en
   <code>/guides/build/</code>, e <code>index.html</code> en su carpeta,
-  <code>guides/index.html</code> en <code>/guides/</code>. Enlaza a una página por su URL
-  o por su archivo: un enlace que nombra el archivo de una página, relativo o relativo a
-  la raíz, se reescribe a la URL de la página, y cualquier otra URL relativa se resuelve
-  desde el archivo fuente.
+  <code>guides/index.html</code> en <code>/guides/</code>. Cada nombre de carpeta y de
+  archivo se convierte en slug, como en Livemark:
+  <code>User Guide/Getting Started.html</code> se sirve en
+  <code>/user-guide/getting-started/</code>. Enlaza a una página por su URL o por su
+  archivo: un enlace que nombra el archivo de una página, relativo o relativo a la raíz,
+  se reescribe a la URL de la página, y cualquier otra URL relativa se resuelve desde el
+  archivo fuente.
 </p>
 
 <h2>Enlaces internos</h2>
@@ -43,10 +46,10 @@
   <code>/</code> allí.
 </p>
 <p>
-  La navegación agrupa las páginas por su carpeta superior, con el nombre del título del
-  <code>index.html</code> de la carpeta o, si no, el nombre de la carpeta. El nombre de un
-  grupo enlaza a esa página índice, y el chevrón que hay a su lado pliega el grupo. Las
-  páginas de la raíz aparecen sin agrupar.
+  La navegación agrupa las páginas de una carpeta bajo su <code>index.html</code>, con el
+  título de esa página como nombre. El nombre de un grupo enlaza a esa página índice, y el
+  chevrón que hay a su lado pliega el grupo. Una carpeta sin <code>index.html</code> no
+  forma grupo: sus páginas quedan arriba, junto a las de la raíz.
 </p>
 
 <h2>Enlaces externos</h2>

@@ -37,10 +37,12 @@ The config keys are in `htmlpress-configuration`; a different look in `htmlpress
   (`-1` pins a page last).
 - Other `<head>` tags (`<link>`, `<style>`, `<script>`) are kept and added after the theme; a
   fragment's are the ones before its first content, as a browser reads them.
-- The navigation nests pages by folder at any depth (`guides/cli/…` inside `guides/…`), each
-  group named by its `index.html`, whose title links to it and whose `order` places the folder.
+- The navigation nests a folder's pages under its `index.html` at any depth (`guides/cli/…`
+  inside `guides/…`), whose title names and links the group and whose `order` places it; a
+  folder without an `index.html` makes no group, its pages sitting at the top.
 - Each page is served at its own folder URL: `guides/build.html` at `/guides/build/`,
-  `guides/index.html` at `/guides/`. Link to the page file (`guides/build.html`, relative or
+  `guides/index.html` at `/guides/`, every name slugified as in Livemark
+  (`User Guide/Intro.html` at `/user-guide/intro/`). Link to the page file (`guides/build.html`, relative or
   root-relative) or to its URL: a link naming a page's file becomes its URL. Images and other
   files are copied as-is; a relative `href`, `src`, `srcset` or `poster` resolves from the
   source file, even when the page moves.

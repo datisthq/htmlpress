@@ -1,90 +1,51 @@
-use std::collections::HashMap;
-
 use crate::models::nav::NavNode;
 use crate::models::page::Page;
 
-/// Nest pages, already in navigation order, by their folders below `prefix`: a folder's
-/// `index.html` is its entry, and a folder without one is an entry named by its path.
-/// An entry keeps the position of the first page under it, or its index page's when that
-/// page sets an order. Flat keeps every page at the top.
+/// Nest pages, already in navigation order, as Livemark does: a page goes under its
+/// folder's `index.html` below `prefix` and a folder's index under its parent folder's;
+/// with no such page it stays at the top, so a folder without an index adds no entry.
+/// Flat keeps every page at the top.
 pub(crate) fn build_nav<'a>(
     pages: &[&'a Page],
     prefix: &str,
     flat: bool,
 ) -> Vec<NavNode<'a>> {
     let prefix = prefix.trim_start_matches('/');
-    let mut roots = vec![];
-    for page in pages {
-        let relative = page.path.strip_prefix(prefix).unwrap_or(&page.path);
-        let mut folders: Vec<&str> = relative.split('/').collect();
-        let file = folders.pop().unwrap_or_default();
-        if flat {
-            folders.clear();
-        }
-        // The section's own index, and the root one, lead the list instead of holding it
-        let index = file == "index.html" && !folders.is_empty();
-        insert_page(&mut roots, prefix, &folders, page, index);
-    }
-    let ranks = (pages.iter().enumerate())
-        .map(|(rank, page)| (std::ptr::from_ref::<Page>(page), rank))
+    let relatives: Vec<&str> = (pages.iter())
+        .map(|page| page.path.strip_prefix(prefix).unwrap_or(&page.path))
         .collect();
-    sort_nodes(&mut roots, &ranks);
-    roots
+    let parents: Vec<Option<usize>> = (relatives.iter())
+        .map(|relative| {
+            let parent = read_parent(relative).filter(|_| !flat)?;
+            relatives.iter().position(|other| *other == parent)
+        })
+        .collect();
+    create_nodes(pages, &parents, None)
 }
 
-fn sort_nodes(nodes: &mut [NavNode<'_>], ranks: &HashMap<*const Page, usize>) {
-    for node in nodes.iter_mut() {
-        sort_nodes(&mut node.children, ranks);
-    }
-    nodes.sort_by_cached_key(|node| {
-        let rank = |page: &Page| ranks.get(&std::ptr::from_ref(page)).copied();
-        match node.page {
-            Some(page) if page.order.is_some() => rank(page),
-            _ => (NavNode::flatten(std::slice::from_ref(node)).into_iter())
-                .filter_map(rank)
-                .min(),
-        }
-    });
+fn create_nodes<'a>(
+    pages: &[&'a Page],
+    parents: &[Option<usize>],
+    parent: Option<usize>,
+) -> Vec<NavNode<'a>> {
+    (pages.iter().enumerate())
+        .filter(|(index, _)| parents.get(*index).copied().flatten() == parent)
+        .map(|(index, page)| NavNode {
+            page,
+            children: create_nodes(pages, parents, Some(index)),
+        })
+        .collect()
 }
 
-fn insert_page<'a>(
-    nodes: &mut Vec<NavNode<'a>>,
-    parent: &str,
-    folders: &[&str],
-    page: &'a Page,
-    index: bool,
-) {
-    let Some((name, rest)) = folders.split_first() else {
-        nodes.push(NavNode {
-            page: Some(page),
-            folder: None,
-            children: vec![],
-        });
-        return;
+// `a/b/c.html` and `a/b/index.html` both answer to `a/index.html` or `a/b/index.html`:
+// a folder's index belongs to the folder above it, a top page to none
+fn read_parent(relative: &str) -> Option<String> {
+    let folder = relative.rsplit_once('/')?.0;
+    let folder = match relative.ends_with("/index.html") {
+        true => folder.rsplit_once('/')?.0,
+        false => folder,
     };
-    let folder = format!("{parent}{name}/");
-    let path = format!("{folder}index.html");
-    let position = match nodes
-        .iter()
-        .position(|node| node.folder.as_ref() == Some(&path))
-    {
-        Some(position) => position,
-        None => {
-            nodes.push(NavNode {
-                page: None,
-                folder: Some(path),
-                children: vec![],
-            });
-            nodes.len() - 1
-        }
-    };
-    let Some(node) = nodes.get_mut(position) else {
-        return;
-    };
-    match rest.is_empty() && index {
-        true => node.page = Some(page),
-        false => insert_page(&mut node.children, &folder, rest, page, index),
-    }
+    Some(format!("{folder}/index.html"))
 }
 
 #[cfg(test)]
