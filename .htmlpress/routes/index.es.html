@@ -475,25 +475,17 @@ htmlpress.yaml</code></pre>
                 diff, foco y marcas de línea, en un tema claro y otro oscuro.
               </p></htmlpress-card
             >
-            <htmlpress-card title="Navegación desde la carpeta"
+            <htmlpress-card title="Navegación y búsqueda"
               ><svg viewBox="0 0 24 24" aria-hidden="true">
                 <rect width="7" height="18" x="3" y="3" rx="1" />
                 <rect width="7" height="7" x="14" y="3" rx="1" />
                 <rect width="7" height="7" x="14" y="14" rx="1" />
               </svg>
               <p>
-                Agrupada por carpeta, ordenada por <code>&lt;meta name="order"&gt;</code>,
-                con una tabla de contenidos y enlaces de anterior y siguiente.
-              </p></htmlpress-card
-            >
-            <htmlpress-card title="Búsqueda incluida"
-              ><svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="m21 21-4.34-4.34" />
-                <circle cx="11" cy="11" r="8" />
-              </svg>
-              <p>
-                Un índice de texto completo escrito al construir y abierto con
-                <kbd>S</kbd>; la página que abre un resultado resalta la coincidencia.
+                Agrupada por carpeta y ordenada por
+                <code>&lt;meta name="order"&gt;</code>, con tabla de contenidos y enlaces
+                anterior y siguiente; un índice de texto completo se abre con
+                <kbd>S</kbd> y resalta la coincidencia.
               </p></htmlpress-card
             >
             <htmlpress-card title="Documentación, blog y registro de cambios"
@@ -508,25 +500,16 @@ htmlpress.yaml</code></pre>
                 <code>CHANGELOG.md</code>.
               </p></htmlpress-card
             >
-            <htmlpress-card title="Cómoda en un teléfono"
-              ><svg viewBox="0 0 24 24" aria-hidden="true">
-                <rect width="14" height="20" x="5" y="2" rx="2" ry="2" />
-                <path d="M12 18h.01" />
-              </svg>
-              <p>
-                La navegación se convierte en un panel lateral, los selectores en hojas
-                inferiores y nada se desplaza en horizontal.
-              </p></htmlpress-card
-            >
-            <htmlpress-card title="Modo oscuro y tokens de tema"
+            <htmlpress-card title="Modo oscuro, tokens y teléfonos"
               ><svg viewBox="0 0 24 24" aria-hidden="true">
                 <path
                   d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"
                 />
               </svg>
               <p>
-                Un tema oscuro según el sistema o el interruptor, y cada color, fuente y
-                ancho es un token <code>--htmlpress-*</code>.
+                Un tema oscuro del sistema o del selector, cada color, fuente y ancho un
+                token <code>--htmlpress-*</code>, y en un teléfono un cajón y hojas
+                inferiores.
               </p></htmlpress-card
             >
             <htmlpress-card title="En cada idioma"
@@ -543,7 +526,7 @@ htmlpress.yaml</code></pre>
                 cada idioma tiene su prefijo, navegación, búsqueda y textos de interfaz.
               </p></htmlpress-card
             >
-            <htmlpress-card title="Recarga en vivo"
+            <htmlpress-card title="Recarga en vivo, salida estática"
               ><svg viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
                 <path d="M21 3v5h-5" />
@@ -551,20 +534,9 @@ htmlpress.yaml</code></pre>
                 <path d="M8 16H3v5" />
               </svg>
               <p>
-                <code>htmlpress start</code> recompila con cada guardado y recarga el
-                navegador, escapes y componentes incluidos.
-              </p></htmlpress-card
-            >
-            <htmlpress-card title="Salida estática"
-              ><svg viewBox="0 0 24 24" aria-hidden="true">
-                <path
-                  d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"
-                />
-              </svg>
-              <p>
-                <code>htmlpress build</code> escribe archivos sencillos en
-                <code>.htmlpress/build</code>, con enlaces canónicos, listos para
-                cualquier hosting estático.
+                <code>htmlpress start</code> recompila y recarga en cada guardado;
+                <code>htmlpress build</code> escribe archivos planos en
+                <code>.htmlpress/build</code>, listos para cualquier hosting estático.
               </p></htmlpress-card
             >
             <htmlpress-card title="Un binario, tres canales"

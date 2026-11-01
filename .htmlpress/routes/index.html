@@ -469,25 +469,16 @@ htmlpress.yaml</code></pre>
                 focus and line marks, in a light and a dark theme.
               </p></htmlpress-card
             >
-            <htmlpress-card title="Navigation from the folder"
+            <htmlpress-card title="Navigation and search"
               ><svg viewBox="0 0 24 24" aria-hidden="true">
                 <rect width="7" height="18" x="3" y="3" rx="1" />
                 <rect width="7" height="7" x="14" y="3" rx="1" />
                 <rect width="7" height="7" x="14" y="14" rx="1" />
               </svg>
               <p>
-                Grouped by folder, ordered by <code>&lt;meta name="order"&gt;</code>, with
-                a table of contents and previous and next links.
-              </p></htmlpress-card
-            >
-            <htmlpress-card title="Search built in"
-              ><svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="m21 21-4.34-4.34" />
-                <circle cx="11" cy="11" r="8" />
-              </svg>
-              <p>
-                A full-text index written at build time and opened with <kbd>S</kbd>; the
-                page a result opens highlights the match.
+                Grouped by folder and ordered by <code>&lt;meta name="order"&gt;</code>,
+                with a table of contents and previous and next links; a full-text index
+                opens with <kbd>S</kbd> and highlights the match.
               </p></htmlpress-card
             >
             <htmlpress-card title="Docs, blog and changelog"
@@ -501,26 +492,16 @@ htmlpress.yaml</code></pre>
                 with an RSS feed, or a page per release from a <code>CHANGELOG.md</code>.
               </p></htmlpress-card
             >
-            <htmlpress-card title="At home on a phone"
-              ><svg viewBox="0 0 24 24" aria-hidden="true">
-                <rect width="14" height="20" x="5" y="2" rx="2" ry="2" />
-                <path d="M12 18h.01" />
-              </svg>
-              <p>
-                The navigation turns into a drawer, the pickers into bottom sheets, and
-                nothing scrolls sideways.
-              </p></htmlpress-card
-            >
-            <htmlpress-card title="Dark mode and theme tokens"
+            <htmlpress-card title="Dark mode, tokens and phones"
               ><svg viewBox="0 0 24 24" aria-hidden="true">
                 <path
                   d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"
                 />
               </svg>
               <p>
-                A dark theme from the system or the toggle, and every color, font and
-                width a
-                <code>--htmlpress-*</code> token.
+                A dark theme from the system or the toggle, every color, font and width a
+                <code>--htmlpress-*</code> token, and on a phone a drawer and bottom
+                sheets.
               </p></htmlpress-card
             >
             <htmlpress-card title="Every language"
@@ -537,7 +518,7 @@ htmlpress.yaml</code></pre>
                 language gets its own prefix, navigation, search and UI strings.
               </p></htmlpress-card
             >
-            <htmlpress-card title="Live reload"
+            <htmlpress-card title="Live reload, static output"
               ><svg viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
                 <path d="M21 3v5h-5" />
@@ -545,20 +526,9 @@ htmlpress.yaml</code></pre>
                 <path d="M8 16H3v5" />
               </svg>
               <p>
-                <code>htmlpress start</code> rebuilds on every save and reloads the
-                browser, escapes and components included.
-              </p></htmlpress-card
-            >
-            <htmlpress-card title="Static output"
-              ><svg viewBox="0 0 24 24" aria-hidden="true">
-                <path
-                  d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"
-                />
-              </svg>
-              <p>
+                <code>htmlpress start</code> rebuilds and reloads on every save;
                 <code>htmlpress build</code> writes plain files to
-                <code>.htmlpress/build</code>, with canonical links, ready for any static
-                host.
+                <code>.htmlpress/build</code>, ready for any static host.
               </p></htmlpress-card
             >
             <htmlpress-card title="One binary, three channels"

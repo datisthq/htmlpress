@@ -464,24 +464,17 @@ htmlpress.yaml</code></pre>
                 多种语言，支持标题、标签页、差异、聚焦和行标记，并提供浅色和深色主题。
               </p></htmlpress-card
             >
-            <htmlpress-card title="源自文件夹的导航"
+            <htmlpress-card title="导航与搜索"
               ><svg viewBox="0 0 24 24" aria-hidden="true">
                 <rect width="7" height="18" x="3" y="3" rx="1" />
                 <rect width="7" height="7" x="14" y="3" rx="1" />
                 <rect width="7" height="7" x="14" y="14" rx="1" />
               </svg>
               <p>
-                按文件夹分组，按 <code>&lt;meta name="order"&gt;</code>
-                排序，并带有目录以及上一页和下一页链接。
-              </p></htmlpress-card
-            >
-            <htmlpress-card title="内置搜索"
-              ><svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="m21 21-4.34-4.34" />
-                <circle cx="11" cy="11" r="8" />
-              </svg>
-              <p>
-                构建时生成全文索引，按 <kbd>S</kbd> 打开；结果所打开的页面会高亮匹配内容。
+                按文件夹分组，按
+                <code>&lt;meta name="order"&gt;</code>
+                排序，带目录和上一页、下一页链接；按
+                <kbd>S</kbd> 打开全文索引，并高亮匹配内容。
               </p></htmlpress-card
             >
             <htmlpress-card title="文档、博客和更新日志"
@@ -496,24 +489,16 @@ htmlpress.yaml</code></pre>
                 <code>CHANGELOG.md</code> 生成的每版本一页。
               </p></htmlpress-card
             >
-            <htmlpress-card title="手机上同样自如"
-              ><svg viewBox="0 0 24 24" aria-hidden="true">
-                <rect width="14" height="20" x="5" y="2" rx="2" ry="2" />
-                <path d="M12 18h.01" />
-              </svg>
-              <p>
-                导航变为抽屉，选择器变为底部面板，没有任何内容会横向滚动。
-              </p></htmlpress-card
-            >
-            <htmlpress-card title="深色模式和主题令牌"
+            <htmlpress-card title="深色模式、令牌与手机"
               ><svg viewBox="0 0 24 24" aria-hidden="true">
                 <path
                   d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"
                 />
               </svg>
               <p>
-                深色主题可跟随系统或通过开关切换，每种颜色、字体和宽度都是一个
-                <code>--htmlpress-*</code> 令牌。
+                深色主题跟随系统或开关，每种颜色、字体和宽度都是
+                <code>--htmlpress-*</code>
+                令牌；在手机上，导航变为抽屉，选择器变为底部面板。
               </p></htmlpress-card
             >
             <htmlpress-card title="多语言"
@@ -531,7 +516,7 @@ htmlpress.yaml</code></pre>
                 翻译：每种语言都有自己的前缀、导航、搜索和界面文案。
               </p></htmlpress-card
             >
-            <htmlpress-card title="实时重载"
+            <htmlpress-card title="实时重载与静态输出"
               ><svg viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
                 <path d="M21 3v5h-5" />
@@ -539,19 +524,10 @@ htmlpress.yaml</code></pre>
                 <path d="M8 16H3v5" />
               </svg>
               <p>
-                <code>htmlpress start</code>
-                在每次保存时重新构建并刷新浏览器，弹出文件和组件也不例外。
-              </p></htmlpress-card
-            >
-            <htmlpress-card title="静态输出"
-              ><svg viewBox="0 0 24 24" aria-hidden="true">
-                <path
-                  d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"
-                />
-              </svg>
-              <p>
-                <code>htmlpress build</code> 将纯文件写入
-                <code>.htmlpress/build</code>，带有规范链接，可部署到任何静态托管平台。
+                <code>htmlpress start</code> 每次保存都重新构建并刷新浏览器；<code
+                  >htmlpress build</code
+                >
+                把纯文件写入 <code>.htmlpress/build</code>，可部署到任何静态主机。
               </p></htmlpress-card
             >
             <htmlpress-card title="一个二进制文件，三个渠道"
