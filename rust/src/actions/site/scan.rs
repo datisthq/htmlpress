@@ -44,6 +44,19 @@ pub fn scan_site(root: &Path) -> crate::Result<Site> {
     Ok(read_site(root, None)?.0)
 }
 
+/// What a rendering build keeps to read one page again on its own: the facts every
+/// page needs of the others, as the build settled them.
+pub(crate) struct Built {
+    finish: Finish,
+    markdown: MarkdownOptions,
+    parser: PipelineOptions,
+    // Each article's and route's source to its index and the path `read_source` takes
+    selected: HashMap<String, (usize, String)>,
+    patched: BTreeSet<String>,
+    inputs: BTreeSet<String>,
+    suffixes: bool,
+}
+
 /// A page rendered into its layout: the path it is written to and its HTML.
 pub(crate) type Rendered = (String, String);
 
@@ -53,7 +66,7 @@ pub(crate) type Rendered = (String, String);
 pub(crate) fn read_site(
     root: &Path,
     reload: Option<bool>,
-) -> crate::Result<(Site, Vec<Rendered>)> {
+) -> crate::Result<(Site, Vec<Rendered>, Option<Built>)> {
     let languages = resolve_languages(&load_config(root)?, &read_folder_name(root));
     let Some(language) = languages.first() else {
         return Err(Error::Usage("no language to build".to_owned()));
@@ -171,6 +184,10 @@ pub(crate) fn read_site(
             }
         }
         let kept: BTreeSet<&String> = selection.pages.values().collect();
+        let selected: HashMap<String, (usize, String)> = (selected.iter())
+            .filter(|(_, _, source)| kept.contains(source))
+            .map(|(index, path, source)| (source.clone(), (*index, path.clone())))
+            .collect();
         let mut inputs: BTreeSet<String> = seen
             .into_iter()
             .filter(|path| !kept.contains(path))
@@ -333,8 +350,81 @@ pub(crate) fn read_site(
         }
         sort_pages(&mut pages);
         site.pages = pages;
-        Ok((site, rendered))
+        let built = Built {
+            finish: Finish::clone(&finish),
+            markdown: markdown.clone(),
+            parser: parser.clone(),
+            selected,
+            patched: (config.patches.iter())
+                .map(|patch| patch.file.clone())
+                .collect(),
+            inputs: site.inputs.clone(),
+            suffixes,
+        };
+        Ok((site, rendered, reload.map(|_| built)))
     })
+}
+
+/// Read and render the page at `source` again, alone; None when it is no page the last
+/// build read, or its edit changed a fact other pages read, which only a full build covers.
+pub(crate) fn reread_page(
+    root: &Path,
+    built: &mut Built,
+    source: &str,
+) -> crate::Result<Option<(Page, Rendered)>> {
+    let Some((index, path)) = built.selected.get(source).cloned() else {
+        return Ok(None);
+    };
+    let Some(Some(old)) = built.finish.pages.get(index) else {
+        return Ok(None);
+    };
+    if built.patched.contains(source) || !root.join(source).is_file() {
+        return Ok(None);
+    }
+    let alloc = Allocator::new();
+    let mut sources = Sources {
+        alloc: &alloc,
+        markdown: built.markdown.clone(),
+        parser: create_pipeline(&built.parser).map_err(Error::Usage)?,
+        files: HashMap::new(),
+        sizes: HashMap::new(),
+    };
+    // A new include is a file the watcher does not know yet, and may make a partial
+    let included = list_page_includes(root, source, &mut sources);
+    if included.iter().any(|path| !built.inputs.contains(path)) {
+        return Ok(None);
+    }
+    let Draft { mut page, tree } = read_draft(root, &path, source, &mut sources)?;
+    detect_language(&mut page, &built.finish.languages, built.suffixes)
+        .map_err(Error::page(source))?;
+    if page.is_route() {
+        page.sidebar = false;
+    }
+    page.updated = old.updated.clone();
+    rebase_image(&mut page, &built.finish.bases);
+    if read_facts(&page) != read_facts(old) {
+        return Ok(None);
+    }
+    if let Some(slot) = built.finish.pages.get_mut(index) {
+        *slot = Some(page);
+    }
+    let (_, page, html) =
+        complete_page(&built.finish, index, tree, &mut HashMap::new(), &alloc)?;
+    Ok(html.map(|html| (page, html)))
+}
+
+// What other pages read of a page: everything but what its own render and the indexes
+// take from its content
+fn read_facts(page: &Page) -> Page {
+    Page {
+        head: String::new(),
+        content: String::new(),
+        toc: vec![],
+        markdown: String::new(),
+        chunks: vec![],
+        components: BTreeSet::new(),
+        ..page.clone()
+    }
 }
 
 // What every worker reads and none changes
@@ -366,6 +456,7 @@ type Failure = (usize, Error);
 type Completed = (usize, Page, Option<Rendered>);
 
 // What finishing any page needs: every page's facts by index, and the site they make
+#[derive(Clone)]
 struct Finish {
     pages: Vec<Option<Page>>,
     links: BTreeMap<String, String>,

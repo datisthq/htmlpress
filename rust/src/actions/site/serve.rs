@@ -1,3 +1,4 @@
+use std::collections::BTreeSet;
 use std::net::{IpAddr, UdpSocket};
 use std::path::{Component, Path, PathBuf};
 use std::sync::mpsc::{Receiver, RecvTimeoutError, channel};
@@ -9,7 +10,9 @@ use tiny_http::{Header, Request, Response, Server};
 
 use crate::actions::config::load::load_config;
 use crate::actions::path::select::read_bases;
-use crate::actions::site::build::{build_site, create_build_paths};
+use crate::actions::site::build::{
+    Cache, build_cached, create_build_paths, rebuild_pages,
+};
 use crate::models::build::{BuildOptions, format_count};
 use crate::models::error::Error;
 use crate::settings::{
@@ -35,7 +38,8 @@ pub fn serve_site(
     let start = (SystemTime::now().duration_since(UNIX_EPOCH))
         .map_or(0, |elapsed| u64::try_from(elapsed.as_millis()).unwrap_or(0));
     let state = Arc::new(Reload::new(start, String::new()));
-    let inputs = report_build(&options, &state, false).unwrap_or_default();
+    let mut cache = None;
+    let inputs = report_build(&options, &state, &mut cache, None).unwrap_or_default();
 
     let (sender, events) = channel();
     let mut watcher = create_watcher(sender)?;
@@ -47,7 +51,7 @@ pub fn serve_site(
     let rebuild_state = state.clone();
     let rebuild_options = options.clone();
     std::thread::spawn(move || {
-        rebuild_on_change(&rebuild_options, &events, &rebuild_state, inputs)
+        rebuild_on_change(&rebuild_options, &events, &rebuild_state, inputs, cache)
     });
 
     on_ready(&add_base(urls, &state.read_base()));
@@ -126,19 +130,39 @@ struct Status {
     base: String,
 }
 
-// Returns the files the build read beside its pages, or None when it failed
+// Returns the files the build read beside its pages, or None when it failed. With the
+// paths that `changed`, it rebuilds only their pages when it can
 fn report_build(
     options: &BuildOptions,
     state: &Reload,
-    rebuilt: bool,
+    cache: &mut Option<Cache>,
+    changed: Option<&[String]>,
 ) -> Option<Vec<String>> {
-    let (error, inputs) = match build_site(options) {
+    let partial = match (changed, cache.as_mut()) {
+        (Some(changed), Some(cache)) => rebuild_pages(options, cache, changed),
+        _ => Ok(None),
+    };
+    let built = match partial {
+        Ok(Some(report)) => Ok(report),
+        // A failed partial rebuild leaves the cache half updated: build it all again
+        Ok(None) | Err(_) => build_cached(options).map(|(report, built)| {
+            *cache = built;
+            report
+        }),
+    };
+    let (error, inputs) = match built {
         Ok(report) => {
-            let verb = if rebuilt { "rebuilt" } else { "built" };
+            let verb = if changed.is_some() {
+                "rebuilt"
+            } else {
+                "built"
+            };
             eprintln!("{verb} {}", format_count(report.pages, "page"));
             (None, Some(report.inputs))
         }
         Err(error) => {
+            // The output still holds the last good build, but the error may lie anywhere
+            *cache = None;
             eprintln!("error: {error}");
             (Some(error.to_string()), None)
         }
@@ -175,6 +199,7 @@ fn rebuild_on_change(
     events: &Events,
     state: &Reload,
     inputs: Vec<String>,
+    mut cache: Option<Cache>,
 ) {
     let output = read_real_path(&options.output);
     let (staging, previous) = create_build_paths(&output);
@@ -201,6 +226,8 @@ fn rebuild_on_change(
         if !sources.contains(&event) {
             continue;
         }
+        let mut changed = BTreeSet::new();
+        sources.add_changed(&event, &mut changed);
         // Editors save in bursts (temp file, rename, chmod): settle before building once.
         // Only a source event extends the wait, or a `cargo build` beside the docs, which
         // writes all the time, would hold the build back until it ends
@@ -208,6 +235,7 @@ fn rebuild_on_change(
         while let Some(wait) = deadline.checked_duration_since(Instant::now()) {
             match events.recv_timeout(wait) {
                 Ok(event) if sources.contains(&event) => {
+                    sources.add_changed(&event, &mut changed);
                     deadline = Instant::now() + SETTLE
                 }
                 Ok(_) => {}
@@ -216,7 +244,8 @@ fn rebuild_on_change(
             }
         }
         // A failed build read only part of the project: keep the last good build's list
-        if let Some(inputs) = report_build(options, state, true) {
+        let changed: Vec<String> = changed.into_iter().collect();
+        if let Some(inputs) = report_build(options, state, &mut cache, Some(&changed)) {
             sources.inputs = inputs;
         }
     }
@@ -270,6 +299,20 @@ impl Sources {
         }
         let Ok(event) = event else { return false };
         event.paths.iter().any(|path| self.contains_path(path))
+    }
+
+    // Each path of the event that counts, relative to the root with `/` separators
+    fn add_changed(
+        &self,
+        event: &notify::Result<notify::Event>,
+        changed: &mut BTreeSet<String>,
+    ) {
+        let Ok(event) = event else { return };
+        for path in event.paths.iter().filter(|path| self.contains_path(path)) {
+            if let Ok(inside) = path.strip_prefix(&self.root) {
+                changed.insert(inside.to_string_lossy().replace('\\', "/"));
+            }
+        }
     }
 
     fn contains_path(&self, path: &Path) -> bool {

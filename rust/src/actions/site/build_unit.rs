@@ -494,3 +494,62 @@ fn draws_a_route_bare_filling_its_layout_elements() -> crate::Result<()> {
     assert!(search.contains("/guide/") && !search.contains("\"url\":\"/\""));
     Ok(())
 }
+
+fn read_output(output: &Path, path: &str) -> crate::Result<String> {
+    let file = output.join(path);
+    std::fs::read_to_string(&file).map_err(Error::io(&file))
+}
+
+fn build_reloading(root: &Path, output: &str) -> crate::Result<(BuildOptions, Cache)> {
+    let options = BuildOptions {
+        output: root.join(output),
+        reload: true,
+        ..BuildOptions::new(root)
+    };
+    let (_, cache) = build_cached(&options)?;
+    let cache = cache.ok_or_else(|| Error::Usage("no cache".to_owned()))?;
+    Ok((options, cache))
+}
+
+#[test]
+fn rebuilds_a_page_alone_as_a_full_build_would() -> crate::Result<()> {
+    let root = tempfile::tempdir().map_err(Error::io("tempdir"))?;
+    let root = root.path();
+    write_source(root, "index.html", "<title>Home</title><p>Old</p>")?;
+    write_source(root, "guide.html", "<title>Guide</title><p>Guide</p>")?;
+    let (options, mut cache) = build_reloading(root, ".out")?;
+    write_source(root, "guide.html", "<title>Guide</title><p>New</p>")?;
+    let changed = ["guide.html".to_owned(), ".guide.swp".to_owned()];
+    let report = rebuild_pages(&options, &mut cache, &changed)?;
+    assert_eq!(report.map(|report| report.pages), Some(1));
+    let (full, _) = build_reloading(root, ".full")?;
+    for path in [
+        "guide/index.html",
+        "guide/index.md",
+        "_htmlpress/search.json",
+    ] {
+        assert_eq!(
+            read_output(&options.output, path)?,
+            read_output(&full.output, path)?
+        );
+    }
+    assert!(read_output(&options.output, "guide/index.html")?.contains("New"));
+    Ok(())
+}
+
+#[test]
+fn leaves_an_edit_other_pages_read_to_a_full_build() -> crate::Result<()> {
+    let root = tempfile::tempdir().map_err(Error::io("tempdir"))?;
+    let root = root.path();
+    write_source(root, "index.html", "<title>Home</title>")?;
+    write_source(root, "guide.html", "<title>Guide</title>")?;
+    let (options, mut cache) = build_reloading(root, ".out")?;
+    write_source(root, "guide.html", "<title>Renamed</title>")?;
+    let renamed = rebuild_pages(&options, &mut cache, &["guide.html".to_owned()])?;
+    write_source(root, "new.html", "<title>New</title>")?;
+    let added = rebuild_pages(&options, &mut cache, &["new.html".to_owned()])?;
+    std::fs::remove_file(root.join("guide.html")).map_err(Error::io("guide"))?;
+    let removed = rebuild_pages(&options, &mut cache, &["guide.html".to_owned()])?;
+    assert_eq!((renamed, added, removed), (None, None, None));
+    Ok(())
+}

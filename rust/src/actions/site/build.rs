@@ -8,7 +8,7 @@ use crate::actions::section::generate::list_posts;
 use crate::actions::site::describe::{describe_language, describe_site};
 use crate::actions::site::index::{create_search_path, index_site};
 use crate::actions::site::localize::localize_site;
-use crate::actions::site::scan::{Rendered, read_site};
+use crate::actions::site::scan::{Built, Rendered, read_site, reread_page};
 use crate::models::build::{BuildOptions, BuildReport};
 use crate::models::config::SectionKind;
 use crate::models::error::Error;
@@ -19,8 +19,22 @@ use crate::settings::{ASSETS_DIR, NOT_FOUND, NOT_FOUND_PAGE, RELOAD, THEME_STYLE
 
 /// Build the project at `options.root` into `options.output`, replacing what is there.
 pub fn build_site(options: &BuildOptions) -> crate::Result<BuildReport> {
+    build_cached(options).map(|(report, _)| report)
+}
+
+/// A finished build, kept by the dev server to rebuild a page alone when only its
+/// content changed.
+pub(crate) struct Cache {
+    site: Site,
+    built: Built,
+}
+
+/// [`build_site`], keeping what [`rebuild_pages`] needs.
+pub(crate) fn build_cached(
+    options: &BuildOptions,
+) -> crate::Result<(BuildReport, Option<Cache>)> {
     check_output(&options.root, &options.output)?;
-    let (site, rendered) = read_site(&options.root, Some(options.reload))?;
+    let (site, rendered, built) = read_site(&options.root, Some(options.reload))?;
     // Written beside the output and swapped in whole: the dev server answers requests
     // while it rebuilds, and a page loaded from a half-written output shows unstyled
     let (staging, previous) = create_build_paths(&options.output);
@@ -33,12 +47,62 @@ pub fn build_site(options: &BuildOptions) -> crate::Result<BuildReport> {
     };
     write_site(&staged, &site, &rendered)?;
     swap_output(&staging, &previous, &options.output)?;
-    Ok(BuildReport {
+    let report = BuildReport {
         output: options.output.clone(),
         pages: site.pages.len(),
         files: site.files.len(),
         inputs: site.inputs.iter().cloned().collect(),
-    })
+    };
+    Ok((report, built.map(|built| Cache { site, built })))
+}
+
+/// Rebuild the pages at `changed`, paths relative to the root, in place in the output,
+/// with the indexes every page feeds; None when a change reaches beyond a page's own
+/// content, which only a full build covers. A path gone and never read is skipped.
+pub(crate) fn rebuild_pages(
+    options: &BuildOptions,
+    cache: &mut Cache,
+    changed: &[String],
+) -> crate::Result<Option<BuildReport>> {
+    let site = &cache.site;
+    let known = |path: &String| {
+        site.inputs.contains(path)
+            || site.files.values().any(|source| source == path)
+            || site.pages.iter().any(|page| is_inside(&page.source, path))
+    };
+    let mut done = vec![];
+    for path in changed {
+        if !options.root.join(path).exists() && !known(path) {
+            continue;
+        }
+        match reread_page(&options.root, &mut cache.built, path)? {
+            Some(page) => done.push(page),
+            None => return Ok(None),
+        }
+    }
+    for (page, (path, html)) in &done {
+        write_file(&options.output.join(path), html.as_bytes())?;
+        let own = (cache.site.pages.iter_mut())
+            .find(|own| own.source == page.source && own.language == page.language);
+        if let Some(own) = own {
+            *own = page.clone();
+        }
+    }
+    write_indexes(options, &cache.site)?;
+    Ok(Some(BuildReport {
+        output: options.output.clone(),
+        pages: done.len(),
+        files: 0,
+        inputs: cache.site.inputs.iter().cloned().collect(),
+    }))
+}
+
+// The path itself, or a folder holding it: a folder moved or removed takes its pages
+fn is_inside(source: &str, path: &str) -> bool {
+    source == path
+        || source
+            .strip_prefix(path)
+            .is_some_and(|rest| rest.starts_with('/'))
 }
 
 /// The folders a build of `output` writes beside it: the next output, swapped in once
@@ -72,11 +136,6 @@ fn write_site(
     for (path, html) in rendered {
         write_file(&options.output.join(path), html.as_bytes())?;
     }
-    // Each language describes itself through its own view: its config, its pages, and
-    // the default pages it lacks listed but not built
-    let views: Vec<Site> = (site.languages.iter())
-        .map(|language| localize_site(site, &language.code))
-        .collect();
     if !site.pages.iter().any(|page| page.path == NOT_FOUND_PAGE) {
         let language = site.read_language("");
         let base = site.config.read_base();
@@ -116,6 +175,18 @@ fn write_site(
     if options.reload {
         write_file(&assets.join("reload.js"), RELOAD.as_bytes())?;
     }
+    write_indexes(options, site)
+}
+
+// What every page feeds: search, the agent files, feeds, the home's redirect, robots
+// and the sitemap
+fn write_indexes(options: &BuildOptions, site: &Site) -> crate::Result<()> {
+    let assets = options.output.join(ASSETS_DIR);
+    // Each language describes itself through its own view: its config, its pages, and
+    // the default pages it lacks listed but not built
+    let views: Vec<Site> = (site.languages.iter())
+        .map(|language| localize_site(site, &language.code))
+        .collect();
     // A project's own file of the same name was copied above and wins; _headers and
     // _redirects merge it
     let shipped = |name: &str| site.files.contains_key(name);

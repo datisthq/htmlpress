@@ -230,6 +230,18 @@ real paths and `start <symlink>` otherwise matched nothing. It never follows sym
 last path that reached it, so pnpm's `node_modules/.pnpm/node_modules/htmlpress-rust` link
 to `rust/` turned every `rust/docs` edit into a `node_modules/` path the filter dropped.
 
+A save that changes only page content rebuilds that page alone (`rebuild_pages`, about
+0.15 s against 1 s in debug for the docs): `build_cached` keeps the `Site` and `scan`'s
+`Built` (the settled `Finish`, each source's index and `read_source` path), and
+`reread_page` reads the page again, runs step 2's per-page settling, and compares
+`read_facts` (the page without `head`, `content`, `toc`, `markdown`, `chunks`,
+`components`, which only its own render and the indexes read) with the old facts. Equal,
+it renders the page in place and `write_indexes` rewrites search, agent files, feeds and
+the sitemap from the cached pages; anything else (a fact, a new include, a patched page,
+a file that is no page, a failed build) returns None and the full build runs. A path
+gone and never read, an editor's temp file, is skipped. A new field on `Page` that another
+page reads must stay out of `read_facts`' cleared list, or its edits reach no other page.
+
 ## The CLI
 
 Commands are fireargs commands: `#[fireargs::input]` / `#[fireargs::output]` structs and an

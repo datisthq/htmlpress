@@ -186,7 +186,7 @@ fn reading_the_config_feeds_no_events_back() -> crate::Result<()> {
     let state = Reload::default();
     let fed_back = std::thread::scope(|scope| {
         let (options, state) = (&options, &state);
-        scope.spawn(move || rebuild_on_change(options, &events, state, vec![]));
+        scope.spawn(move || rebuild_on_change(options, &events, state, vec![], None));
         let mut fed_back = 0;
         while let Ok(event) = raw.recv_timeout(Duration::from_millis(500)) {
             fed_back += 1;
