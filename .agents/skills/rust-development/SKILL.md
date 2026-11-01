@@ -122,7 +122,9 @@ run from source: `cargo run --manifest-path rust/Cargo.toml -- build docs`.
    so no URL builder needs to know the base; absolute URLs take it through
    `Config::read_origin`, and the text outputs through `Config::read_base`
 4. `build_site` refuses an output that holds the project or sits visible inside it, since it
-   wipes the output first, then writes pages, copies files and adds `_htmlpress/` assets,
+   writes into `<output>.next` and swaps it in whole (`create_build_paths`), since the dev
+   server answers while it rebuilds and a half-written output serves pages without their CSS;
+   it writes pages, copies files and adds `_htmlpress/` assets,
    `robots.txt`, `sitemap.xml` and, when the project has none, the built-in `404.html`
    (`NOT_FOUND`), which the nav and pager never list. `index_site` writes `_htmlpress/search.json`
    (each page's text split at its `h2`/`h3`, words separated at element starts since
@@ -169,19 +171,27 @@ watcher. `serve_site` builds with `reload: true`, serves the output with tiny_ht
 request) and rebuilds on notify events. Reload is a **long poll**, not SSE: tiny_http buffers
 chunked responses, so a stream would sit unsent. `reload.js` asks
 `/_htmlpress/reload?since=<version>` and the server answers when the build counter moves,
-with the version on the first line and a failed build's error after it. A failed build never
-stops the server, not even the first: while one stands, every page request gets the error
-page, since a failed build leaves the output half written, and `reload.js` is answered from
-memory.
+with the version on the first line and a failed build's error after it. The counter starts at
+the server's start time, not 0, or a tab open across a restart already holds the new
+server's version and never reloads. `reload.js` retries every second on anything but a 200
+with a numeric first line: another server on the port answers at once, so a script trusting
+any answer polls it hundreds of times a second. A failed build never stops the server, not
+even the first: while one stands, every page request gets the error page, and `reload.js` is
+answered from memory. `base` lives in the reload state and is re-read after every build.
 
 The watcher's filter is load-bearing: a build reads every source (inotify `Access` events) and
-rewrites the output, so counting either would rebuild forever. `is_source_event` drops access
-events, the output, other dot-folders, the bare `.htmlpress` folder and anything outside
-the include bases and `htmlpress.yaml`, but keeps files inside `.htmlpress/` such as an
-escape. `.htmlpress/cache/`, where a build stores GitHub releases, is dropped too: the
-build writes it, so it would rebuild forever. Access events are dropped before anything else,
-even before `load_config` reads `htmlpress.yaml` for the bases: that read makes access events
-of its own, and handling them reads it again, a loop that spun a core while nothing changed.
+rewrites the output, so counting either would rebuild forever. `Sources::contains` drops access
+events, the output and its `.next`/`.previous` siblings, other dot-folders, the bare
+`.htmlpress` folder and anything outside the include bases, `htmlpress.yaml` and
+`BuildReport.inputs` (`Site.inputs`: includes, changelog sources, patched files and skills,
+which may sit outside every base or in `.skills/`), but keeps files inside `.htmlpress/` such
+as an escape. `.htmlpress/cache/`, where a build stores GitHub releases, is dropped too: the
+build writes it, so it would rebuild forever. The bases are re-read only on a change event
+naming `htmlpress.yaml`: that read makes access events of its own, and parsing the config for
+each of a build's thousands of output events held the next edit back by seconds. Only a
+source event extends the 100 ms settle, or a `cargo build` beside the docs delays every
+rebuild until it ends. The watcher watches the root's real path, since the filter compares
+real paths and `start <symlink>` otherwise matched nothing.
 
 ## The CLI
 

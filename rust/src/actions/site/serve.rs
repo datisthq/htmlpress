@@ -2,14 +2,14 @@ use std::net::{IpAddr, UdpSocket};
 use std::path::{Component, Path, PathBuf};
 use std::sync::mpsc::{Receiver, RecvTimeoutError, channel};
 use std::sync::{Arc, Condvar, Mutex};
-use std::time::Duration;
+use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 
 use notify::{RecursiveMode, Watcher};
 use tiny_http::{Header, Request, Response, Server};
 
 use crate::actions::config::load::load_config;
 use crate::actions::path::select::read_bases;
-use crate::actions::site::build::build_site;
+use crate::actions::site::build::{build_site, create_build_paths};
 use crate::models::build::{BuildOptions, format_count};
 use crate::models::error::Error;
 use crate::settings::{
@@ -30,25 +30,29 @@ pub fn serve_site(
         ..options.clone()
     };
     let (server, urls) = open_server(host, port)?;
-    let base =
-        (load_config(&options.root).map(|config| config.read_base())).unwrap_or_default();
-    let state = Arc::new(Reload::default());
-    report_build(&options, &state, false);
+    // Counted from the start time, not from 0: a tab left open across a restart would
+    // otherwise hold the new server's version already and never reload
+    let start = (SystemTime::now().duration_since(UNIX_EPOCH))
+        .map_or(0, |elapsed| u64::try_from(elapsed.as_millis()).unwrap_or(0));
+    let state = Arc::new(Reload::new(start, String::new()));
+    let inputs = report_build(&options, &state, false).unwrap_or_default();
 
     let (sender, events) = channel();
     let mut watcher = notify::recommended_watcher(sender)
         .map_err(|error| Error::Usage(format!("cannot watch files: {error}")))?;
+    // The real path: events name paths under the folder watched, and the filter compares
+    // them with real ones, so a symlinked root would match nothing
     watcher
-        .watch(&options.root, RecursiveMode::Recursive)
+        .watch(&read_real_path(&options.root), RecursiveMode::Recursive)
         .map_err(|error| Error::Usage(format!("cannot watch files: {error}")))?;
     let rebuild_state = state.clone();
     let rebuild_options = options.clone();
     std::thread::spawn(move || {
-        rebuild_on_change(&rebuild_options, &events, &rebuild_state)
+        rebuild_on_change(&rebuild_options, &events, &rebuild_state, inputs)
     });
 
-    on_ready(&add_base(urls, &base));
-    answer_requests(&server, &options.output, &base, &state);
+    on_ready(&add_base(urls, &state.read_base()));
+    answer_requests(&server, &options.output, &state);
     Ok(())
 }
 
@@ -68,19 +72,13 @@ pub(crate) fn open_server(
     Ok((server, urls))
 }
 
-/// Answer every request from the files in `output`, served under `base` (`/repo`, or
-/// empty for the root), until the server stops.
-pub(crate) fn answer_requests(
-    server: &Server,
-    output: &Path,
-    base: &str,
-    state: &Arc<Reload>,
-) {
+/// Answer every request from the files in `output`, served under the state's base
+/// (`/repo`, or empty for the root), until the server stops.
+pub(crate) fn answer_requests(server: &Server, output: &Path, state: &Arc<Reload>) {
     for request in server.incoming_requests() {
         let output = output.to_owned();
-        let base = base.to_owned();
         let state = state.clone();
-        std::thread::spawn(move || answer_request(request, &output, &base, &state));
+        std::thread::spawn(move || answer_request(request, &output, &state));
     }
 }
 
@@ -101,64 +99,137 @@ pub(crate) struct Reload {
     changed: Condvar,
 }
 
+impl Reload {
+    /// A build state starting at `version`, serving under `base`.
+    pub(crate) fn new(version: u64, base: String) -> Self {
+        Self {
+            status: Mutex::new(Status {
+                version,
+                error: None,
+                base,
+            }),
+            changed: Condvar::new(),
+        }
+    }
+
+    fn read_base(&self) -> String {
+        (self.status.lock().ok()).map_or_else(String::new, |status| status.base.clone())
+    }
+}
+
 // The error of the last build, if it failed: open pages show it over the page, and new
 // requests for a page get it instead, since a failed build leaves the output half written.
 #[derive(Default, Clone)]
 struct Status {
     version: u64,
     error: Option<String>,
+    // Read again after every build, so a changed `base` needs no restart
+    base: String,
 }
 
-fn report_build(options: &BuildOptions, state: &Reload, rebuilt: bool) {
-    let error = match build_site(options) {
+// Returns the files the build read beside its pages, or None when it failed
+fn report_build(
+    options: &BuildOptions,
+    state: &Reload,
+    rebuilt: bool,
+) -> Option<Vec<String>> {
+    let (error, inputs) = match build_site(options) {
         Ok(report) => {
             let verb = if rebuilt { "rebuilt" } else { "built" };
             eprintln!("{verb} {}", format_count(report.pages, "page"));
-            None
+            (None, Some(report.inputs))
         }
         Err(error) => {
             eprintln!("error: {error}");
-            Some(error.to_string())
+            (Some(error.to_string()), None)
         }
     };
+    let base = load_config(&options.root).map(|config| config.read_base());
     if let Ok(mut status) = state.status.lock() {
         status.version += 1;
         status.error = error;
+        if let Ok(base) = base {
+            status.base = base;
+        }
         state.changed.notify_all();
     }
+    inputs
 }
 
 type Events = Receiver<notify::Result<notify::Event>>;
 
-fn rebuild_on_change(options: &BuildOptions, events: &Events, state: &Reload) {
-    let root =
-        std::path::absolute(&options.root).unwrap_or_else(|_| options.root.clone());
-    let output =
-        std::path::absolute(&options.output).unwrap_or_else(|_| options.output.clone());
-    let output = output.canonicalize().unwrap_or(output);
-    let root = root.canonicalize().unwrap_or(root);
+const SETTLE: Duration = Duration::from_millis(100);
+
+fn rebuild_on_change(
+    options: &BuildOptions,
+    events: &Events,
+    state: &Reload,
+    inputs: Vec<String>,
+) {
+    let output = read_real_path(&options.output);
+    let (staging, previous) = create_build_paths(&output);
+    let root = read_real_path(&options.root);
+    let config = root.join(CONFIG_FILE);
+    let mut sources = Sources {
+        bases: vec![],
+        root,
+        outputs: vec![output, staging, previous],
+        inputs,
+    };
+    let mut loaded = false;
     while let Ok(event) = events.recv() {
-        // Reading the config makes access events of its own: let one through to it, and
-        // each read would read the config again, forever
-        if !is_change_event(&event) {
-            continue;
+        // On the first change and when it changes only: a build writes thousands of files,
+        // and parsing the config for each of their events held the next edit back by
+        // seconds. Reading it makes access events of its own, which must never count
+        let touched = event
+            .as_ref()
+            .is_ok_and(|event| event.paths.contains(&config));
+        if is_change_event(&event) && (touched || !loaded) {
+            sources.bases = read_watched_bases(&sources.root);
+            loaded = true;
         }
-        let bases = match load_config(&root) {
-            Ok(config) => read_bases(&config),
-            Err(_) => vec![String::new()],
-        };
-        if !is_source_event(&event, &root, &output, &bases) {
+        if !sources.contains(&event) {
             continue;
         }
         // Editors save in bursts (temp file, rename, chmod): settle before building once.
-        loop {
-            match events.recv_timeout(Duration::from_millis(100)) {
-                Ok(_) => continue,
+        // Only a source event extends the wait, or a `cargo build` beside the docs, which
+        // writes all the time, would hold the build back until it ends
+        let mut deadline = Instant::now() + SETTLE;
+        while let Some(wait) = deadline.checked_duration_since(Instant::now()) {
+            match events.recv_timeout(wait) {
+                Ok(event) if sources.contains(&event) => {
+                    deadline = Instant::now() + SETTLE
+                }
+                Ok(_) => {}
                 Err(RecvTimeoutError::Timeout) => break,
                 Err(RecvTimeoutError::Disconnected) => return,
             }
         }
-        report_build(options, state, true);
+        // A failed build read only part of the project: keep the last good build's list
+        if let Some(inputs) = report_build(options, state, true) {
+            sources.inputs = inputs;
+        }
+    }
+}
+
+// Every folder, when the config cannot be read, so fixing it is a change
+fn read_watched_bases(root: &Path) -> Vec<String> {
+    match load_config(root) {
+        Ok(config) => read_bases(&config),
+        Err(_) => vec![String::new()],
+    }
+}
+
+// The real path, or, for one not created yet (an output before the first build), its
+// real parent's joined with its name
+fn read_real_path(path: &Path) -> PathBuf {
+    if let Ok(real) = path.canonicalize() {
+        return real;
+    }
+    let path = std::path::absolute(path).unwrap_or_else(|_| path.to_owned());
+    match (path.parent().map(Path::canonicalize), path.file_name()) {
+        (Some(Ok(parent)), Some(name)) => parent.join(name),
+        _ => path,
     }
 }
 
@@ -168,24 +239,35 @@ fn is_change_event(event: &notify::Result<notify::Event>) -> bool {
         .is_ok_and(|event| !matches!(event.kind, notify::EventKind::Access(_)))
 }
 
-// A build reads every source and rewrites the output, so access events and anything under
-// the output, or the project folder itself, must not count: each would rebuild forever.
-// Outside the include bases nothing is read, so a `cargo build` beside docs/ is no change.
-fn is_source_event(
-    event: &notify::Result<notify::Event>,
-    root: &Path,
-    output: &Path,
-    bases: &[String],
-) -> bool {
-    if !is_change_event(event) {
-        return false;
-    }
-    let Ok(event) = event else { return false };
-    event.paths.iter().any(|path| {
-        if path.starts_with(output) || path.starts_with(root.join(CACHE_DIR)) {
+// What the watcher counts as a change, every path real
+struct Sources {
+    root: PathBuf,
+    // The output and the folders a build writes beside it
+    outputs: Vec<PathBuf>,
+    bases: Vec<String>,
+    // The files the last good build read beside its pages, relative to the root
+    inputs: Vec<String>,
+}
+
+impl Sources {
+    // A build reads every source and rewrites the output, so access events and anything
+    // under the output, or the project folder itself, must not count: each would rebuild
+    // forever. Outside the include bases and the inputs nothing is read, so a `cargo
+    // build` beside docs/ is no change.
+    fn contains(&self, event: &notify::Result<notify::Event>) -> bool {
+        if !is_change_event(event) {
             return false;
         }
-        let Ok(inside) = path.strip_prefix(root) else {
+        let Ok(event) = event else { return false };
+        event.paths.iter().any(|path| self.contains_path(path))
+    }
+
+    fn contains_path(&self, path: &Path) -> bool {
+        let skipped = self.outputs.iter().any(|output| path.starts_with(output));
+        if skipped || path.starts_with(self.root.join(CACHE_DIR)) {
+            return false;
+        }
+        let Ok(inside) = path.strip_prefix(&self.root) else {
             return false;
         };
         let mut parts = inside.components();
@@ -197,14 +279,20 @@ fn is_source_event(
             return parts.next().is_some();
         }
         let inside = inside.to_string_lossy().replace('\\', "/");
-        let in_base = bases.iter().any(|base| inside.starts_with(base.as_str()));
+        // Before the dot rule: skills are read from `.skills/`
+        if self.inputs.contains(&inside) {
+            return true;
+        }
+        let in_base = (self.bases.iter()).any(|base| inside.starts_with(base.as_str()));
         !first.starts_with('.')
             && first != "node_modules"
             && (inside == CONFIG_FILE || in_base)
-    })
+    }
 }
 
-fn answer_request(request: Request, output: &Path, base: &str, state: &Reload) {
+fn answer_request(request: Request, output: &Path, state: &Reload) {
+    let base = state.read_base();
+    let base = base.as_str();
     let url = request.url().to_owned();
     let (full, query) = url.split_once('?').unwrap_or((&url, ""));
     let Some(path) = strip_base(full, base) else {
@@ -263,7 +351,7 @@ fn wait_for_change(state: &Reload, since: Option<u64>) -> Status {
         Ok((status, _)) => status.clone(),
         Err(_) => Status {
             version: since,
-            error: None,
+            ..Status::default()
         },
     }
 }
@@ -280,7 +368,7 @@ fn answer_error(request: Request, base: &str, error: &str) -> std::io::Result<()
          <title>Build failed</title>\n<h1>Build failed</h1>\n<pre>{error}</pre>\n\
          <p>Fix the error and save: the page reloads once the build succeeds.</p>\n\
          <script type=\"module\" src=\"{base}{RELOAD_SCRIPT}\" \
-         data-endpoint=\"{base}{RELOAD_PATH}\"></script>\n</html>\n"
+         data-endpoint=\"{base}{RELOAD_PATH}\" data-error-page></script>\n</html>\n"
     );
     let response = Response::from_string(body).with_status_code(500);
     request.respond(add_headers(response, "error.html"))

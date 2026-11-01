@@ -1,7 +1,8 @@
 use std::collections::hash_map::Entry;
-use std::collections::{BTreeMap, HashMap};
+use std::collections::{BTreeMap, BTreeSet, HashMap};
 use std::path::Path;
 
+use crate::actions::changelog::fetch::is_github_source;
 use crate::actions::config::load::load_config;
 use crate::actions::git::read::read_dates;
 use crate::actions::include::list::list_includes;
@@ -63,7 +64,7 @@ pub fn scan_site(root: &Path) -> crate::Result<Site> {
         }
     }
     let mut selection = selection;
-    keep_partials(root, &mut selection)?;
+    let mut inputs = keep_partials(root, &mut selection)?;
     let assets = read_assets(root)?;
     let markdown = MarkdownOptions {
         components: list_components(&assets),
@@ -164,6 +165,19 @@ pub fn scan_site(root: &Path) -> crate::Result<Site> {
     let title = language.title.clone();
     let translations = list_translations(&pages);
     let skills = load_skills(root, &config.skills)?;
+    inputs.extend(config.patches.iter().map(|patch| patch.file.clone()));
+    for language in &languages {
+        let sources = (language.config.sections.iter())
+            .filter_map(|section| section.source.as_deref())
+            .filter(|source| !is_github_source(source));
+        inputs.extend(sources.map(|source| source.trim_start_matches('/').to_owned()));
+    }
+    let real = root.canonicalize().unwrap_or_else(|_| root.to_owned());
+    for skill in &skills {
+        if let Ok(path) = skill.path.strip_prefix(&real) {
+            inputs.insert(path.to_string_lossy().replace('\\', "/"));
+        }
+    }
     Ok(Site {
         root: root.to_owned(),
         config,
@@ -172,6 +186,7 @@ pub fn scan_site(root: &Path) -> crate::Result<Site> {
         files,
         assets,
         skills,
+        inputs,
         translations,
         languages,
     })
@@ -270,8 +285,11 @@ fn check_urls(pages: &[Page]) -> crate::Result<()> {
 }
 
 // A Markdown file another page includes is a partial, as before Markdown pages: copied
-// as a file, never built into a page of its own, nor listed
-fn keep_partials(root: &Path, selection: &mut Selection) -> crate::Result<()> {
+// as a file, never built into a page of its own, nor listed. Returns every included path
+fn keep_partials(
+    root: &Path,
+    selection: &mut Selection,
+) -> crate::Result<BTreeSet<String>> {
     let mut pending: Vec<String> = selection.pages.values().cloned().collect();
     let mut seen: Vec<String> = vec![];
     let mut partials: Vec<String> = vec![];
@@ -302,7 +320,11 @@ fn keep_partials(root: &Path, selection: &mut Selection) -> crate::Result<()> {
             selection.files.insert(file, source);
         }
     }
-    Ok(())
+    let pages: Vec<&String> = selection.pages.values().collect();
+    Ok(seen
+        .into_iter()
+        .filter(|path| !pages.contains(&path))
+        .collect())
 }
 
 // The names, without the prefix, of every component built in or the project's

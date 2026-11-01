@@ -37,4 +37,7 @@ pub struct BuildReport {
     pub output: PathBuf,
     pub pages: usize,
     pub files: usize,
+    /// The project files read beside the pages and the copied ones, relative to the root:
+    /// includes, changelog sources, patched files and skills.
+    pub inputs: Vec<String>,
 }

@@ -25,6 +25,7 @@ fn create_site() -> crate::Result<Site> {
             .map(|asset| (asset.path.to_owned(), asset.content.to_owned()))
             .collect(),
         skills: vec![],
+        inputs: Default::default(),
         languages: vec![],
         translations: std::collections::BTreeMap::new(),
     })

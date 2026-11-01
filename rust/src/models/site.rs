@@ -1,4 +1,4 @@
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 use std::path::PathBuf;
 
 use std::sync::LazyLock;
@@ -25,6 +25,9 @@ pub struct Site {
     pub assets: BTreeMap<String, String>,
     /// The `SKILL.md` files the config's `skills` globs match, published for agents.
     pub skills: Vec<Skill>,
+    /// The project files read beside the pages and the copied ones, relative to the root
+    /// with `/` separators: includes, changelog sources, patched files and skills.
+    pub inputs: BTreeSet<String>,
     /// The languages the site is published in, the default first.
     pub languages: Vec<SiteLanguage>,
     /// For each page key, the URL of its version in each language that has one.

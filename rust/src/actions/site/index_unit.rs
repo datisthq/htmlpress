@@ -25,6 +25,7 @@ fn splits_each_page_at_its_headings() -> crate::Result<()> {
         files: Default::default(),
         assets: Default::default(),
         skills: vec![],
+        inputs: Default::default(),
         languages: vec![],
         translations: std::collections::BTreeMap::new(),
     };

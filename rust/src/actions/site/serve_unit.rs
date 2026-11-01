@@ -61,29 +61,59 @@ fn tells_pages_from_other_files() {
 
 #[test]
 fn keeps_watching_sources_and_the_project_folder_only() {
-    let root = Path::new("/site");
-    let output = Path::new("/site/.htmlpress/build");
-    let all = [String::new()];
-    let docs = ["docs/".to_owned()];
+    let output = PathBuf::from("/site/.htmlpress/build");
+    let (staging, previous) = create_build_paths(&output);
+    let sources = |bases: &[&str], inputs: &[&str]| Sources {
+        root: PathBuf::from("/site"),
+        outputs: vec![output.clone(), staging.clone(), previous.clone()],
+        bases: bases.iter().map(|base| (*base).to_owned()).collect(),
+        inputs: inputs.iter().map(|input| (*input).to_owned()).collect(),
+    };
     let event = |path: &str| {
         Ok(notify::Event::new(notify::EventKind::Any).add_path(PathBuf::from(path)))
     };
-    let watched =
-        |path: &str, bases: &[String]| is_source_event(&event(path), root, output, bases);
-    assert!(watched("/site/index.html", &all));
-    assert!(watched("/site/.htmlpress/layout.html", &all));
-    assert!(!watched("/site/.htmlpress/build/index.html", &all));
-    assert!(!watched("/site/.htmlpress", &all));
-    assert!(!watched("/site/.htmlpress/cache/changelog-a-b.json", &all));
-    assert!(!watched("/site/.git/index", &all));
-    assert!(!watched("/site/node_modules/x.html", &all));
+    let all = sources(&[""], &[]);
+    let watched = |sources: &Sources, path: &str| sources.contains(&event(path));
+    assert!(watched(&all, "/site/index.html"));
+    assert!(watched(&all, "/site/.htmlpress/layout.html"));
+    assert!(!watched(&all, "/site/.htmlpress/build/index.html"));
+    assert!(!watched(&all, "/site/.htmlpress/build.next/index.html"));
+    assert!(!watched(&all, "/site/.htmlpress/build.previous/index.html"));
+    assert!(!watched(&all, "/site/.htmlpress"));
+    assert!(!watched(&all, "/site/.htmlpress/cache/changelog-a-b.json"));
+    assert!(!watched(&all, "/site/.git/index"));
+    assert!(!watched(&all, "/site/node_modules/x.html"));
     let access = notify::EventKind::Access(notify::event::AccessKind::Any);
     let read = Ok(notify::Event::new(access).add_path(PathBuf::from("/site/index.html")));
-    assert!(!is_source_event(&read, root, output, &all));
-    assert!(watched("/site/docs/index.html", &docs));
-    assert!(watched("/site/htmlpress.yaml", &docs));
-    assert!(watched("/site/.htmlpress/layouts/landing.html", &docs));
-    assert!(!watched("/site/rust/target/debug/htmlpress", &docs));
+    assert!(!all.contains(&read));
+    let docs = sources(&["docs/"], &["CHANGELOG.md", ".skills/a/SKILL.md"]);
+    assert!(watched(&docs, "/site/docs/index.html"));
+    assert!(watched(&docs, "/site/htmlpress.yaml"));
+    assert!(watched(&docs, "/site/.htmlpress/layouts/landing.html"));
+    assert!(watched(&docs, "/site/CHANGELOG.md"));
+    assert!(watched(&docs, "/site/.skills/a/SKILL.md"));
+    assert!(!watched(&docs, "/site/.skills/b/SKILL.md"));
+    assert!(!watched(&docs, "/site/rust/target/debug/htmlpress"));
+}
+
+#[test]
+fn reads_the_real_path_of_a_folder_not_created_yet() -> crate::Result<()> {
+    let project = tempfile::tempdir().map_err(Error::io("tempdir"))?;
+    let real = project
+        .path()
+        .canonicalize()
+        .map_err(Error::io("canonicalize"))?;
+    let link = real.join("link");
+    std::fs::create_dir(real.join("site")).map_err(Error::io("site"))?;
+    #[cfg(unix)]
+    std::os::unix::fs::symlink(real.join("site"), &link).map_err(Error::io("symlink"))?;
+    #[cfg(unix)]
+    assert_eq!(read_real_path(&link), real.join("site"));
+    assert_eq!(
+        read_real_path(&real.join("site/build")),
+        real.join("site/build")
+    );
+    Ok(())
 }
 
 #[test]
@@ -154,7 +184,7 @@ fn reading_the_config_feeds_no_events_back() -> crate::Result<()> {
     let state = Reload::default();
     let fed_back = std::thread::scope(|scope| {
         let (options, state) = (&options, &state);
-        scope.spawn(move || rebuild_on_change(options, &events, state));
+        scope.spawn(move || rebuild_on_change(options, &events, state, vec![]));
         let mut fed_back = 0;
         while let Ok(event) = raw.recv_timeout(Duration::from_millis(500)) {
             fed_back += 1;

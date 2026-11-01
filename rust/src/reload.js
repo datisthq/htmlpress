@@ -4,15 +4,22 @@
 // Module scripts have no document.currentScript, so find the tag by its attribute
 const script = document.querySelector("script[data-endpoint]")
 const endpoint = script?.dataset.endpoint ?? "/_htmlpress/reload"
+// The server's own error page already shows the error, so it only reloads
+const errorPage = script?.hasAttribute("data-error-page") ?? false
 let version
 
 async function waitForBuild() {
   try {
     const query = version === undefined ? "" : `?since=${version}`
-    const [next, ...error] = (await (await fetch(endpoint + query)).text()).split("\n")
+    const response = await fetch(endpoint + query)
+    const [next, ...error] = (await response.text()).split("\n")
+    // Another server on the port, or none: answering at once, it would be asked again
+    // at once, hundreds of times a second, and its 404 page shown as a build error
+    if (!response.ok || !/^\d+$/.test(next)) throw new Error("not the dev server")
     const message = error.join("\n")
-    if (message) showError(message)
-    else if (version !== undefined && next !== version) return location.reload()
+    const changed = version !== undefined && next !== version
+    if (changed && (!message || errorPage)) return location.reload()
+    if (message && !errorPage) showError(message)
     version = next
   } catch {
     await new Promise(resolve => setTimeout(resolve, 1000))

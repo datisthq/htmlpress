@@ -23,7 +23,7 @@ pub fn preview_site(
     let (server, urls) = open_server(host, port)?;
     let base = load_config(&options.root)?.read_base();
     on_ready(&add_base(urls, &base));
-    let state = Arc::new(Reload::default());
-    answer_requests(&server, &options.output, &base, &state);
+    let state = Arc::new(Reload::new(0, base));
+    answer_requests(&server, &options.output, &state);
     Ok(())
 }

@@ -26,6 +26,7 @@ fn create_site() -> crate::Result<Site> {
         files: std::collections::BTreeMap::new(),
         assets: Default::default(),
         skills: vec![],
+        inputs: Default::default(),
         languages: vec![],
         translations: std::collections::BTreeMap::new(),
     })

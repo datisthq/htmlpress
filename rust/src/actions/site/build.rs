@@ -1,4 +1,4 @@
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 use crate::actions::date::format::format_feed_date;
 use crate::actions::page::read::{create_output_path, read_page};
@@ -20,14 +20,54 @@ use crate::settings::{ASSETS_DIR, NOT_FOUND, NOT_FOUND_PAGE, RELOAD, THEME_STYLE
 pub fn build_site(options: &BuildOptions) -> crate::Result<BuildReport> {
     check_output(&options.root, &options.output)?;
     let site = scan_site(&options.root)?;
-
-    if options.output.exists() {
-        std::fs::remove_dir_all(&options.output).map_err(Error::io(&options.output))?;
+    // Written beside the output and swapped in whole: the dev server answers requests
+    // while it rebuilds, and a page loaded from a half-written output shows unstyled
+    let (staging, previous) = create_build_paths(&options.output);
+    if staging.exists() {
+        std::fs::remove_dir_all(&staging).map_err(Error::io(&staging))?;
     }
+    let staged = BuildOptions {
+        output: staging.clone(),
+        ..options.clone()
+    };
+    write_site(&staged, &site)?;
+    swap_output(&staging, &previous, &options.output)?;
+    Ok(BuildReport {
+        output: options.output.clone(),
+        pages: site.pages.len(),
+        files: site.files.len(),
+        inputs: site.inputs.iter().cloned().collect(),
+    })
+}
+
+/// The folders a build of `output` writes beside it: the next output, swapped in once
+/// complete, and the previous one, removed after the swap.
+pub(crate) fn create_build_paths(output: &Path) -> (PathBuf, PathBuf) {
+    let name = (output.file_name())
+        .map_or("build".into(), |name| name.to_string_lossy().into_owned());
+    (
+        output.with_file_name(format!("{name}.next")),
+        output.with_file_name(format!("{name}.previous")),
+    )
+}
+
+// Windows refuses to rename or remove a folder holding a file the server has open, so
+// the previous output is removed best-effort, and the output in place when it cannot move
+fn swap_output(staging: &Path, previous: &Path, output: &Path) -> crate::Result<()> {
+    let _ = std::fs::remove_dir_all(previous);
+    if output.exists() && std::fs::rename(output, previous).is_err() {
+        std::fs::remove_dir_all(output).map_err(Error::io(output))?;
+    }
+    std::fs::rename(staging, output).map_err(Error::io(output))?;
+    let _ = std::fs::remove_dir_all(previous);
+    Ok(())
+}
+
+fn write_site(options: &BuildOptions, site: &Site) -> crate::Result<()> {
     // Each language renders through its own view: its config, its pages, and the default
     // pages it lacks listed but not built
     let views: Vec<Site> = (site.languages.iter())
-        .map(|language| localize_site(&site, &language.code))
+        .map(|language| localize_site(site, &language.code))
         .collect();
     for view in &views {
         for page in view.pages.iter().filter(|page| !page.untranslated) {
@@ -98,26 +138,22 @@ pub fn build_site(options: &BuildOptions) -> crate::Result<BuildReport> {
         }
     }
     if !redirects.is_empty() {
-        let rules = create_redirects(&site, &redirects.concat())?;
+        let rules = create_redirects(site, &redirects.concat())?;
         write_file(&options.output.join("_redirects"), rules.as_bytes())?;
     }
     if !shipped("robots.txt") {
         write_file(
             &options.output.join("robots.txt"),
-            create_robots(&site).as_bytes(),
+            create_robots(site).as_bytes(),
         )?;
     }
-    if let Some(sitemap) = create_sitemap(&site)
+    if let Some(sitemap) = create_sitemap(site)
         && !shipped("sitemap.xml")
     {
         write_file(&options.output.join("sitemap.xml"), sitemap.as_bytes())?;
     }
 
-    Ok(BuildReport {
-        output: options.output.clone(),
-        pages: site.pages.len(),
-        files: site.files.len(),
-    })
+    Ok(())
 }
 
 // Agents read Content-Signal only inside a user-agent group, so it must follow one.

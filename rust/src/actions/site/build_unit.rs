@@ -5,6 +5,36 @@ fn write_source(root: &Path, path: &str, text: &str) -> crate::Result<()> {
 }
 
 #[test]
+fn swaps_the_output_in_whole_and_reports_what_it_read() -> crate::Result<()> {
+    let root = tempfile::tempdir().map_err(Error::io("tempdir"))?;
+    let root = root.path();
+    write_source(
+        root,
+        "htmlpress.yaml",
+        "include: docs/**/*.html\nsections:\n  - title: Changelog\n    type: changelog\n    \
+         prefix: /changelog/\n    source: CHANGELOG.md\n",
+    )?;
+    write_source(root, "CHANGELOG.md", "# Changelog\n\n## 1.0.0\n\n- a\n")?;
+    write_source(root, "shared/part.md", "part")?;
+    write_source(
+        root,
+        "docs/index.html",
+        "<h1>Home</h1><htmlpress-include src=\"../shared/part.md\"></htmlpress-include>",
+    )?;
+    let options = BuildOptions::new(root);
+    let (staging, previous) = create_build_paths(&options.output);
+    write_source(&staging, "stale.html", "old")?;
+    write_source(&options.output, "stale.html", "old")?;
+
+    let report = build_site(&options)?;
+    assert_eq!(report.inputs, ["CHANGELOG.md", "shared/part.md"]);
+    assert!(options.output.join("index.html").is_file());
+    assert!(!options.output.join("stale.html").exists());
+    assert!(!staging.exists() && !previous.exists());
+    Ok(())
+}
+
+#[test]
 fn builds_pages_files_and_assets() -> crate::Result<()> {
     let root = tempfile::tempdir().map_err(Error::io("tempdir"))?;
     let root = root.path();
