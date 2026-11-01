@@ -103,12 +103,14 @@ fn reads_the_real_path_of_a_folder_not_created_yet() -> crate::Result<()> {
         .path()
         .canonicalize()
         .map_err(Error::io("canonicalize"))?;
-    let link = real.join("link");
     std::fs::create_dir(real.join("site")).map_err(Error::io("site"))?;
     #[cfg(unix)]
-    std::os::unix::fs::symlink(real.join("site"), &link).map_err(Error::io("symlink"))?;
-    #[cfg(unix)]
-    assert_eq!(read_real_path(&link), real.join("site"));
+    {
+        let link = real.join("link");
+        std::os::unix::fs::symlink(real.join("site"), &link)
+            .map_err(Error::io("symlink"))?;
+        assert_eq!(read_real_path(&link), real.join("site"));
+    }
     assert_eq!(
         read_real_path(&real.join("site/build")),
         real.join("site/build")
