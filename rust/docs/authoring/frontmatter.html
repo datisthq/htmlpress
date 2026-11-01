@@ -1,19 +1,20 @@
 <title>Frontmatter</title>
 <meta
   name="description"
-  content="The head tags that set a page's title, description, image, order and layout."
+  content="The keys that set a page's title, description, image, order and layout, as Markdown frontmatter or HTML head tags."
 />
-<meta name="order" content="32" />
+<meta name="order" content="33" />
 <meta name="icon" content="file-text" />
 
 <h1>Frontmatter</h1>
 <p>
-  An HTML page has no YAML frontmatter: its metadata is the HTML
-  <code>&lt;head&gt;</code> itself. A page is a full document or a fragment, and htmlpress
-  reads both the same way. Every tag is optional; htmlpress derives sensible defaults from
-  the file when one is missing. A
-  <a href="/authoring/markdown-pages/">Markdown page</a> sets the same metadata in its
-  frontmatter, under the same names.
+  A page's metadata is a set of keys, the same in both formats. A
+  <a href="/authoring/markdown-pages/">Markdown page</a> writes them as its YAML
+  frontmatter; an <a href="/authoring/html-pages/">HTML page</a> as its
+  <code>&lt;head&gt;</code>, <code>title</code> as <code>&lt;title&gt;</code> and every
+  other key as <code>&lt;meta name="key" content="…"&gt;</code>. A page is a full document
+  or a fragment, and htmlpress reads both the same way. Every key is optional; htmlpress
+  derives sensible defaults from the file when one is missing.
 </p>
 <htmlpress-tabs sync="syntax">
   <htmlpress-tab title="HTML">
@@ -37,8 +38,8 @@ Plain Markdown, styled by the theme.</code></pre>
   </htmlpress-tab>
 </htmlpress-tabs>
 <p>
-  The body becomes the page's content inside the layout. Give every page one
-  <code>&lt;title&gt;</code> and one <code>&lt;h1&gt;</code>.
+  The body becomes the page's content inside the layout. Give every page a
+  <code>title</code> and one top-level heading.
 </p>
 
 <h2>Article metadata</h2>
@@ -46,24 +47,24 @@ Plain Markdown, styled by the theme.</code></pre>
 <table>
   <thead>
     <tr>
-      <th>Tag</th>
+      <th>Key</th>
       <th>Default</th>
       <th>Purpose</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td><code>&lt;title&gt;</code></td>
+      <td><code>title</code></td>
       <td>first <code>&lt;h1&gt;</code>, else the file name</td>
       <td>Names the page in the navigation and the browser tab.</td>
     </tr>
     <tr>
-      <td><code>&lt;meta name="description"&gt;</code></td>
+      <td><code>description</code></td>
       <td><code>description</code> from <code>htmlpress.yaml</code></td>
       <td>The page's description for search engines and social previews.</td>
     </tr>
     <tr>
-      <td><code>&lt;meta name="image"&gt;</code></td>
+      <td><code>image</code></td>
       <td>none</td>
       <td>
         The image shown when the page is shared, as <code>og:image</code>. A relative URL
@@ -72,16 +73,17 @@ Plain Markdown, styled by the theme.</code></pre>
       </td>
     </tr>
     <tr>
-      <td>anything else in <code>&lt;head&gt;</code></td>
+      <td><code>head</code></td>
       <td>none</td>
       <td>
-        Kept: a page's own <code>&lt;link&gt;</code>, <code>&lt;style&gt;</code> or
-        <code>&lt;script&gt;</code> is added to the layout's head, after the theme. A page
-        without a <code>&lt;head&gt;</code> gives the ones before its first content.
+        Markdown only: raw HTML added to the layout's head, after the theme. An HTML page
+        writes its own <code>&lt;link&gt;</code>, <code>&lt;style&gt;</code> or
+        <code>&lt;script&gt;</code> in its <code>&lt;head&gt;</code>, or before its first
+        content, and they are added the same way.
       </td>
     </tr>
     <tr>
-      <td><code>&lt;meta name="date"&gt;</code></td>
+      <td><code>date</code></td>
       <td>none</td>
       <td>
         When the page was published, <code>YYYY-MM-DD</code> (a timestamp is cut to its
@@ -89,14 +91,16 @@ Plain Markdown, styled by the theme.</code></pre>
       </td>
     </tr>
     <tr>
-      <td><code>&lt;meta name="author"&gt;</code></td>
+      <td><code>author</code></td>
       <td>none</td>
-      <td>An author shown under the title; repeat the tag for several.</td>
+      <td>An author shown under the title; a list, or the tag repeated, for several.</td>
     </tr>
     <tr>
-      <td><code>&lt;meta name="keywords"&gt;</code></td>
+      <td><code>keywords</code></td>
       <td>none</td>
-      <td>Comma-separated tags; in a blog each gets a page listing its posts.</td>
+      <td>
+        Tags, a list or comma-separated; in a blog each gets a page listing its posts.
+      </td>
     </tr>
   </tbody>
 </table>
@@ -111,19 +115,19 @@ Plain Markdown, styled by the theme.</code></pre>
 <table>
   <thead>
     <tr>
-      <th>Tag</th>
+      <th>Key</th>
       <th>Default</th>
       <th>Purpose</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td><code>&lt;meta name="order"&gt;</code></td>
+      <td><code>order</code></td>
       <td>none (sorted by path)</td>
       <td>An integer sort position; see "Ordering rules" below.</td>
     </tr>
     <tr>
-      <td><code>&lt;meta name="layout"&gt;</code></td>
+      <td><code>layout</code></td>
       <td>the site's layout</td>
       <td>
         Wraps the page in <code>.htmlpress/layouts/&lt;name&gt;.html</code> instead, for a
@@ -133,12 +137,12 @@ Plain Markdown, styled by the theme.</code></pre>
       </td>
     </tr>
     <tr>
-      <td><code>&lt;meta name="label"&gt;</code></td>
+      <td><code>label</code></td>
       <td>the title</td>
       <td>A shorter name for the page's navigation entry.</td>
     </tr>
     <tr>
-      <td><code>&lt;meta name="icon"&gt;</code></td>
+      <td><code>icon</code></td>
       <td>none</td>
       <td>
         A <a href="/authoring/rich-elements/#icons">built-in icon</a> before a top-level
@@ -147,33 +151,33 @@ Plain Markdown, styled by the theme.</code></pre>
       </td>
     </tr>
     <tr>
-      <td><code>&lt;meta name="sidebar" content="false"&gt;</code></td>
+      <td><code>sidebar</code></td>
       <td><code>true</code></td>
       <td>
-        Leaves the page out of the navigation and the previous and next links; it is still
-        built and reachable by its URL.
+        <code>false</code> leaves the page out of the navigation and the previous and next
+        links; it is still built and reachable by its URL.
       </td>
     </tr>
     <tr>
-      <td><code>&lt;meta name="toc" content="false"&gt;</code></td>
+      <td><code>toc</code></td>
       <td><code>true</code></td>
-      <td>Turns off the page's table of contents.</td>
+      <td><code>false</code> turns off the page's table of contents.</td>
     </tr>
     <tr>
-      <td><code>&lt;meta name="breadcrumbs" content="false"&gt;</code></td>
+      <td><code>breadcrumbs</code></td>
       <td>the config's <code>breadcrumbs</code></td>
       <td>
-        Hides the trail of folders above the content; <code>true</code> shows it even when
-        the config turns it off.
+        <code>false</code> hides the trail of folders above the content;
+        <code>true</code> shows it even when the config turns it off.
       </td>
     </tr>
     <tr>
-      <td><code>&lt;meta name="source-url"&gt;</code></td>
+      <td><code>source-url</code></td>
       <td><code>edit</code> followed by the page's path</td>
       <td>
         Where the page's source link leads, for a page whose source lives elsewhere;
-        <code>&lt;meta name="source-action" content="view"&gt;</code> labels it "View on
-        GitHub" instead of "Edit on GitHub".
+        <code>source-action</code> set to <code>view</code> labels it "View on GitHub"
+        instead of "Edit on GitHub".
       </td>
     </tr>
   </tbody>
@@ -208,16 +212,15 @@ Plain Markdown, styled by the theme.</code></pre>
   <a href="/authoring/links/">Links</a>.
 </p>
 <p>
-  <code>&lt;meta name="path" content="/start/"&gt;</code> serves the page at another URL,
-  independent of its file path: a path ending in <code>/</code> names that folder, and one
-  ending in <code>.html</code> the page that file would be, so
-  <code>/start.html</code> serves it at <code>/start/</code> too. Two pages on one URL
-  fail the build.
+  <code>path: /start/</code> serves the page at another URL, independent of its file path:
+  a path ending in <code>/</code> names that folder, and one ending in
+  <code>.html</code> the page that file would be, so <code>/start.html</code> serves it at
+  <code>/start/</code> too. Two pages on one URL fail the build.
 </p>
 <p>
   On a site with <code>languages</code>, a file named <code>guide.es.html</code>, or one
-  with <code>&lt;meta name="language" content="es"&gt;</code>, is the Spanish translation
-  of <code>guide.html</code>, served at <code>/es/guide/</code>; see
+  with <code>language: es</code>, is the Spanish translation of <code>guide.html</code>,
+  served at <code>/es/guide/</code>; see
   <a href="/customization/translations/">Translations</a>.
 </p>
 

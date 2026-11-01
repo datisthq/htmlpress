@@ -1,12 +1,22 @@
-<title>任意 HTML</title>
+<title>HTML 页面</title>
 <meta
   name="description"
-  content="页面可以是浏览器能显示的任何 HTML：它自己的元素、样式和脚本，放在站点的布局之中。"
+  content="一个 .html 页面：完整文档或片段，其 head 即元数据，任何元素、样式或脚本都放在站点的布局之中。"
 />
 <meta name="order" content="31" />
 <meta name="icon" content="braces" />
 
-<h1>任意 HTML</h1>
+<h1>HTML 页面</h1>
+<p>
+  项目中的每个
+  <code>.html</code> 文件都是一个页面，可以是完整文档，也可以是片段；htmlpress
+  以相同方式读取两者。它的 <code>&lt;title&gt;</code> 和
+  <code>&lt;meta name="…"&gt;</code> 标签就是它的元数据，即
+  <a href="/zh/authoring/frontmatter/">前置元数据</a>所列的键，body 的其余部分是内容。<a
+    href="/zh/authoring/markdown-pages/"
+    >Markdown 页面</a
+  >是同样的页面，只是用 Markdown 编写。
+</p>
 <p>
   页面就是纯 HTML，htmlpress 不对它做限制：任何元素、属性、内联
   SVG、<code>&lt;canvas&gt;</code>、<code>&lt;iframe&gt;</code>、自定义元素、样式或脚本都按原样工作。没有模板语言，也没有白名单。Htmlpress

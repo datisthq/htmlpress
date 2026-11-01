@@ -1,12 +1,20 @@
-<title>Arbitrary HTML</title>
+<title>HTML Pages</title>
 <meta
   name="description"
-  content="A page is any HTML a browser can show: its own elements, styles and scripts, inside the site's layout."
+  content="An .html page: a full document or a fragment, its head as metadata, and any element, style or script inside the site's layout."
 />
 <meta name="order" content="31" />
 <meta name="icon" content="braces" />
 
-<h1>Arbitrary HTML</h1>
+<h1>HTML Pages</h1>
+<p>
+  Every <code>.html</code> file in a project is a page, a full document or a fragment;
+  htmlpress reads both the same way. Its <code>&lt;title&gt;</code> and
+  <code>&lt;meta name="…"&gt;</code> tags are its metadata, the keys
+  <a href="/authoring/frontmatter/">Frontmatter</a> lists, and the rest of its body is the
+  content. A <a href="/authoring/markdown-pages/">Markdown page</a> is the same page,
+  written in Markdown.
+</p>
 <p>
   A page is plain HTML, and htmlpress does not restrict it: any element, attribute, inline
   SVG, <code>&lt;canvas&gt;</code>, <code>&lt;iframe&gt;</code>, custom element, style or

@@ -1,15 +1,23 @@
 <title>前置元数据</title>
-<meta name="description" content="设置页面标题、描述、图片、排序和布局的 head 标签。" />
-<meta name="order" content="32" />
+<meta
+  name="description"
+  content="设置页面标题、描述、图片、排序和布局的键，可写成 Markdown 前置元数据或 HTML head 标签。"
+/>
+<meta name="order" content="33" />
 <meta name="icon" content="file-text" />
 
 <h1>前置元数据</h1>
 <p>
-  HTML 页面没有 YAML 前置元数据：它的元数据就是 HTML 的
-  <code>&lt;head&gt;</code> 本身。页面可以是完整文档，也可以是片段，htmlpress
-  以相同方式读取两者。每个标签都是可选的；缺少某个标签时，htmlpress
-  会根据文件推导出合理的默认值。<a href="/zh/authoring/markdown-pages/">Markdown 页面</a>
-  则在其前置元数据中用相同的名称设置同样的元数据。
+  页面的元数据是一组键，两种格式中相同。<a href="/zh/authoring/markdown-pages/"
+    >Markdown 页面</a
+  >
+  把它们写成 YAML 前置元数据；<a href="/zh/authoring/html-pages/">HTML 页面</a>写在
+  <code>&lt;head&gt;</code> 中：<code>title</code> 写作
+  <code>&lt;title&gt;</code>，其他键写作
+  <code>&lt;meta name="键" content="…"&gt;</code
+  >。页面可以是完整文档，也可以是片段，htmlpress
+  以相同方式读取两者。每个键都是可选的；缺少某个键时，htmlpress
+  会根据文件推导出合理的默认值。
 </p>
 <htmlpress-tabs sync="syntax">
   <htmlpress-tab title="HTML">
@@ -32,34 +40,31 @@ order: 1
 Plain Markdown, styled by the theme.</code></pre>
   </htmlpress-tab>
 </htmlpress-tabs>
-<p>
-  body 会成为布局内的页面内容。每个页面应有一个
-  <code>&lt;title&gt;</code> 和一个 <code>&lt;h1&gt;</code>。
-</p>
+<p>body 会成为布局内的页面内容。每个页面应有一个 <code>title</code> 和一个一级标题。</p>
 
 <h2>文章元数据</h2>
 <p>页面的标识与呈现。</p>
 <table>
   <thead>
     <tr>
-      <th>标签</th>
+      <th>键</th>
       <th>默认值</th>
       <th>用途</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td><code>&lt;title&gt;</code></td>
+      <td><code>title</code></td>
       <td>第一个 <code>&lt;h1&gt;</code>，否则为文件名</td>
       <td>在导航和浏览器标签页中显示的页面名称。</td>
     </tr>
     <tr>
-      <td><code>&lt;meta name="description"&gt;</code></td>
+      <td><code>description</code></td>
       <td><code>htmlpress.yaml</code> 中的 <code>description</code></td>
       <td>供搜索引擎和社交预览使用的页面描述。</td>
     </tr>
     <tr>
-      <td><code>&lt;meta name="image"&gt;</code></td>
+      <td><code>image</code></td>
       <td>无</td>
       <td>
         页面被分享时显示的图片，即 <code>og:image</code>。相对 URL
@@ -67,16 +72,17 @@ Plain Markdown, styled by the theme.</code></pre>
       </td>
     </tr>
     <tr>
-      <td><code>&lt;head&gt;</code> 中的其他任何内容</td>
+      <td><code>head</code></td>
       <td>无</td>
       <td>
-        保留：页面自己的 <code>&lt;link&gt;</code>、<code>&lt;style&gt;</code> 或
-        <code>&lt;script&gt;</code> 会添加到布局的 head 中，位于主题之后。没有
-        <code>&lt;head&gt;</code> 的页面，取其第一段内容之前的这些标签。
+        仅限 Markdown：添加到布局 head 中的原始 HTML，位于主题之后。HTML 页面把自己的
+        <code>&lt;link&gt;</code>、<code>&lt;style&gt;</code> 或
+        <code>&lt;script&gt;</code> 写在
+        <code>&lt;head&gt;</code> 中，或写在第一段内容之前，并以同样方式添加。
       </td>
     </tr>
     <tr>
-      <td><code>&lt;meta name="date"&gt;</code></td>
+      <td><code>date</code></td>
       <td>无</td>
       <td>
         页面的发布日期，格式为
@@ -85,14 +91,14 @@ Plain Markdown, styled by the theme.</code></pre>
       </td>
     </tr>
     <tr>
-      <td><code>&lt;meta name="author"&gt;</code></td>
+      <td><code>author</code></td>
       <td>无</td>
-      <td>显示在标题下方的作者；有多位作者时重复该标签。</td>
+      <td>显示在标题下方的作者；有多位作者时写成列表，或重复该标签。</td>
     </tr>
     <tr>
-      <td><code>&lt;meta name="keywords"&gt;</code></td>
+      <td><code>keywords</code></td>
       <td>无</td>
-      <td>逗号分隔的标签；在博客中，每个标签都有一个列出其文章的页面。</td>
+      <td>标签，写成列表或用逗号分隔；在博客中每个标签都有一个列出其文章的页面。</td>
     </tr>
   </tbody>
 </table>
@@ -107,19 +113,19 @@ Plain Markdown, styled by the theme.</code></pre>
 <table>
   <thead>
     <tr>
-      <th>标签</th>
+      <th>键</th>
       <th>默认值</th>
       <th>用途</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td><code>&lt;meta name="order"&gt;</code></td>
+      <td><code>order</code></td>
       <td>无（按路径排序）</td>
       <td>整数排序位置；见下文“排序规则”。</td>
     </tr>
     <tr>
-      <td><code>&lt;meta name="layout"&gt;</code></td>
+      <td><code>layout</code></td>
       <td>站点布局</td>
       <td>
         改用
@@ -129,12 +135,12 @@ Plain Markdown, styled by the theme.</code></pre>
       </td>
     </tr>
     <tr>
-      <td><code>&lt;meta name="label"&gt;</code></td>
+      <td><code>label</code></td>
       <td>标题</td>
       <td>页面导航条目的简短名称。</td>
     </tr>
     <tr>
-      <td><code>&lt;meta name="icon"&gt;</code></td>
+      <td><code>icon</code></td>
       <td>无</td>
       <td>
         显示在顶层导航条目前的<a href="/zh/authoring/rich-elements/">内置图标</a
@@ -142,28 +148,32 @@ Plain Markdown, styled by the theme.</code></pre>
       </td>
     </tr>
     <tr>
-      <td><code>&lt;meta name="sidebar" content="false"&gt;</code></td>
+      <td><code>sidebar</code></td>
       <td><code>true</code></td>
       <td>
+        <code>false</code>
         将页面排除在导航以及上一页和下一页链接之外；页面仍会被构建，并可通过其 URL 访问。
       </td>
     </tr>
     <tr>
-      <td><code>&lt;meta name="toc" content="false"&gt;</code></td>
+      <td><code>toc</code></td>
       <td><code>true</code></td>
-      <td>关闭页面的目录。</td>
+      <td><code>false</code> 关闭页面的目录。</td>
     </tr>
     <tr>
-      <td><code>&lt;meta name="breadcrumbs" content="false"&gt;</code></td>
+      <td><code>breadcrumbs</code></td>
       <td>配置中的 <code>breadcrumbs</code></td>
-      <td>隐藏内容上方的文件夹路径；<code>true</code> 即使配置关闭也会显示。</td>
+      <td>
+        <code>false</code> 隐藏内容上方的文件夹路径；<code>true</code>
+        即使配置关闭也会显示。
+      </td>
     </tr>
     <tr>
-      <td><code>&lt;meta name="source-url"&gt;</code></td>
+      <td><code>source-url</code></td>
       <td><code>edit</code> 加上页面路径</td>
       <td>
-        页面源码链接的目标地址，适用于源码存放在别处的页面；
-        <code>&lt;meta name="source-action" content="view"&gt;</code>
+        页面源码链接的目标地址，适用于源码存放在别处的页面； 值为 <code>view</code> 的
+        <code>source-action</code>
         会把链接文字从“编辑此页”改为“查看源码”。
       </td>
     </tr>
@@ -199,16 +209,16 @@ Plain Markdown, styled by the theme.</code></pre>
   <a href="/zh/authoring/links/">链接</a>。
 </p>
 <p>
-  <code>&lt;meta name="path" content="/start/"&gt;</code> 让页面在另一个 URL
-  提供服务，与其文件路径无关：以 <code>/</code> 结尾的路径指向该文件夹，以
+  <code>path: /start/</code> 让页面在另一个 URL 提供服务，与其文件路径无关：以
+  <code>/</code> 结尾的路径指向该文件夹，以
   <code>.html</code> 结尾的路径则指向该文件所对应的页面，因此
   <code>/start.html</code> 同样会在 <code>/start/</code> 提供该页面。两个页面使用同一个
   URL 会导致构建失败。
 </p>
 <p>
   在设置了 <code>languages</code> 的站点上，名为 <code>guide.es.html</code> 的文件，或带有
-  <code>&lt;meta name="language" content="es"&gt;</code> 的文件，就是
-  <code>guide.html</code> 的西班牙语翻译，在 <code>/es/guide/</code> 提供服务；见
+  <code>language: es</code> 的文件，就是 <code>guide.html</code> 的西班牙语翻译，在
+  <code>/es/guide/</code> 提供服务；见
   <a href="/zh/customization/translations/">翻译</a>。
 </p>
 

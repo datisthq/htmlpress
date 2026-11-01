@@ -1,19 +1,21 @@
 <title>Frontmatter</title>
 <meta
   name="description"
-  content="Las etiquetas de head que definen el título, la descripción, la imagen, el orden y el layout de una página."
+  content="Las claves que definen el título, la descripción, la imagen, el orden y el layout de una página, como frontmatter de Markdown o etiquetas head de HTML."
 />
-<meta name="order" content="32" />
+<meta name="order" content="33" />
 <meta name="icon" content="file-text" />
 
 <h1>Frontmatter</h1>
 <p>
-  Una página HTML no tiene frontmatter en YAML: sus metadatos son el propio
-  <code>&lt;head&gt;</code> de HTML. Una página es un documento completo o un fragmento, y
-  htmlpress lee ambos de la misma forma. Todas las etiquetas son opcionales; cuando falta
-  una, htmlpress deduce valores predeterminados razonables a partir del archivo. Una
-  <a href="/es/authoring/markdown-pages/">página Markdown</a> fija los mismos metadatos en
-  su frontmatter, con los mismos nombres.
+  Los metadatos de una página son un conjunto de claves, las mismas en ambos formatos. Una
+  <a href="/es/authoring/markdown-pages/">página Markdown</a> las escribe como su
+  frontmatter en YAML; una <a href="/es/authoring/html-pages/">página HTML</a> como su
+  <code>&lt;head&gt;</code>, <code>title</code> como <code>&lt;title&gt;</code> y
+  cualquier otra clave como <code>&lt;meta name="clave" content="…"&gt;</code>. Una página
+  es un documento completo o un fragmento, y htmlpress lee ambos de la misma forma. Todas
+  las claves son opcionales; cuando falta una, htmlpress deduce valores predeterminados
+  razonables a partir del archivo.
 </p>
 <htmlpress-tabs sync="syntax">
   <htmlpress-tab title="HTML">
@@ -38,7 +40,7 @@ Plain Markdown, styled by the theme.</code></pre>
 </htmlpress-tabs>
 <p>
   El cuerpo se convierte en el contenido de la página dentro del layout. Dale a cada
-  página un <code>&lt;title&gt;</code> y un <code>&lt;h1&gt;</code>.
+  página un <code>title</code> y un único encabezado de primer nivel.
 </p>
 
 <h2>Metadatos del artículo</h2>
@@ -46,19 +48,19 @@ Plain Markdown, styled by the theme.</code></pre>
 <table>
   <thead>
     <tr>
-      <th>Etiqueta</th>
+      <th>Clave</th>
       <th>Predeterminado</th>
       <th>Uso</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td><code>&lt;title&gt;</code></td>
+      <td><code>title</code></td>
       <td>el primer <code>&lt;h1&gt;</code> o, si no, el nombre del archivo</td>
       <td>Da nombre a la página en la navegación y en la pestaña del navegador.</td>
     </tr>
     <tr>
-      <td><code>&lt;meta name="description"&gt;</code></td>
+      <td><code>description</code></td>
       <td><code>description</code> de <code>htmlpress.yaml</code></td>
       <td>
         La descripción de la página para los buscadores y las vistas previas en redes
@@ -66,7 +68,7 @@ Plain Markdown, styled by the theme.</code></pre>
       </td>
     </tr>
     <tr>
-      <td><code>&lt;meta name="image"&gt;</code></td>
+      <td><code>image</code></td>
       <td>ninguno</td>
       <td>
         La imagen que se muestra cuando se comparte la página, como
@@ -76,17 +78,17 @@ Plain Markdown, styled by the theme.</code></pre>
       </td>
     </tr>
     <tr>
-      <td>cualquier otra cosa en <code>&lt;head&gt;</code></td>
+      <td><code>head</code></td>
       <td>ninguno</td>
       <td>
-        Se conserva: los <code>&lt;link&gt;</code>, <code>&lt;style&gt;</code> o
-        <code>&lt;script&gt;</code> propios de una página se añaden al head del layout,
-        después del tema. Una página sin <code>&lt;head&gt;</code> aporta los que van
-        antes de su primer contenido.
+        Solo Markdown: HTML sin procesar que se añade al head del layout, después del
+        tema. Una página HTML escribe sus propios <code>&lt;link&gt;</code>,
+        <code>&lt;style&gt;</code> o <code>&lt;script&gt;</code> en su
+        <code>&lt;head&gt;</code>, o antes de su primer contenido, y se añaden igual.
       </td>
     </tr>
     <tr>
-      <td><code>&lt;meta name="date"&gt;</code></td>
+      <td><code>date</code></td>
       <td>ninguno</td>
       <td>
         Cuándo se publicó la página, <code>YYYY-MM-DD</code> (una marca de tiempo se
@@ -95,16 +97,19 @@ Plain Markdown, styled by the theme.</code></pre>
       </td>
     </tr>
     <tr>
-      <td><code>&lt;meta name="author"&gt;</code></td>
-      <td>ninguno</td>
-      <td>Un autor que se muestra bajo el título; repite la etiqueta para varios.</td>
-    </tr>
-    <tr>
-      <td><code>&lt;meta name="keywords"&gt;</code></td>
+      <td><code>author</code></td>
       <td>ninguno</td>
       <td>
-        Etiquetas separadas por comas; en un blog cada una recibe una página que lista sus
-        entradas.
+        Un autor que se muestra bajo el título; una lista, o la etiqueta repetida, para
+        varios.
+      </td>
+    </tr>
+    <tr>
+      <td><code>keywords</code></td>
+      <td>ninguno</td>
+      <td>
+        Etiquetas, en una lista o separadas por comas; en un blog cada una tiene una
+        página con sus entradas.
       </td>
     </tr>
   </tbody>
@@ -121,19 +126,19 @@ Plain Markdown, styled by the theme.</code></pre>
 <table>
   <thead>
     <tr>
-      <th>Etiqueta</th>
+      <th>Clave</th>
       <th>Predeterminado</th>
       <th>Uso</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td><code>&lt;meta name="order"&gt;</code></td>
+      <td><code>order</code></td>
       <td>ninguno (ordenado por ruta)</td>
       <td>Una posición de orden entera; consulta "Reglas de orden" más abajo.</td>
     </tr>
     <tr>
-      <td><code>&lt;meta name="layout"&gt;</code></td>
+      <td><code>layout</code></td>
       <td>el layout del sitio</td>
       <td>
         Envuelve la página en <code>.htmlpress/layouts/&lt;name&gt;.html</code> en su
@@ -143,12 +148,12 @@ Plain Markdown, styled by the theme.</code></pre>
       </td>
     </tr>
     <tr>
-      <td><code>&lt;meta name="label"&gt;</code></td>
+      <td><code>label</code></td>
       <td>el título</td>
       <td>Un nombre más corto para la entrada de la página en la navegación.</td>
     </tr>
     <tr>
-      <td><code>&lt;meta name="icon"&gt;</code></td>
+      <td><code>icon</code></td>
       <td>ninguno</td>
       <td>
         Un <a href="/es/authoring/rich-elements/">icono integrado</a> antes de una entrada
@@ -158,34 +163,34 @@ Plain Markdown, styled by the theme.</code></pre>
       </td>
     </tr>
     <tr>
-      <td><code>&lt;meta name="sidebar" content="false"&gt;</code></td>
+      <td><code>sidebar</code></td>
       <td><code>true</code></td>
       <td>
-        Deja la página fuera de la navegación y de los enlaces anterior y siguiente; se
-        sigue compilando y es accesible por su URL.
+        <code>false</code> deja la página fuera de la navegación y de los enlaces anterior
+        y siguiente; se sigue compilando y es accesible por su URL.
       </td>
     </tr>
     <tr>
-      <td><code>&lt;meta name="toc" content="false"&gt;</code></td>
+      <td><code>toc</code></td>
       <td><code>true</code></td>
-      <td>Desactiva la tabla de contenidos de la página.</td>
+      <td><code>false</code> desactiva la tabla de contenidos de la página.</td>
     </tr>
     <tr>
-      <td><code>&lt;meta name="breadcrumbs" content="false"&gt;</code></td>
+      <td><code>breadcrumbs</code></td>
       <td>el <code>breadcrumbs</code> de la configuración</td>
       <td>
-        Oculta la ruta de carpetas sobre el contenido; <code>true</code> la muestra aunque
-        la configuración la desactive.
+        <code>false</code> oculta la ruta de carpetas sobre el contenido;
+        <code>true</code> la muestra aunque la configuración la desactive.
       </td>
     </tr>
     <tr>
-      <td><code>&lt;meta name="source-url"&gt;</code></td>
+      <td><code>source-url</code></td>
       <td><code>edit</code> seguido de la ruta de la página</td>
       <td>
         Adónde lleva el enlace al código fuente de la página, para una página cuyo origen
         está en otro sitio;
-        <code>&lt;meta name="source-action" content="view"&gt;</code> lo etiqueta como
-        "Ver el código fuente" en lugar de "Editar esta página".
+        <code>source-action</code> con valor <code>view</code> lo etiqueta como "Ver el
+        código fuente" en lugar de "Editar esta página".
       </td>
     </tr>
   </tbody>
@@ -225,16 +230,16 @@ Plain Markdown, styled by the theme.</code></pre>
   <code>/guides/</code>. Consulta <a href="/es/authoring/links/">Enlaces</a>.
 </p>
 <p>
-  <code>&lt;meta name="path" content="/start/"&gt;</code> sirve la página en otra URL,
-  independiente de la ruta de su archivo: una ruta que termina en <code>/</code> nombra
-  esa carpeta, y una que termina en <code>.html</code> la página que sería ese archivo,
-  así que <code>/start.html</code> también la sirve en <code>/start/</code>. Dos páginas
-  en una misma URL hacen fallar la compilación.
+  <code>path: /start/</code> sirve la página en otra URL, independiente de la ruta de su
+  archivo: una ruta que termina en <code>/</code> nombra esa carpeta, y una que termina en
+  <code>.html</code> la página que sería ese archivo, así que
+  <code>/start.html</code> también la sirve en <code>/start/</code>. Dos páginas en una
+  misma URL hacen fallar la compilación.
 </p>
 <p>
   En un sitio con <code>languages</code>, un archivo llamado <code>guide.es.html</code>, o
-  uno con <code>&lt;meta name="language" content="es"&gt;</code>, es la traducción al
-  español de <code>guide.html</code>, servida en <code>/es/guide/</code>; consulta
+  uno con <code>language: es</code>, es la traducción al español de
+  <code>guide.html</code>, servida en <code>/es/guide/</code>; consulta
   <a href="/es/customization/translations/">Traducciones</a>.
 </p>
 
