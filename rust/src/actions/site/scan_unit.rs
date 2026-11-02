@@ -447,6 +447,9 @@ fn reads_a_route_path_as_a_tanstack_file_route() {
         ("__root.html", None),
         ("posts.$id.html", None),
         ("logo.svg", None),
+        ("a/[.][.]/[.][.]/x.html", None),
+        ("[.].html", None),
+        ("a..b.html", None),
     ] {
         assert_eq!(read_route_path(file).as_deref(), path, "{file}");
     }

@@ -1063,6 +1063,16 @@ pub(crate) fn read_route_path(file: &str) -> Option<String> {
         .filter(|segment| !(segment.starts_with('(') && segment.ends_with(')')))
         .map(|segment| segment.replace("[.]", "."))
         .collect();
+    // `[.][.]` would otherwise be `..`, written outside the build folder
+    if kept
+        .iter()
+        .any(|segment| matches!(segment.as_str(), "" | "." | ".."))
+    {
+        eprintln!(
+            "warning: {ROUTES_DIR}{file}: a route cannot name an empty, . or .. segment"
+        );
+        return None;
+    }
     let path = kept.join("/");
     Some(match kept.last() {
         None => "index.html".to_owned(),
