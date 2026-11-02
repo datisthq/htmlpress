@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.0](https://github.com/datisthq/htmlpress/compare/v0.9.0...v0.10.0) (2026-11-02)
+
+
+### Features
+
+* rename the tokens after Livemark's and add a violet secondary ([0337232](https://github.com/datisthq/htmlpress/commit/0337232ea139c9799a5d35e5f73e92f3ccec048c))
+
 ## [0.9.0](https://github.com/datisthq/htmlpress/compare/v0.8.0...v0.9.0) (2026-11-02)
 
 
