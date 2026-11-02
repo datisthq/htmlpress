@@ -3,7 +3,7 @@
     display: block;
     padding: 0.5rem 1.5rem;
     background: var(--htmlpress-banner);
-    color: var(--htmlpress-banner-text);
+    color: var(--htmlpress-banner-foreground);
     font: 0.75rem/1rem var(--htmlpress-mono);
     letter-spacing: 0.025em;
     text-align: center;

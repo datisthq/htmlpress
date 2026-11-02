@@ -12,7 +12,7 @@
     overflow: hidden;
     border: 1px solid var(--htmlpress-border);
     border-radius: var(--htmlpress-radius);
-    background: var(--htmlpress-bg);
+    background: var(--htmlpress-background);
     box-shadow: 0 20px 40px -12px oklch(0 0 0 / 0.25);
   }
   header {
@@ -21,7 +21,7 @@
     gap: 1.25rem;
     padding: 0.5rem 1rem;
     border-bottom: 1px solid var(--htmlpress-border);
-    background: var(--htmlpress-surface);
+    background: var(--htmlpress-muted);
   }
   header > span {
     flex-shrink: 0;
@@ -50,7 +50,7 @@
     border: 0;
     border-radius: 9999px;
     background: none;
-    color: var(--htmlpress-muted);
+    color: var(--htmlpress-muted-foreground);
     font: inherit;
     font-size: 0.875rem;
     line-height: 1.25rem;
@@ -62,11 +62,11 @@
       background 0.2s;
   }
   [role="tab"]:hover {
-    color: var(--htmlpress-text);
+    color: var(--htmlpress-foreground);
   }
   [role="tab"][aria-selected="true"] {
-    background: var(--htmlpress-bg);
-    color: var(--htmlpress-text);
+    background: var(--htmlpress-background);
+    color: var(--htmlpress-foreground);
     font-weight: 500;
     box-shadow:
       0 1px 3px 0 oklch(0 0 0 / 0.1),
@@ -76,7 +76,7 @@
     font: 0.75rem var(--htmlpress-mono);
   }
   [role="tab"][aria-selected="true"] > span:first-child {
-    color: var(--htmlpress-accent);
+    color: var(--htmlpress-primary);
   }
   [role="tab"] > svg[aria-hidden] {
     display: none;
@@ -89,7 +89,7 @@
     bottom: 0.125rem;
     height: 0.125rem;
     border-radius: 999px;
-    background: color-mix(in oklab, var(--htmlpress-accent) 70%, transparent);
+    background: color-mix(in oklab, var(--htmlpress-primary) 70%, transparent);
     transform-origin: left;
     animation: landing-progress 6s linear;
   }
@@ -135,7 +135,7 @@
     flex-shrink: 0;
     width: 24%;
     overflow: hidden;
-    border: 3px solid color-mix(in oklab, var(--htmlpress-text) 80%, transparent);
+    border: 3px solid color-mix(in oklab, var(--htmlpress-foreground) 80%, transparent);
     border-bottom: 0;
     border-radius: 0.75rem 0.75rem 0 0;
     box-shadow: 0 25px 50px -12px oklch(0 0 0 / 0.35);
@@ -158,9 +158,9 @@
     height: 100%;
     margin: 0;
     padding: 1rem;
-    border: 1px solid color-mix(in oklab, var(--htmlpress-accent) 25%, transparent);
+    border: 1px solid color-mix(in oklab, var(--htmlpress-primary) 25%, transparent);
     border-radius: var(--htmlpress-radius);
-    background: var(--htmlpress-bg);
+    background: var(--htmlpress-background);
     box-shadow: 0 10px 24px -8px oklch(0 0 0 / 0.2);
   }
   figure > svg[aria-hidden] {
@@ -169,18 +169,18 @@
     height: 2rem;
     padding: 0.4375rem;
     border-radius: 0.5rem;
-    background: color-mix(in oklab, var(--htmlpress-accent) 10%, transparent);
-    color: var(--htmlpress-accent);
+    background: color-mix(in oklab, var(--htmlpress-primary) 10%, transparent);
+    color: var(--htmlpress-primary);
   }
   figcaption {
     margin: 0;
-    color: var(--htmlpress-muted);
+    color: var(--htmlpress-muted-foreground);
     font: 0.75rem/1.6 var(--htmlpress-mono);
   }
   figcaption > strong {
     display: block;
     margin-bottom: 0.25rem;
-    color: var(--htmlpress-accent);
+    color: var(--htmlpress-primary);
     font: 600 0.75rem/1.4 var(--htmlpress-font);
     letter-spacing: 0.12em;
     text-transform: uppercase;

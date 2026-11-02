@@ -11,10 +11,10 @@
     --evd-europe: #eb6834;
     --evd-us: #1baf7a;
     --evd-rest: #eda100;
-    --evd-ink: var(--htmlpress-text);
-    --evd-soft: var(--htmlpress-muted);
+    --evd-ink: var(--htmlpress-foreground);
+    --evd-soft: var(--htmlpress-muted-foreground);
     --evd-grid: var(--htmlpress-border);
-    --evd-card: var(--htmlpress-surface);
+    --evd-card: var(--htmlpress-muted);
     margin-block: 1.5rem 2rem;
     color: var(--evd-ink);
     font-variant-numeric: tabular-nums;
@@ -209,7 +209,7 @@
     font-size: 1.8cqw;
     white-space: nowrap;
     pointer-events: none;
-    background: var(--htmlpress-bg);
+    background: var(--htmlpress-background);
     border: 1px solid var(--evd-grid);
     border-radius: 0.8cqw;
     box-shadow: var(--htmlpress-shadow);
@@ -284,7 +284,7 @@
     font-size: 0.875rem;
     color: var(--evd-ink);
     cursor: pointer;
-    background: var(--htmlpress-bg);
+    background: var(--htmlpress-background);
     border: 1px solid var(--evd-grid);
     border-radius: 999px;
   }

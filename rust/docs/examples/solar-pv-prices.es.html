@@ -9,10 +9,10 @@
   .sp {
     --sp-line: #2a78d6;
     --sp-accent: #eda100;
-    --sp-ink: var(--htmlpress-text);
-    --sp-soft: var(--htmlpress-muted);
+    --sp-ink: var(--htmlpress-foreground);
+    --sp-soft: var(--htmlpress-muted-foreground);
     --sp-grid: var(--htmlpress-border);
-    --sp-card: var(--htmlpress-surface);
+    --sp-card: var(--htmlpress-muted);
     margin-block: 2rem;
     color: var(--sp-ink);
   }
@@ -43,7 +43,7 @@
   .sp-toggle {
     display: inline-flex;
     padding: 3px;
-    background: var(--htmlpress-bg);
+    background: var(--htmlpress-background);
     border: 1px solid var(--sp-grid);
     border-radius: 999px;
   }
@@ -59,8 +59,8 @@
     border-radius: 999px;
   }
   .sp-toggle button[aria-pressed="true"] {
-    color: var(--htmlpress-accent-text);
-    background: var(--htmlpress-accent);
+    color: var(--htmlpress-primary-foreground);
+    background: var(--htmlpress-primary);
   }
   .sp-range {
     display: flex;
@@ -73,7 +73,7 @@
   .sp-range input {
     flex: 1;
     min-width: 5rem;
-    accent-color: var(--htmlpress-accent);
+    accent-color: var(--htmlpress-primary);
   }
   .sp-range output {
     min-width: 2.5rem;
@@ -148,7 +148,7 @@
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
     pointer-events: none;
-    background: var(--htmlpress-bg);
+    background: var(--htmlpress-background);
     border: 1px solid var(--sp-grid);
     border-radius: 0.5rem;
     box-shadow: var(--htmlpress-shadow);
@@ -459,7 +459,7 @@
             cy: y(priceOf(year)),
             r: 5,
             fill: "var(--sp-line)",
-            stroke: "var(--htmlpress-bg)",
+            stroke: "var(--htmlpress-background)",
             "stroke-width": 2,
           },
           svg,

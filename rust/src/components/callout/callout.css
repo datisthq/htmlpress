@@ -22,7 +22,7 @@
     line-height: 1.25rem;
   }
   :scope[type="tip"] {
-    --tone: var(--htmlpress-success);
+    --tone: var(--htmlpress-positive);
     --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5M9 18h6M10 22h4'/%3E%3C/svg%3E");
     --label: "Tip";
     --fill: light-dark(
@@ -42,7 +42,7 @@
     --ink: light-dark(oklch(0.476 0.114 61.907), oklch(0.852 0.199 91.936));
   }
   :scope[type="danger"] {
-    --tone: var(--htmlpress-danger);
+    --tone: var(--htmlpress-destructive);
     --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5'/%3E%3C/svg%3E");
     --label: "Danger";
     --fill: light-dark(oklch(0.936 0.032 17.717 / 0.5), oklch(0.258 0.092 26.042 / 0.5));

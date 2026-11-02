@@ -172,7 +172,7 @@ $ htmlpress escape htmlpress-tabs -r docs  # in another project folder</code></p
 /* .htmlpress/components/credits/credits.css */
 @scope (htmlpress-credits) {
   :scope { display: block; }
-  p { color: var(--htmlpress-muted); }
+  p { color: var(--htmlpress-muted-foreground); }
 }</code></pre>
     <p>
       Then put <code>&lt;htmlpress-credits&gt;&lt;/htmlpress-credits&gt;</code> in an
@@ -195,7 +195,7 @@ $ htmlpress escape htmlpress-tabs -r docs  # in another project folder</code></p
       rebrand:
     </p>
     <pre><code>:root {
-  --htmlpress-accent: oklch(0.55 0.24 27); /* red */
+  --htmlpress-primary: oklch(0.55 0.24 27); /* red */
 }</code></pre>
     <p>
       For a single page, override the token from that page's own

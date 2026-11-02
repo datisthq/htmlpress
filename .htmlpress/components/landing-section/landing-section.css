@@ -27,7 +27,7 @@
   }
   header > p {
     margin: 1rem 0 0;
-    color: var(--htmlpress-muted);
+    color: var(--htmlpress-muted-foreground);
     font-size: 1.125rem;
     line-height: 1.75rem;
   }

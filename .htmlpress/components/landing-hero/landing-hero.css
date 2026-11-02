@@ -34,7 +34,7 @@
   }
   hgroup > p {
     margin: 0;
-    color: var(--htmlpress-accent);
+    color: var(--htmlpress-primary);
     font-size: 0.75rem;
     font-weight: 600;
     line-height: 1rem;
@@ -52,8 +52,8 @@
     padding: 0;
     color: inherit;
     background: linear-gradient(
-        color-mix(in oklab, var(--htmlpress-accent) 22%, transparent),
-        color-mix(in oklab, var(--htmlpress-accent) 22%, transparent)
+        color-mix(in oklab, var(--htmlpress-primary) 22%, transparent),
+        color-mix(in oklab, var(--htmlpress-primary) 22%, transparent)
       )
       0 88% / 100% 0.3em no-repeat;
     box-decoration-break: clone;
@@ -61,7 +61,7 @@
   :scope > section > div > p {
     max-width: 52ch;
     margin: 1.5rem 0 0;
-    color: var(--htmlpress-muted);
+    color: var(--htmlpress-muted-foreground);
     font-size: 1.25rem;
     line-height: 1.625;
   }
@@ -74,13 +74,13 @@
     border: 1px solid var(--htmlpress-border);
     /* The visible corner of the 2.5rem-tall pill buttons above */
     border-radius: 1.25rem;
-    background: color-mix(in oklab, var(--htmlpress-bg) 50%, transparent);
+    background: color-mix(in oklab, var(--htmlpress-background) 50%, transparent);
     backdrop-filter: blur(8px);
     list-style: none;
   }
   li {
     margin: 0;
-    color: var(--htmlpress-muted);
+    color: var(--htmlpress-muted-foreground);
     font-family: var(--htmlpress-mono);
     font-size: 0.78125rem;
     line-height: 1.25rem;
@@ -88,14 +88,14 @@
   }
   li::before {
     content: "$ ";
-    color: var(--htmlpress-accent);
+    color: var(--htmlpress-primary);
     user-select: none;
   }
   samp {
     font: inherit;
   }
   b {
-    color: var(--htmlpress-text);
+    color: var(--htmlpress-foreground);
     font-weight: 400;
   }
   @media (max-width: 64rem) {

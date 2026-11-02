@@ -7,7 +7,7 @@
     margin: 1rem 0;
     padding: 1rem;
     border: 1px solid var(--htmlpress-border);
-    background: var(--htmlpress-bg);
+    background: var(--htmlpress-background);
     border-radius: var(--htmlpress-radius);
     font: 0.875rem/1.25rem var(--htmlpress-mono);
   }
@@ -38,12 +38,12 @@
     width: 1rem;
     height: 1rem;
     margin-right: 0.5rem;
-    background: var(--htmlpress-muted);
+    background: var(--htmlpress-muted-foreground);
     vertical-align: -0.2em;
     mask: var(--file) center / contain no-repeat;
   }
   li:has(> ul)::before {
-    background: var(--htmlpress-accent);
+    background: var(--htmlpress-primary);
     mask-image: var(--folder);
   }
 }

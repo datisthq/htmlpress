@@ -21,7 +21,7 @@
     margin: 0;
     padding: 0;
     border-radius: 999px;
-    color: var(--htmlpress-muted);
+    color: var(--htmlpress-muted-foreground);
     cursor: pointer;
     list-style: none;
   }
@@ -31,7 +31,7 @@
   summary:hover,
   details[open] > summary {
     margin: 0;
-    background: var(--htmlpress-surface);
+    background: var(--htmlpress-muted);
   }
   svg {
     flex: none;
@@ -61,13 +61,14 @@
     padding: 0.25rem;
     border: 1px solid var(--htmlpress-border);
     border-radius: 0.75rem;
-    background: var(--htmlpress-bg);
-    box-shadow: 0 8px 24px color-mix(in oklab, var(--htmlpress-text) 12%, transparent);
+    background: var(--htmlpress-background);
+    box-shadow: 0 8px 24px
+      color-mix(in oklab, var(--htmlpress-foreground) 12%, transparent);
   }
   p {
     margin: 0;
     padding: 0.375rem 0.625rem;
-    color: var(--htmlpress-muted);
+    color: var(--htmlpress-muted-foreground);
     font-size: 0.75rem;
     font-weight: 500;
   }
@@ -90,17 +91,17 @@
     border: 0;
     border-radius: 0.5rem;
     background: none;
-    color: var(--htmlpress-text);
+    color: var(--htmlpress-foreground);
     font: 400 0.875rem/1.25rem var(--htmlpress-font);
     text-align: left;
     white-space: nowrap;
     cursor: pointer;
   }
   button:hover {
-    background: var(--htmlpress-surface);
+    background: var(--htmlpress-muted);
   }
   button[aria-current="true"] {
-    color: var(--htmlpress-accent);
+    color: var(--htmlpress-primary);
     font-weight: 500;
   }
 }

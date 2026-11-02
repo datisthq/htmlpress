@@ -2,7 +2,7 @@
   :scope {
     display: block;
     background: var(--htmlpress-banner);
-    color: var(--htmlpress-banner-text);
+    color: var(--htmlpress-banner-foreground);
   }
   p {
     display: flex;

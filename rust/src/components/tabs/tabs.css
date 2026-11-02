@@ -5,7 +5,7 @@
     margin: 1rem 0;
     border: 1px solid var(--htmlpress-border);
     border-radius: var(--htmlpress-radius);
-    background: var(--htmlpress-bg);
+    background: var(--htmlpress-background);
   }
   [role="tablist"] {
     display: flex;
@@ -19,18 +19,18 @@
     border: 0;
     border-bottom: 2px solid transparent;
     background: none;
-    color: var(--htmlpress-muted);
+    color: var(--htmlpress-muted-foreground);
     font: 500 0.875rem/1.25rem var(--htmlpress-font);
     white-space: nowrap;
     cursor: pointer;
     transition: color 0.15s;
   }
   [role="tab"]:hover {
-    color: var(--htmlpress-text);
+    color: var(--htmlpress-foreground);
   }
   [role="tab"][aria-selected="true"] {
-    border-bottom-color: var(--htmlpress-accent);
-    color: var(--htmlpress-text);
+    border-bottom-color: var(--htmlpress-primary);
+    color: var(--htmlpress-foreground);
   }
   [role="tabpanel"] {
     padding: 1rem;
@@ -53,7 +53,7 @@
       :has(> htmlpress-tab > :not(pre, .htmlpress-code))
     ) {
     overflow: hidden;
-    background: var(--htmlpress-surface);
+    background: var(--htmlpress-muted);
     box-shadow:
       0 1px 3px 0 oklch(0 0 0 / 0.1),
       0 1px 2px -1px oklch(0 0 0 / 0.1);
@@ -99,6 +99,6 @@
     padding-inline: 0.75rem;
   }
   :scope[sync="package-manager"] [role="tab"][aria-selected="true"] {
-    border-bottom-color: var(--htmlpress-text);
+    border-bottom-color: var(--htmlpress-foreground);
   }
 }

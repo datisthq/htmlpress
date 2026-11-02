@@ -2,7 +2,7 @@
   :scope {
     display: block;
     margin-top: 3rem;
-    color: var(--htmlpress-muted);
+    color: var(--htmlpress-muted-foreground);
     font-size: 0.875rem;
     line-height: 1.25rem;
     text-align: center;
@@ -20,6 +20,6 @@
     transition: color 0.15s;
   }
   a:hover {
-    color: var(--htmlpress-text);
+    color: var(--htmlpress-foreground);
   }
 }

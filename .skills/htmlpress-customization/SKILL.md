@@ -28,15 +28,16 @@ Most looks are a token. Override it in `.htmlpress/styles/tokens.css`, or in one
 
 ```css
 :root {
-  --htmlpress-accent: oklch(0.55 0.24 27);
+  --htmlpress-primary: oklch(0.55 0.24 27);
 }
 ```
 
-`--htmlpress-accent`, `-accent-text`, `-font`, `-mono`, `-bg`, `-surface`, `-text`, `-muted`,
-`-prose`, `-prose-strong`, `-prose-marker`, `-border`, `-shadow`, `-radius`, `-width`,
-`-nav-width`, `-banner`, `-banner-text`, `-highlight`, `-highlight-text` (search matches on
+`--htmlpress-primary`, `-primary-foreground`, `-secondary`, `-secondary-foreground`, `-font`,
+`-mono`, `-background`, `-foreground`, `-muted`, `-muted-foreground`, `-prose`,
+`-prose-strong`, `-prose-marker`, `-border`, `-shadow`, `-radius`, `-width`, `-nav-width`,
+`-banner`, `-banner-foreground`, `-highlight`, `-highlight-foreground` (search matches on
 the page a result opened), and the
-callout and badge tones `-info`, `-success`, `-warning`, `-danger`.
+callout and badge tones `-info`, `-positive`, `-warning`, `-destructive`.
 
 ## Escaping
 
@@ -132,7 +133,7 @@ the folder:
     display: block;
   }
   p {
-    color: var(--htmlpress-muted);
+    color: var(--htmlpress-muted-foreground);
   }
 }
 ```
@@ -153,7 +154,7 @@ the folder:
   directly in `components/` fails the build. Check `htmlpress escape` marks the file escaped.
 - To restyle a component from an outer one, beat its `:scope`: write `:scope htmlpress-header`,
   not a bare `htmlpress-header`, which loses on specificity.
-- Use tokens inside your CSS (`var(--htmlpress-muted)`) so dark mode keeps working.
+- Use tokens inside your CSS (`var(--htmlpress-muted-foreground)`) so dark mode keeps working.
 - Every `<pre><code>` is highlighted by Shiki at build time, one without a language as plain
   `text`: a component coloring its own code meets `pre.shiki` with an inline background, a
   surface background forced with `!important`, and spans already inside. To color it

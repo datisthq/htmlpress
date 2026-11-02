@@ -11,10 +11,10 @@
     --si-max: #2a78d6;
     --si-recent: #eb6834;
     --si-past: #86b6ef;
-    --si-ink: var(--htmlpress-text);
-    --si-soft: var(--htmlpress-muted);
+    --si-ink: var(--htmlpress-foreground);
+    --si-soft: var(--htmlpress-muted-foreground);
     --si-grid: var(--htmlpress-border);
-    --si-card: var(--htmlpress-surface);
+    --si-card: var(--htmlpress-muted);
     color: var(--si-ink);
   }
   @media (prefers-color-scheme: dark) {
@@ -113,7 +113,7 @@
     font-weight: 600;
     line-height: 1.4;
     letter-spacing: 0;
-    color: var(--htmlpress-text);
+    color: var(--htmlpress-foreground);
   }
   .si-figure figcaption {
     margin-top: 0.75rem;
@@ -178,7 +178,7 @@
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
     pointer-events: none;
-    background: var(--htmlpress-bg);
+    background: var(--htmlpress-background);
     border: 1px solid var(--si-grid);
     border-radius: 0.5rem;
     box-shadow: var(--htmlpress-shadow);
@@ -556,7 +556,7 @@
             cy: y(value),
             r: narrow ? 3.5 : 4.5,
             fill: "var(--si-min)",
-            stroke: "var(--htmlpress-bg)",
+            stroke: "var(--htmlpress-background)",
             "stroke-width": 1.5,
           },
           svg,

@@ -10,8 +10,8 @@
     overflow: hidden;
     border: 1px solid transparent;
     border-radius: 2rem;
-    background: var(--htmlpress-accent);
-    color: var(--htmlpress-accent-text);
+    background: var(--htmlpress-primary);
+    color: var(--htmlpress-primary-foreground);
     font-size: 0.75rem;
     font-weight: 500;
     line-height: 1rem;
@@ -25,7 +25,7 @@
     );
   }
   :scope[variant="positive"] {
-    --tone: var(--htmlpress-success);
+    --tone: var(--htmlpress-positive);
     color: light-dark(oklch(0.532 0.157 131.589), oklch(0.841 0.238 128.85));
   }
   :scope[variant="warning"] {
@@ -33,16 +33,16 @@
     color: light-dark(oklch(0.476 0.114 61.907), oklch(0.852 0.199 91.936));
   }
   :scope[variant="destructive"] {
-    --tone: var(--htmlpress-danger);
-    color: var(--htmlpress-danger);
+    --tone: var(--htmlpress-destructive);
+    color: var(--htmlpress-destructive);
   }
   :scope[variant="secondary"] {
-    background: var(--htmlpress-surface);
-    color: var(--htmlpress-text);
+    background: var(--htmlpress-muted);
+    color: var(--htmlpress-foreground);
   }
   :scope[variant="outline"] {
     border-color: var(--htmlpress-border);
     background: transparent;
-    color: var(--htmlpress-text);
+    color: var(--htmlpress-foreground);
   }
 }

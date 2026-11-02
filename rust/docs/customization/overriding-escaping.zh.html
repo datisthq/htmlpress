@@ -160,7 +160,7 @@ $ htmlpress escape htmlpress-tabs -r docs  # in another project folder</code></p
 /* .htmlpress/components/credits/credits.css */
 @scope (htmlpress-credits) {
   :scope { display: block; }
-  p { color: var(--htmlpress-muted); }
+  p { color: var(--htmlpress-muted-foreground); }
 }</code></pre>
     <p>
       然后把 <code>&lt;htmlpress-credits&gt;&lt;/htmlpress-credits&gt;</code> 放入弹出的
@@ -183,7 +183,7 @@ $ htmlpress escape htmlpress-tabs -r docs  # in another project folder</code></p
       <code>:root</code> 块来更换品牌风格：
     </p>
     <pre><code>:root {
-  --htmlpress-accent: oklch(0.55 0.24 27); /* red */
+  --htmlpress-primary: oklch(0.55 0.24 27); /* red */
 }</code></pre>
     <p>
       若只针对单个页面，可以改为在该页面自己的

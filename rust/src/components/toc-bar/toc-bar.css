@@ -10,7 +10,7 @@
       z-index: 15;
       display: block;
       border-bottom: 1px solid var(--htmlpress-border);
-      background: var(--htmlpress-bg);
+      background: var(--htmlpress-background);
     }
   }
   :scope > button {
@@ -21,7 +21,7 @@
     padding: 0.75rem 1rem;
     border: 0;
     background: none;
-    color: var(--htmlpress-muted);
+    color: var(--htmlpress-muted-foreground);
     font: 0.875rem/1.25rem var(--htmlpress-font);
     text-align: left;
     cursor: pointer;
@@ -47,10 +47,10 @@
     rotate: -90deg;
   }
   [data-ring] circle {
-    stroke: color-mix(in oklab, var(--htmlpress-muted) 30%, transparent);
+    stroke: color-mix(in oklab, var(--htmlpress-muted-foreground) 30%, transparent);
     transition: stroke-dashoffset 0.15s;
   }
   [data-ring] circle + circle {
-    stroke: var(--htmlpress-accent);
+    stroke: var(--htmlpress-primary);
   }
 }

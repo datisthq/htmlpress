@@ -170,7 +170,7 @@ $ htmlpress escape htmlpress-tabs -r docs  # in another project folder</code></p
 /* .htmlpress/components/credits/credits.css */
 @scope (htmlpress-credits) {
   :scope { display: block; }
-  p { color: var(--htmlpress-muted); }
+  p { color: var(--htmlpress-muted-foreground); }
 }</code></pre>
     <p>
       Después pon <code>&lt;htmlpress-credits&gt;&lt;/htmlpress-credits&gt;</code> en un
@@ -194,7 +194,7 @@ $ htmlpress escape htmlpress-tabs -r docs  # in another project folder</code></p
       para cambiar la imagen de marca:
     </p>
     <pre><code>:root {
-  --htmlpress-accent: oklch(0.55 0.24 27); /* red */
+  --htmlpress-primary: oklch(0.55 0.24 27); /* red */
 }</code></pre>
     <p>
       Para una sola página, sobrescribe el token desde el <code>&lt;style&gt;</code>

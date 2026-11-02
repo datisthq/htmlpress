@@ -3,7 +3,11 @@
   :scope {
     --landing-width: 72rem;
     --landing-gutter: 1.5rem;
-    --landing-tint: color-mix(in oklab, var(--htmlpress-accent) 5%, var(--htmlpress-bg));
+    --landing-tint: color-mix(
+      in oklab,
+      var(--htmlpress-primary) 5%,
+      var(--htmlpress-background)
+    );
     /* Keep it saturated: the backdrop mixes it at 16%, where a 100–200 tint vanishes */
     --landing-secondary: oklch(0.541 0.281 293.009);
     display: block;

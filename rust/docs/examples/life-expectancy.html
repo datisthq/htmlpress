@@ -13,10 +13,10 @@
     --lx-r3: #1baf7a;
     --lx-r4: #6250d6;
     --lx-r5: #e87ba4;
-    --lx-ink: var(--htmlpress-text);
-    --lx-soft: var(--htmlpress-muted);
+    --lx-ink: var(--htmlpress-foreground);
+    --lx-soft: var(--htmlpress-muted-foreground);
     --lx-grid: var(--htmlpress-border);
-    --lx-card: var(--htmlpress-surface);
+    --lx-card: var(--htmlpress-muted);
     margin-block: 1.5rem 2rem;
     color: var(--lx-ink);
     font-variant-numeric: tabular-nums;
@@ -68,7 +68,7 @@
     font-weight: 600;
     color: var(--lx-soft);
     cursor: pointer;
-    background: var(--htmlpress-bg);
+    background: var(--htmlpress-background);
     border: 1px solid var(--lx-grid);
     border-radius: 999px;
   }
@@ -95,7 +95,7 @@
   .lx-time input {
     flex: 1;
     min-width: 5rem;
-    accent-color: var(--htmlpress-accent);
+    accent-color: var(--htmlpress-primary);
   }
   .lx-time output {
     min-width: 2.5rem;
@@ -107,9 +107,9 @@
     place-items: center;
     width: 2rem;
     height: 2rem;
-    color: var(--htmlpress-accent-text);
+    color: var(--htmlpress-primary-foreground);
     cursor: pointer;
-    background: var(--htmlpress-accent);
+    background: var(--htmlpress-primary);
     border: 0;
     border-radius: 50%;
   }
@@ -217,7 +217,7 @@
     fill: var(--lx-ink);
     pointer-events: none;
     paint-order: stroke;
-    stroke: var(--htmlpress-bg);
+    stroke: var(--htmlpress-background);
     stroke-width: 3px;
   }
   .lx-chart .lx-watermark {
@@ -228,7 +228,7 @@
   .lx-dot {
     cursor: pointer;
     fill-opacity: 0.75;
-    stroke: var(--htmlpress-bg);
+    stroke: var(--htmlpress-background);
     transition: fill-opacity 0.15s;
   }
   .lx-dot.lx-on {
@@ -260,7 +260,7 @@
     line-height: 1.45;
     white-space: nowrap;
     pointer-events: none;
-    background: var(--htmlpress-bg);
+    background: var(--htmlpress-background);
     border: 1px solid var(--lx-grid);
     border-radius: 0.5rem;
     box-shadow: var(--htmlpress-shadow);
@@ -325,7 +325,7 @@
     background: var(--lx-card);
   }
   .lx-table tr.lx-on {
-    box-shadow: inset 3px 0 var(--htmlpress-accent);
+    box-shadow: inset 3px 0 var(--htmlpress-primary);
   }
   .lx-pick {
     display: inline-flex;
@@ -1402,7 +1402,7 @@
           x2: x(state.year),
           y1: m.top,
           y2: height - m.bottom,
-          stroke: "var(--htmlpress-accent)",
+          stroke: "var(--htmlpress-primary)",
           "stroke-width": 1.5,
         },
         svg,
@@ -1446,7 +1446,7 @@
           cy: y(country.le[i]),
           r: 4.5,
           fill: color(country),
-          stroke: "var(--htmlpress-bg)",
+          stroke: "var(--htmlpress-background)",
           "stroke-width": 2,
         },
         svg,

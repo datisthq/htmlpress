@@ -13,8 +13,8 @@
     padding: 0 0.625rem;
     border: 1px solid transparent;
     border-radius: 999px;
-    background: var(--htmlpress-accent);
-    color: var(--htmlpress-accent-text);
+    background: var(--htmlpress-primary);
+    color: var(--htmlpress-primary-foreground);
     font-size: 0.875rem;
     font-weight: 500;
     line-height: 1.25rem;
@@ -23,30 +23,30 @@
     transition: background 0.15s;
   }
   a:hover {
-    background: color-mix(in oklab, var(--htmlpress-accent) 80%, transparent);
+    background: color-mix(in oklab, var(--htmlpress-primary) 80%, transparent);
   }
   :scope[variant="secondary"] a {
     border-color: var(--htmlpress-border);
-    background: var(--htmlpress-bg);
+    background: var(--htmlpress-background);
     color: var(--htmlpress-prose-strong);
   }
   :scope[variant="secondary"] a:hover {
-    background: var(--htmlpress-surface);
+    background: var(--htmlpress-muted);
   }
   :scope:is([variant="outline"], [variant="ghost"], [variant="link"]) a {
     border-color: var(--htmlpress-border);
     background: transparent;
-    color: var(--htmlpress-text);
+    color: var(--htmlpress-foreground);
   }
   :scope:is([variant="outline"], [variant="ghost"]) a:hover {
-    background: var(--htmlpress-surface);
+    background: var(--htmlpress-muted);
   }
   :scope:is([variant="ghost"], [variant="link"]) a {
     border-color: transparent;
   }
   :scope[variant="link"] a {
     padding-inline: 0;
-    color: var(--htmlpress-accent);
+    color: var(--htmlpress-primary);
     text-decoration: underline;
     text-underline-offset: 0.2em;
   }
@@ -56,19 +56,19 @@
   :scope:is([variant="positive"], [variant="warning"], [variant="destructive"]) a {
     border-color: var(--tone);
     background: var(--tone);
-    color: var(--htmlpress-bg);
+    color: var(--htmlpress-background);
   }
   :scope:is([variant="positive"], [variant="warning"], [variant="destructive"]) a:hover {
-    background: color-mix(in oklab, var(--tone) 85%, var(--htmlpress-text));
+    background: color-mix(in oklab, var(--tone) 85%, var(--htmlpress-foreground));
   }
   :scope[variant="positive"] {
-    --tone: var(--htmlpress-success);
+    --tone: var(--htmlpress-positive);
   }
   :scope[variant="warning"] {
     --tone: var(--htmlpress-warning);
   }
   :scope[variant="destructive"] {
-    --tone: var(--htmlpress-danger);
+    --tone: var(--htmlpress-destructive);
   }
   :scope[size="sm"] a {
     padding: 0.375rem 0.875rem;

@@ -2,7 +2,7 @@
   :scope {
     display: block;
     margin-bottom: 1rem;
-    color: var(--htmlpress-muted);
+    color: var(--htmlpress-muted-foreground);
     font-size: 0.875rem;
   }
   ol {
@@ -28,10 +28,10 @@
     text-decoration: none;
   }
   a:hover {
-    color: var(--htmlpress-text);
+    color: var(--htmlpress-foreground);
   }
   [aria-current="page"] {
-    color: var(--htmlpress-text);
+    color: var(--htmlpress-foreground);
     font-weight: 500;
   }
 }

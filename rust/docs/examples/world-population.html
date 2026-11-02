@@ -13,10 +13,10 @@
     --pop-latam: #eda100;
     --pop-namerica: #e87ba4;
     --pop-oceania: #008300;
-    --pop-ink: var(--htmlpress-text);
-    --pop-soft: var(--htmlpress-muted);
+    --pop-ink: var(--htmlpress-foreground);
+    --pop-soft: var(--htmlpress-muted-foreground);
     --pop-grid: var(--htmlpress-border);
-    --pop-card: var(--htmlpress-surface);
+    --pop-card: var(--htmlpress-muted);
     margin-block: 2rem;
     color: var(--pop-ink);
     font-variant-numeric: tabular-nums;
@@ -147,7 +147,7 @@
     padding: 0.6rem 0.75rem;
     font-size: 0.8125rem;
     pointer-events: none;
-    background: var(--htmlpress-bg);
+    background: var(--htmlpress-background);
     border: 1px solid var(--pop-grid);
     border-radius: 0.5rem;
     box-shadow: var(--htmlpress-shadow);
@@ -524,7 +524,7 @@
           {
             d: `M${upper.join("L")}L${lower.join("L")}Z`,
             fill: `var(${region.color})`,
-            stroke: "var(--htmlpress-bg)",
+            stroke: "var(--htmlpress-background)",
             "stroke-width": 1.5,
             "stroke-linejoin": "round",
           },
@@ -553,7 +553,7 @@
           y: m.top,
           width: x(2100) - x(projectionStart),
           height: height - m.top - m.bottom,
-          fill: "var(--htmlpress-bg)",
+          fill: "var(--htmlpress-background)",
           opacity: 0.35,
         },
         svg,
@@ -701,7 +701,7 @@
           cy: y(8.232),
           r: 4,
           fill: "var(--pop-asia)",
-          stroke: "var(--htmlpress-bg)",
+          stroke: "var(--htmlpress-background)",
           "stroke-width": 2,
         },
         svg,

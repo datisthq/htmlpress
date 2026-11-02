@@ -12,10 +12,10 @@
     --cw-mid: #f0efec;
     --cw-line: #2a78d6;
     --cw-trend: #eb6834;
-    --cw-ink: var(--htmlpress-text);
-    --cw-soft: var(--htmlpress-muted);
+    --cw-ink: var(--htmlpress-foreground);
+    --cw-soft: var(--htmlpress-muted-foreground);
     --cw-grid: var(--htmlpress-border);
-    --cw-card: var(--htmlpress-surface);
+    --cw-card: var(--htmlpress-muted);
     color: var(--cw-ink);
   }
   @media (prefers-color-scheme: dark) {
@@ -110,7 +110,7 @@
     font-weight: 600;
     line-height: 1.4;
     letter-spacing: 0;
-    color: var(--htmlpress-text);
+    color: var(--htmlpress-foreground);
   }
   .cw-panel > header span {
     font-size: 0.8125rem;
@@ -177,7 +177,7 @@
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
     pointer-events: none;
-    background: var(--htmlpress-bg);
+    background: var(--htmlpress-background);
     border: 1px solid var(--cw-grid);
     border-radius: 0.5rem;
     box-shadow: var(--htmlpress-shadow);
@@ -943,7 +943,7 @@
             cy,
             r: 4,
             fill: "var(--cw-ink)",
-            stroke: "var(--htmlpress-bg)",
+            stroke: "var(--htmlpress-background)",
             "stroke-width": 2,
           },
           svg,
@@ -989,7 +989,7 @@
         {
           r: 4,
           fill: "var(--cw-line)",
-          stroke: "var(--htmlpress-bg)",
+          stroke: "var(--htmlpress-background)",
           "stroke-width": 2,
           opacity: 0,
         },
@@ -1116,7 +1116,7 @@
           cy: y(lastValue),
           r: 4,
           fill: "var(--cw-warm)",
-          stroke: "var(--htmlpress-bg)",
+          stroke: "var(--htmlpress-background)",
           "stroke-width": 2,
         },
         svg,
@@ -1137,7 +1137,7 @@
         {
           r: 4,
           fill: "var(--cw-line)",
-          stroke: "var(--htmlpress-bg)",
+          stroke: "var(--htmlpress-background)",
           "stroke-width": 2,
           opacity: 0,
         },

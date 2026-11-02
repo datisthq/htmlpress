@@ -13,10 +13,18 @@
     --co2-china-ink: #ffffff;
     --co2-usa-ink: #0b0b0b;
     --co2-india-ink: #0b0b0b;
-    --co2-other: color-mix(in oklab, var(--htmlpress-text) 16%, var(--htmlpress-bg));
-    --co2-rest: color-mix(in oklab, var(--htmlpress-text) 6%, var(--htmlpress-bg));
-    --co2-ink: var(--htmlpress-text);
-    --co2-soft: var(--htmlpress-muted);
+    --co2-other: color-mix(
+      in oklab,
+      var(--htmlpress-foreground) 16%,
+      var(--htmlpress-background)
+    );
+    --co2-rest: color-mix(
+      in oklab,
+      var(--htmlpress-foreground) 6%,
+      var(--htmlpress-background)
+    );
+    --co2-ink: var(--htmlpress-foreground);
+    --co2-soft: var(--htmlpress-muted-foreground);
     --co2-grid: var(--htmlpress-border);
     margin-block: 2rem;
     color: var(--co2-ink);
@@ -30,8 +38,16 @@
       --co2-china-ink: #ffffff;
       --co2-usa-ink: #ffffff;
       --co2-india-ink: #ffffff;
-      --co2-other: color-mix(in oklab, var(--htmlpress-text) 32%, var(--htmlpress-bg));
-      --co2-rest: color-mix(in oklab, var(--htmlpress-text) 12%, var(--htmlpress-bg));
+      --co2-other: color-mix(
+        in oklab,
+        var(--htmlpress-foreground) 32%,
+        var(--htmlpress-background)
+      );
+      --co2-rest: color-mix(
+        in oklab,
+        var(--htmlpress-foreground) 12%,
+        var(--htmlpress-background)
+      );
     }
   }
   :root[data-theme="dark"] .co2 {
@@ -41,8 +57,16 @@
     --co2-china-ink: #ffffff;
     --co2-usa-ink: #ffffff;
     --co2-india-ink: #ffffff;
-    --co2-other: color-mix(in oklab, var(--htmlpress-text) 32%, var(--htmlpress-bg));
-    --co2-rest: color-mix(in oklab, var(--htmlpress-text) 12%, var(--htmlpress-bg));
+    --co2-other: color-mix(
+      in oklab,
+      var(--htmlpress-foreground) 32%,
+      var(--htmlpress-background)
+    );
+    --co2-rest: color-mix(
+      in oklab,
+      var(--htmlpress-foreground) 12%,
+      var(--htmlpress-background)
+    );
   }
   .co2-panel {
     margin-top: 1.5rem;
@@ -64,7 +88,7 @@
     font-weight: 600;
     line-height: 1.4;
     letter-spacing: 0;
-    color: var(--htmlpress-text);
+    color: var(--htmlpress-foreground);
     scroll-margin-top: 5rem;
   }
   .co2 > h2 {
@@ -100,7 +124,7 @@
     padding: 0.55rem 0.7rem;
     font-size: 0.8125rem;
     pointer-events: none;
-    background: var(--htmlpress-bg);
+    background: var(--htmlpress-background);
     border: 1px solid var(--co2-grid);
     border-radius: 0.5rem;
     box-shadow: var(--htmlpress-shadow);
@@ -123,7 +147,7 @@
   .co2-toggle {
     display: inline-flex;
     padding: 3px;
-    background: var(--htmlpress-surface);
+    background: var(--htmlpress-muted);
     border: 1px solid var(--co2-grid);
     border-radius: 999px;
   }
@@ -139,8 +163,8 @@
     border-radius: 999px;
   }
   .co2-toggle button[aria-pressed="true"] {
-    color: var(--htmlpress-accent-text);
-    background: var(--htmlpress-accent);
+    color: var(--htmlpress-primary-foreground);
+    background: var(--htmlpress-primary);
   }
   .co2-bars {
     position: relative;
@@ -243,7 +267,7 @@
   .co2-flip div {
     padding: 0.9rem 1rem;
     border-left: 4px solid var(--co2-fill);
-    background: var(--htmlpress-surface);
+    background: var(--htmlpress-muted);
     border-radius: 0 0.5rem 0.5rem 0;
   }
   .co2-flip strong {

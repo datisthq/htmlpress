@@ -19,23 +19,27 @@
     flex-shrink: 0;
     align-items: center;
     gap: 0.375rem;
-    color: color-mix(in srgb, var(--htmlpress-text) 80%, var(--htmlpress-bg));
+    color: color-mix(
+      in srgb,
+      var(--htmlpress-foreground) 80%,
+      var(--htmlpress-background)
+    );
     white-space: nowrap;
     text-decoration: none;
     transition: color 0.15s;
   }
   a:hover {
-    color: var(--htmlpress-text);
+    color: var(--htmlpress-foreground);
   }
   a[aria-current="page"] {
     margin-bottom: -0.125rem;
     padding-bottom: 0.125rem;
     border-bottom: 2px solid currentColor;
-    color: var(--htmlpress-text);
+    color: var(--htmlpress-foreground);
     font-weight: 500;
   }
   small {
-    color: var(--htmlpress-muted);
+    color: var(--htmlpress-muted-foreground);
     font-size: inherit;
   }
   small::before {
@@ -70,7 +74,11 @@
     display: inline-flex;
     align-items: center;
     gap: 0.25rem;
-    color: color-mix(in srgb, var(--htmlpress-text) 80%, var(--htmlpress-bg));
+    color: color-mix(
+      in srgb,
+      var(--htmlpress-foreground) 80%,
+      var(--htmlpress-background)
+    );
     cursor: pointer;
     list-style: none;
   }
@@ -78,7 +86,7 @@
     display: none;
   }
   summary:hover {
-    color: var(--htmlpress-text);
+    color: var(--htmlpress-foreground);
   }
   summary svg {
     width: 0.875rem;
@@ -111,7 +119,7 @@
     padding: 0.375rem;
     border: 1px solid var(--htmlpress-border);
     border-radius: var(--htmlpress-radius);
-    background: var(--htmlpress-bg);
+    background: var(--htmlpress-background);
     box-shadow: var(--htmlpress-shadow);
   }
   details > div > a {
@@ -119,7 +127,7 @@
     border-radius: calc(var(--htmlpress-radius) - 0.25rem);
   }
   details > div > a:hover {
-    background: var(--htmlpress-surface);
+    background: var(--htmlpress-muted);
   }
   details > div > a[aria-current="page"] {
     margin: 0;

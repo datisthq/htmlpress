@@ -13,10 +13,10 @@
     --ghr-latam: #eda100;
     --ghr-namerica: #e87ba4;
     --ghr-oceania: #008300;
-    --ghr-ink: var(--htmlpress-text);
-    --ghr-soft: var(--htmlpress-muted);
+    --ghr-ink: var(--htmlpress-foreground);
+    --ghr-soft: var(--htmlpress-muted-foreground);
     --ghr-grid: var(--htmlpress-border);
-    --ghr-card: var(--htmlpress-surface);
+    --ghr-card: var(--htmlpress-muted);
     color: var(--ghr-ink);
     font-variant-numeric: tabular-nums;
   }
@@ -156,7 +156,7 @@
   }
   .ghr-chart .ghr-halo {
     paint-order: stroke;
-    stroke: var(--htmlpress-bg);
+    stroke: var(--htmlpress-background);
     stroke-width: 4px;
     stroke-linejoin: round;
   }
@@ -204,7 +204,7 @@
     font-size: 0.8125rem;
     white-space: nowrap;
     pointer-events: none;
-    background: var(--htmlpress-bg);
+    background: var(--htmlpress-background);
     border: 1px solid var(--ghr-grid);
     border-radius: 0.5rem;
     box-shadow: var(--htmlpress-shadow);
@@ -630,7 +630,7 @@
               cy: y(v),
               r: 4.5,
               fill: stroke,
-              stroke: "var(--htmlpress-bg)",
+              stroke: "var(--htmlpress-background)",
               "stroke-width": 2,
             },
             group,
@@ -758,7 +758,7 @@
         {
           r: 4,
           fill: `var(${r.color})`,
-          stroke: "var(--htmlpress-bg)",
+          stroke: "var(--htmlpress-background)",
           "stroke-width": 2,
           opacity: 0,
         },

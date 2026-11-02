@@ -30,7 +30,7 @@
     background: linear-gradient(
       to right,
       transparent,
-      color-mix(in oklab, var(--htmlpress-accent) 16%, transparent),
+      color-mix(in oklab, var(--htmlpress-primary) 16%, transparent),
       transparent
     );
     animation: landing-scan-x 18s cubic-bezier(0.4, 0, 0.6, 1) infinite;
@@ -53,7 +53,7 @@
     width: 32rem;
     height: 32rem;
     border-radius: 50%;
-    background: color-mix(in oklab, var(--htmlpress-accent) 15%, transparent);
+    background: color-mix(in oklab, var(--htmlpress-primary) 15%, transparent);
     filter: blur(64px);
     animation: landing-drift 18s ease-in-out infinite;
   }

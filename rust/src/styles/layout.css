@@ -48,8 +48,8 @@ button:not([disabled]),
 
 body {
   margin: 0;
-  background: var(--htmlpress-bg);
-  color: var(--htmlpress-text);
+  background: var(--htmlpress-background);
+  color: var(--htmlpress-foreground);
   font: 1rem/1.5 var(--htmlpress-font);
 }
 

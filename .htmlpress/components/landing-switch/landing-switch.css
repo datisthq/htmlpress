@@ -7,14 +7,14 @@
     padding: 0.25rem;
     border: 1px solid var(--htmlpress-border);
     border-radius: 9999px;
-    background: var(--htmlpress-bg);
+    background: var(--htmlpress-background);
   }
   button {
     padding: 0.25rem 0.875rem;
     border: 0;
     border-radius: 9999px;
     background: none;
-    color: var(--htmlpress-muted);
+    color: var(--htmlpress-muted-foreground);
     font: 500 0.875rem/1.25rem var(--htmlpress-font);
     cursor: pointer;
     transition:
@@ -22,14 +22,14 @@
       color 0.2s;
   }
   button:hover {
-    color: var(--htmlpress-text);
+    color: var(--htmlpress-foreground);
   }
   button[aria-selected="true"] {
-    background: var(--htmlpress-accent);
-    color: var(--htmlpress-accent-text);
+    background: var(--htmlpress-primary);
+    color: var(--htmlpress-primary-foreground);
   }
   button:focus-visible {
-    outline: 2px solid var(--htmlpress-accent);
+    outline: 2px solid var(--htmlpress-primary);
     outline-offset: 2px;
   }
 }

@@ -300,7 +300,7 @@ in light, dark and phone width (**`change-verification`**).
 - `content.css` styles prose lists and links under `:where(main)`, at a bare type's
   weight, so a component's scoped rule wins; a component inside `main` must still reset
   every `li` margin and padding and give its links a `font-weight`, or it takes prose's
-- Mix colors `in oklab`, never `in oklch`: mixing a hue with the neutral `--htmlpress-bg` in oklch
+- Mix colors `in oklab`, never `in oklch`: mixing a hue with the neutral `--htmlpress-background` in oklch
   swings the hue, and every callout tint comes out pink
 - A component's per-theme colours can be one `light-dark(light, dark)`: the tokens set
   `color-scheme` for both the media query and the toggle, so it follows either

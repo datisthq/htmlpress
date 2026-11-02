@@ -15,8 +15,8 @@
     border: 1px solid var(--htmlpress-border);
     border-bottom: 0;
     border-radius: 1.5rem 1.5rem 0 0;
-    background: var(--htmlpress-bg);
-    color: var(--htmlpress-text);
+    background: var(--htmlpress-background);
+    color: var(--htmlpress-foreground);
     font: 400 0.875rem/1.25rem var(--htmlpress-font);
     transition: translate 0.25s ease-out;
   }
@@ -64,7 +64,7 @@
   h2 {
     margin: 0;
     overflow: hidden;
-    color: var(--htmlpress-text);
+    color: var(--htmlpress-foreground);
     font-size: 1.125rem;
     font-weight: 600;
     line-height: 1.75rem;
@@ -82,7 +82,7 @@
     border: 0;
     border-radius: 999px;
     background: none;
-    color: var(--htmlpress-text);
+    color: var(--htmlpress-foreground);
     cursor: pointer;
   }
   header > button svg {
@@ -117,7 +117,7 @@
     margin-bottom: 0.5rem;
     padding: 3px;
     border-radius: 999px;
-    background: var(--htmlpress-surface);
+    background: var(--htmlpress-muted);
   }
   [role="tab"] {
     flex: 1;
@@ -125,13 +125,17 @@
     border: 1px solid transparent;
     border-radius: 999px;
     background: none;
-    color: color-mix(in oklab, var(--htmlpress-text) 60%, var(--htmlpress-bg));
+    color: color-mix(
+      in oklab,
+      var(--htmlpress-foreground) 60%,
+      var(--htmlpress-background)
+    );
     font: 500 0.875rem/1.25rem var(--htmlpress-font);
     cursor: pointer;
   }
   [role="tab"][aria-selected="true"] {
-    background: var(--htmlpress-bg);
-    color: var(--htmlpress-text);
+    background: var(--htmlpress-background);
+    color: var(--htmlpress-foreground);
   }
   ul {
     display: flex;
@@ -159,7 +163,7 @@
     border: 0;
     border-radius: 999px;
     background: none;
-    color: var(--htmlpress-text);
+    color: var(--htmlpress-foreground);
     font: 400 1rem/1.5rem var(--htmlpress-font);
     text-align: left;
     text-decoration: none;
@@ -167,7 +171,7 @@
   }
   ul :is(a, button):hover,
   ul :is(a, button):is([aria-current="true"], [aria-current="page"]) {
-    background: var(--htmlpress-surface);
+    background: var(--htmlpress-muted);
   }
   ul :is(a, button):is([aria-current="true"], [aria-current="page"]) {
     font-weight: 500;
@@ -178,7 +182,7 @@
     width: 1.125rem;
     height: 1.125rem;
     margin-left: auto;
-    background: var(--htmlpress-accent);
+    background: var(--htmlpress-primary);
     content: "";
     mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E")
       center / contain no-repeat;

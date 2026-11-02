@@ -561,20 +561,20 @@ Learn how to set up your first project.
 <p>
   颜色、字体和宽度都是 <code>:root</code> 上的 CSS 自定义属性，在
   <code>prefers-color-scheme</code> 或页眉的主题切换下有一套深色值：
-  <code>--htmlpress-accent</code>、<code>--htmlpress-accent-text</code>、
-  <code>--htmlpress-banner</code>、<code>--htmlpress-banner-text</code>、
-  <code>--htmlpress-highlight</code>、<code>--htmlpress-highlight-text</code>、
-  <code>--htmlpress-bg</code>、<code>--htmlpress-surface</code>、
-  <code>--htmlpress-text</code>、<code>--htmlpress-muted</code>、
+  <code>--htmlpress-primary</code>、<code>--htmlpress-primary-foreground</code>、
+  <code>--htmlpress-banner</code>、<code>--htmlpress-banner-foreground</code>、
+  <code>--htmlpress-highlight</code>、<code>--htmlpress-highlight-foreground</code>、
+  <code>--htmlpress-background</code>、<code>--htmlpress-muted</code>、
+  <code>--htmlpress-foreground</code>、<code>--htmlpress-muted-foreground</code>、
   <code>--htmlpress-border</code>、<code>--htmlpress-info</code>、
-  <code>--htmlpress-success</code>、<code>--htmlpress-warning</code>、
-  <code>--htmlpress-danger</code>、<code>--htmlpress-font</code>、
+  <code>--htmlpress-positive</code>、<code>--htmlpress-warning</code>、
+  <code>--htmlpress-destructive</code>、<code>--htmlpress-font</code>、
   <code>--htmlpress-mono</code>、<code>--htmlpress-radius</code>、
   <code>--htmlpress-shadow</code>、<code>--htmlpress-width</code> 和
   <code>--htmlpress-nav-width</code>。可在页面自己的样式表中覆盖它们：
 </p>
 <pre><code>:root {
-  --htmlpress-accent: oklch(0.6 0.18 30);
+  --htmlpress-primary: oklch(0.6 0.18 30);
   --htmlpress-font: "Inter", system-ui, sans-serif;
   --htmlpress-width: 52rem;
 }</code></pre>

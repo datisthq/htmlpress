@@ -4,7 +4,7 @@
   }
   footer {
     border-top: 1px solid var(--htmlpress-border);
-    background: var(--htmlpress-surface);
+    background: var(--htmlpress-muted);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -14,7 +14,7 @@
   }
   p {
     margin: 0;
-    color: var(--htmlpress-muted);
+    color: var(--htmlpress-muted-foreground);
     font-size: 0.75rem;
     font-weight: 600;
     line-height: 1rem;
@@ -22,7 +22,7 @@
     text-transform: uppercase;
   }
   a {
-    color: color-mix(in oklab, var(--htmlpress-text) 70%, transparent);
+    color: color-mix(in oklab, var(--htmlpress-foreground) 70%, transparent);
     font-size: 0.875rem;
     font-weight: 500;
     line-height: 1.25rem;
@@ -30,6 +30,6 @@
     transition: color 0.2s;
   }
   a:hover {
-    color: var(--htmlpress-text);
+    color: var(--htmlpress-foreground);
   }
 }

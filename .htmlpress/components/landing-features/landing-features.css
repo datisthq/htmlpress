@@ -10,7 +10,7 @@
     box-shadow: none;
     font-size: 0.875rem;
     line-height: 1.625;
-    color: var(--htmlpress-muted);
+    color: var(--htmlpress-muted-foreground);
     transition:
       border-color 0.2s,
       translate 0.2s,
@@ -19,7 +19,7 @@
   :scope htmlpress-card:hover {
     border-color: color-mix(
       in oklab,
-      var(--htmlpress-accent) 40%,
+      var(--htmlpress-primary) 40%,
       var(--htmlpress-border)
     );
     translate: 0 -0.125rem;
@@ -40,12 +40,12 @@
     margin-bottom: 1rem;
     padding: 0.625rem;
     border-radius: 0.625rem;
-    background: color-mix(in oklab, var(--htmlpress-accent) 10%, transparent);
-    color: var(--htmlpress-accent);
+    background: color-mix(in oklab, var(--htmlpress-primary) 10%, transparent);
+    color: var(--htmlpress-primary);
     transition: background 0.2s;
   }
   :scope htmlpress-card:hover > svg[aria-hidden] {
-    background: color-mix(in oklab, var(--htmlpress-accent) 15%, transparent);
+    background: color-mix(in oklab, var(--htmlpress-primary) 15%, transparent);
   }
   :scope htmlpress-card > h3 {
     margin: 0 0 0.5rem;

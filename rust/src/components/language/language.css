@@ -17,7 +17,7 @@
     margin: 0;
     padding: 0;
     border-radius: 999px;
-    color: var(--htmlpress-muted);
+    color: var(--htmlpress-muted-foreground);
     cursor: pointer;
     list-style: none;
   }
@@ -27,7 +27,7 @@
   summary:hover,
   details[open] > summary {
     margin: 0;
-    background: var(--htmlpress-surface);
+    background: var(--htmlpress-muted);
   }
   summary > svg {
     width: 1rem;
@@ -42,13 +42,14 @@
     padding: 0.25rem;
     border: 1px solid var(--htmlpress-border);
     border-radius: 0.75rem;
-    background: var(--htmlpress-bg);
-    box-shadow: 0 8px 24px color-mix(in oklab, var(--htmlpress-text) 12%, transparent);
+    background: var(--htmlpress-background);
+    box-shadow: 0 8px 24px
+      color-mix(in oklab, var(--htmlpress-foreground) 12%, transparent);
   }
   p {
     margin: 0;
     padding: 0.375rem 0.625rem;
-    color: var(--htmlpress-muted);
+    color: var(--htmlpress-muted-foreground);
     font-size: 0.75rem;
     font-weight: 500;
   }
@@ -66,16 +67,16 @@
     gap: 0.625rem;
     padding: 0.375rem 0.625rem;
     border-radius: 0.5rem;
-    color: var(--htmlpress-text);
+    color: var(--htmlpress-foreground);
     font-size: 0.875rem;
     text-decoration: none;
     white-space: nowrap;
   }
   a:hover {
-    background: var(--htmlpress-surface);
+    background: var(--htmlpress-muted);
   }
   a[aria-current] {
-    color: var(--htmlpress-accent);
+    color: var(--htmlpress-primary);
     font-weight: 500;
   }
   a > svg {

@@ -23,8 +23,8 @@
     height: 2.5rem;
     padding: 0.625rem;
     border-radius: 0.625rem;
-    background: color-mix(in oklab, var(--htmlpress-accent) 10%, transparent);
-    color: var(--htmlpress-accent);
+    background: color-mix(in oklab, var(--htmlpress-primary) 10%, transparent);
+    color: var(--htmlpress-primary);
   }
   h3 {
     margin: 0;
@@ -34,7 +34,7 @@
   }
   p {
     margin: 0.25rem 0 0;
-    color: var(--htmlpress-muted);
+    color: var(--htmlpress-muted-foreground);
     font-size: 0.875rem;
     line-height: 1.625;
   }

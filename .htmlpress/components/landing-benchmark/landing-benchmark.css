@@ -18,11 +18,11 @@
     gap: 1rem;
     margin: 0;
     padding: 0;
-    color: var(--htmlpress-muted);
+    color: var(--htmlpress-muted-foreground);
     font-size: 0.875rem;
   }
   li[data-own] {
-    color: var(--htmlpress-text);
+    color: var(--htmlpress-foreground);
     font-weight: 600;
   }
   /* The bar is the meter itself, its length its value, so no width is written inline */
@@ -42,17 +42,17 @@
   }
   meter::-webkit-meter-optimum-value {
     border-radius: 999px;
-    background: color-mix(in oklab, var(--htmlpress-muted) 45%, transparent);
+    background: color-mix(in oklab, var(--htmlpress-muted-foreground) 45%, transparent);
   }
   meter::-moz-meter-bar {
     border-radius: 999px;
-    background: color-mix(in oklab, var(--htmlpress-muted) 45%, transparent);
+    background: color-mix(in oklab, var(--htmlpress-muted-foreground) 45%, transparent);
   }
   li[data-own] meter::-webkit-meter-optimum-value {
-    background: var(--htmlpress-accent);
+    background: var(--htmlpress-primary);
   }
   li[data-own] meter::-moz-meter-bar {
-    background: var(--htmlpress-accent);
+    background: var(--htmlpress-primary);
   }
   data {
     font-family: var(--htmlpress-mono);

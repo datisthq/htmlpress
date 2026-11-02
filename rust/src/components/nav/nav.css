@@ -26,7 +26,7 @@
     height: 2rem;
     margin: 0.5rem 0 -0.25rem;
     padding: 0 0.5rem;
-    color: color-mix(in oklab, var(--htmlpress-text) 70%, transparent);
+    color: color-mix(in oklab, var(--htmlpress-foreground) 70%, transparent);
     font: 500 0.75rem/1rem var(--htmlpress-mono);
     letter-spacing: 0.1em;
     text-transform: uppercase;
@@ -61,7 +61,7 @@
     padding: 0 0.75rem;
     border: 1px solid var(--htmlpress-border);
     border-radius: 999px;
-    color: var(--htmlpress-text);
+    color: var(--htmlpress-foreground);
     font-weight: 400;
   }
   [data-sections] details > summary > span {
@@ -75,7 +75,7 @@
     position: static;
     width: 1rem;
     height: 1rem;
-    color: var(--htmlpress-muted);
+    color: var(--htmlpress-muted-foreground);
     mask-size: 1rem;
     rotate: 0deg;
   }
@@ -92,7 +92,7 @@
     padding: 0.25rem;
     border: 1px solid var(--htmlpress-border);
     border-radius: 0.75rem;
-    background: var(--htmlpress-bg);
+    background: var(--htmlpress-background);
     box-shadow:
       0 4px 6px -1px oklch(0 0 0 / 0.1),
       0 2px 4px -2px oklch(0 0 0 / 0.1);
@@ -115,7 +115,7 @@
     padding: 0 0.75rem;
     border: 0 solid transparent;
     border-radius: 1rem;
-    color: var(--htmlpress-text);
+    color: var(--htmlpress-foreground);
     line-height: 2rem;
     text-decoration: none;
     text-overflow: ellipsis;
@@ -127,18 +127,18 @@
   }
   /* A color, not opacity: text under opacity loses subpixel antialiasing and reads blurred */
   a:not([aria-current="page"]) {
-    color: color-mix(in srgb, var(--htmlpress-text) 75%, var(--htmlpress-surface));
+    color: color-mix(in srgb, var(--htmlpress-foreground) 75%, var(--htmlpress-muted));
   }
   a:hover,
   summary:not(:has(> a)):hover {
-    background: color-mix(in oklab, var(--htmlpress-text) 4%, transparent);
+    background: color-mix(in oklab, var(--htmlpress-foreground) 4%, transparent);
   }
   a[data-untranslated] small {
     margin-left: 0.375rem;
     padding: 0 0.25rem;
     border: 1px solid var(--htmlpress-border);
     border-radius: 0.25rem;
-    color: var(--htmlpress-muted);
+    color: var(--htmlpress-muted-foreground);
     font-family: var(--htmlpress-mono);
     font-size: 0.625rem;
     text-transform: uppercase;
@@ -147,17 +147,17 @@
   a[aria-current="page"] {
     border-width: 1px;
     line-height: calc(2rem - 2px);
-    border-color: color-mix(in oklab, var(--htmlpress-accent) 20%, transparent);
-    background: color-mix(in oklab, var(--htmlpress-accent) 2%, transparent);
-    color: var(--htmlpress-accent);
+    border-color: color-mix(in oklab, var(--htmlpress-primary) 20%, transparent);
+    background: color-mix(in oklab, var(--htmlpress-primary) 2%, transparent);
+    color: var(--htmlpress-primary);
     font-weight: 500;
   }
   :root[data-theme="dark"] :scope a[aria-current="page"] {
-    background: color-mix(in oklab, var(--htmlpress-accent) 5%, transparent);
+    background: color-mix(in oklab, var(--htmlpress-primary) 5%, transparent);
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) :scope a[aria-current="page"] {
-      background: color-mix(in oklab, var(--htmlpress-accent) 5%, transparent);
+      background: color-mix(in oklab, var(--htmlpress-primary) 5%, transparent);
     }
   }
   a[aria-current="page"] > svg {
@@ -195,7 +195,7 @@
   /* A blog's recent posts and a changelog's releases: in Livemark a fixed heading, faded
      like the rows around it, with no chevron to fold it */
   li > details > summary {
-    color: color-mix(in srgb, var(--htmlpress-text) 75%, var(--htmlpress-surface));
+    color: color-mix(in srgb, var(--htmlpress-foreground) 75%, var(--htmlpress-muted));
     pointer-events: none;
   }
   li > details > summary::after {
