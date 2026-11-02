@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.11.0](https://github.com/datisthq/htmlpress/compare/v0.10.0...v0.11.0) (2026-11-02)
+
+
+### Features
+
+* add a built-in logo and favicon drawn in the theme's primary ([d463565](https://github.com/datisthq/htmlpress/commit/d46356554e5067b0bcd25bddab9fd71afadb23e0))
+* default the site title to Htmlpress and the description to Static site generator, so the brand always shows both ([a81dd8b](https://github.com/datisthq/htmlpress/commit/a81dd8bf3ca21382fcdd8bdd392aee010df7cfaa))
+
 ## [0.10.0](https://github.com/datisthq/htmlpress/compare/v0.9.0...v0.10.0) (2026-11-02)
 
 
