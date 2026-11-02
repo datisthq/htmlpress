@@ -54,6 +54,8 @@ head:
 - `base` — a sub-path such as `/repo/`. Root-relative URLs get it as a prefix, so write them
   without it.
 - `title`, `description`, `logo`, `favicon` (URLs) and `banner` (HTML above the header).
+  `title` defaults to `Htmlpress` and `description` to `Static site generator`, and the
+  default description fills every page without its own: set both.
 - `breadcrumbs` — `false` hides the folder trail above every page; default `true`, and a
   page's `<meta name="breadcrumbs">` overrides it.
 - `include` — globs of the `.html` and `.md` files that become pages, default `**/*.html` and

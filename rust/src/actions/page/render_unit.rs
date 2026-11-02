@@ -75,7 +75,7 @@ fn renders_the_page_in_the_layout() -> crate::Result<()> {
     assert!(html.contains(r#"<a href="/guide/" aria-current="page">Guide</a>"#));
     assert!(html.contains(r#"<a href="/">Home</a>"#));
     assert!(html.contains(
-        r#"<htmlpress-brand><a href="/"><svg aria-hidden="true" viewBox="0 0 1 1"></svg>Docs &lt;&amp;&gt;</a></htmlpress-brand>"#
+        r#"<htmlpress-brand><a href="/"><svg aria-hidden="true" viewBox="0 0 1 1"></svg><span>Docs &lt;&amp;&gt;<small></small></span></a></htmlpress-brand>"#
     ));
     assert!(!html.contains("<htmlpress-content>") && !html.contains(RELOAD_PATH));
     Ok(())
@@ -258,7 +258,7 @@ fn uses_the_layout_a_page_names() -> crate::Result<()> {
     let html = render_page(&site, &site.pages[0], false)?;
     assert_eq!(
         html,
-        r#"<header><htmlpress-brand><a href="/"><svg aria-hidden="true" viewBox="0 0 1 1"></svg>Docs &lt;&amp;&gt;</a></htmlpress-brand></header><main><h1>Home</h1></main>"#
+        r#"<header><htmlpress-brand><a href="/"><svg aria-hidden="true" viewBox="0 0 1 1"></svg><span>Docs &lt;&amp;&gt;<small></small></span></a></htmlpress-brand></header><main><h1>Home</h1></main>"#
     );
     let other = render_page(&site, &site.pages[1], false)?;
     assert!(other.contains("<htmlpress-nav>"));
@@ -410,7 +410,7 @@ fn fills_the_logo_banner_and_footer() -> crate::Result<()> {
     site.config.logo = Some("/logo.svg".to_owned());
     site.config.banner = Some("<a href=\"/new\">New</a>".into());
     let html = render_page(&site, &site.pages[0], false)?;
-    assert!(html.contains(r#"<a href="/"><img src="/logo.svg" alt="">Docs"#));
+    assert!(html.contains(r#"<a href="/"><img src="/logo.svg" alt=""><span>Docs"#));
     assert!(html.contains(r#"<link rel="icon" href="/logo.svg" type="image/svg+xml">"#));
     site.config.favicon = Some("/icon.webp".to_owned());
     let html = render_page(&site, &site.pages[0], false)?;
@@ -536,7 +536,7 @@ fn shows_only_the_open_sections_pages_with_its_brand() -> crate::Result<()> {
     let cli = render_page(&site, &site.pages[3], false)?;
     assert!(cli.contains(r#"<a href="/api/" data-section aria-current="page">API</a>"#));
     assert!(cli.contains(r#"<a href="/" data-section>Docs</a>"#));
-    assert!(cli.contains(r#"<htmlpress-brand><a href="/api/"><svg aria-hidden="true" viewBox="0 0 1 1"></svg>API Reference</a>"#));
+    assert!(cli.contains(r#"<htmlpress-brand><a href="/api/"><svg aria-hidden="true" viewBox="0 0 1 1"></svg><span>API Reference<small></small></span></a>"#));
     assert!(!cli.contains(r#"<a href="/guide/""#), "{cli}");
     assert!(cli.contains(r#"<a rel="prev" href="/api/"><small>Previous</small>API</a>"#));
     assert!(!cli.contains(r#"rel="next""#));
@@ -711,8 +711,7 @@ fn writes_the_ui_in_the_pages_language() -> crate::Result<()> {
         path: "htmlpress.yaml".into(),
         message: error.to_string(),
     })?;
-    site.languages =
-        crate::actions::language::resolve::resolve_languages(&config, "Docs");
+    site.languages = crate::actions::language::resolve::resolve_languages(&config);
     let spanish = |page: &mut Page| {
         page.language = "es".to_owned();
         page.date = Some("2026-10-01".to_owned());

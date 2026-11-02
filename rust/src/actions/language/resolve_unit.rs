@@ -10,7 +10,7 @@ fn create_config(yaml: &str) -> crate::Result<Config> {
 
 #[test]
 fn makes_one_english_language_without_languages() {
-    let languages = resolve_languages(&Config::default(), "Docs");
+    let languages = resolve_languages(&Config::default());
     assert_eq!(languages.len(), 1);
     let language = &languages[0];
     assert_eq!(
@@ -19,7 +19,11 @@ fn makes_one_english_language_without_languages() {
     );
     assert_eq!(
         (language.locale.as_str(), language.title.as_str()),
-        ("en", "Docs")
+        ("en", "Htmlpress")
+    );
+    assert_eq!(
+        language.config.description,
+        Some(Localized::from("Static site generator"))
     );
     assert_eq!(language.read_message("toc.title"), "Contents");
 }
@@ -39,7 +43,7 @@ fn prefixes_every_language_but_the_first_and_localizes_the_config() -> crate::Re
         "links:\n",
         "  - { title: API, url: /api/, prefix: /api/ }\n",
     ))?;
-    let languages = resolve_languages(&config, "folder");
+    let languages = resolve_languages(&config);
     let prefixes: Vec<&str> = languages.iter().map(|item| item.prefix.as_str()).collect();
     assert_eq!(prefixes, ["/", "/es/", "/ar/", "/pt/"]);
     let es = &languages[1];

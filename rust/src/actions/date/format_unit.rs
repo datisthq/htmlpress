@@ -5,7 +5,7 @@ use crate::models::language::Language;
 
 #[test]
 fn formats_dates_for_readers_in_their_language() {
-    let english = resolve_english(&Config::default(), "Docs");
+    let english = resolve_english(&Config::default());
     assert_eq!(format_date("2026-10-01", &english), "Oct 1, 2026");
     assert_eq!(format_date("soon", &english), "soon");
     let language = |code: &str| Language {
@@ -17,7 +17,7 @@ fn formats_dates_for_readers_in_their_language() {
         languages: vec![language("de"), language("ja"), language("ru")],
         ..Config::default()
     };
-    let languages = resolve_languages(&config, "Docs");
+    let languages = resolve_languages(&config);
     let dates: Vec<String> = (languages.iter())
         .map(|language| format_date("2026-03-01", language))
         .collect();

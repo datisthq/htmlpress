@@ -35,7 +35,7 @@ pub struct Site {
 }
 
 static ENGLISH: LazyLock<SiteLanguage> =
-    LazyLock::new(|| resolve_english(&Config::default(), "Htmlpress"));
+    LazyLock::new(|| resolve_english(&Config::default()));
 
 impl Site {
     /// The language with this code, else the default one.

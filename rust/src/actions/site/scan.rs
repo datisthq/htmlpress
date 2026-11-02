@@ -68,7 +68,7 @@ pub(crate) fn read_site(
     root: &Path,
     reload: Option<bool>,
 ) -> crate::Result<(Site, Vec<Rendered>, Option<Built>)> {
-    let languages = resolve_languages(&load_config(root)?, &read_folder_name(root));
+    let languages = resolve_languages(&load_config(root)?);
     let Some(language) = languages.first() else {
         return Err(Error::Usage("no language to build".to_owned()));
     };
@@ -1104,16 +1104,6 @@ fn split_route(part: &str) -> Vec<String> {
         rest = &rest[char.len_utf8()..];
     }
     segments
-}
-
-fn read_folder_name(root: &Path) -> String {
-    std::path::absolute(root)
-        .ok()
-        .and_then(|path| {
-            path.file_name()
-                .map(|name| name.to_string_lossy().into_owned())
-        })
-        .unwrap_or_else(|| "Htmlpress".to_owned())
 }
 
 #[cfg(test)]

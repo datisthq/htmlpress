@@ -19,9 +19,10 @@ pub struct Config {
     pub favicon: Option<String>,
     /// An image's URL shown before the site title in the brand.
     pub logo: Option<String>,
-    /// The site title in the header and after each page title; defaults to the folder name.
+    /// The site title in the header and after each page title; defaults to "Htmlpress".
     pub title: Option<Localized>,
-    /// The site description, used for pages without one of their own.
+    /// The site description, used for pages without one of their own; defaults to
+    /// "Static site generator".
     pub description: Option<Localized>,
     /// HTML for an announcement bar above the header.
     pub banner: Option<Localized>,

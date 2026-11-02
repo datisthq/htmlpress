@@ -67,7 +67,7 @@ fn builds_a_blog_index_and_tag_pages() -> crate::Result<()> {
         sections: vec![create_section(SectionKind::Blog, "/blog/")],
         ..Config::default()
     };
-    let generated = generate(Path::new("."), &resolve_english(&config, "Docs"), &pages)?;
+    let generated = generate(Path::new("."), &resolve_english(&config), &pages)?;
     let urls: Vec<&str> = generated.iter().map(|page| page.url.as_str()).collect();
     assert_eq!(urls, ["/blog/", "/blog/tags/rust/", "/blog/tags/web/"]);
     let index = &generated[0].content;
@@ -94,9 +94,7 @@ fn keeps_the_projects_own_index() -> crate::Result<()> {
         sections: vec![create_section(SectionKind::Blog, "/blog/")],
         ..Config::default()
     };
-    assert!(
-        generate(Path::new("."), &resolve_english(&config, "Docs"), &pages)?.is_empty()
-    );
+    assert!(generate(Path::new("."), &resolve_english(&config), &pages)?.is_empty());
     Ok(())
 }
 
@@ -112,7 +110,7 @@ fn builds_a_page_per_changelog_version() -> crate::Result<()> {
         sections: vec![create_section(SectionKind::Changelog, "/changelog/")],
         ..Config::default()
     };
-    let generated = generate(root.path(), &resolve_english(&config, "Docs"), &[])?;
+    let generated = generate(root.path(), &resolve_english(&config), &[])?;
     let urls: Vec<&str> = generated.iter().map(|page| page.url.as_str()).collect();
     assert_eq!(
         urls,

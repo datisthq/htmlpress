@@ -2,7 +2,7 @@ use std::collections::BTreeMap;
 
 use crate::models::config::Config;
 use crate::models::language::{Direction, Language, SiteLanguage};
-use crate::settings::MESSAGES;
+use crate::settings::{DEFAULT_DESCRIPTION, DEFAULT_TITLE, MESSAGES};
 
 const RTL: [&str; 10] = ["ar", "dv", "fa", "he", "ks", "ps", "sd", "ug", "ur", "yi"];
 // The country whose flag stands for a language without a region, as in Livemark
@@ -39,33 +39,30 @@ const LANGUAGE_FLAGS: [(&str, &str); 29] = [
 ];
 
 /// The config's languages with their defaults filled, the default one first; an implicit
-/// English one without `languages`. `title` is the site title when the config sets none.
-pub(crate) fn resolve_languages(config: &Config, title: &str) -> Vec<SiteLanguage> {
+/// English one without `languages`.
+pub(crate) fn resolve_languages(config: &Config) -> Vec<SiteLanguage> {
     if config.languages.is_empty() {
-        return vec![resolve_english(config, title)];
+        return vec![resolve_english(config)];
     }
     let default =
         (config.languages.first()).map_or("en", |language| language.code.as_str());
     (config.languages.iter().enumerate())
-        .map(|(index, language)| {
-            resolve_language(config, title, language, index, default)
-        })
+        .map(|(index, language)| resolve_language(config, language, index, default))
         .collect()
 }
 
 /// The language a site without `languages` is written in.
-pub(crate) fn resolve_english(config: &Config, title: &str) -> SiteLanguage {
+pub(crate) fn resolve_english(config: &Config) -> SiteLanguage {
     let english = Language {
         code: "en".to_owned(),
         label: "English".to_owned(),
         ..Language::default()
     };
-    resolve_language(config, title, &english, 0, "en")
+    resolve_language(config, &english, 0, "en")
 }
 
 fn resolve_language(
     config: &Config,
-    title: &str,
     language: &Language,
     index: usize,
     default: &str,
@@ -80,6 +77,14 @@ fn resolve_language(
         _ => format!("/{}/", language.code),
     };
     let mut config = config.localize(&language.code, default);
+    let title = config
+        .title
+        .get_or_insert_with(|| DEFAULT_TITLE.into())
+        .text()
+        .to_owned();
+    config
+        .description
+        .get_or_insert_with(|| DEFAULT_DESCRIPTION.into());
     // Every routed section and prefixed link is mirrored under the language's prefix
     let localize = |path: &mut Option<String>| {
         if let Some(path) = path {
@@ -102,8 +107,7 @@ fn resolve_language(
         flag: (language.flag.clone()).or_else(|| read_flag(&locale, &primary)),
         prefix,
         default: index == 0,
-        title: (config.title.as_ref())
-            .map_or(title.to_owned(), |title| title.text().to_owned()),
+        title,
         messages: read_messages(&primary, &language.messages),
         code: language.code.clone(),
         label: language.label.clone(),

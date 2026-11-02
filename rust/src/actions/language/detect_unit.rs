@@ -14,7 +14,7 @@ fn create_languages() -> Vec<SiteLanguage> {
         languages: vec![language("en"), language("es")],
         ..Config::default()
     };
-    resolve_languages(&config, "Docs")
+    resolve_languages(&config)
 }
 
 fn detect(

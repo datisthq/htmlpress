@@ -1,5 +1,9 @@
 use crate::models::asset::Asset;
 
+/// The site title and description when the config sets none, as Livemark's defaults.
+pub const DEFAULT_TITLE: &str = "Htmlpress";
+pub const DEFAULT_DESCRIPTION: &str = "Static site generator";
+
 /// The project's config file, read from the project root.
 pub const CONFIG_FILE: &str = "htmlpress.yaml";
 

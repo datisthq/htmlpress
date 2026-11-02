@@ -619,12 +619,11 @@ fn create_brand(site: &Site, page: &Page) -> String {
         Some(logo) => format!("<img src=\"{}\" alt=\"\">", escape_html(logo)),
         None => create_default_logo(site),
     };
-    let (title, link) = (escape_html(title), escape_html(&link));
-    let title = match description {
-        Some(text) => format!("<span>{title}<small>{}</small></span>", escape_html(text)),
-        None => title,
-    };
-    format!("<a href=\"{link}\">{logo}{title}</a>")
+    let (title, description) = (escape_html(title), escape_html(description));
+    let link = escape_html(&link);
+    format!(
+        "<a href=\"{link}\">{logo}<span>{title}<small>{description}</small></span></a>"
+    )
 }
 
 // Inline, so `currentColor` takes the primary of the theme the page shows, toggle included
@@ -642,12 +641,13 @@ fn create_default_logo(site: &Site) -> String {
 
 // The open page's section may rename the brand and point it at its own home; either
 // home leads to its version in the page's language, or the brand would leave it
-fn read_brand<'a>(site: &'a Site, page: &Page) -> (&'a str, Option<&'a str>, String) {
+fn read_brand<'a>(site: &'a Site, page: &Page) -> (&'a str, &'a str, String) {
     let section = read_section(site, page);
     let title = section.and_then(|section| section.site_title.as_deref());
     let description = section.and_then(|section| section.site_description.as_deref());
     let link = section.and_then(|section| section.site_link.as_deref());
-    let description = description.or(site.config.description.as_deref());
+    let description =
+        (description.or(site.config.description.as_deref())).unwrap_or_default();
     let link = match link {
         Some(link) => (site.translations.get(link))
             .and_then(|versions| versions.get(&page.language))
