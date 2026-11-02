@@ -292,7 +292,9 @@ in light, dark and phone width (**`change-verification`**).
   so its files are never linked: list the components whose scripts create it (`SHEET_HOSTS`
   in `page/render`), and append it to `<body>` so the creator's scoped CSS stays off it
 - A running `htmlpress start` serves the assets it was compiled with: rebuild and restart it
-  after editing one, or copy the file into `<root>/.htmlpress/build/_htmlpress/` to preview
+  after editing one, or copy the file into `<root>/.htmlpress/build/_htmlpress/` to preview.
+  To iterate on one (a token's colour), escape it at `<root>/.htmlpress/<asset path>`: the
+  watcher counts any file there, so each save live-reloads
 - Fade text with a `color-mix(in srgb, … , <background>)`, never `opacity`: text under
   opacity loses subpixel antialiasing and reads blurred next to Livemark's
 - `content.css` styles prose lists and links under `:where(main)`, at a bare type's

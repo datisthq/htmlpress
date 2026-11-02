@@ -41,7 +41,7 @@
     background: linear-gradient(
       to bottom,
       transparent,
-      color-mix(in oklab, var(--landing-violet) 16%, transparent),
+      color-mix(in oklab, var(--landing-secondary) 16%, transparent),
       transparent
     );
     animation: landing-scan-y 18s cubic-bezier(0.4, 0, 0.6, 1) infinite;

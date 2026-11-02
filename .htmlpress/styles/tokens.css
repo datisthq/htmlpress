@@ -1,0 +1,81 @@
+:root {
+  color-scheme: light;
+  --htmlpress-font:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans",
+    Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+    "Noto Color Emoji";
+  --htmlpress-mono:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
+  --htmlpress-bg: oklch(1 0 0);
+  --htmlpress-surface: oklch(0.985 0 0);
+  --htmlpress-text: oklch(0.145 0 0);
+  --htmlpress-prose: oklch(0.373 0.034 259.733);
+  --htmlpress-prose-strong: oklch(0.21 0.034 264.665);
+  --htmlpress-prose-marker: oklch(0.872 0.01 258.338);
+  --htmlpress-muted: oklch(0.5 0 0);
+  --htmlpress-border: oklch(0.922 0 0);
+  --htmlpress-accent: oklch(0.541 0.281 293.009);
+  --htmlpress-accent-text: oklch(0.985 0 0);
+  --htmlpress-banner: oklch(0.924 0.12 95.746);
+  --htmlpress-banner-text: oklch(0.205 0 0);
+  --htmlpress-highlight: oklch(0.905 0.182 98.111);
+  --htmlpress-highlight-text: oklch(0.205 0 0);
+  --htmlpress-info: oklch(0.623 0.214 259.815);
+  --htmlpress-success: oklch(0.648 0.2 131.684);
+  --htmlpress-warning: oklch(0.795 0.184 86.047);
+  --htmlpress-danger: oklch(0.55 0.2 25);
+  --htmlpress-shadow: 0 1px 3px 0 oklch(0 0 0 / 0.08), 0 1px 2px -1px oklch(0 0 0 / 0.08);
+  --htmlpress-radius: 1rem;
+  --htmlpress-width: 56.5rem;
+  --htmlpress-nav-width: 16rem;
+}
+
+/* The dark set twice: once for the system preference, once for the theme toggle's
+   choice, which wins over the preference either way. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --htmlpress-bg: oklch(0.145 0 0);
+    --htmlpress-surface: oklch(0.205 0 0);
+    --htmlpress-text: oklch(0.985 0 0);
+    --htmlpress-prose: oklch(0.872 0.01 258.338);
+    --htmlpress-prose-strong: oklch(1 0 0);
+    --htmlpress-prose-marker: oklch(0.446 0.03 256.802);
+    --htmlpress-muted: oklch(0.708 0 0);
+    --htmlpress-border: oklch(0.269 0 0);
+    --htmlpress-accent: oklch(0.606 0.25 292.717);
+    --htmlpress-accent-text: oklch(0.985 0 0);
+    --htmlpress-banner: oklch(0.269 0 0);
+    --htmlpress-banner-text: oklch(0.985 0 0);
+    --htmlpress-highlight: oklch(0.554 0.135 66.442);
+    --htmlpress-highlight-text: oklch(0.985 0 0);
+    --htmlpress-info: oklch(0.623 0.214 259.815);
+    --htmlpress-success: oklch(0.841 0.238 128.85);
+    --htmlpress-warning: oklch(0.852 0.199 91.936);
+    --htmlpress-danger: oklch(0.7 0.17 25);
+    --htmlpress-shadow: 0 1px 3px 0 oklch(0 0 0 / 0.4);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --htmlpress-bg: oklch(0.145 0 0);
+  --htmlpress-surface: oklch(0.205 0 0);
+  --htmlpress-text: oklch(0.985 0 0);
+  --htmlpress-prose: oklch(0.872 0.01 258.338);
+  --htmlpress-prose-strong: oklch(1 0 0);
+  --htmlpress-prose-marker: oklch(0.446 0.03 256.802);
+  --htmlpress-muted: oklch(0.708 0 0);
+  --htmlpress-border: oklch(0.269 0 0);
+  --htmlpress-accent: oklch(0.606 0.25 292.717);
+  --htmlpress-accent-text: oklch(0.985 0 0);
+  --htmlpress-banner: oklch(0.269 0 0);
+  --htmlpress-banner-text: oklch(0.985 0 0);
+  --htmlpress-highlight: oklch(0.554 0.135 66.442);
+  --htmlpress-highlight-text: oklch(0.985 0 0);
+  --htmlpress-info: oklch(0.623 0.214 259.815);
+  --htmlpress-success: oklch(0.841 0.238 128.85);
+  --htmlpress-warning: oklch(0.852 0.199 91.936);
+  --htmlpress-danger: oklch(0.7 0.17 25);
+  --htmlpress-shadow: 0 1px 3px 0 oklch(0 0 0 / 0.4);
+}
