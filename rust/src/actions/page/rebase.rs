@@ -1,4 +1,4 @@
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet, HashMap};
 
 use textlane::resolve_url;
 
@@ -23,25 +23,82 @@ pub(crate) fn rebase_image(page: &mut Page, bases: &[String]) {
     }
 }
 
-/// Each page's file, as a root-relative URL, mapped to the URL it is served at: by its
-/// path and by its source without the include base, since a link may name either.
-pub(crate) fn list_links(pages: &[Page], bases: &[String]) -> BTreeMap<String, String> {
-    let mut links = BTreeMap::new();
+/// Each language's links: a page's file, as a root-relative URL, to the URL it is served
+/// at, its translation's in that language when it has one, as Livemark links. A link may
+/// name the page's path or its source without the include base, percent-encoded or not.
+pub(crate) fn list_links(
+    pages: &[Page],
+    bases: &[String],
+) -> BTreeMap<String, BTreeMap<String, String>> {
+    let files = list_files(pages, bases);
+    let translations: HashMap<(&str, &str), &Page> = (pages.iter())
+        .filter(|page| !page.untranslated && !page.key.is_empty())
+        .map(|page| ((page.key.as_str(), page.language.as_str()), page))
+        .collect();
+    let languages: BTreeSet<&str> =
+        pages.iter().map(|page| page.language.as_str()).collect();
+    (languages.into_iter())
+        .map(|language| {
+            let links = (files.iter())
+                .map(|(file, page)| {
+                    let page = (translations.get(&(page.key.as_str(), language)))
+                        .unwrap_or(page);
+                    (file.clone(), page.url.clone())
+                })
+                .collect();
+            (language.to_owned(), links)
+        })
+        .collect()
+}
+
+// Every spelling of each page's file: its path, then its source, then the source's
+// `.html` for a `.md` page and every one percent-encoded, an exact one never displaced
+fn list_files<'p>(pages: &'p [Page], bases: &[String]) -> BTreeMap<String, &'p Page> {
+    let mut files = BTreeMap::new();
     for page in pages {
-        links.insert(format!("/{}", page.path), page.url.clone());
-        if let Some(name) = page
-            .source
-            .rsplit('/')
-            .next()
-            .filter(|_| !page.source.is_empty())
-        {
-            let folder = read_source_folder(&page.source, bases);
-            links
-                .entry(format!("{folder}{name}"))
-                .or_insert_with(|| page.url.clone());
+        files.insert(format!("/{}", page.path), page);
+    }
+    let sources: Vec<(Option<String>, &Page)> = (pages.iter())
+        .map(|page| (read_source_file(&page.source, bases), page))
+        .collect();
+    for (source, page) in &sources {
+        if let Some(source) = source {
+            files.entry(source.clone()).or_insert(page);
         }
     }
-    links
+    for (source, page) in &sources {
+        let mut spellings = vec![format!("/{}", page.path)];
+        if let Some(source) = source {
+            if let Some(stem) = source.strip_suffix(".md") {
+                spellings.push(format!("{stem}.html"));
+            }
+            spellings.push(source.clone());
+        }
+        let encoded: Vec<String> = spellings.iter().map(|it| encode_path(it)).collect();
+        for spelling in spellings.into_iter().chain(encoded) {
+            files.entry(spelling).or_insert(page);
+        }
+    }
+    files
+}
+
+// `/guides/setup.html` for `docs/guides/setup.html` when `docs/` is an include base
+fn read_source_file(source: &str, bases: &[String]) -> Option<String> {
+    let name = source.rsplit('/').next().filter(|_| !source.is_empty())?;
+    Some(format!("{}{name}", read_source_folder(source, bases)))
+}
+
+// A link spells a space or a non-ASCII letter as `%20`, `%C3%A9`, which the lookup
+// compares as written
+fn encode_path(path: &str) -> String {
+    let mut encoded = String::with_capacity(path.len());
+    for byte in path.bytes() {
+        match byte.is_ascii_alphanumeric() || b"-._~/!$&'()*+,;=:@".contains(&byte) {
+            true => encoded.push(char::from(byte)),
+            false => encoded.push_str(&format!("%{byte:02X}")),
+        }
+    }
+    encoded
 }
 
 /// `/guides/` for `docs/guides/setup.html` when `docs/` is an include base.

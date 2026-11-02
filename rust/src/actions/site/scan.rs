@@ -460,7 +460,7 @@ type Completed = (usize, Page, Option<Rendered>);
 #[derive(Clone)]
 struct Finish {
     pages: Vec<Option<Page>>,
-    links: BTreeMap<String, String>,
+    links: BTreeMap<String, BTreeMap<String, String>>,
     bases: Vec<String>,
     themes: (String, String),
     plugins: Vec<PluginEntry>,
@@ -603,7 +603,7 @@ fn complete_page<'a>(
     finish: &Finish,
     index: usize,
     tree: Node<'a>,
-    pipelines: &mut HashMap<Option<String>, Pipeline>,
+    pipelines: &mut HashMap<(Option<String>, String), Pipeline>,
     alloc: &'a Allocator,
 ) -> crate::Result<Completed> {
     let Some(Some(page)) = finish.pages.get(index) else {
@@ -614,12 +614,16 @@ fn complete_page<'a>(
         true => None,
         false => Some(read_root(&page.source, &finish.bases).unwrap_or_default()),
     };
-    let pipeline = match pipelines.entry(root_base.clone()) {
+    let pipeline = match pipelines.entry((root_base.clone(), page.language.clone())) {
         Entry::Occupied(entry) => entry.into_mut(),
         Entry::Vacant(entry) => {
+            let links = (finish.links.get(&page.language))
+                .or_else(|| finish.links.values().next())
+                .cloned()
+                .unwrap_or_default();
             let options = PipelineOptions {
                 rebase: root_base,
-                links: finish.links.clone(),
+                links,
                 themes: Some(finish.themes.clone()),
                 plugins: finish.plugins.clone(),
             };

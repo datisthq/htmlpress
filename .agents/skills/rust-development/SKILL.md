@@ -74,7 +74,9 @@ run from source: `cargo run --manifest-path rust/Cargo.toml -- build docs`.
    (`/guides/build/`), the root `404.html` excepted. Relative URLs become root-relative
    from the source folder (textlane's `html.pathRewrite` in the page pipeline, rooted at the
    page's include base, `list_links` as its `pages`), since every page sits one folder
-   deeper, and a link naming a page's file takes its URL; `page/rebase` does the same for
+   deeper, and a link naming a page's file takes its URL. `pathRewrite` matches `pages`
+   keys verbatim, never decoding, so `list_links` lists every spelling (percent-encoded, a
+   `.md` page's `.html`) per language, and pipelines cache by base and language; `page/rebase` does the same for
    the `image` meta, which no tree holds. Pages sort `index.html`
    first, then by `<meta name="order">` (negatives last), then by path; `nav/build` nests
    them as Livemark's `buildArticleTree` does, under their folder's `index.html` only, for the

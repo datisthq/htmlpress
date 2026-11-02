@@ -43,7 +43,9 @@ The config keys are in `htmlpress-configuration`; a different look in `htmlpress
 - Each page is served at its own folder URL: `guides/build.html` at `/guides/build/`,
   `guides/index.html` at `/guides/`, every name slugified as in Livemark
   (`User Guide/Intro.html` at `/user-guide/intro/`). Link to the page file (`guides/build.html`, relative or
-  root-relative) or to its URL: a link naming a page's file becomes its URL. Images and other
+  root-relative) or to its URL: a link naming a page's file becomes its URL, as in Livemark —
+  percent-encoded (`User%20Guide/Intro.md`) or not, a `.md` page by its `.html` name too,
+  and a page with a translation in the reader's language goes to that one. Images and other
   files are copied as-is; a relative `href`, `src`, `srcset` or `poster` resolves from the
   source file, even when the page moves.
 - A root `404.html` is the not-found page, kept out of the navigation; without one a built-in

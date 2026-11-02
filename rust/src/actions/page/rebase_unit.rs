@@ -62,25 +62,28 @@ fn rebases_the_urls_of_a_page_served_at_its_folder() -> Result<(), String> {
     Ok(())
 }
 
+// A page built to `path` from `source`, with no content
+fn read(path: &str, source: &str) -> Result<Page, String> {
+    let alloc = textlane::Allocator::new();
+    let tree = textlane::hast::Node::Root(textlane::hast::Root {
+        children: textlane::ArenaVec::new_in(&alloc),
+        position: None,
+        data: None,
+        quirks_mode: None,
+    });
+    let page = read_source(path, &tree);
+    Ok(Page {
+        source: source.into(),
+        ..page.map_err(|e| e.to_string())?
+    })
+}
+
 #[test]
 fn links_a_page_file_to_its_url() -> Result<(), String> {
-    let read = |path: &str, source: &str| -> Result<Page, String> {
-        let alloc = textlane::Allocator::new();
-        let tree = textlane::hast::Node::Root(textlane::hast::Root {
-            children: textlane::ArenaVec::new_in(&alloc),
-            position: None,
-            data: None,
-            quirks_mode: None,
-        });
-        let page = read_source(path, &tree);
-        Ok(Page {
-            source: source.into(),
-            ..page.map_err(|e| e.to_string())?
-        })
-    };
     let other = read("es/other.html", "docs/other.es.html")?;
     let index = read("guides/index.html", "docs/guides/index.html")?;
     let links = list_links(&[other, index], &["docs/".to_owned()]);
+    let links = links.get("").cloned().unwrap_or_default();
     let html = concat!(
         r#"<a href="other.es.html#a">x</a><a href="/es/other.html?q=1">x</a>"#,
         r#"<a href="guides/index.html">x</a><a href="missing.html">x</a>"#,
@@ -94,6 +97,58 @@ fn links_a_page_file_to_its_url() -> Result<(), String> {
             r#"<a href="/guides/">x</a><a href="/missing.html">x</a>"#,
             r#"<img src="/other.es.html">"#,
         )
+    );
+    Ok(())
+}
+
+#[test]
+fn links_a_source_by_any_spelling_and_in_the_reader_language() -> Result<(), String> {
+    let page = |path: &str, source: &str, language: &str| -> Result<Page, String> {
+        let page = read(path, source)?;
+        let key = page.url.trim_start_matches("/es").to_owned();
+        Ok(Page {
+            language: language.into(),
+            key,
+            ..page
+        })
+    };
+    let started = "user-guide/getting-started.html";
+    let pages = [
+        page(started, "docs/User Guide/Getting Started.md", "en")?,
+        page(
+            &format!("es/{started}"),
+            "docs/User Guide/Getting Started.es.md",
+            "es",
+        )?,
+        page("guide.html", "docs/guide.html", "en")?,
+    ];
+    let links = list_links(&pages, &["docs/".to_owned()]);
+    let english = links.get("en").cloned().unwrap_or_default();
+    let spanish = links.get("es").cloned().unwrap_or_default();
+    let started = "/user-guide/getting-started/";
+    for file in [
+        "/User Guide/Getting Started.md",
+        "/User%20Guide/Getting%20Started.md",
+        "/User Guide/Getting Started.html",
+        "/User%20Guide/Getting%20Started.html",
+        "/User%20Guide/Getting%20Started.es.md",
+    ] {
+        assert_eq!(
+            english.get(file).map(String::as_str),
+            Some(started),
+            "{file}"
+        );
+    }
+    let translated = "/es/user-guide/getting-started/";
+    assert_eq!(
+        spanish
+            .get("/User%20Guide/Getting%20Started.md")
+            .map(String::as_str),
+        Some(translated)
+    );
+    assert_eq!(
+        spanish.get("/guide.html").map(String::as_str),
+        Some("/guide/")
     );
     Ok(())
 }
