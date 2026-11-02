@@ -22,7 +22,9 @@ without making the numbers lie.
 - `pnpm -C benchmark measure` — narrowed with `--case`, `--size`, `--tool`; `--runs 1 --warmup 0`
   for a smoke run. Never measure while something else builds on the machine: a cargo build in
   another worktree doubles the slow rivals' times
-- `pnpm -C benchmark show:report` — merges `.cache/results/`, latest per case, size and tool
+- `pnpm -C benchmark show:report` — merges `.cache/results/`, latest per case, size and tool.
+  The landing's chart copies its numbers by hand into `.htmlpress/routes/index.html` and the
+  `es/` and `zh/` copies beside it: update all three, or the translations drift
 
 ## The adapter contract
 

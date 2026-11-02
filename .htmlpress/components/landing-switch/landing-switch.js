@@ -1,5 +1,6 @@
-// Its buttons become tabs, each showing the element its `aria-controls` names and hiding
-// the others' — mark all but the first `hidden` in the HTML, so the page reads without JS.
+// Its buttons become tabs, each showing the elements its `aria-controls` names (the first
+// is the tabpanel) and hiding the others' — mark all but the first tab's `hidden` in the
+// HTML, so the page reads without JS.
 
 class LandingSwitch extends HTMLElement {
   connectedCallback() {
@@ -28,11 +29,16 @@ class LandingSwitch extends HTMLElement {
       const selected = position === index
       tab.setAttribute("aria-selected", String(selected))
       tab.tabIndex = selected ? 0 : -1
-      const panel = document.getElementById(tab.getAttribute("aria-controls") ?? "")
-      if (!panel) continue
-      panel.setAttribute("role", "tabpanel")
-      panel.setAttribute("aria-labelledby", tab.id)
-      panel.hidden = !selected
+      const ids = (tab.getAttribute("aria-controls") ?? "").split(/\s+/).filter(Boolean)
+      for (const [order, id] of ids.entries()) {
+        const element = document.getElementById(id)
+        if (!element) continue
+        if (order === 0) {
+          element.setAttribute("role", "tabpanel")
+          element.setAttribute("aria-labelledby", tab.id)
+        }
+        element.hidden = !selected
+      }
     }
   }
 }

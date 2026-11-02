@@ -556,14 +556,21 @@ htmlpress.yaml</code></pre>
             ><button
               type="button"
               id="quickstart-html-tab"
-              aria-controls="quickstart-html"
+              aria-controls="quickstart-html quickstart-html-format"
             >
               HTML</button
-            ><button type="button" id="quickstart-md-tab" aria-controls="quickstart-md">
+            ><button
+              type="button"
+              id="quickstart-md-tab"
+              aria-controls="quickstart-md quickstart-md-format"
+            >
               Markdown
             </button></htmlpress-landing-switch
           >
-          <h2>编写 HTML 或 Markdown，发布网站。</h2>
+          <h2>
+            编写 <span id="quickstart-html-format">HTML</span
+            ><span id="quickstart-md-format" hidden>Markdown</span>，发布网站。
+          </h2>
           <p>你的页面保持原样，其余的交给 Htmlpress。</p>
         </header>
         <div>
@@ -657,7 +664,20 @@ Run `htmlpress start` and open the browser.
 
 $ htmlpress build --json '{"root":"docs","out":"dist"}'
 
-$ htmlpress --llms</code></pre>
+$ htmlpress --llms
+
+$ curl htmlpress.dev/zh/introduction/index.md
+# 简介
+
+> 了解如何搭建你的第一个 htmlpress 项目：
+> 安装、编写页面、运行和构建。
+
+$ curl htmlpress.dev/robots.txt
+User-agent: *
+Content-Signal: search=yes, ai-input=yes, ai-train=yes
+Allow: /
+
+$ npx skills add https://htmlpress.dev</code></pre>
             </htmlpress-landing-code></htmlpress-landing-window
           >
           <htmlpress-landing-points
@@ -680,32 +700,6 @@ $ htmlpress --llms</code></pre>
               <li>
                 <svg viewBox="0 0 24 24" aria-hidden="true">
                   <path
-                    d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5c0 1.1.9 2 2 2h1"
-                  />
-                  <path
-                    d="M16 21h1a2 2 0 0 0 2-2v-5c0-1.1.9-2 2-2a2 2 0 0 1-2-2V5a2 2 0 0 0-2-2h-1"
-                  />
-                </svg>
-                <h3>每条命令都支持 JSON</h3>
-                <p>
-                  <code>--json</code> 将结果输出到 stdout，并以 JSON
-                  格式接收输入；日志和错误输出到 stderr。
-                </p>
-              </li>
-              <li>
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M12 19h8" />
-                  <path d="m4 17 6-6-6-6" />
-                </svg>
-                <h3>一次读懂 CLI</h3>
-                <p>
-                  <code>htmlpress --llms</code> 以 MCP
-                  风格的工具列出每条命令的输入和输出模式。
-                </p>
-              </li>
-              <li>
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path
                     d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"
                   />
                   <path d="M14 2v5a1 1 0 0 0 1 1h5" />
@@ -714,8 +708,10 @@ $ htmlpress --llms</code></pre>
                 </svg>
                 <h3>每个页面的 Markdown 副本</h3>
                 <p>
-                  每个页面旁都有一份 <code>index.md</code>，并在页面 head
-                  中链接，智能体无需解析标记即可读取内容。
+                  每个页面旁都有一份 <code>index.md</code>，并在页面 head 中链接。<a
+                    href="/zh/deployment/cloudflare/"
+                    >一条 CDN 规则</a
+                  >即可把它返回给发送 <code>Accept: text/markdown</code> 的请求。
                 </p>
               </li>
               <li>
@@ -735,6 +731,37 @@ $ htmlpress --llms</code></pre>
               </li>
               <li>
                 <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"
+                  />
+                  <path d="m9 12 2 2 4-4" />
+                </svg>
+                <h3>内容信号</h3>
+                <p>
+                  <code>robots.txt</code> 声明你的页面能否用于搜索、AI 回答或模型训练。<a
+                    href="/zh/customization/ai-agents/"
+                    >一个配置项</a
+                  >即可更改。
+                </p>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"
+                  />
+                  <path d="M20 2v4" />
+                  <path d="M22 4h-4" />
+                  <circle cx="4" cy="20" r="2" />
+                </svg>
+                <h3>发布你自己的技能</h3>
+                <p>
+                  把 <code>skills</code> 指向你的
+                  <code>SKILL.md</code> 文件，它们就会发布到
+                  <code>/.well-known/agent-skills/</code> 下。
+                </p>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" aria-hidden="true">
                   <path d="M12 8V4H8" />
                   <rect width="16" height="12" x="4" y="8" rx="2" />
                   <path d="M2 14h2" />
@@ -742,9 +769,10 @@ $ htmlpress --llms</code></pre>
                   <path d="M15 13v2" />
                   <path d="M9 13v2" />
                 </svg>
-                <h3>为你的智能体准备的技能</h3>
+                <h3>为你的编码智能体准备的技能</h3>
                 <p>
-                  五个技能教会 Claude Code、Cursor 或 Codex
+                  <code>npx skills add https://htmlpress.dev</code> 教会 Claude
+                  Code、Cursor 或 Codex
                   <a href="/zh/agent-skills/">编写、配置、重塑样式并部署</a>站点。
                 </p>
               </li>
@@ -752,6 +780,64 @@ $ htmlpress --llms</code></pre>
           >
         </div>
         <p><a href="/zh/agent-skills/">智能体如何使用 htmlpress →</a></p>
+      </section>
+    </htmlpress-landing-section>
+
+    <htmlpress-landing-section>
+      <section>
+        <header>
+          <h2>眨眼间完成构建</h2>
+          <p>
+            冷构建一千个 Markdown 页面。Htmlpress
+            用它们生成完整的文档站点，导航、搜索和代码高亮一应俱全，比所测的其他所有文档生成器都快。
+          </p>
+        </header>
+        <htmlpress-landing-window label="基准测试 · 1,000 页文档站点，冷构建"
+          ><htmlpress-landing-benchmark
+            ><ul>
+              <li data-own>
+                <span>htmlpress</span><meter min="0" max="763" value="763"></meter
+                ><data value="763">763 页/秒</data>
+              </li>
+              <li>
+                <span>mdBook</span><meter min="0" max="763" value="376"></meter
+                ><data value="376">376 页/秒</data>
+              </li>
+              <li>
+                <span>Zola + book</span><meter min="0" max="763" value="83"></meter
+                ><data value="83">83 页/秒</data>
+              </li>
+              <li>
+                <span>Astro Starlight</span><meter min="0" max="763" value="58"></meter
+                ><data value="58">58 页/秒</data>
+              </li>
+              <li>
+                <span>MkDocs Material</span><meter min="0" max="763" value="51"></meter
+                ><data value="51">51 页/秒</data>
+              </li>
+              <li>
+                <span>Hugo + Hextra</span><meter min="0" max="763" value="48"></meter
+                ><data value="48">48 页/秒</data>
+              </li>
+              <li>
+                <span>Docusaurus</span><meter min="0" max="763" value="21"></meter
+                ><data value="21">21 页/秒</data>
+              </li>
+              <li>
+                <span>Livemark</span><meter min="0" max="763" value="16"></meter
+                ><data value="16">16 页/秒</data>
+              </li>
+              <li>
+                <span>VitePress</span><meter min="0" max="763" value="14"></meter
+                ><data value="14">14 页/秒</data>
+              </li>
+            </ul></htmlpress-landing-benchmark
+          ></htmlpress-landing-window
+        >
+        <p>
+          中位数下每秒构建的页面数，测于 AMD Ryzen 5 PRO 7545U。使用
+          <code>pnpm -C benchmark measure</code> 复现。
+        </p>
       </section>
     </htmlpress-landing-section>
 

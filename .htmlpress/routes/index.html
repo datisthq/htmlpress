@@ -550,66 +550,6 @@ htmlpress.yaml</code></pre>
       </section>
     </htmlpress-landing-section>
 
-    <htmlpress-landing-section>
-      <section>
-        <header>
-          <h2>Builds in a blink</h2>
-          <p>
-            A thousand Markdown pages built cold. Htmlpress makes a whole documentation
-            site of them, navigation, search and highlighted code included, faster than
-            every other documentation generator measured.
-          </p>
-        </header>
-        <htmlpress-landing-window label="benchmark · 1,000-page docs site, cold build"
-          ><htmlpress-landing-benchmark
-            ><ul>
-              <li data-own>
-                <span>htmlpress</span><meter min="0" max="763" value="763"></meter
-                ><data value="763">763 pages/s</data>
-              </li>
-              <li>
-                <span>mdBook</span><meter min="0" max="763" value="376"></meter
-                ><data value="376">376 pages/s</data>
-              </li>
-              <li>
-                <span>Zola + book</span><meter min="0" max="763" value="83"></meter
-                ><data value="83">83 pages/s</data>
-              </li>
-              <li>
-                <span>Astro Starlight</span><meter min="0" max="763" value="58"></meter
-                ><data value="58">58 pages/s</data>
-              </li>
-              <li>
-                <span>MkDocs Material</span><meter min="0" max="763" value="51"></meter
-                ><data value="51">51 pages/s</data>
-              </li>
-              <li>
-                <span>Hugo + Hextra</span><meter min="0" max="763" value="48"></meter
-                ><data value="48">48 pages/s</data>
-              </li>
-              <li>
-                <span>Docusaurus</span><meter min="0" max="763" value="21"></meter
-                ><data value="21">21 pages/s</data>
-              </li>
-              <li>
-                <span>Livemark</span><meter min="0" max="763" value="16"></meter
-                ><data value="16">16 pages/s</data>
-              </li>
-              <li>
-                <span>VitePress</span><meter min="0" max="763" value="14"></meter
-                ><data value="14">14 pages/s</data>
-              </li>
-            </ul></htmlpress-landing-benchmark
-          ></htmlpress-landing-window
-        >
-        <p>
-          Pages built per second at the median, on an AMD Ryzen 5 PRO 7545U. Reproduce
-          with
-          <code>pnpm -C benchmark measure</code>.
-        </p>
-      </section>
-    </htmlpress-landing-section>
-
     <htmlpress-landing-section tone="tint">
       <section>
         <header>
@@ -617,14 +557,21 @@ htmlpress.yaml</code></pre>
             ><button
               type="button"
               id="quickstart-html-tab"
-              aria-controls="quickstart-html"
+              aria-controls="quickstart-html quickstart-html-format"
             >
               HTML</button
-            ><button type="button" id="quickstart-md-tab" aria-controls="quickstart-md">
+            ><button
+              type="button"
+              id="quickstart-md-tab"
+              aria-controls="quickstart-md quickstart-md-format"
+            >
               Markdown
             </button></htmlpress-landing-switch
           >
-          <h2>Write HTML or Markdown. Ship a website.</h2>
+          <h2>
+            Write <span id="quickstart-html-format">HTML</span
+            ><span id="quickstart-md-format" hidden>Markdown</span>. Ship a website.
+          </h2>
           <p>Your pages stay as they are. Htmlpress does the rest.</p>
         </header>
         <div>
@@ -718,7 +665,20 @@ Run `htmlpress start` and open the browser.
 
 $ htmlpress build --json '{"root":"docs","out":"dist"}'
 
-$ htmlpress --llms</code></pre>
+$ htmlpress --llms
+
+$ curl htmlpress.dev/introduction/index.md
+# Introduction
+
+> Learn how to set up your first htmlpress
+> project: install, write pages, run and build.
+
+$ curl htmlpress.dev/robots.txt
+User-agent: *
+Content-Signal: search=yes, ai-input=yes, ai-train=yes
+Allow: /
+
+$ npx skills add https://htmlpress.dev</code></pre>
             </htmlpress-landing-code></htmlpress-landing-window
           >
           <htmlpress-landing-points
@@ -751,7 +711,8 @@ $ htmlpress --llms</code></pre>
                 <h3>A Markdown copy of every page</h3>
                 <p>
                   Each page gets an <code>index.md</code> beside its HTML, linked from the
-                  page head, so an agent reads the content without the markup.
+                  page head. <a href="/deployment/cloudflare/">One CDN rule</a> serves it
+                  to requests that send <code>Accept: text/markdown</code>.
                 </p>
               </li>
               <li>
@@ -772,6 +733,35 @@ $ htmlpress --llms</code></pre>
               </li>
               <li>
                 <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"
+                  />
+                  <path d="m9 12 2 2 4-4" />
+                </svg>
+                <h3>Content signals</h3>
+                <p>
+                  <code>robots.txt</code> states whether your pages may be used for
+                  search, AI answers or model training.
+                  <a href="/customization/ai-agents/">One config option</a> changes it.
+                </p>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"
+                  />
+                  <path d="M20 2v4" />
+                  <path d="M22 4h-4" />
+                  <circle cx="4" cy="20" r="2" />
+                </svg>
+                <h3>Publish your own skills</h3>
+                <p>
+                  Point <code>skills</code> at your <code>SKILL.md</code> files and they
+                  are published under <code>/.well-known/agent-skills/</code>.
+                </p>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" aria-hidden="true">
                   <path d="M12 8V4H8" />
                   <rect width="16" height="12" x="4" y="8" rx="2" />
                   <path d="M2 14h2" />
@@ -779,9 +769,10 @@ $ htmlpress --llms</code></pre>
                   <path d="M15 13v2" />
                   <path d="M9 13v2" />
                 </svg>
-                <h3>A skill for your agent</h3>
+                <h3>Skills for your coding agent</h3>
                 <p>
-                  Five skills teach Claude Code, Cursor or Codex to
+                  <code>npx skills add https://htmlpress.dev</code> teaches Claude Code,
+                  Cursor or Codex to
                   <a href="/agent-skills/">write, configure, restyle and deploy</a> a
                   site.
                 </p>
@@ -790,6 +781,66 @@ $ htmlpress --llms</code></pre>
           >
         </div>
         <p><a href="/agent-skills/">How agents use htmlpress →</a></p>
+      </section>
+    </htmlpress-landing-section>
+
+    <htmlpress-landing-section>
+      <section>
+        <header>
+          <h2>Builds in a blink</h2>
+          <p>
+            A thousand Markdown pages built cold. Htmlpress makes a whole documentation
+            site of them, navigation, search and highlighted code included, faster than
+            every other documentation generator measured.
+          </p>
+        </header>
+        <htmlpress-landing-window label="benchmark · 1,000-page docs site, cold build"
+          ><htmlpress-landing-benchmark
+            ><ul>
+              <li data-own>
+                <span>htmlpress</span><meter min="0" max="763" value="763"></meter
+                ><data value="763">763 pages/s</data>
+              </li>
+              <li>
+                <span>mdBook</span><meter min="0" max="763" value="376"></meter
+                ><data value="376">376 pages/s</data>
+              </li>
+              <li>
+                <span>Zola + book</span><meter min="0" max="763" value="83"></meter
+                ><data value="83">83 pages/s</data>
+              </li>
+              <li>
+                <span>Astro Starlight</span><meter min="0" max="763" value="58"></meter
+                ><data value="58">58 pages/s</data>
+              </li>
+              <li>
+                <span>MkDocs Material</span><meter min="0" max="763" value="51"></meter
+                ><data value="51">51 pages/s</data>
+              </li>
+              <li>
+                <span>Hugo + Hextra</span><meter min="0" max="763" value="48"></meter
+                ><data value="48">48 pages/s</data>
+              </li>
+              <li>
+                <span>Docusaurus</span><meter min="0" max="763" value="21"></meter
+                ><data value="21">21 pages/s</data>
+              </li>
+              <li>
+                <span>Livemark</span><meter min="0" max="763" value="16"></meter
+                ><data value="16">16 pages/s</data>
+              </li>
+              <li>
+                <span>VitePress</span><meter min="0" max="763" value="14"></meter
+                ><data value="14">14 pages/s</data>
+              </li>
+            </ul></htmlpress-landing-benchmark
+          ></htmlpress-landing-window
+        >
+        <p>
+          Pages built per second at the median, on an AMD Ryzen 5 PRO 7545U. Reproduce
+          with
+          <code>pnpm -C benchmark measure</code>.
+        </p>
       </section>
     </htmlpress-landing-section>
 

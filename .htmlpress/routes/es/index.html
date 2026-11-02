@@ -565,14 +565,21 @@ htmlpress.yaml</code></pre>
             ><button
               type="button"
               id="quickstart-html-tab"
-              aria-controls="quickstart-html"
+              aria-controls="quickstart-html quickstart-html-format"
             >
               HTML</button
-            ><button type="button" id="quickstart-md-tab" aria-controls="quickstart-md">
+            ><button
+              type="button"
+              id="quickstart-md-tab"
+              aria-controls="quickstart-md quickstart-md-format"
+            >
               Markdown
             </button></htmlpress-landing-switch
           >
-          <h2>Escribe HTML o Markdown. Publica un sitio web.</h2>
+          <h2>
+            Escribe <span id="quickstart-html-format">HTML</span
+            ><span id="quickstart-md-format" hidden>Markdown</span>. Publica un sitio web.
+          </h2>
           <p>Tus páginas se quedan como están. Htmlpress hace el resto.</p>
         </header>
         <div>
@@ -667,7 +674,21 @@ Run `htmlpress start` and open the browser.
 
 $ htmlpress build --json '{"root":"docs","out":"dist"}'
 
-$ htmlpress --llms</code></pre>
+$ htmlpress --llms
+
+$ curl htmlpress.dev/es/introduction/index.md
+# Introducción
+
+> Aprende a configurar tu primer proyecto de
+> htmlpress: instala, escribe páginas, ejecuta
+> y compila.
+
+$ curl htmlpress.dev/robots.txt
+User-agent: *
+Content-Signal: search=yes, ai-input=yes, ai-train=yes
+Allow: /
+
+$ npx skills add https://htmlpress.dev</code></pre>
             </htmlpress-landing-code></htmlpress-landing-window
           >
           <htmlpress-landing-points
@@ -692,32 +713,6 @@ $ htmlpress --llms</code></pre>
               <li>
                 <svg viewBox="0 0 24 24" aria-hidden="true">
                   <path
-                    d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5c0 1.1.9 2 2 2h1"
-                  />
-                  <path
-                    d="M16 21h1a2 2 0 0 0 2-2v-5c0-1.1.9-2 2-2a2 2 0 0 1-2-2V5a2 2 0 0 0-2-2h-1"
-                  />
-                </svg>
-                <h3>Todos los comandos hablan JSON</h3>
-                <p>
-                  <code>--json</code> imprime el resultado en stdout y recibe la entrada
-                  como JSON; los registros y los errores van a stderr.
-                </p>
-              </li>
-              <li>
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M12 19h8" />
-                  <path d="m4 17 6-6-6-6" />
-                </svg>
-                <h3>La CLI de una sola lectura</h3>
-                <p>
-                  <code>htmlpress --llms</code> lista el esquema de entrada y salida de
-                  cada comando como herramientas con forma de MCP.
-                </p>
-              </li>
-              <li>
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path
                     d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"
                   />
                   <path d="M14 2v5a1 1 0 0 0 1 1h5" />
@@ -727,7 +722,9 @@ $ htmlpress --llms</code></pre>
                 <h3>Una copia en Markdown de cada página</h3>
                 <p>
                   Cada página obtiene un <code>index.md</code> junto a su HTML, enlazado
-                  desde el head, para que un agente lea el contenido sin el marcado.
+                  desde el head.
+                  <a href="/es/deployment/cloudflare/">Una regla de CDN</a> lo sirve a las
+                  peticiones que envían <code>Accept: text/markdown</code>.
                 </p>
               </li>
               <li>
@@ -748,6 +745,36 @@ $ htmlpress --llms</code></pre>
               </li>
               <li>
                 <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"
+                  />
+                  <path d="m9 12 2 2 4-4" />
+                </svg>
+                <h3>Señales de contenido</h3>
+                <p>
+                  <code>robots.txt</code> indica si tus páginas pueden usarse para
+                  búsqueda, respuestas de IA o entrenamiento de modelos.
+                  <a href="/es/customization/ai-agents/">Una opción de configuración</a>
+                  lo cambia.
+                </p>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"
+                  />
+                  <path d="M20 2v4" />
+                  <path d="M22 4h-4" />
+                  <circle cx="4" cy="20" r="2" />
+                </svg>
+                <h3>Publica tus propias skills</h3>
+                <p>
+                  Apunta <code>skills</code> a tus archivos <code>SKILL.md</code> y se
+                  publican en <code>/.well-known/agent-skills/</code>.
+                </p>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" aria-hidden="true">
                   <path d="M12 8V4H8" />
                   <rect width="16" height="12" x="4" y="8" rx="2" />
                   <path d="M2 14h2" />
@@ -755,9 +782,10 @@ $ htmlpress --llms</code></pre>
                   <path d="M15 13v2" />
                   <path d="M9 13v2" />
                 </svg>
-                <h3>Una skill para tu agente</h3>
+                <h3>Skills para tu agente de programación</h3>
                 <p>
-                  Cinco skills enseñan a Claude Code, Cursor o Codex a
+                  <code>npx skills add https://htmlpress.dev</code> enseña a Claude Code,
+                  Cursor o Codex a
                   <a href="/es/agent-skills/"
                     >escribir, configurar, rediseñar y desplegar</a
                   >
@@ -768,6 +796,66 @@ $ htmlpress --llms</code></pre>
           >
         </div>
         <p><a href="/es/agent-skills/">Cómo usan htmlpress los agentes →</a></p>
+      </section>
+    </htmlpress-landing-section>
+
+    <htmlpress-landing-section>
+      <section>
+        <header>
+          <h2>Compila en un instante</h2>
+          <p>
+            Mil páginas de Markdown compiladas en frío. Htmlpress hace con ellas un sitio
+            de documentación completo, con navegación, búsqueda y código resaltado
+            incluidos, más rápido que cualquier otro generador de documentación medido.
+          </p>
+        </header>
+        <htmlpress-landing-window
+          label="benchmark · sitio de documentación de 1.000 páginas, compilación en frío"
+          ><htmlpress-landing-benchmark
+            ><ul>
+              <li data-own>
+                <span>htmlpress</span><meter min="0" max="763" value="763"></meter
+                ><data value="763">763 páginas/s</data>
+              </li>
+              <li>
+                <span>mdBook</span><meter min="0" max="763" value="376"></meter
+                ><data value="376">376 páginas/s</data>
+              </li>
+              <li>
+                <span>Zola + book</span><meter min="0" max="763" value="83"></meter
+                ><data value="83">83 páginas/s</data>
+              </li>
+              <li>
+                <span>Astro Starlight</span><meter min="0" max="763" value="58"></meter
+                ><data value="58">58 páginas/s</data>
+              </li>
+              <li>
+                <span>MkDocs Material</span><meter min="0" max="763" value="51"></meter
+                ><data value="51">51 páginas/s</data>
+              </li>
+              <li>
+                <span>Hugo + Hextra</span><meter min="0" max="763" value="48"></meter
+                ><data value="48">48 páginas/s</data>
+              </li>
+              <li>
+                <span>Docusaurus</span><meter min="0" max="763" value="21"></meter
+                ><data value="21">21 páginas/s</data>
+              </li>
+              <li>
+                <span>Livemark</span><meter min="0" max="763" value="16"></meter
+                ><data value="16">16 páginas/s</data>
+              </li>
+              <li>
+                <span>VitePress</span><meter min="0" max="763" value="14"></meter
+                ><data value="14">14 páginas/s</data>
+              </li>
+            </ul></htmlpress-landing-benchmark
+          ></htmlpress-landing-window
+        >
+        <p>
+          Páginas compiladas por segundo en la mediana, en un AMD Ryzen 5 PRO 7545U.
+          Reprodúcelo con <code>pnpm -C benchmark measure</code>.
+        </p>
       </section>
     </htmlpress-landing-section>
 
