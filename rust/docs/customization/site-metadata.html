@@ -64,7 +64,7 @@ head:
         </tr>
         <tr>
           <td><code>logo</code></td>
-          <td>none</td>
+          <td>the htmlpress mark</td>
           <td>
             Image shown before the site title in the header (and as favicon default)
           </td>
@@ -109,8 +109,14 @@ head:
       </li>
       <li>
         If <code>favicon</code> is omitted, htmlpress falls back to <code>logo</code>;
-        with neither, the htmlpress icon, which <code>.htmlpress/favicon.svg</code> can
+        with neither, the htmlpress mark, which <code>.htmlpress/logo.svg</code> can
         replace.
+      </li>
+      <li>
+        Without <code>logo</code>, the header shows the htmlpress mark inline, drawn in
+        <code>currentColor</code> and colored <code>--htmlpress-primary</code>, so it
+        follows the theme and its toggle. The favicon copy takes the light and dark
+        <code>--htmlpress-primary</code> from <code>styles/tokens.css</code>.
       </li>
       <li>
         The logo is an <code>&lt;img&gt;</code> before the site title and its

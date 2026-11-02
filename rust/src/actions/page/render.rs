@@ -240,7 +240,7 @@ fn create_head(
     }
     let favicon = (site.config.favicon.as_ref()).or(site.config.logo.as_ref());
     let favicon =
-        favicon.map_or(format!("/{ASSETS_DIR}/favicon.svg"), |url| escape_html(url));
+        favicon.map_or(format!("/{ASSETS_DIR}/logo.svg"), |url| escape_html(url));
     let kind = match read_favicon_type(&favicon) {
         Some(kind) => format!(" type=\"{kind}\""),
         None => String::new(),
@@ -615,15 +615,29 @@ fn create_alternates(site: &Site, page: &Page) -> String {
 
 fn create_brand(site: &Site, page: &Page) -> String {
     let (title, description, link) = read_brand(site, page);
-    let logo = site.config.logo.as_ref().map_or(String::new(), |logo| {
-        format!("<img src=\"{}\" alt=\"\">", escape_html(logo))
-    });
+    let logo = match &site.config.logo {
+        Some(logo) => format!("<img src=\"{}\" alt=\"\">", escape_html(logo)),
+        None => create_default_logo(site),
+    };
     let (title, link) = (escape_html(title), escape_html(&link));
     let title = match description {
         Some(text) => format!("<span>{title}<small>{}</small></span>", escape_html(text)),
         None => title,
     };
     format!("<a href=\"{link}\">{logo}{title}</a>")
+}
+
+// Inline, so `currentColor` takes the primary of the theme the page shows, toggle included
+fn create_default_logo(site: &Site) -> String {
+    let svg = site
+        .assets
+        .get("logo.svg")
+        .map(String::as_str)
+        .unwrap_or_default();
+    match svg.find("<svg") {
+        Some(start) => format!("<svg aria-hidden=\"true\"{}", &svg[start + 4..]),
+        None => String::new(),
+    }
 }
 
 // The open page's section may rename the brand and point it at its own home; either

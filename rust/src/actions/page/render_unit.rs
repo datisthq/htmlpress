@@ -27,6 +27,10 @@ fn create_site() -> crate::Result<Site> {
         assets: ASSETS
             .iter()
             .map(|asset| (asset.path.to_owned(), asset.content.to_owned()))
+            .chain([(
+                "logo.svg".to_owned(),
+                "<svg viewBox=\"0 0 1 1\"></svg>".to_owned(),
+            )])
             .collect(),
         skills: vec![],
         inputs: Default::default(),
@@ -71,7 +75,7 @@ fn renders_the_page_in_the_layout() -> crate::Result<()> {
     assert!(html.contains(r#"<a href="/guide/" aria-current="page">Guide</a>"#));
     assert!(html.contains(r#"<a href="/">Home</a>"#));
     assert!(html.contains(
-        r#"<htmlpress-brand><a href="/">Docs &lt;&amp;&gt;</a></htmlpress-brand>"#
+        r#"<htmlpress-brand><a href="/"><svg aria-hidden="true" viewBox="0 0 1 1"></svg>Docs &lt;&amp;&gt;</a></htmlpress-brand>"#
     ));
     assert!(!html.contains("<htmlpress-content>") && !html.contains(RELOAD_PATH));
     Ok(())
@@ -254,7 +258,7 @@ fn uses_the_layout_a_page_names() -> crate::Result<()> {
     let html = render_page(&site, &site.pages[0], false)?;
     assert_eq!(
         html,
-        r#"<header><htmlpress-brand><a href="/">Docs &lt;&amp;&gt;</a></htmlpress-brand></header><main><h1>Home</h1></main>"#
+        r#"<header><htmlpress-brand><a href="/"><svg aria-hidden="true" viewBox="0 0 1 1"></svg>Docs &lt;&amp;&gt;</a></htmlpress-brand></header><main><h1>Home</h1></main>"#
     );
     let other = render_page(&site, &site.pages[1], false)?;
     assert!(other.contains("<htmlpress-nav>"));
@@ -400,7 +404,7 @@ fn fills_the_logo_banner_and_footer() -> crate::Result<()> {
     let html = render_page(&site, &site.pages[0], false)?;
     assert!(!html.contains("<htmlpress-banner"));
     assert!(html.contains(
-        r#"<link rel="icon" href="/_htmlpress/favicon.svg" type="image/svg+xml">"#
+        r#"<link rel="icon" href="/_htmlpress/logo.svg" type="image/svg+xml">"#
     ));
     assert!(html.contains(r#"<a href="https://htmlpress.dev">Htmlpress</a>"#));
     site.config.logo = Some("/logo.svg".to_owned());
@@ -423,7 +427,7 @@ fn puts_the_description_under_the_brand_title() -> crate::Result<()> {
     site.config.description = Some("Notes <&>".into());
     let html = render_page(&site, &site.pages[0], false)?;
     assert!(html.contains(
-        r#"<a href="/"><span>Docs &lt;&amp;&gt;<small>Notes &lt;&amp;&gt;</small></span></a>"#
+        r#"<a href="/"><svg aria-hidden="true" viewBox="0 0 1 1"></svg><span>Docs &lt;&amp;&gt;<small>Notes &lt;&amp;&gt;</small></span></a>"#
     ));
     Ok(())
 }
@@ -532,7 +536,7 @@ fn shows_only_the_open_sections_pages_with_its_brand() -> crate::Result<()> {
     let cli = render_page(&site, &site.pages[3], false)?;
     assert!(cli.contains(r#"<a href="/api/" data-section aria-current="page">API</a>"#));
     assert!(cli.contains(r#"<a href="/" data-section>Docs</a>"#));
-    assert!(cli.contains(r#"<htmlpress-brand><a href="/api/">API Reference</a>"#));
+    assert!(cli.contains(r#"<htmlpress-brand><a href="/api/"><svg aria-hidden="true" viewBox="0 0 1 1"></svg>API Reference</a>"#));
     assert!(!cli.contains(r#"<a href="/guide/""#), "{cli}");
     assert!(cli.contains(r#"<a rel="prev" href="/api/"><small>Previous</small>API</a>"#));
     assert!(!cli.contains(r#"rel="next""#));

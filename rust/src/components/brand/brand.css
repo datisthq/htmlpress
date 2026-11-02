@@ -17,13 +17,18 @@
   a:has(small) {
     align-items: end;
   }
-  img {
+  img,
+  svg {
     flex-shrink: 0;
     width: auto;
     height: 1.625rem;
     margin-left: -1px;
   }
-  a:has(small) img {
+  svg {
+    width: 1.625rem;
+    color: var(--htmlpress-primary);
+  }
+  a:has(small) :is(img, svg) {
     margin-bottom: 0.25rem;
   }
   span {

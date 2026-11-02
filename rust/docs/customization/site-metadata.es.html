@@ -64,7 +64,7 @@ head:
         </tr>
         <tr>
           <td><code>logo</code></td>
-          <td>ninguno</td>
+          <td>la marca de htmlpress</td>
           <td>
             Imagen mostrada antes del título del sitio en la cabecera (y favicon por
             defecto)
@@ -112,8 +112,15 @@ head:
       </li>
       <li>
         Si se omite <code>favicon</code>, htmlpress recurre a <code>logo</code>; sin
-        ninguno de los dos, el icono de htmlpress, que <code>.htmlpress/favicon.svg</code>
+        ninguno de los dos, la marca de htmlpress, que <code>.htmlpress/logo.svg</code>
         puede sustituir.
+      </li>
+      <li>
+        Sin <code>logo</code>, la cabecera muestra la marca de htmlpress en línea,
+        dibujada en <code>currentColor</code> y coloreada con
+        <code>--htmlpress-primary</code>, así que sigue el tema y su selector. La copia
+        del favicon toma el <code>--htmlpress-primary</code> claro y oscuro de
+        <code>styles/tokens.css</code>.
       </li>
       <li>
         El logo es un <code>&lt;img&gt;</code> antes del título del sitio y su

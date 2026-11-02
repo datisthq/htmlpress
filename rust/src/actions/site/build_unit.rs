@@ -109,6 +109,24 @@ fn serves_escapes_and_project_components() -> crate::Result<()> {
 }
 
 #[test]
+fn writes_the_logo_in_the_projects_primary() -> crate::Result<()> {
+    let root = tempfile::tempdir().map_err(Error::io("tempdir"))?;
+    let root = root.path();
+    write_source(root, "index.html", "<h1>Home</h1>")?;
+    write_source(
+        root,
+        ".htmlpress/styles/tokens.css",
+        ":root { --htmlpress-primary: red }",
+    )?;
+    let options = BuildOptions::new(root);
+    build_site(&options)?;
+    let logo = std::fs::read_to_string(options.output.join("_htmlpress/logo.svg"))
+        .map_err(Error::io("logo.svg"))?;
+    assert!(logo.contains("<style>svg{color:red}</style>"), "{logo}");
+    Ok(())
+}
+
+#[test]
 fn refuses_an_output_that_holds_the_project() -> crate::Result<()> {
     let root = tempfile::tempdir().map_err(Error::io("tempdir"))?;
     let project = root.path().join("docs");

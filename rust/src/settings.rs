@@ -62,7 +62,7 @@ macro_rules! asset {
 /// replaces it.
 pub const ASSETS: &[Asset] = &[
     asset!("layout.html"),
-    asset!("favicon.svg"),
+    asset!("logo.svg"),
     asset!("styles/tokens.css"),
     asset!("styles/layout.css"),
     asset!("styles/content.css"),

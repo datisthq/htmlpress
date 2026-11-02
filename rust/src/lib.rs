@@ -63,6 +63,9 @@ mod actions {
     pub(crate) mod package {
         pub(crate) mod convert;
     }
+    pub(crate) mod logo {
+        pub(crate) mod color;
+    }
     pub(crate) mod markdown {
         pub(crate) mod render;
     }

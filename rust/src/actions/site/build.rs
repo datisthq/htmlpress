@@ -1,6 +1,7 @@
 use std::path::{Path, PathBuf};
 
 use crate::actions::date::format::format_feed_date;
+use crate::actions::logo::color::color_logo;
 use crate::actions::page::decorate::{Decoration, list_fragments};
 use crate::actions::page::read::read_decorated_page;
 use crate::actions::page::render::render_page;
@@ -166,11 +167,20 @@ fn write_site(
     write_file(&assets.join("theme.css"), theme.join("\n").as_bytes())?;
     for (path, text) in &site.assets {
         let served = path.starts_with("scripts/")
-            || path == "favicon.svg"
             || path.starts_with("components/") && !path.ends_with(".html");
         if served {
             write_file(&assets.join(path), text.as_bytes())?;
         }
+    }
+    if let Some(logo) = site.assets.get("logo.svg") {
+        let tokens = site
+            .assets
+            .get("styles/tokens.css")
+            .map_or("", String::as_str);
+        write_file(
+            &assets.join("logo.svg"),
+            color_logo(logo, tokens).as_bytes(),
+        )?;
     }
     if options.reload {
         write_file(&assets.join("reload.js"), RELOAD.as_bytes())?;
