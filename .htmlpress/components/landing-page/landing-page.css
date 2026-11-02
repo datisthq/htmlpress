@@ -9,7 +9,7 @@
       var(--htmlpress-background)
     );
     /* Keep it saturated: the backdrop mixes it at 16%, where a 100–200 tint vanishes */
-    --landing-secondary: oklch(0.541 0.281 293.009);
+    --landing-secondary: oklch(0.879 0.169 91.605);
     display: block;
   }
   /* As wide as the docs pages' sidebar and toggle, so the header links line up with theirs */
@@ -41,11 +41,11 @@
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) htmlpress-landing-page {
-    --landing-secondary: oklch(0.811 0.111 293.571);
+    --landing-secondary: oklch(0.414 0.112 45.904);
   }
 }
 :root[data-theme="dark"] htmlpress-landing-page {
-  --landing-secondary: oklch(0.811 0.111 293.571);
+  --landing-secondary: oklch(0.414 0.112 45.904);
 }
 
 /* One image per theme, as the screenshots are: a media query alone misses the toggle */
