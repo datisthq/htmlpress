@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.9.0](https://github.com/datisthq/htmlpress/compare/v0.8.0...v0.9.0) (2026-11-02)
+
+
+### Features
+
+* default to a violet accent and an amber banner ([0c2b76b](https://github.com/datisthq/htmlpress/commit/0c2b76be7eb7550a8728d2b3eb1116fe9a280a48))
+* draw the title and byline where the layout puts &lt;htmlpress-title&gt;, as Livemark's article does ([e3439f8](https://github.com/datisthq/htmlpress/commit/e3439f8d8be810b783a30bed40653df84db5ff48))
+* rebuild only the edited page when its content alone changed ([e5af873](https://github.com/datisthq/htmlpress/commit/e5af8737d89096e9a98a89f9ece2f1044a1f1cb8))
+* serve .htmlpress/routes/ as bare pages outside the navigation, as Livemark does ([b4a81f0](https://github.com/datisthq/htmlpress/commit/b4a81f04fc9c12040f6d738767506ae6008dc2f0))
+
+
+### Bug Fixes
+
+* default to Livemark's blue accent and violet banner ([f26aaa2](https://github.com/datisthq/htmlpress/commit/f26aaa283480814a3b63594d10ba40f1b49fa37f))
+* rebuild on edits in a folder a symlink also reaches ([912b22b](https://github.com/datisthq/htmlpress/commit/912b22b026ebb76a837e45e4405dea2d5857e71a))
+* refuse a route whose escaped dots name a . or .. segment ([390f6dc](https://github.com/datisthq/htmlpress/commit/390f6dc7f02eb42be0b24cf442198aeebf1c6827))
+* resolve links to a page's file as Livemark does: percent-encoded, a .md page by its .html name, and to the reader's translation ([922affa](https://github.com/datisthq/htmlpress/commit/922affaeecd07abe23d5e37a1930098c1df3072f))
+* route pages exactly as Livemark: longest include base, literal path, translations taking their original's path, file-based custom routes ([5a5ab6d](https://github.com/datisthq/htmlpress/commit/5a5ab6d400b671eb41f2a45d575e9d6d416e5588))
+
 ## [0.8.0](https://github.com/datisthq/htmlpress/compare/v0.7.1...v0.8.0) (2026-11-01)
 
 
