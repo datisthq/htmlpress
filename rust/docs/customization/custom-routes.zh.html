@@ -155,15 +155,21 @@ title: 关于
     <h2>与站点其余部分的配合</h2>
     <ul>
       <li>
-        <strong>路径即 URL。</strong>路由在
-        <code>.htmlpress/routes/</code> 下的路径就是它的 URL：<code>pricing.html</code> 是
-        <code>/pricing/</code>，<code>guide/faq.md</code> 是
-        <code>/guide/faq/</code>，<code>index.html</code> 在其所在文件夹提供。
+        <strong>基于文件的路由。</strong>路由在
+        <code>.htmlpress/routes/</code> 下的路径就是它的 URL，按 Livemark 的 TanStack
+        文件路由规则读取，名称保持原样：<code>pricing.html</code> 是
+        <code>/pricing/</code>，<code>guide/faq.md</code> 和
+        <code>guide.faq.html</code> 都是 <code>/guide/faq/</code>，<code>index</code> 或
+        <code>route</code> 文件在其所在文件夹提供。<code>(group)</code> 或
+        <code>_pathless</code> 文件夹不计入 URL，<code>[.]</code> 是字面意义的点，因此
+        <code>feed[.]xml.html</code> 在 <code>/feed.xml</code> 提供；以
+        <code>__</code> 开头或含有 <code>$param</code> 的名称不是路由。
       </li>
       <li>
         <strong>根路径 <code>/</code>。</strong
         ><code>.htmlpress/routes/index.html</code> 是首页，取代
-        <code>index.html</code> 文章；旁边的 <code>index.zh.html</code> 是它的<a
+        <code>index.html</code> 文章。路由的语言取决于其 URL 所在的前缀，因此
+        <code>zh/index.html</code> 是中文首页，也是它的<a
           href="/zh/customization/translations/"
           >翻译</a
         >。没有它时，首页是第一篇文章。

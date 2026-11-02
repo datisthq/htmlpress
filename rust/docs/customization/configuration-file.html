@@ -218,6 +218,11 @@
       read, and they are served without it, so <code>docs/**/*.html</code> builds
       <code>docs/guide.html</code> to <code>/guide/</code>. Other files under a base,
       <code>.html</code> ones <code>include</code> leaves out too, are copied as they are.
+      As in Livemark, a file is served without the longest base it sits under, whichever
+      glob matched it: with <code>["**/*.md", "docs/**/*.md"]</code>,
+      <code>docs/guide/a.md</code> is <code>/guide/a/</code>. A project without a
+      <code>.gitignore</code> also leaves out every <code>build/</code> and
+      <code>dist/</code> folder.
     </p>
     <p>
       Globs are relative to the project and cannot leave it (<code>..</code> or an

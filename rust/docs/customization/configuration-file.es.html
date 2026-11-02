@@ -231,7 +231,12 @@
       su base: solo se leen los archivos bajo una base, y se sirven sin ella, de modo que
       <code>docs/**/*.html</code> compila <code>docs/guide.html</code> en
       <code>/guide/</code>. Los demás archivos bajo una base, incluidos los
-      <code>.html</code> que <code>include</code> deja fuera, se copian tal cual.
+      <code>.html</code> que <code>include</code> deja fuera, se copian tal cual. Como en
+      Livemark, un archivo se sirve sin la base más larga bajo la que queda, sea cual sea
+      el glob que lo eligió: con <code>["**/*.md", "docs/**/*.md"]</code>,
+      <code>docs/guide/a.md</code> es <code>/guide/a/</code>. Un proyecto sin
+      <code>.gitignore</code> también deja fuera toda carpeta <code>build/</code> y
+      <code>dist/</code>.
     </p>
     <p>
       Los globs son relativos al proyecto y no pueden salir de él (<code>..</code> o una

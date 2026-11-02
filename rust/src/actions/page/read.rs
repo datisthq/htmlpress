@@ -77,6 +77,7 @@ pub(crate) fn read_source(path: &str, tree: &Node<'_>) -> crate::Result<Page> {
         url: create_url(&output),
         path: output,
         source: path.to_owned(),
+        literal: facts.route.is_some(),
         key: String::new(),
         language: facts.language,
         untranslated: false,
@@ -599,25 +600,18 @@ pub(crate) fn read_date(text: &str) -> Option<String> {
     valid.then(|| date.to_owned())
 }
 
-/// The page path a `path` override stands for: `/intro/` → `intro/index.html`,
-/// `/intro.html` → `intro.html`, both served at `/intro/`. Anything else is an error,
-/// since a URL that is neither a folder nor an `.html` file could not name the page.
+/// The page path a `path` override stands for, slashes added as Livemark adds them:
+/// `intro`, `/intro` and `/intro/` → `intro/index.html`, served at `/intro/`. One ending in
+/// `.html` names that file instead, `/intro.html` → `intro.html`, served at `/intro/` too.
 pub(crate) fn create_route_path(route: &str) -> Result<String, String> {
-    let Some(relative) = route.strip_prefix('/') else {
-        return Err(format!("path must start with \"/\", got \"{route}\""));
-    };
+    let relative = route.trim().trim_matches('/');
     if relative.split('/').any(|part| part == "..") {
         return Err(format!("path must stay inside the site, got \"{route}\""));
     }
-    match (
-        relative.is_empty() || relative.ends_with('/'),
-        relative.ends_with(".html"),
-    ) {
-        (true, _) => Ok(format!("{relative}index.html")),
+    match (relative.is_empty(), relative.ends_with(".html")) {
+        (true, _) => Ok("index.html".to_owned()),
         (false, true) => Ok(relative.to_owned()),
-        (false, false) => Err(format!(
-            "path must end with \"/\" or \".html\", got \"{route}\""
-        )),
+        (false, false) => Ok(format!("{relative}/index.html")),
     }
 }
 

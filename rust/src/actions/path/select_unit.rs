@@ -176,3 +176,20 @@ fn keeps_a_changelog_source_a_file_and_twins_only_of_pages() -> Result<(), Strin
     assert!(clash.is_err_and(|error| error.contains("both served at /a.html")));
     Ok(())
 }
+
+#[test]
+fn serves_a_page_without_the_longest_base_of_any_include() -> Result<(), String> {
+    let selection = select(
+        &["**/*.md", "docs/**/*.md", "README.md"],
+        &[],
+        &["README.md", "docs/guide/a.md"],
+    )?;
+    assert_eq!(
+        pairs(&selection.pages),
+        [
+            ("README.html", "README.md"),
+            ("guide/a.html", "docs/guide/a.md")
+        ]
+    );
+    Ok(())
+}

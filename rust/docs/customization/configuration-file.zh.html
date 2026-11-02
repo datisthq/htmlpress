@@ -216,7 +216,11 @@
       中第一个通配符之前的文件夹是它的基础目录：只读取基础目录下的文件，并在提供时去掉该基础目录，因此
       <code>docs/**/*.html</code> 会把 <code>docs/guide.html</code> 构建为
       <code>/guide/</code>。基础目录下的其他文件，包括被 <code>include</code> 排除的
-      <code>.html</code> 文件，都按原样复制。
+      <code>.html</code> 文件，都按原样复制。与 Livemark
+      一样，文件在提供时去掉它所在的最长基础目录，无论匹配它的是哪个 glob：使用
+      <code>["**/*.md", "docs/**/*.md"]</code> 时，<code>docs/guide/a.md</code> 是
+      <code>/guide/a/</code>。没有 <code>.gitignore</code> 的项目还会排除所有
+      <code>build/</code> 和 <code>dist/</code> 文件夹。
     </p>
     <p>
       glob 相对于项目，且不能离开项目（<code>..</code> 或绝对路径会报错）：<code>*</code>

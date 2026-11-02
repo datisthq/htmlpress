@@ -324,7 +324,7 @@ fn reads_the_navigation_and_source_metas() -> crate::Result<()> {
     assert!(page.head.is_empty(), "{}", page.head);
     for bad in [
         "<meta name=\"icon\" content=\"nope\">",
-        "<meta name=\"path\" content=\"start\">",
+        "<meta name=\"path\" content=\"/../start/\">",
         "<meta name=\"sidebar\" content=\"no\">",
         "<meta name=\"source-action\" content=\"open\">",
     ] {
@@ -377,4 +377,18 @@ fn lists_h4_and_gives_h5_and_h6_ids_only() -> crate::Result<()> {
     assert!(page.content.contains("<h5 id=\"arch\">"));
     assert!(page.content.contains("<h6 id=\"notes\">"));
     Ok(())
+}
+
+#[test]
+fn adds_the_slashes_a_path_lacks_as_livemark_does() {
+    for (route, path) in [
+        ("noslash", "noslash/index.html"),
+        ("/a/b", "a/b/index.html"),
+        ("/a/b/", "a/b/index.html"),
+        ("/", "index.html"),
+        ("/start.html", "start.html"),
+    ] {
+        assert_eq!(create_route_path(route).as_deref(), Ok(path), "{route}");
+    }
+    assert!(create_route_path("/a/../../b/").is_err());
 }

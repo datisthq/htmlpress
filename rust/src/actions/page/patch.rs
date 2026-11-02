@@ -9,6 +9,7 @@ pub(crate) fn patch_page(page: Page, article: &PatchArticle) -> Result<Page, Str
     if let Some(path) = &article.path {
         page.path = create_route_path(path)?;
         page.url = create_url(&page.path);
+        page.literal = true;
     }
     if let Some(date) = &article.date {
         let parsed = read_date(date);

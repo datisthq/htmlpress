@@ -108,26 +108,29 @@
       不对应任何已配置语言的后缀仍是文件名的一部分，因此
       <code>vite.config.html</code>
       依然是英语页面。若要把译文放在单独的文件夹中，或自由命名文件，可以改为在其 head
-      中设置语言；已经位于该语言文件夹下的文件不会被重复加前缀：
+      中设置语言。与 Livemark 一样，<code>path</code> 就是页面的确切 URL，不会再加前缀：
+      请完整写出，并以该语言的前缀开头，否则构建失败：
     </p>
     <htmlpress-tabs sync="syntax">
       <htmlpress-tab title="HTML">
         <pre
           data-title="es/guias/instalar.html"
         ><code class="language-html">&lt;meta name="language" content="es" /&gt;
-&lt;meta name="path" content="/guides/install/" /&gt;</code></pre>
+&lt;meta name="path" content="/es/guides/install/" /&gt;</code></pre>
       </htmlpress-tab>
       <htmlpress-tab title="Markdown">
         <pre data-title="es/guias/instalar.md"><code class="language-md">---
 language: es
-path: /guides/install/
+path: /es/guides/install/
 ---</code></pre>
       </htmlpress-tab>
     </htmlpress-tabs>
     <p>
-      只有当译文与原文在语言前缀之下共享同一个 URL
-      时，两者才会配对，所以要给重命名的文件设置与原文相同的
-      <code>path</code>。配置中未列出的语言会导致构建失败。
+      只有当译文与原文在语言前缀之下共享同一个 URL 时，两者才会配对。没有自己
+      <code>path</code> 的 <code>guide.es.html</code> 会沿用原文的 <code>path</code>：若
+      <code>guide.html</code> 设置了 <code>path: /start/</code>，译文就在
+      <code>/es/start/</code>；像上面那样放在单独文件夹中的文件，需要把原文的
+      <code>path</code> 写在前缀之下。配置中未列出的语言会导致构建失败。
     </p>
 
     <h2>翻译配置</h2>

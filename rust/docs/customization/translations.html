@@ -109,27 +109,31 @@
     <p>
       A suffix that names no configured language stays part of the name, so
       <code>vite.config.html</code> is still an English page. To keep translations in a
-      folder of their own, or to name a file freely, set the language in its head instead;
-      a file already under the language's folder is not prefixed twice:
+      folder of their own, or to name a file freely, set the language in its head instead.
+      A <code>path</code> is the page's exact URL, as in Livemark, never prefixed: write
+      it in full, starting with the language's prefix, or the build fails:
     </p>
     <htmlpress-tabs sync="syntax">
       <htmlpress-tab title="HTML">
         <pre
           data-title="es/guias/instalar.html"
         ><code class="language-html">&lt;meta name="language" content="es" /&gt;
-&lt;meta name="path" content="/guides/install/" /&gt;</code></pre>
+&lt;meta name="path" content="/es/guides/install/" /&gt;</code></pre>
       </htmlpress-tab>
       <htmlpress-tab title="Markdown">
         <pre data-title="es/guias/instalar.md"><code class="language-md">---
 language: es
-path: /guides/install/
+path: /es/guides/install/
 ---</code></pre>
       </htmlpress-tab>
     </htmlpress-tabs>
     <p>
       A translation pairs with its original only when both share a URL below the language
-      prefix, so give a renamed file the same <code>path</code> as its original. A
-      language the config does not list fails the build.
+      prefix. A <code>guide.es.html</code> without a <code>path</code> of its own takes
+      its original's, so with <code>guide.html</code> at <code>path: /start/</code> it is
+      served at <code>/es/start/</code>; a file in a folder of its own, as above, needs
+      the original's <code>path</code> under the prefix. A language the config does not
+      list fails the build.
     </p>
 
     <h2>Translate the config</h2>

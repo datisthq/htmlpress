@@ -426,3 +426,28 @@ fn reads_routes_at_their_path_over_articles_and_out_of_the_nav() -> crate::Resul
     );
     Ok(())
 }
+
+#[test]
+fn reads_a_route_path_as_a_tanstack_file_route() {
+    for (file, path) in [
+        ("index.html", Some("index.html")),
+        ("about.html", Some("about/index.html")),
+        (
+            "My Blog/First Post.md",
+            Some("My Blog/First Post/index.html"),
+        ),
+        ("blog.post.html", Some("blog/post/index.html")),
+        ("blog/index.html", Some("blog/index.html")),
+        ("blog.route.html", Some("blog/index.html")),
+        ("(marketing)/pricing.html", Some("pricing/index.html")),
+        ("_layout/team.html", Some("team/index.html")),
+        ("es/index.html", Some("es/index.html")),
+        ("feed[.]xml.html", Some("feed.xml")),
+        ("-landing/hero.html", None),
+        ("__root.html", None),
+        ("posts.$id.html", None),
+        ("logo.svg", None),
+    ] {
+        assert_eq!(read_route_path(file).as_deref(), path, "{file}");
+    }
+}

@@ -95,9 +95,11 @@ are drawn. A missing layout fails the build.
 ## Routes
 
 Articles are the pages `include` picks; routes are pages of their own, as in Livemark. Each
-`.html` or `.md` file in `.htmlpress/routes/` is served at its path there (`pricing.html` at
-`/pricing/`, `index.html` at `/`, `index.es.html` its translation), outside `include` and
-`exclude`:
+`.html` or `.md` file in `.htmlpress/routes/` is served at its path there, read as Livemark's
+TanStack file routes with names kept as written (`pricing.html` at `/pricing/`, `index.html` at
+`/`, `blog.post.html` at `/blog/post/`; `(group)` and `_pathless` folders left out of the URL,
+`[.]` a literal dot, `__` and `$param` names no route), outside `include` and `exclude`. Its
+language is the prefix its URL is under, so `es/index.html` is the Spanish home:
 
 ```html
 <!-- .htmlpress/routes/pricing.html -->

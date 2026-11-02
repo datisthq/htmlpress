@@ -212,10 +212,13 @@ Plain Markdown, styled by the theme.</code></pre>
   <a href="/authoring/links/">Links</a>.
 </p>
 <p>
-  <code>path: /start/</code> serves the page at another URL, independent of its file path:
-  a path ending in <code>/</code> names that folder, and one ending in
-  <code>.html</code> the page that file would be, so <code>/start.html</code> serves it at
-  <code>/start/</code> too. Two pages on one URL fail the build.
+  <code>path: /start/</code> serves the page at that exact URL, independent of its file
+  path, as Livemark's frontmatter <code>path</code> does: missing slashes are added, so
+  <code>start</code> and <code>/start</code> are <code>/start/</code> too, and one ending
+  in <code>.html</code> names the page that file would be, so
+  <code>/start.html</code> serves it at <code>/start/</code> as well. It is never
+  prefixed: a translation's <code>path</code> starts with its language's prefix
+  (<code>/es/start/</code>), or the build fails. Two pages on one URL fail the build.
 </p>
 <p>
   On a site with <code>languages</code>, a file named <code>guide.es.html</code>, or one

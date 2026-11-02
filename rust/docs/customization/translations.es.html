@@ -110,28 +110,31 @@
       Un sufijo que no nombra ningún idioma configurado sigue formando parte del nombre,
       así que <code>vite.config.html</code> sigue siendo una página en inglés. Para
       guardar las traducciones en una carpeta propia, o para nombrar un archivo
-      libremente, define el idioma en su head; un archivo que ya está bajo la carpeta del
-      idioma no recibe el prefijo dos veces:
+      libremente, define el idioma en su head. Un <code>path</code> es la URL exacta de la
+      página, como en Livemark, nunca con prefijo añadido: escríbelo completo, empezando
+      por el prefijo del idioma, o la compilación falla:
     </p>
     <htmlpress-tabs sync="syntax">
       <htmlpress-tab title="HTML">
         <pre
           data-title="es/guias/instalar.html"
         ><code class="language-html">&lt;meta name="language" content="es" /&gt;
-&lt;meta name="path" content="/guides/install/" /&gt;</code></pre>
+&lt;meta name="path" content="/es/guides/install/" /&gt;</code></pre>
       </htmlpress-tab>
       <htmlpress-tab title="Markdown">
         <pre data-title="es/guias/instalar.md"><code class="language-md">---
 language: es
-path: /guides/install/
+path: /es/guides/install/
 ---</code></pre>
       </htmlpress-tab>
     </htmlpress-tabs>
     <p>
       Una traducción solo se empareja con su original cuando ambos comparten una URL bajo
-      el prefijo del idioma, así que da a un archivo renombrado el mismo
-      <code>path</code> que su original. Un idioma que la configuración no lista hace
-      fallar la compilación.
+      el prefijo del idioma. Un <code>guide.es.html</code> sin <code>path</code> propio
+      toma el de su original, así que con <code>guide.html</code> en
+      <code>path: /start/</code> se sirve en <code>/es/start/</code>; un archivo en una
+      carpeta propia, como arriba, necesita el <code>path</code> del original bajo el
+      prefijo. Un idioma que la configuración no lista hace fallar la compilación.
     </p>
 
     <h2>Traducir la configuración</h2>

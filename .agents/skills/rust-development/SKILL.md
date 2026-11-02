@@ -67,8 +67,12 @@ run from source: `cargo run --manifest-path rust/Cargo.toml -- build docs`.
    Livemark's directives, alerts and fences onto htmlpress' elements (`create_rules`, ported from Livemark's `create.ts`), any other `:::name` into `htmlpress-name` of a known component, the config's `plugins.md` after `md.directive` (`plugin/add`; every page pipeline is a textlane `Pipeline`, its textlane plugins by name and htmlpress' own through `use_native`, so a project's entry naming one merges into it as in Livemark; never build with `Processor::with`, which runs a duplicate twice), a fence's meta onto
    `data-*` by the `AnnotateCode` plugin, before `html.raw`, which drops nodes' `data`, and
    `code{:lang}` marked by `MarkInlineCode` after it). Every path is served
-   without its base and slugified as Livemark routes it (`path/slugify`, each dot part of the
-   name on its own so a `.es` suffix survives), so `Page.path` is the page's path without it
+   without the longest include base it sits under (Livemark's `resolveArticlePath`, not the
+   matched glob's) and slugified (`path/slugify`, each dot part of the name on its own so a
+   `.es` suffix survives); a `path` meta or patch sets `Page.literal`, which
+   `detect_language` never prefixes, and a suffixed translation without one takes its
+   original's (`read_original_path`). Routes skip slugifying: `read_route_path` reads TanStack
+   file-route names, their language from the URL prefix. So `Page.path` is the page's path without it
    (`guides/build.html`) and `Page.source` the file's. The nav, breadcrumbs and Markdown copies nest by `Page.path`; a page is
    written to `create_output_path` (`guides/build/index.html`) and served at `create_url`
    (`/guides/build/`), the root `404.html` excepted. Relative URLs become root-relative

@@ -10,7 +10,7 @@ use crate::actions::changelog::fetch::is_github_source;
 use crate::actions::config::load::load_config;
 use crate::actions::git::read::read_dates;
 use crate::actions::include::list::list_includes;
-use crate::actions::language::detect::{create_key, detect_language};
+use crate::actions::language::detect::{create_key, detect_language, list_originals};
 use crate::actions::language::resolve::resolve_languages;
 use crate::actions::page::compile::create_processor;
 use crate::actions::page::decorate::{Decoration, list_fragments};
@@ -18,12 +18,13 @@ use crate::actions::page::include::resolve_includes;
 use crate::actions::page::parse::{create_page_tree, load_source};
 use crate::actions::page::patch::patch_page;
 use crate::actions::page::read::{
-    create_output_path, finish_page, is_layout_name, read_source,
+    create_output_path, create_url, finish_page, is_layout_name, read_source,
 };
 use crate::actions::page::rebase::{list_links, read_root, rebase_image};
 use crate::actions::page::render::render_page;
 use crate::actions::path::contain::{contain_path, read_contained};
-use crate::actions::path::select::{Selection, is_page, read_bases, select_paths};
+use crate::actions::path::select::{Selection, read_bases, select_paths};
+use crate::actions::path::slugify::slugify_path;
 use crate::actions::pipeline::create::create_pipeline;
 use crate::actions::section::generate::generate_pages;
 use crate::actions::site::localize::localize_site;
@@ -83,8 +84,18 @@ pub(crate) fn read_site(
             list_files(root, &base, &mut paths)?;
         }
     }
+    // Nested bases, `""` and `docs/`, list a file once each
     paths.sort();
-
+    paths.dedup();
+    // Livemark's floor for a project with no `.gitignore` to say what its output is
+    if !root.join(".gitignore").is_file() {
+        paths.retain(|path| {
+            let folders = path.rsplit_once('/').map_or("", |(folders, _)| folders);
+            !folders
+                .split('/')
+                .any(|folder| folder == "build" || folder == "dist")
+        });
+    }
     paths.retain(|path| path != CONFIG_FILE);
     let selection = select_paths(&config, paths).map_err(|message| Error::Config {
         path: root.join(CONFIG_FILE),
@@ -219,7 +230,17 @@ pub(crate) fn read_site(
             &mut sources,
         )?;
         let suffixes = !config.languages.is_empty();
-        for (_, page) in &mut facts {
+        let inherited: Vec<Option<(String, String)>> = (facts.iter())
+            .map(|(_, page)| {
+                let pages = facts.iter().map(|(_, page)| page);
+                read_original_path(page, pages, &languages, suffixes)
+            })
+            .collect();
+        for ((_, page), inherited) in facts.iter_mut().zip(inherited) {
+            if let Some((path, url)) = inherited {
+                page.path = path;
+                page.url = url;
+            }
             detect_language(page, &languages, suffixes)
                 .map_err(Error::page(&page.source))?;
         }
@@ -395,6 +416,13 @@ pub(crate) fn reread_page(
         return Ok(None);
     }
     let Draft { mut page, tree } = read_draft(root, &path, source, &mut sources)?;
+    let pages = built.finish.pages.iter().flatten();
+    let languages = &built.finish.languages;
+    if let Some((path, url)) = read_original_path(&page, pages, languages, built.suffixes)
+    {
+        page.path = path;
+        page.url = url;
+    }
     detect_language(&mut page, &built.finish.languages, built.suffixes)
         .map_err(Error::page(source))?;
     if page.is_route() {
@@ -590,10 +618,15 @@ fn read_draft<'a>(
         },
         error => error,
     })?;
-    let page = Page {
+    let mut page = Page {
         source: source.to_owned(),
         ..page
     };
+    // A route is served at the path its file names, unslugified, as TanStack serves it
+    if page.is_route() && !page.literal {
+        page.url = create_url(path);
+        page.path = path.to_owned();
+    }
     Ok(Draft { page, tree })
 }
 
@@ -800,6 +833,23 @@ pub(crate) fn sort_pages(pages: &mut [Page]) {
 }
 
 // Two pages on one URL would overwrite each other's output without a word
+// A translation without a `path` takes its original's, as in Livemark, so the two stay
+// paired: `guide.es.html` beside `guide.html` at `path: /start/` is served at `/es/start/`
+fn read_original_path<'p>(
+    page: &Page,
+    mut pages: impl Iterator<Item = &'p Page>,
+    languages: &[SiteLanguage],
+    suffixes: bool,
+) -> Option<(String, String)> {
+    if !suffixes || page.literal || page.is_route() {
+        return None;
+    }
+    let originals = list_originals(&page.source, languages)?;
+    let original =
+        pages.find(|other| other.literal && originals.contains(&other.source))?;
+    Some((original.path.clone(), original.url.clone()))
+}
+
 fn check_urls(facts: &[(usize, Page)]) -> crate::Result<()> {
     for (index, page) in facts.iter().map(|(_, page)| page).enumerate() {
         let earlier = facts[..index].iter().map(|(_, page)| page);
@@ -951,8 +1001,8 @@ fn list_files(root: &Path, prefix: &str, paths: &mut Vec<String>) -> crate::Resu
     Ok(())
 }
 
-// Each `.html` and `.md` file under the routes folder, none in or named with a leading
-// `-`, is a page at its own path, in place of any article served there
+// Each `.html` and `.md` file under the routes folder is a page at the URL its path names
+// as a TanStack file route does in Livemark, in place of any article served there
 fn add_routes(
     root: &Path,
     canonical: &Path,
@@ -967,20 +1017,83 @@ fn add_routes(
     list_files(root, ROUTES_DIR, &mut sources)?;
     sources.sort();
     for source in sources {
-        let path = &source[ROUTES_DIR.len()..];
-        if !is_page(path) || path.split('/').any(|part| part.starts_with('-')) {
+        let Some(served) = read_route_path(&source[ROUTES_DIR.len()..]) else {
             continue;
-        }
-        let served = match path.strip_suffix(".md") {
-            Some(stem) => format!("{stem}.html"),
-            None => path.to_owned(),
         };
+        let url = create_url(&served);
         selection.files.remove(&served);
-        if let Some(article) = selection.pages.insert(served.clone(), source.clone()) {
-            eprintln!("warning: {source} takes the place of {article} at /{served}");
+        let taken: Vec<String> = (selection.pages.iter())
+            .filter(|(path, article)| {
+                !article.starts_with(ROUTES_DIR) && create_url(&slugify_path(path)) == url
+            })
+            .map(|(path, _)| path.clone())
+            .collect();
+        for path in taken {
+            if let Some(article) = selection.pages.remove(&path) {
+                eprintln!("warning: {source} takes the place of {article} at {url}");
+            }
         }
+        selection.pages.insert(served, source);
     }
     Ok(())
+}
+
+/// The page path a file in the routes folder is served at, as TanStack Router reads a file
+/// route: `blog.post.html` and `blog/post.html` at `/blog/post/`, an `index` or `route`
+/// segment naming its folder, a `(group)` or `_pathless` one left out, `[.]` a literal dot
+/// and a last segment holding one a file, `feed[.]xml.html` at `/feed.xml`. None for a
+/// file or folder named with a leading `-` or `__`, and for a `$param` one no file serves.
+pub(crate) fn read_route_path(file: &str) -> Option<String> {
+    let stem = (file.strip_suffix(".html")).or_else(|| file.strip_suffix(".md"))?;
+    let parts: Vec<&str> = stem.split('/').collect();
+    if parts
+        .iter()
+        .any(|part| part.starts_with('-') || part.starts_with("__"))
+    {
+        return None;
+    }
+    let segments: Vec<String> = parts.iter().flat_map(|part| split_route(part)).collect();
+    if segments.iter().any(|segment| segment.contains('$')) {
+        eprintln!("warning: {ROUTES_DIR}{file}: a $param route has no page to build");
+        return None;
+    }
+    let kept: Vec<String> = (segments.into_iter())
+        .filter(|segment| !matches!(segment.as_str(), "index" | "route"))
+        .filter(|segment| !segment.starts_with('_'))
+        .filter(|segment| !(segment.starts_with('(') && segment.ends_with(')')))
+        .map(|segment| segment.replace("[.]", "."))
+        .collect();
+    let path = kept.join("/");
+    Some(match kept.last() {
+        None => "index.html".to_owned(),
+        Some(last) if last.contains('.') => path,
+        Some(_) => format!("{path}/index.html"),
+    })
+}
+
+// A flat route's segments, split on its dots but not on an escaped `[.]`
+fn split_route(part: &str) -> Vec<String> {
+    let mut segments = vec![String::new()];
+    let mut rest = part;
+    while let Some(char) = rest.chars().next() {
+        if let Some(after) = rest.strip_prefix("[.]") {
+            if let Some(segment) = segments.last_mut() {
+                segment.push_str("[.]");
+            }
+            rest = after;
+            continue;
+        }
+        match char {
+            '.' => segments.push(String::new()),
+            char => {
+                if let Some(segment) = segments.last_mut() {
+                    segment.push(char);
+                }
+            }
+        }
+        rest = &rest[char.len_utf8()..];
+    }
+    segments
 }
 
 fn read_folder_name(root: &Path) -> String {

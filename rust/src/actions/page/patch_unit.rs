@@ -28,7 +28,7 @@ fn replaces_what_the_patch_sets_and_keeps_the_rest() -> Result<(), String> {
     assert_eq!(page.authors, ["Ann"]);
     assert_eq!(page.source_action, SourceAction::View);
     let bad = PatchArticle {
-        path: Some("intro".to_owned()),
+        path: Some("/a/../../b/".to_owned()),
         ..PatchArticle::default()
     };
     let page = read_page("a.html", "<h1>A</h1>").map_err(|error| error.to_string())?;

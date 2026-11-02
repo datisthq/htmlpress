@@ -162,15 +162,22 @@ Anything you'd write in a normal Markdown page, here.</code></pre>
     <h2>How it fits with the rest of the site</h2>
     <ul>
       <li>
-        <strong>Paths are URLs.</strong> A route's path under
-        <code>.htmlpress/routes/</code> is its URL: <code>pricing.html</code> is
-        <code>/pricing/</code>, <code>guide/faq.md</code> is <code>/guide/faq/</code>, and
-        an <code>index.html</code> is served at its folder.
+        <strong>File-based routing.</strong> A route's path under
+        <code>.htmlpress/routes/</code> is its URL, read as Livemark's TanStack file
+        routes are, names kept as written: <code>pricing.html</code> is
+        <code>/pricing/</code>, <code>guide/faq.md</code> and
+        <code>guide.faq.html</code> are <code>/guide/faq/</code>, and an
+        <code>index</code> or <code>route</code> file is served at its folder. A
+        <code>(group)</code> or <code>_pathless</code> folder is left out of the URL,
+        <code>[.]</code> is a literal dot, so <code>feed[.]xml.html</code> is served at
+        <code>/feed.xml</code>, and a name starting with <code>__</code> or holding a
+        <code>$param</code> is no route.
       </li>
       <li>
         <strong>The root path <code>/</code>.</strong>
         <code>.htmlpress/routes/index.html</code> is the home page, in place of an
-        <code>index.html</code> article; <code>index.es.html</code> beside it is its
+        <code>index.html</code> article. A route's language is the prefix its URL is
+        under, so <code>es/index.html</code> is the Spanish home page and its
         <a href="/customization/translations/">translation</a>. Without one, the home page
         is the first article.
       </li>

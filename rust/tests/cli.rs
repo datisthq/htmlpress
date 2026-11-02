@@ -144,7 +144,7 @@ fn builds_every_language_with_its_picker_and_fallbacks() -> TestResult {
     write_page(root.path(), "install.html", "<title>Install</title>")?;
     write_page(
         root.path(),
-        "zh/start.html",
+        "start.html",
         r#"<meta name="language" content="zh"><title>开始</title>"#,
     )?;
     write_page(

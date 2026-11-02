@@ -231,11 +231,14 @@ Plain Markdown, styled by the theme.</code></pre>
   <a href="/es/authoring/links/">Enlaces</a>.
 </p>
 <p>
-  <code>path: /start/</code> sirve la página en otra URL, independiente de la ruta de su
-  archivo: una ruta que termina en <code>/</code> nombra esa carpeta, y una que termina en
-  <code>.html</code> la página que sería ese archivo, así que
-  <code>/start.html</code> también la sirve en <code>/start/</code>. Dos páginas en una
-  misma URL hacen fallar la compilación.
+  <code>path: /start/</code> sirve la página en esa URL exacta, independiente de la ruta
+  de su archivo, como el <code>path</code> del frontmatter de Livemark: se añaden las
+  barras que falten, así que <code>start</code> y <code>/start</code> también son
+  <code>/start/</code>, y una que termina en <code>.html</code> nombra la página que sería
+  ese archivo, así que <code>/start.html</code> también la sirve en <code>/start/</code>.
+  Nunca recibe prefijo: el <code>path</code> de una traducción empieza por el prefijo de
+  su idioma (<code>/es/start/</code>), o la compilación falla. Dos páginas en una misma
+  URL hacen fallar la compilación.
 </p>
 <p>
   En un sitio con <code>languages</code>, un archivo llamado <code>guide.es.html</code>, o

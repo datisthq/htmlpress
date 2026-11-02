@@ -209,11 +209,14 @@ Plain Markdown, styled by the theme.</code></pre>
   <a href="/zh/authoring/links/">链接</a>。
 </p>
 <p>
-  <code>path: /start/</code> 让页面在另一个 URL 提供服务，与其文件路径无关：以
-  <code>/</code> 结尾的路径指向该文件夹，以
-  <code>.html</code> 结尾的路径则指向该文件所对应的页面，因此
-  <code>/start.html</code> 同样会在 <code>/start/</code> 提供该页面。两个页面使用同一个
-  URL 会导致构建失败。
+  <code>path: /start/</code> 让页面就在这个确切的 URL 提供服务，与其文件路径无关，与
+  Livemark frontmatter 中的 <code>path</code> 相同：缺少的斜杠会被补上，因此
+  <code>start</code> 和 <code>/start</code> 也是 <code>/start/</code>；以
+  <code>.html</code> 结尾的路径指向该文件所对应的页面，因此
+  <code>/start.html</code> 同样在 <code>/start/</code> 提供。它不会被加前缀：译文的
+  <code>path</code>
+  必须以其语言的前缀开头（<code>/es/start/</code>），否则构建失败。两个页面使用同一个 URL
+  会导致构建失败。
 </p>
 <p>
   在设置了 <code>languages</code> 的站点上，名为 <code>guide.es.html</code> 的文件，或带有

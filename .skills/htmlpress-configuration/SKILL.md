@@ -58,7 +58,10 @@ head:
   page's `<meta name="breadcrumbs">` overrides it.
 - `include` — globs of the `.html` and `.md` files that become pages, default `**/*.html` and
   `**/*.md` (a `README.md` too: exclude what is not a page). Only files under a glob's base, its folders before the first wildcard, are read, and they are served without it:
-  `docs/**/*.html` serves `docs/guide.html` at `/guide.html`. Other files there are copied as-is.
+  `docs/**/*.html` serves `docs/guide.html` at `/guide/`. Other files there are copied as-is.
+  As in Livemark, a file drops the longest base it sits under, whichever glob matched it
+  (`["**/*.md", "docs/**/*.md"]` serves `docs/guide/a.md` at `/guide/a/`), and a project
+  with no `.gitignore` leaves out every `build/` and `dist/` folder.
 - `exclude` — globs left out of the build: partials for includes, drafts.
 - `codeThemeLight`, `codeThemeDark` — the code block themes, by Shiki theme name.
 - `edit` — a URL prefix for an "Edit on GitHub" link.

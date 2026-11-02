@@ -170,17 +170,24 @@ Todo lo que escribirías en una página Markdown normal, aquí.</code></pre>
     <h2>Cómo encaja con el resto del sitio</h2>
     <ul>
       <li>
-        <strong>Las rutas son URLs.</strong> La ruta de un archivo bajo
-        <code>.htmlpress/routes/</code> es su URL: <code>pricing.html</code> es
-        <code>/pricing/</code>, <code>guide/faq.md</code> es <code>/guide/faq/</code>, y
-        un <code>index.html</code> se sirve en su carpeta.
+        <strong>Enrutado por archivos.</strong> La ruta de un archivo bajo
+        <code>.htmlpress/routes/</code> es su URL, leída como las rutas de archivo de
+        TanStack en Livemark, con los nombres tal como están: <code>pricing.html</code> es
+        <code>/pricing/</code>, <code>guide/faq.md</code> y
+        <code>guide.faq.html</code> son <code>/guide/faq/</code>, y un archivo
+        <code>index</code> o <code>route</code> se sirve en su carpeta. Una carpeta
+        <code>(grupo)</code> o <code>_sin-ruta</code> queda fuera de la URL,
+        <code>[.]</code> es un punto literal, así que <code>feed[.]xml.html</code> se
+        sirve en <code>/feed.xml</code>, y un nombre que empieza por <code>__</code> o
+        lleva un <code>$param</code> no es una ruta.
       </li>
       <li>
         <strong>La ruta raíz <code>/</code>.</strong>
         <code>.htmlpress/routes/index.html</code> es la página de inicio, en lugar de un
-        artículo <code>index.html</code>; <code>index.es.html</code> a su lado es su
-        <a href="/es/customization/translations/">traducción</a>. Sin ella, la página de
-        inicio es el primer artículo.
+        artículo <code>index.html</code>. El idioma de una ruta es el prefijo bajo el que
+        queda su URL, así que <code>es/index.html</code> es la página de inicio en español
+        y su <a href="/es/customization/translations/">traducción</a>. Sin ella, la página
+        de inicio es el primer artículo.
       </li>
       <li>
         <strong>Las rutas ganan.</strong> Una ruta ocupa el lugar de un artículo servido

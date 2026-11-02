@@ -12,6 +12,10 @@ pub struct Page {
     pub source: String,
     /// The root-relative URL it is served at: `/`, `/guides/`, `/guides/build.html`.
     pub url: String,
+    /// Whether its URL is a `path` written for it, as Livemark's frontmatter `path`: served
+    /// as is, never moved under its language's prefix.
+    #[serde(skip)]
+    pub literal: bool,
     /// The URL it shares with its translations: its own without the language's prefix.
     pub key: String,
     /// `<meta name="language">`, else the `.<code>.html` suffix: the code of the language it

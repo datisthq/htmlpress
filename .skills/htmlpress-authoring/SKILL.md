@@ -106,7 +106,7 @@ size}`, `::toc{maxLevel}`, `::video{type="youtube" url}`, `::audio{type="soundcl
 | `keywords` (`a, b`)                          | tags it (a blog post's tag pages)                            |
 | `label`                                      | a short name in the navigation                               |
 | `icon`                                       | a Lucide icon; top-level entries and folder index pages      |
-| `path` (`/start/`)                           | serves the page at another URL                               |
+| `path` (`/start/`)                           | serves the page at that exact URL, never prefixed            |
 | `sidebar` (`false`)                          | built, not listed                                            |
 | `toc` (`false`)                              | no table of contents                                         |
 | `breadcrumbs` (`false` / `true`)             | hides or shows the folder trail, over the config's           |
@@ -120,7 +120,9 @@ A file that cannot carry metas, such as a `README.md`, gets them from `patches` 
 
 With `languages` in the config, a translation is `page.<code>.html` beside `page.html`, or a
 file with `<meta name="language" content="<code>">`. It pairs with the original by URL below the
-language prefix, so a renamed one needs the same `<meta name="path">`. Untranslated pages stay
+language prefix: a `page.<code>.html` without a `path` takes its original's, under the prefix.
+A `path` is literal, as Livemark's: slashes are added (`start` → `/start/`), the language prefix
+never is, so a translation's starts with it (`/es/start/`) or the build fails. Untranslated pages stay
 listed in every language with a badge and link to the original. Without a translated home,
 `/<code>/` redirects to the language's first page.
 The same holds for the default language without an `index.html`.

@@ -69,18 +69,15 @@ pub(crate) fn select_paths(
             && !twins.contains(&path)
             && !sources.contains(&path.as_str())
             && !(skills.iter()).any(|(_, pattern)| pattern.matches_with(&path, OPTIONS));
-        let page = (include.iter())
-            .find(|(_, pattern)| source && pattern.matches_with(&path, OPTIONS));
-        let (base, is_page) = match page {
-            Some((text, _)) => (read_base(text), true),
-            None => match (include.iter())
-                .map(|(text, _)| read_base(text))
-                .filter(|base| path.starts_with(base.as_str()))
-                .max_by_key(String::len)
-            {
-                Some(base) => (base, false),
-                None => continue,
-            },
+        let is_page = (include.iter())
+            .any(|(_, pattern)| source && pattern.matches_with(&path, OPTIONS));
+        // As Livemark's: the longest base of any include, not of the one that matched
+        let Some(base) = (include.iter())
+            .map(|(text, _)| read_base(text))
+            .filter(|base| path.starts_with(base.as_str()))
+            .max_by_key(String::len)
+        else {
+            continue;
         };
         let served = path[base.len()..].to_owned();
         // A Markdown page is served where its `.html` twin would be
