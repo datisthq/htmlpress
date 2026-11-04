@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.1](https://github.com/datisthq/htmlpress/compare/v0.11.0...v0.11.1) (2026-11-04)
+
+
+### Bug Fixes
+
+* darken every Catppuccin Latte accent that fails WCAG AA on the code frame, not only green ([d2d876e](https://github.com/datisthq/htmlpress/commit/d2d876ea221d06bb45699b741253abe75dc8cf5d))
+
 ## [0.11.0](https://github.com/datisthq/htmlpress/compare/v0.10.0...v0.11.0) (2026-11-02)
 
 
