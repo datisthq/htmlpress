@@ -31,8 +31,21 @@ pub(crate) fn create_highlight(light: &str, dark: &str) -> Value {
         "themes": { "light": light, "dark": dark },
         "defaultLanguage": "text",
         "fallbackLanguage": "text",
-        // Livemark's fix: Latte's green strings fail WCAG AA on white, at 2.6:1
-        "colorReplacements": { "catppuccin-latte": { "#40a02b": "#2a7e16" } },
+        // Latte's lighter accents fail WCAG AA on the code frame; each is darkened, hue kept
+        "colorReplacements": { "catppuccin-latte": {
+            "#40a02b": "#2a7e16",
+            "#df8e1d": "#9e6414",
+            "#fe640b": "#c64901",
+            "#179299": "#147d83",
+            "#04a5e5": "#037aa9",
+            "#209fb5": "#197d8e",
+            "#7287fd": "#4560fc",
+            "#7c7f93": "#6e7185",
+            "#ea76cb": "#ce209f",
+            "#dc8a78": "#c14c32",
+            "#dd7878": "#ce3d3d",
+            "#e64553": "#df1e2f",
+        } },
         "inline": "class",
         "skipElements": true,
         "keepProperties": true,
