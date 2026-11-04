@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.0](https://github.com/datisthq/htmlpress/compare/v0.11.1...v0.12.0) (2026-11-04)
+
+
+### Features
+
+* link one stylesheet per page, the theme and its components joined, and size the logo image ([8eff1ee](https://github.com/datisthq/htmlpress/commit/8eff1eee5ea20fd713578282fae7e567f614a190))
+
 ## [0.11.1](https://github.com/datisthq/htmlpress/compare/v0.11.0...v0.11.1) (2026-11-04)
 
 
