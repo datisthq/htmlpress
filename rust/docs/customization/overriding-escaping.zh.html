@@ -108,7 +108,7 @@
       </dd>
       <dt><code>styles/*.css</code></dt>
       <dd>
-        全局主题，在每个页面上合并为一个 <code>theme.css</code>：
+        全局主题，位于每个页面所链接的唯一样式表的开头：
         <code>tokens.css</code>（<code>--htmlpress-*</code> 的取值）、
         <code>layout.css</code>（页面的全局样式）和
         <code>content.css</code>（标题、正文、表格、代码）。
@@ -122,7 +122,7 @@
         每个组件一组文件，包括布局框架中的元素，放在以其标签名（去掉
         <code>htmlpress-</code> 前缀）命名的文件夹中。其样式位于
         <code>@scope (&lt;tag&gt;)</code>
-        中，因此绝不会影响到组件之外，其脚本也只定义该元素。页面只链接它所使用的组件。
+        中，因此绝不会影响到组件之外，其脚本也只定义该元素。页面的样式表在主题之后只包含它所使用的组件，页面也只链接这些组件的脚本。
       </dd>
     </dl>
     <p>无需其他任何改动：htmlpress 的其余部分会自动采用弹出的文件。</p>

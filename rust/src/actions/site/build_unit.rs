@@ -1,5 +1,16 @@
 use super::*;
 
+// The text of every bundle a written page links, whatever the base
+fn read_bundled(output: &Path, html: &str) -> String {
+    (html.split("_htmlpress/bundles/").skip(1))
+        .filter_map(|rest| rest.split('"').next())
+        .filter_map(|name| {
+            let path = output.join("_htmlpress/bundles").join(name);
+            std::fs::read_to_string(path).ok()
+        })
+        .collect()
+}
+
 fn write_source(root: &Path, path: &str, text: &str) -> crate::Result<()> {
     write_file(&root.join(path), text.as_bytes())
 }
@@ -62,9 +73,13 @@ fn builds_pages_files_and_assets() -> crate::Result<()> {
     assert_eq!((report.pages, report.files), (2, 1));
     let read = |path: &str| std::fs::read_to_string(options.output.join(path)).ok();
     assert!(read("index.html").is_some_and(|html| html.contains("<h1>Home</h1>")));
+    let guide = read("guides/build/index.html").unwrap_or_default();
+    let bundled = read_bundled(&options.output, &guide);
     assert!(
-        read("guides/build/index.html").is_some_and(|html| html.contains("theme.css"))
+        bundled.contains("--htmlpress-primary")
+            && bundled.contains("@scope (htmlpress-nav)")
     );
+    assert!(guide.contains("_htmlpress/components/nav/nav.js"));
     assert_eq!(read("images/logo.svg").as_deref(), Some("<svg></svg>"));
     assert!(read("_htmlpress/theme.css").is_some());
     assert!(read("_htmlpress/reload.js").is_none());
@@ -212,7 +227,9 @@ fn writes_a_404_page_unless_the_project_has_one() -> crate::Result<()> {
     assert_eq!(report.pages, 1);
     let missing = read("404.html").unwrap_or_default();
     assert!(missing.contains("<title>Page not found · "));
-    assert!(missing.contains("components/button/button.css"));
+    assert!(
+        read_bundled(&options.output, &missing).contains("@scope (htmlpress-button)")
+    );
     assert!(!read("index.html").unwrap_or_default().contains("404.html"));
 
     write_source(root, "404.html", "<title>Lost</title><h1>Lost</h1>")?;
@@ -507,7 +524,8 @@ fn draws_a_route_bare_filling_its_layout_elements() -> crate::Result<()> {
     assert!(!home.contains("htmlpress-sidebar"));
     assert!(home.contains("<htmlpress-brand><a"));
     assert!(home.contains("href=\"/repo/guide/\""));
-    assert!(home.contains("components/header/header.css"));
+    assert!(home.contains("\"/repo/_htmlpress/bundles/"));
+    assert!(read_bundled(&options.output, &home).contains("@scope (htmlpress-header)"));
     let search = read("_htmlpress/search.json").map_err(Error::io("search.json"))?;
     assert!(search.contains("/guide/") && !search.contains("\"url\":\"/\""));
     Ok(())

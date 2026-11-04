@@ -57,7 +57,8 @@ With `site` set it adds `sitemap.xml`. Never edit the output: every build replac
 - Keep `--nojekyll` and `--dotfiles` on a GitHub Pages branch deploy: Jekyll drops the
   `_htmlpress/` theme, and without dot-files `.well-known/` is lost.
 - Files under `_htmlpress/` keep their names between builds: cache them briefly or invalidate
-  them on each release.
+  them on each release. The exception is `_htmlpress/bundles/`, each page's one stylesheet,
+  named by its content, which a host may cache for good.
 - A project's dot-files are never copied: keep an `.htaccess` on the server.
 
 ## Verification

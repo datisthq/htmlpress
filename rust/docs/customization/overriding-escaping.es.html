@@ -110,7 +110,7 @@
       </dd>
       <dt><code>styles/*.css</code></dt>
       <dd>
-        El tema global, unido en un único <code>theme.css</code> en cada página:
+        El tema global, al principio de la única hoja de estilos que enlaza cada página:
         <code>tokens.css</code> (los valores <code>--htmlpress-*</code>),
         <code>layout.css</code> (los estilos globales de la página) y
         <code>content.css</code> (encabezados, prosa, tablas, código).
@@ -126,8 +126,9 @@
         Un componente cada uno, incluidos los elementos del armazón del layout, en una
         carpeta con el nombre de su etiqueta sin el prefijo <code>htmlpress-</code>. Sus
         estilos van dentro de <code>@scope (&lt;tag&gt;)</code>, así que nunca salen de
-        él, y su script solo define ese elemento. Una página enlaza solo los componentes
-        que usa.
+        él, y su script solo define ese elemento. La hoja de estilos de una página solo
+        contiene, tras el tema, los componentes que usa, y la página solo enlaza sus
+        scripts.
       </dd>
     </dl>
     <p>

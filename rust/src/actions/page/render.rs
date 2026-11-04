@@ -5,8 +5,10 @@ use textlane::hast::{Node, Raw};
 use textlane::html::{Parse, parse_html, write_attribute};
 use textlane::{Allocator, ArenaVec, File};
 
+use crate::actions::asset::bundle::bundle_assets;
 use crate::actions::date::format::format_date;
 use crate::actions::icon::render::render_icon;
+use crate::actions::logo::measure::measure_logo;
 use crate::actions::nav::build::build_nav;
 use crate::actions::node::parse::parse_fragment;
 use crate::actions::node::walk::{Step, walk_nodes};
@@ -19,7 +21,7 @@ use crate::actions::section::find::{find_section, is_custom_current};
 use crate::actions::section::generate::{create_tag_url, list_posts};
 use crate::actions::site::index::create_search_path;
 use crate::flags::FLAGS;
-use crate::models::asset::create_component_path;
+use crate::models::asset::{Bundle, create_component_path};
 use crate::models::config::{Link, Position, Section, SectionKind};
 use crate::models::error::Error;
 use crate::models::language::{Direction, SiteLanguage};
@@ -27,16 +29,17 @@ use crate::models::nav::NavNode;
 use crate::models::page::Page;
 use crate::models::page::SourceAction;
 use crate::models::site::Site;
-use crate::settings::{ASSETS_DIR, NOT_FOUND_PAGE, RELOAD_PATH};
+use crate::settings::{ASSETS_DIR, NOT_FOUND_PAGE, RELOAD_PATH, THEME_STYLES};
 
 /// Wrap one page of the site in its layout, filling its `<head>`, each project
 /// component's tag with its `.html`, and every `htmlpress-*` layout element; the page's
 /// content goes in as the markup its pipeline wrote, never parsed again.
+/// Also returns the stylesheet bundle its head links, which the build writes.
 pub(crate) fn render_page(
     site: &Site,
     page: &Page,
     reload: bool,
-) -> crate::Result<String> {
+) -> crate::Result<(String, Option<Bundle>)> {
     let fail = |error: String| Error::page(&page.source)(error);
     // A route without a layout of its own is drawn bare: its content is its layout, and
     // the only page content parsed twice, since its layout elements must be filled
@@ -78,7 +81,7 @@ pub(crate) fn render_page(
     if SHEET_HOSTS.iter().any(|host| tags.contains(*host)) {
         tags.insert("htmlpress-sheet".to_owned());
     }
-    let head = create_head(site, page, &tags, reload);
+    let (head, bundle) = create_head(site, page, &tags, reload);
     let nav = create_nav(site, page);
     let raw = |html: &str| {
         let mut nodes = ArenaVec::new_in(&alloc);
@@ -168,7 +171,7 @@ pub(crate) fn render_page(
     if !base.is_empty() {
         prefix_urls(&mut root.children, &base, &alloc);
     }
-    write_nodes(root.children).map_err(fail)
+    Ok((write_nodes(root.children).map_err(fail)?, bundle))
 }
 
 const BARE_START: &str = "<!doctype html><html><head></head><body>";
@@ -183,7 +186,7 @@ fn create_head(
     page: &Page,
     tags: &BTreeSet<String>,
     reload: bool,
-) -> String {
+) -> (String, Option<Bundle>) {
     let title = match page.url.as_str() {
         "/" => escape_html(&site.title),
         _ => format!(
@@ -251,27 +254,31 @@ fn create_head(
     head.push_str(RESTORE_SCRIPT);
     head.push_str(&create_speculation_rules(&site.config.read_base()));
     head.push_str(&create_messages(site.read_language(&page.language)));
-    let _ = writeln!(
-        head,
-        "<link rel=\"stylesheet\" href=\"/{ASSETS_DIR}/theme.css\">"
-    );
     let used = |extension: &str| -> Vec<String> {
         tags.iter()
             .filter_map(|tag| create_component_path(tag, extension))
-            .filter(|path| site.assets.contains_key(path))
             .collect()
     };
-    for path in used("css") {
+    let styles = (THEME_STYLES.iter().map(|path| (*path).to_owned())).chain(used("css"));
+    // One file, not one per component: on a slow phone link every stylesheet the first
+    // paint waits for costs a round trip
+    let bundle = bundle_assets(&site.assets, styles.collect(), "css");
+    if let Some(bundle) = &bundle {
         let _ = writeln!(
             head,
-            "<link rel=\"stylesheet\" href=\"/{ASSETS_DIR}/{path}\">"
+            "<link rel=\"stylesheet\" href=\"/{ASSETS_DIR}/{}\">",
+            bundle.path
         );
     }
-    let scripts = site
-        .assets
-        .keys()
-        .filter(|path| path.starts_with("scripts/"));
-    for path in scripts.cloned().chain(used("js")) {
+    let scripts = (site.assets.keys())
+        .filter(|path| path.starts_with("scripts/"))
+        .cloned()
+        .chain(
+            used("js")
+                .into_iter()
+                .filter(|path| site.assets.contains_key(path)),
+        );
+    for path in scripts {
         let blocking = match RENDER_BLOCKING.contains(&path.as_str()) {
             true => " blocking=\"render\"",
             false => "",
@@ -302,7 +309,7 @@ fn create_head(
             create_attributes(script)
         );
     }
-    head
+    (head, bundle)
 }
 
 // Crawlers read og:url and og:image as absolute URLs only, so both need `site`.
@@ -616,7 +623,15 @@ fn create_alternates(site: &Site, page: &Page) -> String {
 fn create_brand(site: &Site, page: &Page) -> String {
     let (title, description, link) = read_brand(site, page);
     let logo = match &site.config.logo {
-        Some(logo) => format!("<img src=\"{}\" alt=\"\">", escape_html(logo)),
+        Some(logo) => {
+            let size = match read_logo_size(site, logo) {
+                Some((width, height)) => {
+                    format!(" width=\"{width}\" height=\"{height}\"")
+                }
+                None => String::new(),
+            };
+            format!("<img src=\"{}\" alt=\"\"{size}>", escape_html(logo))
+        }
         None => create_default_logo(site),
     };
     let (title, description) = (escape_html(title), escape_html(description));
@@ -625,6 +640,16 @@ fn create_brand(site: &Site, page: &Page) -> String {
         "<a href=\"{link}\">{logo}<span>{title}<small>{description}</small></span></a>"
     )
 }
+
+// The project's own logo file, sized at the 26px `brand.css` draws it, so it takes its
+// box before it loads instead of shifting the title beside it
+fn read_logo_size(site: &Site, url: &str) -> Option<(u32, u32)> {
+    let source = site.files.get(url.strip_prefix('/')?)?;
+    let bytes = std::fs::read(site.root.join(source)).ok()?;
+    measure_logo(&bytes, LOGO_HEIGHT)
+}
+
+const LOGO_HEIGHT: u32 = 26;
 
 // Inline, so `currentColor` takes the primary of the theme the page shows, toggle included
 fn create_default_logo(site: &Site) -> String {

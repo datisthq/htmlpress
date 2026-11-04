@@ -29,7 +29,7 @@ use crate::actions::pipeline::create::create_pipeline;
 use crate::actions::section::generate::generate_pages;
 use crate::actions::site::localize::localize_site;
 use crate::actions::skill::load::load_skills;
-use crate::models::asset::{COMPONENT_PREFIX, read_component_path};
+use crate::models::asset::{Bundle, COMPONENT_PREFIX, read_component_path};
 use crate::models::config::{Config, PluginEntry};
 use crate::models::error::Error;
 use crate::models::language::SiteLanguage;
@@ -58,8 +58,9 @@ pub(crate) struct Built {
     suffixes: bool,
 }
 
-/// A page rendered into its layout: the path it is written to and its HTML.
-pub(crate) type Rendered = (String, String);
+/// A page rendered into its layout: the path it is written to, its HTML and the
+/// stylesheet bundle its head links.
+pub(crate) type Rendered = (String, String, Option<Bundle>);
 
 /// [`scan_site`], each page also rendered into its layout when `reload` is given, on
 /// every core: a worker parses its share of the pages and keeps their trees until they
@@ -696,10 +697,10 @@ fn complete_page<'a>(
             "no language renders this page".to_owned(),
         ));
     };
-    let html = render_page(view, &page, reload)?;
+    let (html, bundle) = render_page(view, &page, reload)?;
     let path = create_output_path(&page.path);
     page.content.clear();
-    Ok((index, page, Some((path, html))))
+    Ok((index, page, Some((path, html, bundle))))
 }
 
 // The error of the page that comes first, as a build on one thread would report it

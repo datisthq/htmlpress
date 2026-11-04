@@ -4,6 +4,7 @@
 
 mod actions {
     pub(crate) mod asset {
+        pub(crate) mod bundle;
         pub(crate) mod escape;
         pub(crate) mod list;
     }
@@ -65,6 +66,7 @@ mod actions {
     }
     pub(crate) mod logo {
         pub(crate) mod color;
+        pub(crate) mod measure;
     }
     pub(crate) mod markdown {
         pub(crate) mod render;

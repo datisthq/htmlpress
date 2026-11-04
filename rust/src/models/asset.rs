@@ -29,3 +29,11 @@ pub fn read_component_path(path: &str) -> Option<(String, &str)> {
     let (stem, extension) = file.rsplit_once('.')?;
     (stem == name).then(|| (format!("{COMPONENT_PREFIX}{name}"), extension))
 }
+
+/// A page's stylesheets or scripts served as one file: its path under the assets folder,
+/// named by its content, and the asset paths it joins, in order.
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
+pub struct Bundle {
+    pub path: String,
+    pub sources: Vec<String>,
+}

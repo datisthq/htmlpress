@@ -109,7 +109,7 @@
       </dd>
       <dt><code>styles/*.css</code></dt>
       <dd>
-        The global theme, joined into one <code>theme.css</code> on every page:
+        The global theme, first in the one stylesheet every page links:
         <code>tokens.css</code> (the <code>--htmlpress-*</code> values),
         <code>layout.css</code> (the page's globals) and
         <code>content.css</code> (headings, prose, tables, code).
@@ -131,7 +131,8 @@
         One component each, the elements of the layout's frame included, in a folder named
         for its tag without the <code>htmlpress-</code> prefix. Its styles sit in
         <code>@scope (&lt;tag&gt;)</code>, so they never reach outside it, and its script
-        defines only that element. A page links only the components it uses.
+        defines only that element. A page's stylesheet holds only the components it uses,
+        after the theme, and it links only their scripts.
       </dd>
     </dl>
     <p>

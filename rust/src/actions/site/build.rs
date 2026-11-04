@@ -1,5 +1,7 @@
+use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
 
+use crate::actions::asset::bundle::join_bundle;
 use crate::actions::date::format::format_feed_date;
 use crate::actions::logo::color::color_logo;
 use crate::actions::page::decorate::{Decoration, list_fragments};
@@ -10,6 +12,7 @@ use crate::actions::site::describe::{describe_language, describe_site};
 use crate::actions::site::index::{create_search_path, index_site};
 use crate::actions::site::localize::localize_site;
 use crate::actions::site::scan::{Built, Rendered, read_site, reread_page};
+use crate::models::asset::Bundle;
 use crate::models::build::{BuildOptions, BuildReport};
 use crate::models::config::SectionKind;
 use crate::models::error::Error;
@@ -81,8 +84,9 @@ pub(crate) fn rebuild_pages(
             None => return Ok(None),
         }
     }
-    for (page, (path, html)) in &done {
+    for (page, (path, html, bundle)) in &done {
         write_file(&options.output.join(path), html.as_bytes())?;
+        write_bundles(options, &cache.site, bundle.iter())?;
         let own = (cache.site.pages.iter_mut())
             .find(|own| own.source == page.source && own.language == page.language);
         if let Some(own) = own {
@@ -134,8 +138,10 @@ fn write_site(
     site: &Site,
     rendered: &[Rendered],
 ) -> crate::Result<()> {
-    for (path, html) in rendered {
+    let mut bundles = BTreeSet::new();
+    for (path, html, used) in rendered {
         write_file(&options.output.join(path), html.as_bytes())?;
+        bundles.extend(used.iter().cloned());
     }
     if !site.pages.iter().any(|page| page.path == NOT_FOUND_PAGE) {
         let language = site.read_language("");
@@ -150,9 +156,11 @@ fn write_site(
         let page = read_decorated_page(NOT_FOUND_PAGE, &html, Some(&decoration))?;
         let mut built_in = site.clone();
         built_in.config.edit = None;
-        let html = render_page(&built_in, &page, options.reload)?;
+        let (html, used) = render_page(&built_in, &page, options.reload)?;
         write_file(&options.output.join(NOT_FOUND_PAGE), html.as_bytes())?;
+        bundles.extend(used);
     }
+    write_bundles(options, site, bundles.iter())?;
     for (file, source) in &site.files {
         let source = options.root.join(source);
         let target = options.output.join(file);
@@ -186,6 +194,21 @@ fn write_site(
         write_file(&assets.join("reload.js"), RELOAD.as_bytes())?;
     }
     write_indexes(options, site)
+}
+
+fn write_bundles<'a>(
+    options: &BuildOptions,
+    site: &Site,
+    bundles: impl Iterator<Item = &'a Bundle>,
+) -> crate::Result<()> {
+    let assets = options.output.join(ASSETS_DIR);
+    for bundle in bundles {
+        let path = assets.join(&bundle.path);
+        if !path.exists() {
+            write_file(&path, join_bundle(&site.assets, bundle).as_bytes())?;
+        }
+    }
+    Ok(())
 }
 
 // What every page feeds: search, the agent files, feeds, the home's redirect, robots

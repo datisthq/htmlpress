@@ -266,8 +266,11 @@ under `--json` stdout carries only the result. Flags, defaults and output fields
 the paths a project's `.htmlpress/` escapes them under, and every file there is an escapable asset listed in
 `ASSETS` (a unit test fails on one missing). `styles/` joins, in `THEME_STYLES` order, into the
 global `theme.css`; `components/<name>/<name>.css` and `.js` are served one file each, and
-`render_page` links only those whose tag the layout, the page or a project component's
-`.html` holds. A component's CSS sits in `@scope (<tag>)` and its JS is a module that
+`render_page` uses only those whose tag the layout, the page or a project component's
+`.html` holds. A page links one stylesheet, `bundles/<hash>.css` (`asset/bundle`): the theme
+then its components' CSS, since each render-blocking request costs a phone's first paint a
+round trip. Scripts stay one module each: one bundle evaluates in one long task, which
+raised Lighthouse's TBT more than it saved. A component's CSS sits in `@scope (<tag>)` and its JS is a module that
 defines that element alone, with its own copies of any helper: an escaped file must never
 depend on another. Components are light DOM and must leave readable HTML when the script
 never loads. A new component, token or asset path is public API: add it to
