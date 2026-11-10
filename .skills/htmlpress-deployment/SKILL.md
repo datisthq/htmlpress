@@ -21,7 +21,7 @@ Invoke when the user asks to:
 ```sh
 htmlpress build            # or `npx gethtmlpress build` in CI, without installing it
 htmlpress preview          # serves the production build locally, the way a host will
-htmlpress clear            # removes .htmlpress/build
+htmlpress clear            # removes .htmlpress/build and .htmlpress/cache
 ```
 
 The output is `.htmlpress/build/`: an `index.html` per page in its own folder

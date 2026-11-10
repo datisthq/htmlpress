@@ -15,6 +15,27 @@ fn removes_the_output_once() -> crate::Result<()> {
 }
 
 #[test]
+fn removes_the_cache_too() -> crate::Result<()> {
+    let root = tempfile::tempdir().map_err(Error::io("tempdir"))?;
+    let cache = root.path().join(CACHE_DIR);
+    std::fs::create_dir_all(&cache).map_err(Error::io(&cache))?;
+    assert!(clear_site(&BuildOptions::new(root.path()))?);
+    assert!(!cache.exists());
+    Ok(())
+}
+
+#[test]
+fn refuses_while_start_serves_the_project() -> crate::Result<()> {
+    let root = tempfile::tempdir().map_err(Error::io("tempdir"))?;
+    let options = BuildOptions::new(root.path());
+    std::fs::create_dir_all(&options.output).map_err(Error::io(&options.output))?;
+    let _serving = claim_site(root.path())?;
+    assert!(matches!(clear_site(&options), Err(Error::Usage(_))));
+    assert!(options.output.exists());
+    Ok(())
+}
+
+#[test]
 fn refuses_an_output_that_holds_the_project() -> crate::Result<()> {
     let root = tempfile::tempdir().map_err(Error::io("tempdir"))?;
     let options = BuildOptions {

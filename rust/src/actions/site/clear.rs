@@ -1,15 +1,22 @@
 use crate::actions::site::build::check_output;
+use crate::actions::site::claim::claim_site;
 use crate::models::build::BuildOptions;
 use crate::models::error::Error;
+use crate::settings::CACHE_DIR;
 
-/// Remove the build output at `options.output`; returns whether there was one.
+/// Remove the build output at `options.output` and the project's cache, refusing while
+/// `start` serves the project; returns whether there was either.
 pub fn clear_site(options: &BuildOptions) -> crate::Result<bool> {
+    let _claim = claim_site(&options.root)?;
     check_output(&options.root, &options.output)?;
-    if !options.output.exists() {
-        return Ok(false);
+    let mut removed = false;
+    for folder in [options.output.clone(), options.root.join(CACHE_DIR)] {
+        if folder.exists() {
+            std::fs::remove_dir_all(&folder).map_err(Error::io(&folder))?;
+            removed = true;
+        }
     }
-    std::fs::remove_dir_all(&options.output).map_err(Error::io(&options.output))?;
-    Ok(true)
+    Ok(removed)
 }
 
 #[cfg(test)]

@@ -108,7 +108,7 @@ uvx htmlpress --version</code></pre>
       </htmlpress-tab>
       <htmlpress-tab title="Cargo">
         <pre><code class="language-sh">cargo install htmlpress</code></pre>
-        <p>使用 1.88 或更高版本的 Rust 工具链从源码构建。</p>
+        <p>使用 1.89 或更高版本的 Rust 工具链从源码构建。</p>
       </htmlpress-tab>
     </htmlpress-tabs>
     <p>预构建的二进制文件覆盖 x64 和 arm64 架构上的 Linux、macOS 和 Windows：</p>
@@ -276,8 +276,10 @@ built 6 pages and 0 files into docs/.htmlpress/build</code></pre>
 
     <h3><code>htmlpress start [root]</code></h3>
     <p>
-      构建项目，在 <code>http://localhost:8000</code>
-      上提供服务，并在每次更改时重新构建。已打开的页面会在每次构建后自动重载。构建失败时会打印错误并在浏览器中显示：覆盖在已打开的页面上，并替代之后打开的任何页面。即使第一次构建失败，服务器也会继续运行，下一次成功的构建会重载所有页面。
+      构建项目，在
+      <code>http://localhost:8000</code>
+      上提供服务，并在每次更改时重新构建。已打开的页面会在每次构建后自动重载。构建失败时会打印错误并在浏览器中显示：覆盖在已打开的页面上，并替代之后打开的任何页面。即使第一次构建失败，服务器也会继续运行，下一次成功的构建会重载所有页面。第一个
+      <code>start</code> 运行期间，同一项目的第二个 <code>start</code> 会被拒绝。
     </p>
     <p>
       当 8000 端口被占用时，它会依次尝试 8001 直到 8009，并打印实际获得的 URL。
@@ -307,7 +309,9 @@ network http://192.168.1.107:8000</code></pre>
 
     <h3><code>htmlpress clear [root]</code></h3>
     <p>
-      删除构建输出 <code>.htmlpress/build/</code>。它不接受
+      删除构建输出 <code>.htmlpress/build/</code> 和缓存
+      <code>.htmlpress/cache/</code>。<code>htmlpress start</code>
+      正在服务该项目时会拒绝执行； 它不接受
       <code>--out</code>：构建到其他目录的输出请自行删除。
     </p>
 

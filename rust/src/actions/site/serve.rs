@@ -13,6 +13,7 @@ use crate::actions::path::select::read_bases;
 use crate::actions::site::build::{
     Cache, build_cached, create_build_paths, rebuild_pages,
 };
+use crate::actions::site::claim::claim_site;
 use crate::models::build::{BuildOptions, format_count};
 use crate::models::error::Error;
 use crate::settings::{
@@ -28,6 +29,7 @@ pub fn serve_site(
     port: Option<u16>,
     on_ready: impl FnOnce(&[String]),
 ) -> crate::Result<()> {
+    let _claim = claim_site(&options.root)?;
     let options = BuildOptions {
         reload: true,
         ..options.clone()

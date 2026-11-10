@@ -116,7 +116,7 @@ uvx htmlpress --version</code></pre>
       </htmlpress-tab>
       <htmlpress-tab title="Cargo">
         <pre><code class="language-sh">cargo install htmlpress</code></pre>
-        <p>Compila desde el código fuente con la toolchain de Rust, 1.88 o posterior.</p>
+        <p>Compila desde el código fuente con la toolchain de Rust, 1.89 o posterior.</p>
       </htmlpress-tab>
     </htmlpress-tabs>
     <p>Hay binarios precompilados para Linux, macOS y Windows en x64 y arm64:</p>
@@ -297,7 +297,8 @@ built 6 pages and 0 files into docs/.htmlpress/build</code></pre>
       Una compilación fallida imprime su error y lo muestra en el navegador: sobre las
       páginas ya abiertas y en lugar de cualquier página que se abra después. El servidor
       sigue en marcha, aunque falle la primera compilación, y la siguiente compilación
-      correcta recarga todas las páginas.
+      correcta recarga todas las páginas. Un segundo <code>start</code> para el mismo
+      proyecto se rechaza mientras el primero sigue en marcha.
     </p>
     <p>
       Si el 8000 está ocupado, prueba el 8001 y sigue hasta el 8009, e imprime la URL que
@@ -326,8 +327,10 @@ network http://192.168.1.107:8000</code></pre>
 
     <h3><code>htmlpress clear [root]</code></h3>
     <p>
-      Elimina la salida de la compilación, <code>.htmlpress/build/</code>. No acepta
-      <code>--out</code>: borra tú mismo una carpeta compilada en otro lugar.
+      Elimina la salida de la compilación, <code>.htmlpress/build/</code>, y la caché,
+      <code>.htmlpress/cache/</code>. Se niega mientras <code>htmlpress start</code> sirve
+      el proyecto, y no acepta <code>--out</code>: borra tú mismo una carpeta compilada en
+      otro lugar.
     </p>
 
     <h3><code>htmlpress escape [names…]</code></h3>

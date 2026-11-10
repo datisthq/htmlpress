@@ -98,6 +98,7 @@ mod actions {
     }
     pub(crate) mod site {
         pub(crate) mod build;
+        pub(crate) mod claim;
         pub(crate) mod clear;
         pub(crate) mod describe;
         pub(crate) mod index;

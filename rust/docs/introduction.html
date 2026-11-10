@@ -109,7 +109,7 @@ uvx htmlpress --version</code></pre>
       </htmlpress-tab>
       <htmlpress-tab title="Cargo">
         <pre><code class="language-sh">cargo install htmlpress</code></pre>
-        <p>Builds from source with the Rust toolchain, 1.88 or newer.</p>
+        <p>Builds from source with the Rust toolchain, 1.89 or newer.</p>
       </htmlpress-tab>
     </htmlpress-tabs>
     <p>Prebuilt binaries cover Linux, macOS and Windows on x64 and arm64:</p>
@@ -280,7 +280,8 @@ built 6 pages and 0 files into docs/.htmlpress/build</code></pre>
       every change. Open pages reload themselves after each build. A failed build prints
       its error and shows it in the browser: over the pages already open, and in place of
       any page opened next. The server stays up, even when the first build fails, and the
-      next good build reloads every page.
+      next good build reloads every page. A second <code>start</code> for the same project
+      is refused while the first runs.
     </p>
     <p>
       When 8000 is taken it tries 8001 and on to 8009, and prints the URL it got.
@@ -307,8 +308,10 @@ network http://192.168.1.107:8000</code></pre>
 
     <h3><code>htmlpress clear [root]</code></h3>
     <p>
-      Removes the build output, <code>.htmlpress/build/</code>. It takes no
-      <code>--out</code>: delete a folder built elsewhere yourself.
+      Removes the build output, <code>.htmlpress/build/</code>, and the cache,
+      <code>.htmlpress/cache/</code>. It refuses while <code>htmlpress start</code> serves
+      the project, and takes no <code>--out</code>: delete a folder built elsewhere
+      yourself.
     </p>
 
     <h3><code>htmlpress escape [names…]</code></h3>
