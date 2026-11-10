@@ -278,8 +278,11 @@
     height: 100%;
     padding: 0 0.5rem 0 0.25rem;
   }
+  /* Else the input's intrinsic width holds it open, pushing the close button off a
+     narrow or zoomed-in phone */
   .row .field {
     flex: 1;
+    min-width: 0;
     border-color: transparent;
     background: transparent;
   }

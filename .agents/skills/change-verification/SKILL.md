@@ -40,6 +40,8 @@ Pick the **highest** rung the diff reaches, and run everything that rung lists.
 2. **Theme, components, layout** — `rust/src/layout.html`, `404.html` or anything under `rust/src/styles/`, `scripts/` or `components/`. `cargo test page::render`,
    then **look at it**: `pnpm start` (from a worktree, `--port 0`), open the page in Claude in
    Chrome or Playwright, in light and dark and at a phone width. No test renders CSS.
+   Check ~320px too, not just 390: Android's zoom setting shrinks the CSS viewport that far,
+   and a flex row whose `<input>` lacks `min-width: 0` overflows only there.
 3. **Logic** — an action, model or command. `pnpm -C rust check:lint` and `cargo test` on the
    module. A new or changed test runs on its own first and fails before the fix. When the
    change is visible from a terminal (help text, `--json`, `--llms`), also run
