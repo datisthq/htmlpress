@@ -1,6 +1,6 @@
 {
   "name": "gethtmlpress",
-  "version": "0.12.2",
+  "version": "0.12.3",
   "description": "HTML-first static site generator: HTML pages, or Markdown, from anywhere in a project become one site with one layout, one theme and live reload, for humans and agents",
   "keywords": [
     "agents",

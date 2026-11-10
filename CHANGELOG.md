@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.12.3](https://github.com/datisthq/htmlpress/compare/v0.12.2...v0.12.3) (2026-11-10)
+
+
+### Bug Fixes
+
+* describe htmlpress as HTML-first, building pages from anywhere in a project ([d5b5b3d](https://github.com/datisthq/htmlpress/commit/d5b5b3d4b8b32743cf73393be1b06a99f1be26db))
+* upgrade textlane to 0.8.1 ([b58e52d](https://github.com/datisthq/htmlpress/commit/b58e52d634fd8f94d6f75d6346fe3c1188b8795b))
+
 ## [0.12.2](https://github.com/datisthq/htmlpress/compare/v0.12.1...v0.12.2) (2026-11-10)
 
 
