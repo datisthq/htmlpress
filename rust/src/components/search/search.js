@@ -103,15 +103,16 @@ class HtmlpressSearch extends HTMLElement {
       this.append(this.bar)
     }
     this.bar.hidden = false
+    // Otherwise the page keeps scrolling under the panel, with a second scrollbar beside it
+    document.documentElement.style.overflow = "hidden"
     this.measure()
-    addEventListener("scroll", this.measure, { passive: true })
     addEventListener("resize", this.measure)
     this.sheet.input.focus()
   }
 
   closeBar() {
     this.bar.hidden = true
-    removeEventListener("scroll", this.measure)
+    document.documentElement.style.removeProperty("overflow")
     removeEventListener("resize", this.measure)
   }
 }
