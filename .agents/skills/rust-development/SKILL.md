@@ -25,6 +25,10 @@ A single test: `cargo test name` from `rust/`. `rust/rust-toolchain.toml` pins s
 clippy and rustfmt, so rustup installs the right toolchain on first use, locally and in CI. A
 run from source: `cargo run --manifest-path rust/Cargo.toml -- build docs`.
 
+Clippy holds the code to `rust-version` in `rust/Cargo.toml`, not the pinned stable:
+`cargo test` passes on a newer std API that `check:lint` then rejects. Raising it means the
+"1.xx or newer" line in `rust/docs/introduction{,.es,.zh}.html` too.
+
 ## Layout
 
 - `src/actions/<entity>/<verb>.rs` exports `verb_noun`; the module tree is declared inline in
@@ -212,6 +216,9 @@ project root after symlinks, never in a dot-entry (unless the caller allows it, 
 Never `root.join(path)` and read it directly.
 
 ## The dev server
+
+`serve_site` and `clear_site` take `claim_site`'s OS file lock (temp folder, keyed by the
+project path) so `clear` and a second `start` refuse while one serves, as Livemark's lock.
 
 Both servers strip the base from each request (`strip_base`) and redirect `/` to it.
 They also answer the exact rules of the output's `_redirects` (`find_redirect`), where the

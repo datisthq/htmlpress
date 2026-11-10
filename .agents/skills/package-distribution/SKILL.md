@@ -14,6 +14,7 @@ One binary, three registries plus GitHub releases, one version. Nothing here may
   (`typescript/actions/binary/run.ts`): inherited stdio, the exit code and any signal
   passed back, and SIGINT, SIGTERM and SIGHUP forwarded to the binary. Never `spawnSync`:
   it blocks the handlers, so killing the wrapper orphaned a `start` holding its port.
+  Windows has no catchable SIGTERM (`kill` terminates), so a test of forwarding skips it.
 - `resolveBinary` takes `HTMLPRESS_BINARY` first (a cargo build, an unsupported platform),
   else resolves `@htmlpress/<platform>-<arch>/bin/<binary>` from the installed packages.
 - `PLATFORMS` in `typescript/settings.ts` is the single list. `scripts/pack.ts` reads it to lay
