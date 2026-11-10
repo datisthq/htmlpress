@@ -5,7 +5,8 @@ description: Use when writing or editing pages in an htmlpress project — the p
 
 # Htmlpress Authoring
 
-An htmlpress project is a folder of `.html` pages. Htmlpress wraps each in one layout with a
+An htmlpress project is a set of `.html` pages: by default every one in its folder, or the ones
+`include` picks from anywhere in a repository. Htmlpress wraps each in one layout with a
 navigation and a theme, so a page carries content only: no `<nav>`, no site header, no styling.
 
 ## When to use this skill

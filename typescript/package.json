@@ -1,7 +1,7 @@
 {
   "name": "gethtmlpress",
   "version": "0.12.2",
-  "description": "Turn a folder of Markdown and HTML pages into a site: one layout, one theme, live reload, for humans and agents",
+  "description": "HTML-first static site generator: HTML pages, or Markdown, from anywhere in a project become one site with one layout, one theme and live reload, for humans and agents",
   "keywords": [
     "agents",
     "html",

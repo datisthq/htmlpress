@@ -9,7 +9,9 @@ use crate::commands::start::create_start_command;
 pub fn create_program() -> fireargs::Program {
     fireargs::program()
         .name("htmlpress")
-        .description("Turn a folder of Markdown and HTML pages into a site.")
+        .description(
+            "Turn HTML pages, or Markdown, from anywhere in a project into one site.",
+        )
         .version(env!("CARGO_PKG_VERSION"))
         .command("build", create_build_command())
         .command("start", create_start_command())
