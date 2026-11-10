@@ -113,6 +113,17 @@ fn clears_the_build_as_json() -> TestResult {
 }
 
 #[test]
+fn refuses_to_clear_another_folder() -> TestResult {
+    let root = tempfile::tempdir()?;
+    write_page(root.path(), "keep/file", "mine")?;
+    let keep = root.path().join("keep").to_string_lossy().into_owned();
+    let cleared = run_cli(&["clear", "-o", &keep]);
+    assert!(!matches!(cleared, Ok((0, _))));
+    assert!(root.path().join("keep/file").is_file());
+    Ok(())
+}
+
+#[test]
 fn builds_every_language_with_its_picker_and_fallbacks() -> TestResult {
     let root = tempfile::tempdir()?;
     write_page(
