@@ -12,13 +12,14 @@
   <body>
     <h1>Htmlpress</h1>
     <p>
-      Htmlpress is the static site generator for humans and agents. It turns a folder of
-      Markdown and HTML pages into a site. Each page keeps its own markup, and htmlpress
-      adds one layout, one theme, a navigation and a live-reloading dev server. It is one
-      Rust binary, installed from npm, PyPI or crates.io.
+      Htmlpress is the HTML-first static site generator for humans and agents. Write HTML
+      pages, or Markdown, wherever they live in your project, and htmlpress turns them
+      into one site. Each page keeps its own markup, and htmlpress adds one layout, one
+      theme, a navigation and a live-reloading dev server. It is one Rust binary,
+      installed from npm, PyPI or crates.io.
     </p>
     <p>
-      You or your agent write plain Markdown or semantic HTML, which agents know better
+      You or your agent write semantic HTML or plain Markdown, which agents know better
       than any templating language, and every page comes out looking like the same site:
       no framework, no build config, no utility classes.
     </p>
@@ -32,11 +33,22 @@
     <h2>What you get</h2>
     <ul>
       <li>
-        <strong>Just write Markdown or HTML.</strong> A page is any <code>.md</code> file
-        with frontmatter, or any <code>.html</code> file, a full document or a bare
-        fragment, whose <code>&lt;title&gt;</code> and <code>&lt;meta&gt;</code> tags do
-        what frontmatter does; see
+        <strong>Just write HTML.</strong> A page is any <code>.html</code> file, a full
+        document or a bare fragment, whose <code>&lt;title&gt;</code> and
+        <code>&lt;meta&gt;</code> tags are its metadata; see
+        <a href="/authoring/html-pages/">HTML pages</a>. A <code>.md</code> file with
+        frontmatter works too; see
         <a href="/authoring/markdown-pages/">Markdown pages</a>.
+      </li>
+      <li>
+        <strong>Pages from anywhere.</strong> By default every page in the folder; the
+        <code>include</code> and <code>exclude</code> globs pick them from anywhere in a
+        repository instead, so the docs sit beside the code, and a
+        <code>CHANGELOG.md</code> or the <code>SKILL.md</code> files you already keep join
+        the site; see
+        <a href="/customization/configuration-file/#include-and-exclude"
+          >Include and exclude</a
+        >.
       </li>
       <li>
         <strong>A theme styled from the elements.</strong> Headings, tables, code blocks,

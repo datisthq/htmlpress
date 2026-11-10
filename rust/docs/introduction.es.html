@@ -12,14 +12,14 @@
   <body>
     <h1>Htmlpress</h1>
     <p>
-      Htmlpress es el generador de sitios estáticos para humanos y agentes. Convierte una
-      carpeta de páginas Markdown y HTML en un sitio. Cada página conserva su propio
-      marcado, y htmlpress añade un layout, un tema, una navegación y un servidor de
-      desarrollo con recarga en vivo. Es un único binario de Rust, que se instala desde
-      npm, PyPI o crates.io.
+      Htmlpress es el generador de sitios estáticos HTML-first para humanos y agentes.
+      Escribe páginas HTML, o Markdown, allí donde estén en tu proyecto, y htmlpress las
+      convierte en un único sitio. Cada página conserva su propio marcado, y htmlpress
+      añade un layout, un tema, una navegación y un servidor de desarrollo con recarga en
+      vivo. Es un único binario de Rust, que se instala desde npm, PyPI o crates.io.
     </p>
     <p>
-      Escribes Markdown sencillo o HTML semántico, o deja que tu agente lo escriba: los
+      Escribes HTML semántico o Markdown sencillo, o deja que tu agente lo escriba: los
       agentes los conocen mejor que cualquier lenguaje de plantillas, y cada página acaba
       con el aspecto del mismo sitio: sin framework, sin configuración de compilación, sin
       clases utilitarias.
@@ -35,12 +35,22 @@
     <h2>Qué obtienes</h2>
     <ul>
       <li>
-        <strong>Solo escribe Markdown o HTML.</strong> Una página es cualquier archivo
-        <code>.md</code> con frontmatter, o cualquier archivo <code>.html</code>, un
-        documento completo o un simple fragmento, cuyas etiquetas
-        <code>&lt;title&gt;</code> y <code>&lt;meta&gt;</code> hacen lo que hace el
-        frontmatter; consulta
+        <strong>Solo escribe HTML.</strong> Una página es cualquier archivo
+        <code>.html</code>, un documento completo o un simple fragmento, cuyas etiquetas
+        <code>&lt;title&gt;</code> y <code>&lt;meta&gt;</code> son sus metadatos; consulta
+        <a href="/es/authoring/html-pages/">Páginas HTML</a>. Un archivo <code>.md</code>
+        con frontmatter también funciona; consulta
         <a href="/es/authoring/markdown-pages/">Páginas Markdown</a>.
+      </li>
+      <li>
+        <strong>Páginas desde cualquier lugar.</strong> Por defecto, cada página de la
+        carpeta; los globs <code>include</code> y <code>exclude</code> las toman de
+        cualquier lugar de un repositorio, así la documentación vive junto al código, y el
+        <code>CHANGELOG.md</code> o los archivos <code>SKILL.md</code> que ya mantienes se
+        suman al sitio; consulta
+        <a href="/es/customization/configuration-file/#include-y-exclude"
+          >Include y exclude</a
+        >.
       </li>
       <li>
         <strong>Un tema que estiliza los elementos.</strong> Los encabezados, las tablas,

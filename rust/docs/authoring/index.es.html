@@ -10,12 +10,16 @@
 <p>
   Htmlpress acepta HTML semántico simple desde el primer momento, más un pequeño conjunto
   de componentes <code>htmlpress-*</code> para lo que HTML no tiene elemento: avisos,
-  pestañas, pasos, tarjetas, terminales, diagramas y más. Un proyecto es una carpeta: cada
-  archivo <code>.html</code> y <code>.md</code> que contiene es una página, y cualquier
-  otro archivo se copia tal cual a la salida, en la misma ruta. Las carpetas que empiezan
-  por punto, como <code>.git/</code> y <code>.htmlpress/</code>, y
-  <code>node_modules/</code>, se omiten. Cada una de las páginas siguientes cubre un área
-  de la redacción.
+  pestañas, pasos, tarjetas, terminales, diagramas y más. Por defecto, un proyecto es una
+  carpeta: cada archivo <code>.html</code> y <code>.md</code> que contiene es una página,
+  y cualquier otro archivo se copia tal cual a la salida, en la misma ruta. Las carpetas
+  que empiezan por punto, como <code>.git/</code> y <code>.htmlpress/</code>, y
+  <code>node_modules/</code>, se omiten. Los globs
+  <a href="/es/customization/configuration-file/#include-y-exclude"
+    ><code>include</code> y <code>exclude</code></a
+  >
+  toman en su lugar páginas de cualquier lugar de ella. Cada una de las páginas siguientes
+  cubre un área de la redacción.
 </p>
 <p>
   Cada ejemplo muestra su HTML y su Markdown, la sintaxis de

@@ -12,14 +12,15 @@
   <body>
     <h1>Htmlpress</h1>
     <p>
-      Htmlpress 是为人类与智能体打造的静态站点生成器。它把一个装满 Markdown 和 HTML
-      页面的文件夹变成一个站点。每个页面保留自己的标记，htmlpress
+      Htmlpress 是为人类与智能体打造的 HTML 优先的静态站点生成器。编写 HTML 页面（或
+      Markdown），无论它们位于项目中的何处，htmlpress
+      都会把它们变成同一个站点。每个页面保留自己的标记，htmlpress
       则添加一个布局、一套主题、一个导航和一个支持实时重载的开发服务器。它是一个 Rust
       二进制文件，可通过 npm、PyPI 或 crates.io 安装。
     </p>
     <p>
-      你或你的智能体编写纯 Markdown 或语义化
-      HTML——智能体对它们的了解远胜于任何模板语言——而每个页面最终看起来都属于同一个站点：没有框架，没有构建配置，没有工具类。
+      你或你的智能体编写语义化 HTML 或纯
+      Markdown——智能体对它们的了解远胜于任何模板语言——而每个页面最终看起来都属于同一个站点：没有框架，没有构建配置，没有工具类。
     </p>
 
     <htmlpress-callout type="warning">
@@ -29,11 +30,21 @@
     <h2>你将获得</h2>
     <ul>
       <li>
-        <strong>只需编写 Markdown 或 HTML。</strong>页面可以是带 frontmatter 的任意
-        <code>.md</code> 文件，也可以是任意
+        <strong>只需编写 HTML。</strong>页面可以是任意
         <code>.html</code> 文件（完整文档或裸片段），其 <code>&lt;title&gt;</code> 和
-        <code>&lt;meta&gt;</code> 标签承担 frontmatter 的作用；参见
+        <code>&lt;meta&gt;</code> 标签就是它的元数据；参见
+        <a href="/zh/authoring/html-pages/">HTML 页面</a>。带 frontmatter 的
+        <code>.md</code> 文件同样可用；参见
         <a href="/zh/authoring/markdown-pages/">Markdown 页面</a>。
+      </li>
+      <li>
+        <strong>页面可来自任何位置。</strong>默认使用文件夹中的每个页面；<code
+          >include</code
+        >
+        和 <code>exclude</code>
+        通配符则可以从仓库的任何位置挑选页面，让文档与代码并存，你已有的
+        <code>CHANGELOG.md</code> 或 <code>SKILL.md</code> 文件也会并入站点；参见
+        <a href="/zh/customization/configuration-file/#包含与排除">包含与排除</a>。
       </li>
       <li>
         <strong>基于元素的主题样式。</strong

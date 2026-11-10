@@ -38,7 +38,13 @@ files, and is no longer true.
 - `README.md`, `rust/README.md`, `typescript/README.md`, `python/README.md` — the three package
   READMEs share their usage section; change all three together.
 - `rust/docs/` — the user manual, in HTML. Code in `<pre>` must be escaped (`&lt;`), and a page
-  should build cleanly with `pnpm build:docs`.
+  should build cleanly with `pnpm build:docs`. Each page has `.es.html` and `.zh.html` translations
+  to change with it; a translated heading slugs to its own id (`#include-y-exclude`,
+  `#包含与排除`), so an anchor link copied from the English page breaks.
+- The pitch — "HTML-first static site generator", HTML pages or Markdown from anywhere in a
+  project — repeats in the READMEs, the three package descriptions, `rust/src/program.rs`,
+  `rust/src/lib.rs`, `AGENTS.md`, `htmlpress.yaml`, the introduction and the landing routes;
+  reword it everywhere at once, HTML always named before Markdown.
 
 ## Where a fact belongs
 

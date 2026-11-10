@@ -1,8 +1,9 @@
 # Htmlpress
 
-The static site generator for humans and agents. Turn a folder of Markdown and HTML pages
-into a site: one layout, one theme, a navigation and a live-reloading dev server — no
-framework, no templating language, so you or your agent just write the pages.
+The HTML-first static site generator for humans and agents. Write HTML pages, or
+Markdown, wherever they live in your project, and htmlpress turns them into one site: one
+layout, one theme, a navigation and a live-reloading dev server — no framework, no
+templating language, so you or your agent just write the pages.
 
 | Channel   | Package                                                           | Install                                             |
 | --------- | ----------------------------------------------------------------- | --------------------------------------------------- |

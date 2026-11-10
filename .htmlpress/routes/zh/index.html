@@ -1,7 +1,7 @@
 <title>首页</title>
 <meta
   name="description"
-  content="把一个装满 Markdown 和 HTML 页面的文件夹变成站点：一个布局、一套主题、实时重载，为人类与智能体打造。"
+  content="HTML 优先的静态站点生成器：把项目中任何位置的 HTML 页面（或 Markdown）变成同一个站点，一个布局、一套主题、实时重载，为人类与智能体打造。"
 />
 
 <htmlpress-skip></htmlpress-skip>
@@ -341,8 +341,8 @@
         <header>
           <h2>绝不碍事</h2>
           <p>
-            没有框架，没有构建配置，没有强制的目录结构。一个装满 Markdown 或 HTML
-            的文件夹本身就是一个项目。
+            没有框架，没有构建配置，没有强制的目录结构。一个装满 HTML（或 Markdown）
+            的文件夹本身就是一个项目，几条通配符还能从仓库的任何位置挑选页面。
           </p>
         </header>
         <div>
@@ -361,8 +361,8 @@
                 </svg>
                 <h3>任意文件结构</h3>
                 <p>
-                  页面就是任意 <code>.md</code> 或 <code>.html</code> 文件：带 frontmatter
-                  的 Markdown，或从裸片段到完整文档的 HTML。可以平铺，也可以嵌套：带有
+                  页面就是任意 <code>.html</code> 文件，从裸片段到完整文档，或带
+                  frontmatter 的 <code>.md</code> 文件。可以平铺，也可以嵌套：带有
                   <code>index.html</code> 的文件夹会成为导航分组，其他所有文件则原样复制。
                 </p>
               </li>
@@ -649,7 +649,7 @@ Run `htmlpress start` and open the browser.
         <header>
           <h2>为编码智能体打造</h2>
           <p>
-            智能体对 Markdown 和 HTML 的了解远胜于任何模板语言。Htmlpress
+            智能体对 HTML 和 Markdown 的了解远胜于任何模板语言。Htmlpress
             让它们的工作保持简单，并让每个输出都可被机器读取。
           </p>
         </header>
@@ -693,7 +693,7 @@ $ npx skills add https://htmlpress.dev</code></pre>
                   <path d="M16 13H8" />
                   <path d="M16 17H8" />
                 </svg>
-                <h3>输入 Markdown 或纯 HTML</h3>
+                <h3>输入纯 HTML 或 Markdown</h3>
                 <p>
                   没有框架，没有需要学习的语法，没有工具类：页面提供的选择越少，所有页面看起来就越像同一个站点。
                 </p>
@@ -846,8 +846,8 @@ $ npx skills add https://htmlpress.dev</code></pre>
       <section>
         <h2>开始写作。<em>其余的交给 htmlpress。</em></h2>
         <p>
-          把 htmlpress 指向一个 Markdown 或 HTML
-          文件夹，弹出你想掌控的部分，然后部署。全部设置就是这样。
+          把 htmlpress 指向你的 HTML（或
+          Markdown），无论它们在哪里，弹出你想掌控的部分，然后部署。全部设置就是这样。
         </p>
         <htmlpress-landing-actions align="center">
           <a href="/zh/introduction/"

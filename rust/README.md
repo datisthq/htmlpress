@@ -1,10 +1,10 @@
 # Htmlpress
 
-The static site generator for humans and agents. Htmlpress turns a folder of Markdown and
-HTML pages into a site. Each page keeps its own markup, and htmlpress adds one layout, one
-theme, a navigation and a live-reloading dev server. You or your agent write plain Markdown
-or semantic HTML, and the result looks consistent without a framework, a build config or
-Tailwind.
+The HTML-first static site generator for humans and agents. Write HTML pages, or
+Markdown, wherever they live in your project, and htmlpress turns them into one site. Each
+page keeps its own markup, and htmlpress adds one layout, one theme, a navigation and a
+live-reloading dev server. You or your agent write semantic HTML or plain Markdown, and the
+result looks consistent without a framework, a build config or Tailwind.
 
 ## Installation
 
