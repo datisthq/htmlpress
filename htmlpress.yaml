@@ -43,7 +43,7 @@ include:
   - rust/docs/**/*.html
   - rust/blog/**/*.html
 exclude: rust/docs/includes/**
-skills: .skills/*/SKILL.md
+skills: rust/skills/*/SKILL.md
 edit: https://github.com/datisthq/htmlpress/edit/main/
 head:
   scripts:

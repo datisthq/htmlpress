@@ -22,7 +22,7 @@ One binary, three registries plus GitHub releases, one version. Nothing here may
   package with `optionalDependencies` pinned to its own version. Those pins are written at pack
   time, never kept in `typescript/package.json`: a pin to an unpublished version would break
   `pnpm install` in this workspace.
-- The main package also carries `.skills/` as `skills/`, copied by `scripts/pack.ts`, so
+- The main package also carries `rust/skills/` as `skills/`, copied by `scripts/pack.ts`, so
   `npx skills add ./node_modules/gethtmlpress/skills` installs the version in the lockfile.
 - `scripts/release.ts` publishes platform packages before the main one and skips any version
   already on the registry, so rerunning a half-failed release finishes it.

@@ -59,6 +59,8 @@ htmlpress/
 │   │   ├── program.rs   #   the CLI
 │   │   └── lib.rs       #   the library façade
 │   ├── tests/           #   CLI integration tests
+│   ├── blog/            #   the docs site's blog posts
+│   ├── skills/          #   shipped agent skills for people who use htmlpress
 │   └── docs/            #   the docs site, HTML built by htmlpress itself
 ├── typescript/          # the npm package `gethtmlpress`: a shim that runs the binary
 │   ├── actions/         #   resolveBinary — find the platform package's binary
@@ -66,7 +68,6 @@ htmlpress/
 │   ├── scripts/         #   pack and publish the per-platform packages
 │   └── settings.ts      #   the platform list
 ├── python/              # the PyPI package `htmlpress`: maturin binary wheels
-├── .skills/             # shipped agent skills for people who use htmlpress
 ├── .agents/skills/      # repo skills for coding agents (see AGENTS.md)
 ├── .scripts/            # repo-wide guards and the `pnpm squash` script
 └── vite.config.ts       # vite-plus shared config (format, lint, the guards' tests)

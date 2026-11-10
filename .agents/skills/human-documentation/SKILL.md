@@ -45,7 +45,7 @@ files, and is no longer true.
 Whether a rule or lesson for agents goes in `AGENTS.md` or a skill: **`agent-documentation`**.
 
 - How to **use** htmlpress (pages, components, CLI) → the matching `rust/docs/` page and the shipped
-  skill under `.skills/` covering it (authoring, configuration, customization, landing,
+  skill under `rust/skills/` covering it (authoring, configuration, customization, landing,
   deployment), kept in step; each fact in exactly one.
 - How to **work on** htmlpress → a repo skill in `.agents/skills/`.
 - How a person contributes → `CONTRIBUTING.md`.

@@ -4,4 +4,4 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 rm -rf htmlpress.data
 mkdir -p htmlpress.data/data/share/htmlpress
-cp -R ../.skills htmlpress.data/data/share/htmlpress/skills
+cp -R ../rust/skills htmlpress.data/data/share/htmlpress/skills
