@@ -12,7 +12,7 @@ Htmlpress turns a folder of HTML and Markdown pages into a site: one layout, one
 - **escape** — a project file under `.htmlpress/` at a built-in asset's path (`ASSETS` in `rust/src/settings.rs`), replacing it: `layout.html`, `styles/*.css`, `scripts/*.js`, `components/<name>/<name>.{css,js}`; beside escapes a project may add its own `components/<name>/<name>.{html,css,js}` and `layouts/<name>.html`, which a page picks with `<meta name="layout">`
 - **component** — a custom element `<htmlpress-<name>>`, built in or the project's, with up to three files, `components/<name>/<name>.{html,css,js}` (the tag without its prefix): its CSS scoped with `@scope (<tag>)`, its JS defining only that element, linked only on pages that use the tag; a project's own tag adds one, and its `.html` fills the tag at build time
 - **article** / **route** — a page `include` picks, listed in the navigation, against one in `.htmlpress/routes/`, served at its path there, drawn bare and left out of the navigation and search, as Livemark's `.livemark/routes/`; `Page::is_route` tells them apart
-- **docs site** — this repo's own htmlpress project: the root's `htmlpress.yaml` and `.htmlpress/`, its pages in `rust/docs/` (`include: rust/docs/**/*.html`), built by `pnpm build:docs` and deployed to htmlpress.dev
+- **docs site** — this repo's own htmlpress project: the root's `htmlpress.yaml` and `.htmlpress/`, its pages in `rust/docs/` and its blog posts in `rust/blog/` (each sets its `<meta name="path">` under `/blog/`), built by `pnpm build:docs` and deployed to htmlpress.dev
 
 ## Rules
 
@@ -93,6 +93,7 @@ The root is a private pnpm workspace (`package.json`, `pnpm-workspace.yaml`): fo
   - Unit tests beside their module as `<module>_unit.rs`; `tests/` the CLI integration tests
   - `vendor/` — copies of dependencies with a fix htmlpress needs (`onig-regset`, as textlane vendors it), wired in through `[patch.crates-io]`
   - `docs/` — the docs site's HTML pages, outside the crate's `include`; the repo root is their project, with `htmlpress.yaml` and `.htmlpress/`
+  - `blog/` — the docs site's blog posts, outside `docs/` and the crate's `include`
 - `typescript/` — the npm package `gethtmlpress`: `entrypoints/main.ts` runs (`actions/binary/run.ts`) the binary `actions/binary/resolve.ts` finds; `settings.ts` lists the platforms; `scripts/` packs and publishes the platform packages into `typescript/compile/` (**`package-distribution`**)
 - `python/` — the PyPI package `htmlpress`: only `pyproject.toml`, which points maturin at `rust/Cargo.toml` with `bindings = "bin"`
 - `benchmark/` — the private package timing htmlpress against other site generators, its rivals in `rivals/` outside the workspace; it ships nothing, so its commits are `chore(benchmark)` (**`benchmark-development`**)
