@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.12.1](https://github.com/datisthq/htmlpress/compare/v0.12.0...v0.12.1) (2026-11-10)
+
+
+### Bug Fixes
+
+* clear the cache too and refuse clear or a second start while start serves the project, as Livemark does ([ef43f5d](https://github.com/datisthq/htmlpress/commit/ef43f5d268b65d33556a1a5ea4dd8e2a196fefe4))
+* drop clear's -o, so it only ever removes .htmlpress/build ([cf916f2](https://github.com/datisthq/htmlpress/commit/cf916f213d7a778e4169f2bd42e1983611638941))
+* keep the phone search bar's close button on screen at narrow widths ([f020c55](https://github.com/datisthq/htmlpress/commit/f020c55406995c9bdfb54d3e8e5600957ef6a7f5))
+* keep the start lock in the per-user runtime folder and refuse to clear a cache symlinked out of the project ([b1da6f8](https://github.com/datisthq/htmlpress/commit/b1da6f8f57b671eb7f243100d283ff0fba03ba90))
+* lock page scroll while the phone search bar is open ([e0b30ba](https://github.com/datisthq/htmlpress/commit/e0b30baf3e29cae6e535ae95a12f2dfacb1167e3))
+* refuse an output folder no build wrote, forward the npm shim's signals, and fix Markdown twins, escaped dollars, feed routes and the footnotes TOC ([83740f8](https://github.com/datisthq/htmlpress/commit/83740f8f4a4324dfb675c63afe31ec591276706f))
+* upgrade textlane to 0.8.0 ([1616768](https://github.com/datisthq/htmlpress/commit/1616768fb595b89ea774b4c463888109a0b2934a))
+
 ## [0.12.0](https://github.com/datisthq/htmlpress/compare/v0.11.1...v0.12.0) (2026-11-04)
 
 
