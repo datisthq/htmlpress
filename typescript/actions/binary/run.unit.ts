@@ -19,19 +19,23 @@ describe("runBinary", () => {
     expect(result).toEqual({ status: 3, signal: null })
   })
 
-  it("passes a signal the wrapper gets on to the binary", async () => {
-    const signals = new EventEmitter()
-    const running = runBinary({
-      binary: process.execPath,
-      args: LISTENER,
-      signals,
-      stdio: "pipe",
-      onSpawn: child =>
-        child.stdout?.once("data", () => signals.emit("SIGTERM", "SIGTERM")),
-    })
-    expect(await running).toEqual({ status: 7, signal: null })
-    expect(signals.listenerCount("SIGTERM")).toBe(0)
-  })
+  // Windows has no catchable SIGTERM: `kill` there always terminates the child
+  it.skipIf(process.platform === "win32")(
+    "passes a signal the wrapper gets on to the binary",
+    async () => {
+      const signals = new EventEmitter()
+      const running = runBinary({
+        binary: process.execPath,
+        args: LISTENER,
+        signals,
+        stdio: "pipe",
+        onSpawn: child =>
+          child.stdout?.once("data", () => signals.emit("SIGTERM", "SIGTERM")),
+      })
+      expect(await running).toEqual({ status: 7, signal: null })
+      expect(signals.listenerCount("SIGTERM")).toBe(0)
+    },
+  )
 
   it("rejects when the binary cannot run", async () => {
     const running = runBinary({
