@@ -688,3 +688,21 @@ fn keeps_an_escaped_dollar_in_markdown_plain() -> crate::Result<()> {
     assert_eq!(html.matches("<htmlpress-math").count(), 1);
     Ok(())
 }
+
+#[test]
+fn keeps_prices_in_markdown_text() -> crate::Result<()> {
+    let root = tempfile::tempdir().map_err(Error::io("tempdir"))?;
+    let root = root.path();
+    write_source(
+        root,
+        "index.md",
+        "# Home\n\nIt costs $5 and $10.\n\nOr $x$ apples.\n",
+    )?;
+    let options = BuildOptions::new(root);
+    build_site(&options)?;
+    let html = std::fs::read_to_string(options.output.join("index.html"))
+        .map_err(Error::io(root))?;
+    assert!(html.contains("<p>It costs $5 and $10.</p>"), "{html}");
+    assert_eq!(html.matches("<htmlpress-math").count(), 1);
+    Ok(())
+}

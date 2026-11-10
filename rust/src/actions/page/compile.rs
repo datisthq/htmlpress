@@ -132,7 +132,8 @@ pub(crate) fn create_processor(
             ["md.frontmatter", { "data": true, "strip": true }],
             "md.gfm",
             "md.definitionList",
-            "md.math",
+            // Pandoc's dollar rule, as the HTML math step reads `$`: `$5 and $10` is no formula
+            ["md.math", { "pandocTextMath": true }],
             "md.directive",
         ]),
     )?;
