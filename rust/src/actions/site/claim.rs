@@ -1,5 +1,5 @@
 use std::fs::{File, OpenOptions, TryLockError};
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 use sha2::{Digest, Sha256};
 
@@ -14,9 +14,13 @@ pub(crate) fn claim_site(root: &Path) -> crate::Result<File> {
         .iter()
         .map(|byte| format!("{byte:02x}"))
         .collect();
-    // An OS lock, not a pid file, in the temp folder, not the project: the OS drops it
-    // when `start` dies, so a crash never leaves the project claimed
-    let path = std::env::temp_dir().join(format!("htmlpress-{name}.lock"));
+    // An OS lock, not a pid file, so a crash never leaves the project claimed; in the
+    // per-user runtime folder where there is one, as Linux' /tmp lets another user hold it
+    let folder = std::env::var_os("XDG_RUNTIME_DIR")
+        .map(PathBuf::from)
+        .filter(|folder| folder.is_dir())
+        .unwrap_or_else(std::env::temp_dir);
+    let path = folder.join(format!("htmlpress-{name}.lock"));
     let file = OpenOptions::new()
         .create(true)
         .truncate(false)

@@ -24,6 +24,21 @@ fn removes_the_cache_too() -> crate::Result<()> {
     Ok(())
 }
 
+#[cfg(unix)]
+#[test]
+fn refuses_a_cache_symlinked_out_of_the_project() -> crate::Result<()> {
+    let root = tempfile::tempdir().map_err(Error::io("tempdir"))?;
+    let elsewhere = tempfile::tempdir().map_err(Error::io("tempdir"))?;
+    let kept = elsewhere.path().join("cache");
+    std::fs::create_dir_all(&kept).map_err(Error::io(&kept))?;
+    let link = root.path().join(".htmlpress");
+    std::os::unix::fs::symlink(elsewhere.path(), &link).map_err(Error::io(&link))?;
+    let options = BuildOptions::new(root.path());
+    assert!(matches!(clear_site(&options), Err(Error::Usage(_))));
+    assert!(kept.is_dir());
+    Ok(())
+}
+
 #[test]
 fn refuses_while_start_serves_the_project() -> crate::Result<()> {
     let root = tempfile::tempdir().map_err(Error::io("tempdir"))?;

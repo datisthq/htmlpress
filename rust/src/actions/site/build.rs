@@ -422,7 +422,7 @@ pub(crate) fn check_output(root: &Path, output: &Path) -> crate::Result<()> {
 
 // A `.htmlpress` symlinked out of the project would make the default output a folder
 // elsewhere, such as `~/build`
-fn stays_inside(root: &Path, output: &Path) -> bool {
+pub(crate) fn stays_inside(root: &Path, output: &Path) -> bool {
     let (Ok(root), Some(Ok(parent))) =
         (root.canonicalize(), output.parent().map(Path::canonicalize))
     else {
