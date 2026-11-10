@@ -13,7 +13,7 @@ use crate::actions::node::parse::parse_fragment;
 use crate::actions::pipeline::create::{use_native, use_plugins};
 use crate::actions::plugin::add::add_plugins;
 use crate::models::pipeline::MarkdownOptions;
-use crate::models::plugin::{AnnotateCode, MarkInlineCode};
+use crate::models::plugin::{AnnotateCode, EscapeDollars, MarkInlineCode};
 use crate::models::source::Compiled;
 
 /// The frontmatter keys a Markdown page may set: `title`, `head`, and every
@@ -136,6 +136,7 @@ pub(crate) fn create_processor(
             "md.directive",
         ]),
     )?;
+    use_native(&mut pipeline, "htmlpress.escapeDollars", EscapeDollars)?;
     // Before md.component, which renders an unknown directive as its source text
     add_plugins(&mut pipeline, "md", &options.plugins)?;
     use_plugins(

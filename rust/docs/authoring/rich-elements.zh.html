@@ -353,7 +353,7 @@ Learn how to set up your first project.
   <code>&lt;htmlpress-icon name="…"&gt;</code> 以行内方式绘制一个内置的
   <a href="https://lucide.dev">Lucide</a>
   图标，使用文本的颜色和大小；同样的名称也可用于链接或分区的
-  <code>icon</code>。未知的名称会导致构建失败。以下是全部 114 个内置图标：
+  <code>icon</code>。未知的名称会导致构建失败。以下是全部 117 个内置图标：
 </p>
 <htmlpress-tabs sync="syntax">
   <htmlpress-tab title="HTML">
@@ -391,10 +391,12 @@ Learn how to set up your first project.
   <p><htmlpress-icon name="codepen"></htmlpress-icon> codepen</p>
   <p><htmlpress-icon name="coffee"></htmlpress-icon> coffee</p>
   <p><htmlpress-icon name="compass"></htmlpress-icon> compass</p>
+  <p><htmlpress-icon name="copy"></htmlpress-icon> copy</p>
   <p><htmlpress-icon name="cpu"></htmlpress-icon> cpu</p>
   <p><htmlpress-icon name="database"></htmlpress-icon> database</p>
   <p><htmlpress-icon name="download"></htmlpress-icon> download</p>
   <p><htmlpress-icon name="external-link"></htmlpress-icon> external-link</p>
+  <p><htmlpress-icon name="eye"></htmlpress-icon> eye</p>
   <p><htmlpress-icon name="feather"></htmlpress-icon> feather</p>
   <p><htmlpress-icon name="figma"></htmlpress-icon> figma</p>
   <p><htmlpress-icon name="file"></htmlpress-icon> file</p>
@@ -425,6 +427,7 @@ Learn how to set up your first project.
   <p><htmlpress-icon name="layers"></htmlpress-icon> layers</p>
   <p><htmlpress-icon name="layout-grid"></htmlpress-icon> layout-grid</p>
   <p><htmlpress-icon name="layout-panel-left"></htmlpress-icon> layout-panel-left</p>
+  <p><htmlpress-icon name="languages"></htmlpress-icon> languages</p>
   <p><htmlpress-icon name="library"></htmlpress-icon> library</p>
   <p><htmlpress-icon name="life-buoy"></htmlpress-icon> life-buoy</p>
   <p><htmlpress-icon name="lightbulb"></htmlpress-icon> lightbulb</p>
@@ -562,6 +565,7 @@ Learn how to set up your first project.
   颜色、字体和宽度都是 <code>:root</code> 上的 CSS 自定义属性，在
   <code>prefers-color-scheme</code> 或页眉的主题切换下有一套深色值：
   <code>--htmlpress-primary</code>、<code>--htmlpress-primary-foreground</code>、
+  <code>--htmlpress-secondary</code>、<code>--htmlpress-secondary-foreground</code>、
   <code>--htmlpress-banner</code>、<code>--htmlpress-banner-foreground</code>、
   <code>--htmlpress-highlight</code>、<code>--htmlpress-highlight-foreground</code>、
   <code>--htmlpress-background</code>、<code>--htmlpress-muted</code>、
@@ -621,7 +625,7 @@ Learn how to set up your first project.
   </dd>
   <dt><code>&lt;htmlpress-page-toc&gt;</code></dt>
   <dd>
-    页面的 <code>&lt;h2&gt;</code> 和 <code>&lt;h3&gt;</code>，并高亮当前可见的那个。没有
+    页面的 <code>&lt;h2&gt;</code> 到 <code>&lt;h4&gt;</code>，并高亮当前可见的那个。没有
     <code>id</code> 的标题会根据其文本获得一个 ID。
   </dd>
   <dt><code>&lt;htmlpress-pager&gt;</code></dt>

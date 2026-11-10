@@ -102,7 +102,9 @@ Articles are the pages `include` picks; routes are pages of their own, as in Liv
 `.html` or `.md` file in `.htmlpress/routes/` is served at its path there, read as Livemark's
 TanStack file routes with names kept as written (`pricing.html` at `/pricing/`, `index.html` at
 `/`, `blog.post.html` at `/blog/post/`; `(group)` and `_pathless` folders left out of the URL,
-`[.]` a literal dot, `__` and `$param` names no route), outside `include` and `exclude`. Its
+`[.]` a literal dot, `__` and `$param` names no route), outside `include` and `exclude`. A
+route served at a name that is not `.html` (`feed[.]xml.html` at `/feed.xml`) is copied as
+written, with no layout, head or Markdown copy, so it can hold XML or JSON. Its
 language is the prefix its URL is under, so `es/index.html` is the Spanish home:
 
 ```html

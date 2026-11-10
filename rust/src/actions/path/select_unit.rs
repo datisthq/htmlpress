@@ -67,12 +67,10 @@ fn keeps_a_markdown_twin_and_skills_as_files() -> Result<(), String> {
     let selection =
         select_paths(&config, paths.iter().map(|path| path.to_string()).collect())?;
     assert_eq!(pairs(&selection.pages), [("a.html", "a.html")]);
+    assert_eq!(pairs(&selection.twins), [("a.html", "a.md")]);
     assert_eq!(
         pairs(&selection.files),
-        [
-            ("a.md", "a.md"),
-            ("skills/one/SKILL.md", "skills/one/SKILL.md")
-        ]
+        [("skills/one/SKILL.md", "skills/one/SKILL.md")]
     );
     Ok(())
 }

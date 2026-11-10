@@ -137,8 +137,9 @@ sections:
     <pre><code class="language-yaml">- title: Guide
   prefix: /guide/</code></pre>
     <p>
-      在分区内部，侧边栏按文件夹嵌套其页面，深度不限。根目录下的页面不分组，每个文件夹在其父文件夹的分组内拥有自己的可折叠分组，名称取自其
-      <code>index.html</code> 的标题，否则取文件夹名：
+      在分区内部，侧边栏按文件夹嵌套其页面，深度不限。根目录下的页面不分组，每个含有
+      <code>index.html</code>
+      的文件夹在其父文件夹的分组内拥有自己的可折叠分组，名称取自该页面的标题；没有它的文件夹不形成分组，其页面与父文件夹的页面并列：
     </p>
     <htmlpress-filetree>
       <ul>

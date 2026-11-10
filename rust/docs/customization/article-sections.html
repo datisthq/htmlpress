@@ -147,8 +147,9 @@ sections:
   prefix: /guide/</code></pre>
     <p>
       Inside a section, the sidebar nests its pages by folder, at any depth. Pages at the
-      root come ungrouped, and each folder gets its own collapsible group inside its
-      parent's, named by the title of its <code>index.html</code>, else the folder's name:
+      root come ungrouped, and each folder with an <code>index.html</code> gets its own
+      collapsible group inside its parent's, named by that page's title; a folder without
+      one makes no group, and its pages sit beside its parent's:
     </p>
     <htmlpress-filetree>
       <ul>

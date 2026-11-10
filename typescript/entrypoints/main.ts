@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-import { spawnSync } from "node:child_process"
 import { createRequire } from "node:module"
 import { resolveBinary } from "../actions/binary/resolve.ts"
+import { runBinary } from "../actions/binary/run.ts"
 
 const require = createRequire(import.meta.url)
 
@@ -18,9 +18,18 @@ try {
   process.exit(1)
 }
 
-const result = spawnSync(binary, process.argv.slice(2), { stdio: "inherit" })
-if (result.error) {
-  console.error(`error: cannot run ${binary}: ${result.error.message}`)
+let result: Awaited<ReturnType<typeof runBinary>>
+try {
+  result = await runBinary({
+    binary,
+    args: process.argv.slice(2),
+    signals: process,
+    stdio: "inherit",
+  })
+} catch (error) {
+  console.error(
+    `error: cannot run ${binary}: ${error instanceof Error ? error.message : String(error)}`,
+  )
   process.exit(1)
 }
 // Re-raise a signal so a parent sees the same death the binary had (Ctrl-C under start)

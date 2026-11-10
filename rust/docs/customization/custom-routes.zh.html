@@ -96,7 +96,7 @@ title: 关于
         </tr>
         <tr>
           <td><code>&lt;htmlpress-page-toc&gt;</code></td>
-          <td>页面的 <code>&lt;h2&gt;</code> 和 <code>&lt;h3&gt;</code></td>
+          <td>页面的 <code>&lt;h2&gt;</code> 到 <code>&lt;h4&gt;</code></td>
         </tr>
         <tr>
           <td><code>&lt;htmlpress-pager&gt;</code></td>
@@ -163,7 +163,10 @@ title: 关于
         <code>route</code> 文件在其所在文件夹提供。<code>(group)</code> 或
         <code>_pathless</code> 文件夹不计入 URL，<code>[.]</code> 是字面意义的点，因此
         <code>feed[.]xml.html</code> 在 <code>/feed.xml</code> 提供；以
-        <code>__</code> 开头或含有 <code>$param</code> 的名称不是路由。
+        <code>__</code> 开头或含有 <code>$param</code> 的名称不是路由。以非
+        <code>.html</code>
+        名称提供的路由（如该 feed）会按原样复制：没有布局、head、Markdown
+        副本或站点地图条目，因此可以存放 XML 或 JSON。
       </li>
       <li>
         <strong>根路径 <code>/</code>。</strong

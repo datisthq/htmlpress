@@ -19,7 +19,9 @@ use crate::models::error::Error;
 use crate::models::language::SiteLanguage;
 use crate::models::page::Page;
 use crate::models::site::Site;
-use crate::settings::{ASSETS_DIR, NOT_FOUND, NOT_FOUND_PAGE, RELOAD, THEME_STYLES};
+use crate::settings::{
+    ASSETS_DIR, NOT_FOUND, NOT_FOUND_PAGE, OUTPUT_DIR, RELOAD, THEME_STYLES,
+};
 
 /// Build the project at `options.root` into `options.output`, replacing what is there.
 pub fn build_site(options: &BuildOptions) -> crate::Result<BuildReport> {
@@ -138,6 +140,9 @@ fn write_site(
     site: &Site,
     rendered: &[Rendered],
 ) -> crate::Result<()> {
+    // First, so a build that stops halfway leaves a folder `check_output` still replaces
+    let assets = options.output.join(ASSETS_DIR);
+    std::fs::create_dir_all(&assets).map_err(Error::io(&assets))?;
     let mut bundles = BTreeSet::new();
     for (path, html, used) in rendered {
         write_file(&options.output.join(path), html.as_bytes())?;
@@ -167,7 +172,6 @@ fn write_site(
         create_parent(&target)?;
         std::fs::copy(&source, &target).map_err(Error::io(&source))?;
     }
-    let assets = options.output.join(ASSETS_DIR);
     let theme: Vec<&str> = THEME_STYLES
         .iter()
         .filter_map(|path| site.assets.get(*path).map(String::as_str))
@@ -399,7 +403,39 @@ pub(crate) fn check_output(root: &Path, output: &Path) -> crate::Result<()> {
             output.display(),
         )));
     }
+    // Every build writes `_htmlpress/`, so a folder holding files without it, such as
+    // `.git` or the project's escapes, is someone else's and must not be wiped; the
+    // default output is htmlpress' own, even when a stopped build left it half-written
+    let default = output == root.join(OUTPUT_DIR) && stays_inside(&root, &output);
+    if let Some(folder) = [&output, &staging, &previous]
+        .into_iter()
+        .find(|folder| !default && !is_build_output(folder))
+    {
+        return Err(Error::Usage(format!(
+            "{} is not an htmlpress build output, so it is not replaced; \
+             pick another output or remove it yourself",
+            folder.display(),
+        )));
+    }
     Ok(())
+}
+
+// A `.htmlpress` symlinked out of the project would make the default output a folder
+// elsewhere, such as `~/build`
+fn stays_inside(root: &Path, output: &Path) -> bool {
+    let (Ok(root), Some(Ok(parent))) =
+        (root.canonicalize(), output.parent().map(Path::canonicalize))
+    else {
+        return true;
+    };
+    parent.starts_with(root)
+}
+
+fn is_build_output(folder: &Path) -> bool {
+    let Ok(mut entries) = std::fs::read_dir(folder) else {
+        return !folder.exists();
+    };
+    entries.next().is_none() || folder.join(ASSETS_DIR).is_dir()
 }
 
 fn write_file(path: &Path, bytes: &[u8]) -> crate::Result<()> {

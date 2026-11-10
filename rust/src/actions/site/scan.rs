@@ -23,7 +23,9 @@ use crate::actions::page::read::{
 use crate::actions::page::rebase::{list_links, read_root, rebase_image};
 use crate::actions::page::render::render_page;
 use crate::actions::path::contain::{contain_path, read_contained};
-use crate::actions::path::select::{Selection, read_bases, select_paths};
+use crate::actions::path::select::{
+    DEFAULT_INCLUDE, Selection, read_bases, select_paths,
+};
 use crate::actions::path::slugify::slugify_path;
 use crate::actions::pipeline::create::create_pipeline;
 use crate::actions::section::generate::generate_pages;
@@ -56,6 +58,8 @@ pub(crate) struct Built {
     patched: BTreeSet<String>,
     inputs: BTreeSet<String>,
     suffixes: bool,
+    // Pages whose Markdown copy is the project's own `.md` beside them
+    twins: BTreeSet<String>,
 }
 
 /// A page rendered into its layout: the path it is written to, its HTML and the
@@ -103,15 +107,8 @@ pub(crate) fn read_site(
         message,
     })?;
     // stderr, not stdout: under --json stdout carries only the result
-    // A project of HTML pages only is the common case, not a typo
-    let quiet = |pattern: &String| config.include.is_empty() && pattern == "**/*.md";
-    for pattern in selection.unused.iter().filter(|pattern| !quiet(pattern)) {
-        match config.include.is_empty() && !config.exclude.contains(pattern) {
-            true => {
-                eprintln!("warning: no file matches the default include \"{pattern}\"")
-            }
-            false => eprintln!("warning: {CONFIG_FILE}: \"{pattern}\" matches no file"),
-        }
+    for warning in list_pattern_warnings(&config, &selection.unused) {
+        eprintln!("{warning}");
     }
     let mut selection = selection;
     add_routes(root, &canonical, &mut selection)?;
@@ -370,6 +367,14 @@ pub(crate) fn read_site(
             rendered.extend(html);
             pages.push(page);
         }
+        for page in &mut pages {
+            if let Some(twin) = selection.twins.get(&page.source) {
+                page.markdown = read_contained(root, twin, false).map_err(|message| {
+                    Error::Usage(format!("{}: {message}", page.source))
+                })?;
+                site.inputs.insert(twin.clone());
+            }
+        }
         sort_pages(&mut pages);
         site.pages = pages;
         let built = Built {
@@ -382,9 +387,32 @@ pub(crate) fn read_site(
                 .collect(),
             inputs: site.inputs.clone(),
             suffixes,
+            twins: selection.twins.keys().cloned().collect(),
         };
         Ok((site, rendered, reload.map(|_| built)))
     })
+}
+
+// A project of only HTML or only Markdown pages is the common case, not a typo: the
+// default include warns only when neither of its patterns matches
+fn list_pattern_warnings(config: &Config, unused: &[String]) -> Vec<String> {
+    let default = config.include.is_empty();
+    let empty = DEFAULT_INCLUDE
+        .iter()
+        .all(|pattern| unused.iter().any(|it| it == pattern));
+    (unused.iter())
+        .filter(|pattern| {
+            !default || empty || !DEFAULT_INCLUDE.contains(&pattern.as_str())
+        })
+        .map(
+            |pattern| match default && !config.exclude.contains(pattern) {
+                true => {
+                    format!("warning: no file matches the default include \"{pattern}\"")
+                }
+                false => format!("warning: {CONFIG_FILE}: \"{pattern}\" matches no file"),
+            },
+        )
+        .collect()
 }
 
 /// Read and render the page at `source` again, alone; None when it is no page the last
@@ -400,7 +428,10 @@ pub(crate) fn reread_page(
     let Some(Some(old)) = built.finish.pages.get(index) else {
         return Ok(None);
     };
-    if built.patched.contains(source) || !root.join(source).is_file() {
+    if built.patched.contains(source)
+        || built.twins.contains(source)
+        || !root.join(source).is_file()
+    {
         return Ok(None);
     }
     let alloc = Allocator::new();
@@ -1021,8 +1052,14 @@ fn add_routes(
         let Some(served) = read_route_path(&source[ROUTES_DIR.len()..]) else {
             continue;
         };
-        let url = create_url(&served);
         selection.files.remove(&served);
+        // `feed[.]xml.html` is a feed, not a page: its bytes as written, since parsing
+        // XML as HTML would mangle it (`<link>` is a void element there)
+        if !served.ends_with(".html") {
+            selection.files.insert(served, source);
+            continue;
+        }
+        let url = create_url(&served);
         let taken: Vec<String> = (selection.pages.iter())
             .filter(|(path, article)| {
                 !article.starts_with(ROUTES_DIR) && create_url(&slugify_path(path)) == url

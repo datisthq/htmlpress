@@ -166,11 +166,11 @@ uvx htmlpress --version</code></pre>
     </p>
     <pre><code class="language-yaml">title: My docs
 description: Documentation for my project
-include: docs/**/*.html</code></pre>
+include: [docs/**/*.html, docs/**/*.md]</code></pre>
     <p>
-      Without <code>include</code>, every <code>.html</code> file in the project is a
-      page; with it, only the matching ones are, served without the glob's base, so
-      <code>docs/usage.html</code> is at <code>/usage/</code>. See
+      Without <code>include</code>, every <code>.html</code> and <code>.md</code> file in
+      the project is a page; with it, only the matching ones are, served without the
+      glob's base, so <code>docs/usage.html</code> is at <code>/usage/</code>. See
       <a href="/customization/configuration-file/">Configuration File</a> for every key.
     </p>
 
@@ -267,7 +267,9 @@ htmlpress clear    # remove .htmlpress/build/</code></pre>
       Renders the project at <code>root</code> (default <code>.</code>) into
       <code>root/.htmlpress/build</code>, replacing what is there. <code>--out</code> /
       <code>-o</code> picks another folder; one that would hold the project, or a visible
-      folder inside it, is refused, since its pages would be read back as sources.
+      folder inside it, is refused, since its pages would be read back as sources, and so
+      is a folder holding files that no build wrote, such as <code>.git</code>, which it
+      would otherwise delete.
     </p>
     <pre><code class="language-sh">$ htmlpress build docs
 built 6 pages and 0 files into docs/.htmlpress/build</code></pre>

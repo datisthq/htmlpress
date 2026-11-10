@@ -258,7 +258,8 @@ fn writes_agent_files_and_keeps_the_projects_own() -> crate::Result<()> {
 
     build_site(&options)?;
     assert_eq!(read("index.md").as_deref(), Some("# Home\n"));
-    assert_eq!(read("guide.md").as_deref(), Some("my own"));
+    assert_eq!(read("guide/index.md").as_deref(), Some("my own"));
+    assert!(read("guide.md").is_none());
     assert!(
         read("llms.txt").is_some_and(|llms| llms.contains("- [Guide](/guide/index.md)"))
     );
@@ -587,5 +588,103 @@ fn leaves_an_edit_other_pages_read_to_a_full_build() -> crate::Result<()> {
     std::fs::remove_file(root.join("guide.html")).map_err(Error::io("guide"))?;
     let removed = rebuild_pages(&options, &mut cache, &["guide.html".to_owned()])?;
     assert_eq!((renamed, added, removed), (None, None, None));
+    Ok(())
+}
+
+#[test]
+fn refuses_to_replace_a_folder_that_is_no_build_output() -> crate::Result<()> {
+    let root = tempfile::tempdir().map_err(Error::io("tempdir"))?;
+    let root = root.path();
+    let project = root.join("site");
+    std::fs::create_dir_all(&project).map_err(Error::io(&project))?;
+    std::fs::write(project.join("index.html"), "<h1>Home</h1>")
+        .map_err(Error::io(root))?;
+    for folder in [
+        root.join("keep"),
+        root.join("out.next"),
+        project.join(".git"),
+    ] {
+        std::fs::create_dir_all(&folder).map_err(Error::io(&folder))?;
+        std::fs::write(folder.join("file"), "mine").map_err(Error::io(&folder))?;
+    }
+    for output in [root.join("keep"), root.join("out"), project.join(".git")] {
+        let options = BuildOptions {
+            output: output.clone(),
+            ..BuildOptions::new(&project)
+        };
+        assert!(
+            matches!(build_site(&options), Err(Error::Usage(_))),
+            "{output:?}"
+        );
+    }
+    assert!(root.join("keep/file").is_file() && root.join("out.next/file").is_file());
+    assert!(project.join(".git/file").is_file());
+    let options = BuildOptions {
+        output: root.join("built"),
+        ..BuildOptions::new(&project)
+    };
+    build_site(&options)?;
+    build_site(&options)?;
+    std::fs::create_dir_all(root.join("empty")).map_err(Error::io(root))?;
+    build_site(&BuildOptions {
+        output: root.join("empty"),
+        ..BuildOptions::new(&project)
+    })?;
+    Ok(())
+}
+
+#[cfg(unix)]
+#[test]
+fn refuses_a_default_output_a_symlink_leads_out_of_the_project() -> crate::Result<()> {
+    let root = tempfile::tempdir().map_err(Error::io("tempdir"))?;
+    let root = root.path();
+    let project = root.join("site");
+    write_source(&project, "index.html", "<h1>Home</h1>")?;
+    write_source(&root.join("home"), "build/file", "mine")?;
+    std::os::unix::fs::symlink(root.join("home"), project.join(".htmlpress"))
+        .map_err(Error::io(root))?;
+    let options = BuildOptions::new(&project);
+    assert!(matches!(build_site(&options), Err(Error::Usage(_))));
+    assert!(matches!(
+        crate::actions::site::clear::clear_site(&options),
+        Err(Error::Usage(_))
+    ));
+    assert!(root.join("home/build/file").is_file());
+    Ok(())
+}
+
+#[test]
+fn copies_a_route_named_for_another_file_type_as_written() -> crate::Result<()> {
+    let root = tempfile::tempdir().map_err(Error::io("tempdir"))?;
+    let root = root.path();
+    write_source(root, "index.html", "<h1>Home</h1>")?;
+    let feed = "<?xml version=\"1.0\"?>\n<rss><channel><link>https://x.dev/</link></channel></rss>\n";
+    write_source(root, ".htmlpress/routes/feed[.]xml.html", feed)?;
+    write_source(root, "htmlpress.yaml", "site: https://x.dev\n")?;
+    let options = BuildOptions::new(root);
+    build_site(&options)?;
+    let read = |path: &str| std::fs::read_to_string(options.output.join(path));
+    assert_eq!(read("feed.xml").map_err(Error::io(root))?, feed);
+    let sitemap = read("sitemap.xml").map_err(Error::io(root))?;
+    assert!(!sitemap.contains("feed"), "{sitemap}");
+    assert!(!options.output.join("feed.xml.md").exists());
+    Ok(())
+}
+
+#[test]
+fn keeps_an_escaped_dollar_in_markdown_plain() -> crate::Result<()> {
+    let root = tempfile::tempdir().map_err(Error::io("tempdir"))?;
+    let root = root.path();
+    write_source(
+        root,
+        "index.md",
+        "# Home\n\nplain \\$x\\$ end, and $y$ math\n",
+    )?;
+    let options = BuildOptions::new(root);
+    build_site(&options)?;
+    let html = std::fs::read_to_string(options.output.join("index.html"))
+        .map_err(Error::io(root))?;
+    assert!(html.contains("plain $x$ end"), "{html}");
+    assert_eq!(html.matches("<htmlpress-math").count(), 1);
     Ok(())
 }

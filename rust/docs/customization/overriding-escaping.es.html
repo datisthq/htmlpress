@@ -13,7 +13,7 @@
   <body>
     <h1>Escapar para sobrescribir componentes</h1>
     <p>
-      Htmlpress incluye un layout, un tema, dos scripts y una biblioteca de componentes,
+      Htmlpress incluye un layout, un tema, cinco scripts y una biblioteca de componentes,
       todos compilados en el binario. Cualquier archivo integrado se puede reemplazar:
       coloca un archivo en la misma ruta bajo <code>.htmlpress/</code> y la compilación lo
       usará en su lugar.
@@ -120,6 +120,20 @@
       <dt><code>scripts/hints.js</code></dt>
       <dd>
         La sugerencia emergente de las abreviaturas y las referencias a notas al pie.
+      </dd>
+      <dt><code>scripts/keys.js</code></dt>
+      <dd>
+        Las teclas <kbd>J</kbd>, <kbd>K</kbd> y <kbd>D</kbd>, que desplazan la página
+        hacia abajo, hacia arriba y hasta el final, y <kbd>H</kbd> y <kbd>L</kbd>, que
+        siguen los <code>&lt;link rel="prev"&gt;</code> y <code>rel="next"</code> que
+        htmlpress escribe en la cabecera: un solo orden de lectura desde la portada por
+        todas las secciones, así que continúan donde el paginador se detiene.
+      </dd>
+      <dt><code>scripts/table.js</code></dt>
+      <dd>Ordena una tabla con <code>&lt;thead&gt;</code> por el encabezado pulsado.</dd>
+      <dt><code>scripts/zoom.js</code></dt>
+      <dd>
+        Abre una imagen a pantalla completa al pulsarla, salvo si la envuelve un enlace.
       </dd>
       <dt><code>components/&lt;name&gt;/&lt;name&gt;.css</code> y <code>.js</code></dt>
       <dd>

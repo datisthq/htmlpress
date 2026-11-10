@@ -454,3 +454,23 @@ fn reads_a_route_path_as_a_tanstack_file_route() {
         assert_eq!(read_route_path(file).as_deref(), path, "{file}");
     }
 }
+
+#[test]
+fn warns_of_the_default_include_only_when_neither_pattern_matches() {
+    let config = Config::default();
+    let html = ["**/*.html".to_owned()];
+    let markdown = ["**/*.md".to_owned()];
+    let both = ["**/*.html".to_owned(), "**/*.md".to_owned()];
+    assert!(list_pattern_warnings(&config, &html).is_empty());
+    assert!(list_pattern_warnings(&config, &markdown).is_empty());
+    assert_eq!(list_pattern_warnings(&config, &both).len(), 2);
+    let config = Config {
+        include: vec!["docs/**/*.md".to_owned()],
+        ..Config::default()
+    };
+    let typo = ["docs/**/*.md".to_owned()];
+    assert_eq!(
+        list_pattern_warnings(&config, &typo),
+        ["warning: htmlpress.yaml: \"docs/**/*.md\" matches no file"]
+    );
+}

@@ -1,6 +1,7 @@
 use textlane::{Allocator, Attach, Error, File, Plugin, Transform, Tree, TreeKind};
 
 use crate::actions::code::annotate::annotate_code;
+use crate::actions::math::escape::escape_dollars;
 use crate::actions::math::wrap::wrap_math;
 use crate::actions::page::compile::mark_inline_code;
 use crate::actions::page::simplify::simplify_page;
@@ -40,6 +41,48 @@ impl Transform for WrapMath {
             _ => Err(Error::new(
                 "invalid-stage",
                 "htmlpress' math step takes hast",
+            )),
+        }
+    }
+}
+
+/// htmlpress' own step on a Markdown page's tree: its escaped dollars kept escaped for
+/// the HTML math step (see `escape_dollars`).
+#[derive(Clone, Debug, Default)]
+pub(crate) struct EscapeDollars;
+
+impl Plugin for EscapeDollars {
+    fn attach(&self, context: &mut Attach) -> Result<(), Error> {
+        context.add_transform(Box::new(EscapeDollars));
+        Ok(())
+    }
+}
+
+impl Transform for EscapeDollars {
+    fn input(&self) -> TreeKind {
+        TreeKind::Mdast
+    }
+
+    fn output(&self) -> TreeKind {
+        TreeKind::Mdast
+    }
+
+    fn run<'a>(
+        &self,
+        tree: Tree<'a>,
+        file: &mut File,
+        alloc: &'a Allocator,
+    ) -> Result<Tree<'a>, Error> {
+        match tree {
+            Tree::Mdast(mut node) => {
+                if let Some(source) = &file.value {
+                    escape_dollars(&mut node, source, alloc);
+                }
+                Ok(Tree::Mdast(node))
+            }
+            _ => Err(Error::new(
+                "invalid-stage",
+                "htmlpress' dollar step takes mdast",
             )),
         }
     }

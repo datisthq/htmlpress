@@ -104,7 +104,7 @@ Todo lo que escribirías en una página Markdown normal, aquí.</code></pre>
         </tr>
         <tr>
           <td><code>&lt;htmlpress-page-toc&gt;</code></td>
-          <td>los <code>&lt;h2&gt;</code> y <code>&lt;h3&gt;</code> de la página</td>
+          <td>los <code>&lt;h2&gt;</code> a <code>&lt;h4&gt;</code> de la página</td>
         </tr>
         <tr>
           <td><code>&lt;htmlpress-pager&gt;</code></td>
@@ -179,7 +179,9 @@ Todo lo que escribirías en una página Markdown normal, aquí.</code></pre>
         <code>(grupo)</code> o <code>_sin-ruta</code> queda fuera de la URL,
         <code>[.]</code> es un punto literal, así que <code>feed[.]xml.html</code> se
         sirve en <code>/feed.xml</code>, y un nombre que empieza por <code>__</code> o
-        lleva un <code>$param</code> no es una ruta.
+        lleva un <code>$param</code> no es una ruta. Una ruta servida con un nombre que no
+        es <code>.html</code>, como ese feed, se copia tal cual: sin diseño, cabecera,
+        copia en Markdown ni entrada en el sitemap, así que puede contener XML o JSON.
       </li>
       <li>
         <strong>La ruta raíz <code>/</code>.</strong>

@@ -12,6 +12,6 @@ framework, no templating language, so you or your agent just write the pages.
 | crates.io | [`htmlpress`](https://crates.io/crates/htmlpress)                 | `cargo install htmlpress`                           |
 
 Every channel ships the same Rust binary at the same version. The docs live at
-[htmlpress.dev](https://htmlpress.dev), built with htmlpress from `docs/`. This repository holds
+[htmlpress.dev](https://htmlpress.dev), built with htmlpress from `rust/docs/`. This repository holds
 the binary in `rust/` and the npm and PyPI wrappers in `typescript/` and `python/`; see
 [Contributing](CONTRIBUTING.md) for the layout and the commands.

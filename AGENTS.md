@@ -93,7 +93,7 @@ The root is a private pnpm workspace (`package.json`, `pnpm-workspace.yaml`): fo
   - Unit tests beside their module as `<module>_unit.rs`; `tests/` the CLI integration tests
   - `vendor/` — copies of dependencies with a fix htmlpress needs (`onig-regset`, as textlane vendors it), wired in through `[patch.crates-io]`
   - `docs/` — the docs site's HTML pages, outside the crate's `include`; the repo root is their project, with `htmlpress.yaml` and `.htmlpress/`
-- `typescript/` — the npm package `gethtmlpress`: `entrypoints/main.ts` runs the binary `actions/binary/resolve.ts` finds; `settings.ts` lists the platforms; `scripts/` packs and publishes the platform packages into `typescript/compile/` (**`package-distribution`**)
+- `typescript/` — the npm package `gethtmlpress`: `entrypoints/main.ts` runs (`actions/binary/run.ts`) the binary `actions/binary/resolve.ts` finds; `settings.ts` lists the platforms; `scripts/` packs and publishes the platform packages into `typescript/compile/` (**`package-distribution`**)
 - `python/` — the PyPI package `htmlpress`: only `pyproject.toml`, which points maturin at `rust/Cargo.toml` with `bindings = "bin"`
 - `benchmark/` — the private package timing htmlpress against other site generators, its rivals in `rivals/` outside the workspace; it ships nothing, so its commits are `chore(benchmark)` (**`benchmark-development`**)
 - `.skills/` — the shipped agent skills

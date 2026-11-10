@@ -13,7 +13,7 @@
   <body>
     <h1>Escaping to Override Components</h1>
     <p>
-      Htmlpress ships a layout, a theme, three scripts and a library of components, all
+      Htmlpress ships a layout, a theme, five scripts and a library of components, all
       compiled into the binary. Every built-in file can be replaced: drop a file at the
       same path under <code>.htmlpress/</code> and the build uses it instead.
     </p>
@@ -126,6 +126,10 @@
         into the head: one reading order from the home page through every section, so they
         go on where the pager stops.
       </dd>
+      <dt><code>scripts/table.js</code></dt>
+      <dd>Sorting a table with a <code>&lt;thead&gt;</code> by the header clicked.</dd>
+      <dt><code>scripts/zoom.js</code></dt>
+      <dd>Opening an image full screen on click, unless a link wraps it.</dd>
       <dt><code>components/&lt;name&gt;/&lt;name&gt;.css</code> and <code>.js</code></dt>
       <dd>
         One component each, the elements of the layout's frame included, in a folder named

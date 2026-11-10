@@ -165,10 +165,10 @@ uvx htmlpress --version</code></pre>
     </p>
     <pre><code class="language-yaml">title: My docs
 description: Documentation for my project
-include: docs/**/*.html</code></pre>
+include: [docs/**/*.html, docs/**/*.md]</code></pre>
     <p>
-      没有 <code>include</code> 时，项目中的每个
-      <code>.html</code> 文件都是一个页面；设置后，只有匹配的文件才是页面，并且去掉 glob
+      没有 <code>include</code> 时，项目中的每个 <code>.html</code> 和
+      <code>.md</code> 文件都是一个页面；设置后，只有匹配的文件才是页面，并且去掉 glob
       的基础路径后提供服务，因此 <code>docs/usage.html</code> 位于
       <code>/usage/</code>。所有键请参见<a href="/zh/customization/configuration-file/"
         >配置文件</a
@@ -268,7 +268,8 @@ htmlpress clear    # remove .htmlpress/build/</code></pre>
       将位于 <code>root</code>（默认为 <code>.</code>）的项目渲染到
       <code>root/.htmlpress/build</code>，并替换其中已有的内容。<code>--out</code> /
       <code>-o</code>
-      可指定其他文件夹；如果该文件夹会包含项目本身，或是项目内的可见文件夹，则会被拒绝，因为其中的页面会被当作源文件重新读取。
+      可指定其他文件夹；如果该文件夹会包含项目本身，或是项目内的可见文件夹，则会被拒绝，因为其中的页面会被当作源文件重新读取；含有并非构建写入的文件的文件夹（如
+      <code>.git</code>）也会被拒绝，否则它会被删除。
     </p>
     <pre><code class="language-sh">$ htmlpress build docs
 built 6 pages and 0 files into docs/.htmlpress/build</code></pre>

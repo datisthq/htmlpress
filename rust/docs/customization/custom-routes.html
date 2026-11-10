@@ -97,7 +97,7 @@ Anything you'd write in a normal Markdown page, here.</code></pre>
         </tr>
         <tr>
           <td><code>&lt;htmlpress-page-toc&gt;</code></td>
-          <td>the page's <code>&lt;h2&gt;</code> and <code>&lt;h3&gt;</code></td>
+          <td>the page's <code>&lt;h2&gt;</code> to <code>&lt;h4&gt;</code></td>
         </tr>
         <tr>
           <td><code>&lt;htmlpress-pager&gt;</code></td>
@@ -171,7 +171,9 @@ Anything you'd write in a normal Markdown page, here.</code></pre>
         <code>(group)</code> or <code>_pathless</code> folder is left out of the URL,
         <code>[.]</code> is a literal dot, so <code>feed[.]xml.html</code> is served at
         <code>/feed.xml</code>, and a name starting with <code>__</code> or holding a
-        <code>$param</code> is no route.
+        <code>$param</code> is no route. A route served at a name that is not
+        <code>.html</code>, such as that feed, is copied as written: no layout, head,
+        Markdown copy or sitemap entry, so it can hold XML or JSON.
       </li>
       <li>
         <strong>The root path <code>/</code>.</strong>

@@ -72,6 +72,7 @@ mod actions {
         pub(crate) mod render;
     }
     pub(crate) mod math {
+        pub(crate) mod escape;
         pub(crate) mod wrap;
     }
     pub(crate) mod page {

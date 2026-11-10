@@ -549,6 +549,7 @@ fn add_headers<R: std::io::Read>(response: Response<R>, name: &str) -> Response<
         "css" => "text/css; charset=utf-8",
         "js" | "mjs" => "text/javascript; charset=utf-8",
         "json" => "application/json",
+        "xml" => "application/xml; charset=utf-8",
         "svg" => "image/svg+xml",
         "png" => "image/png",
         "jpg" | "jpeg" => "image/jpeg",

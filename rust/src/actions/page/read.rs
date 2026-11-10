@@ -268,7 +268,10 @@ fn read_facts(tree: &Node<'_>) -> Result<Facts, String> {
             "meta" => read_meta(element, &mut facts)?,
             _ => {}
         }
-        let boxed = boxed || HEADING_BOXES.contains(&element.tag_name);
+        // GFM's footnotes section labels itself with a screen-reader-only <h2>
+        let footnotes = element.tag_name == "section"
+            && read_attribute(element, "data-footnotes").is_some();
+        let boxed = boxed || footnotes || HEADING_BOXES.contains(&element.tag_name);
         stack.extend(element.children.iter().rev().map(|child| (child, boxed)));
     }
     Ok(facts)

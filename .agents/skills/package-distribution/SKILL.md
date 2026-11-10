@@ -10,8 +10,10 @@ One binary, three registries plus GitHub releases, one version. Nothing here may
 ## npm: `gethtmlpress`
 
 - `typescript/entrypoints/main.ts` is the `htmlpress` bin: it asks `resolveBinary`
-  (`typescript/actions/binary/resolve.ts`) for a path and runs it with inherited stdio,
-  passing the exit code and any signal through.
+  (`typescript/actions/binary/resolve.ts`) for a path and runs it with `runBinary`
+  (`typescript/actions/binary/run.ts`): inherited stdio, the exit code and any signal
+  passed back, and SIGINT, SIGTERM and SIGHUP forwarded to the binary. Never `spawnSync`:
+  it blocks the handlers, so killing the wrapper orphaned a `start` holding its port.
 - `resolveBinary` takes `HTMLPRESS_BINARY` first (a cargo build, an unsupported platform),
   else resolves `@htmlpress/<platform>-<arch>/bin/<binary>` from the installed packages.
 - `PLATFORMS` in `typescript/settings.ts` is the single list. `scripts/pack.ts` reads it to lay

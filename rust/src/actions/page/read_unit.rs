@@ -164,6 +164,21 @@ fn keeps_headings_inside_components_out_of_the_toc() -> crate::Result<()> {
 }
 
 #[test]
+fn keeps_the_footnotes_label_out_of_the_toc() -> crate::Result<()> {
+    let html = concat!(
+        "<h2>Intro</h2><p>See<sup><a href=\"#user-content-fn-1\">1</a></sup>.</p>",
+        "<section data-footnotes class=\"footnotes\">",
+        "<h2 class=\"sr-only\" id=\"footnote-label\">Footnotes</h2>",
+        "<ol><li id=\"user-content-fn-1\"><p>A note.</p></li></ol></section>",
+    );
+    let page = read_page("guide.html", html)?;
+    let ids: Vec<_> = page.toc.iter().map(|heading| heading.id.as_str()).collect();
+    assert_eq!(ids, ["intro"]);
+    assert!(page.content.contains("footnote-label"));
+    Ok(())
+}
+
+#[test]
 fn reads_the_image_and_keeps_it_out_of_the_head() -> crate::Result<()> {
     let html = "<html><head><title>A</title><meta name=\"image\" content=\"/a.png\"></head><body><p>A</p></body></html>";
     let page = read_page("a.html", html)?;

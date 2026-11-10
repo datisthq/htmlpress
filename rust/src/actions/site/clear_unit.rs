@@ -25,3 +25,24 @@ fn refuses_an_output_that_holds_the_project() -> crate::Result<()> {
     assert!(root.path().exists());
     Ok(())
 }
+
+#[test]
+fn refuses_a_folder_that_is_no_build_output() -> crate::Result<()> {
+    let root = tempfile::tempdir().map_err(Error::io("tempdir"))?;
+    let root = root.path();
+    for name in [".git", ".htmlpress", "../keep"] {
+        let folder = root.join("site").join(name);
+        std::fs::create_dir_all(&folder).map_err(Error::io(&folder))?;
+        std::fs::write(folder.join("file"), "mine").map_err(Error::io(&folder))?;
+        let options = BuildOptions {
+            output: folder.clone(),
+            ..BuildOptions::new(root.join("site"))
+        };
+        assert!(
+            matches!(clear_site(&options), Err(Error::Usage(_))),
+            "{name}"
+        );
+        assert!(folder.join("file").is_file(), "{name}");
+    }
+    Ok(())
+}

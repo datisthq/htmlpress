@@ -57,8 +57,10 @@ run from source: `cargo run --manifest-path rust/Cargo.toml -- build docs`.
    never read back and a repo-root project never walks `rust/target`. `select_paths`
    sorts them by `include` (pages: `.html` and `.md`, both `**/*.html` and `**/*.md` when
    unset) and `exclude` (dropped); other files under a base, `.html` outside `include` too,
-   are copied, and so are an `.md` beside its `.html` page (the project's own Markdown
-   copy), a changelog section's `source` and the `skills` files; `keep_partials` then turns
+   are copied, and so are a changelog section's `source` and the `skills` files; an `.md`
+   beside its `.html` page is `Selection.twins`, read into that page's `markdown` (its
+   Markdown copy) and never copied, and a route served at a name not ending `.html`
+   (`feed[.]xml.html`) is a copied file, since parsing XML as HTML mangles it; `keep_partials` then turns
    back into files the `.md` pages a page includes (`include/list`, read from each source's
    tree, where Markdown's `::include` is already `<htmlpress-include>`), as before Markdown pages.
    A `.md` page is served at its `.html` path and compiled into hast
@@ -165,7 +167,11 @@ run from source: `cargo run --manifest-path rust/Cargo.toml -- build docs`.
    needs to know the base; absolute URLs take it through `Config::read_origin`, and the text
    outputs through `Config::read_base`. The built-in `404.html` is read with the default
    language's decoration, so its links take the base too
-4. `build_site` refuses an output that holds the project or sits visible inside it, since it
+4. `build_site` and `clear_site` refuse (`check_output`) an output that holds the project or
+   sits visible inside it, and any output, `.next` or `.previous` folder holding files
+   without `_htmlpress/`, which `write_site` creates first: `-o .git` once wiped a repo.
+   Only the default `.htmlpress/build` is exempt, and only while `.htmlpress` resolves inside
+   the project. `build_site`
    writes into `<output>.next` and swaps it in whole (`create_build_paths`), since the dev
    server answers while it rebuilds and a half-written output serves pages without their CSS;
    it writes pages, copies files and adds `_htmlpress/` assets,

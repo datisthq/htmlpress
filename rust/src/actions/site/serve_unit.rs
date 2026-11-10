@@ -259,3 +259,12 @@ fn names_a_change_by_its_real_path_beside_links_to_it() -> crate::Result<()> {
     assert!(pages.iter().all(|path| **path == page), "{pages:?}");
     Ok(())
 }
+
+#[test]
+fn serves_xml_as_xml() {
+    let response = add_headers(Response::from_string("<rss/>"), "feed.xml");
+    let kind = (response.headers().iter())
+        .find(|header| header.field.equiv("Content-Type"))
+        .map(|header| header.value.as_str().to_owned());
+    assert_eq!(kind.as_deref(), Some("application/xml; charset=utf-8"));
+}

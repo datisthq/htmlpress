@@ -367,7 +367,7 @@ Learn how to set up your first project.
   <code>&lt;htmlpress-icon name="…"&gt;</code> draws a built-in
   <a href="https://lucide.dev">Lucide</a> icon inline, in the text's color and size; the
   same names go in the <code>icon</code> of a link or a section. An unknown name fails the
-  build. These are the 114 built in:
+  build. These are the 117 built in:
 </p>
 <htmlpress-tabs sync="syntax">
   <htmlpress-tab title="HTML">
@@ -405,10 +405,12 @@ Learn how to set up your first project.
   <p><htmlpress-icon name="codepen"></htmlpress-icon> codepen</p>
   <p><htmlpress-icon name="coffee"></htmlpress-icon> coffee</p>
   <p><htmlpress-icon name="compass"></htmlpress-icon> compass</p>
+  <p><htmlpress-icon name="copy"></htmlpress-icon> copy</p>
   <p><htmlpress-icon name="cpu"></htmlpress-icon> cpu</p>
   <p><htmlpress-icon name="database"></htmlpress-icon> database</p>
   <p><htmlpress-icon name="download"></htmlpress-icon> download</p>
   <p><htmlpress-icon name="external-link"></htmlpress-icon> external-link</p>
+  <p><htmlpress-icon name="eye"></htmlpress-icon> eye</p>
   <p><htmlpress-icon name="feather"></htmlpress-icon> feather</p>
   <p><htmlpress-icon name="figma"></htmlpress-icon> figma</p>
   <p><htmlpress-icon name="file"></htmlpress-icon> file</p>
@@ -439,6 +441,7 @@ Learn how to set up your first project.
   <p><htmlpress-icon name="layers"></htmlpress-icon> layers</p>
   <p><htmlpress-icon name="layout-grid"></htmlpress-icon> layout-grid</p>
   <p><htmlpress-icon name="layout-panel-left"></htmlpress-icon> layout-panel-left</p>
+  <p><htmlpress-icon name="languages"></htmlpress-icon> languages</p>
   <p><htmlpress-icon name="library"></htmlpress-icon> library</p>
   <p><htmlpress-icon name="life-buoy"></htmlpress-icon> life-buoy</p>
   <p><htmlpress-icon name="lightbulb"></htmlpress-icon> lightbulb</p>
@@ -580,6 +583,7 @@ Learn how to set up your first project.
   Colors, fonts and widths are CSS custom properties on <code>:root</code>, with a dark
   set under <code>prefers-color-scheme</code> or the header's theme toggle:
   <code>--htmlpress-primary</code>, <code>--htmlpress-primary-foreground</code>,
+  <code>--htmlpress-secondary</code>, <code>--htmlpress-secondary-foreground</code>,
   <code>--htmlpress-banner</code>, <code>--htmlpress-banner-foreground</code>,
   <code>--htmlpress-highlight</code>, <code>--htmlpress-highlight-foreground</code>,
   <code>--htmlpress-prose</code>, <code>--htmlpress-prose-strong</code>,
@@ -643,8 +647,8 @@ Learn how to set up your first project.
   </dd>
   <dt><code>&lt;htmlpress-page-toc&gt;</code></dt>
   <dd>
-    The page's <code>&lt;h2&gt;</code> and <code>&lt;h3&gt;</code>, highlighting the one
-    in view. A heading without an <code>id</code> gets one from its text.
+    The page's <code>&lt;h2&gt;</code> to <code>&lt;h4&gt;</code>, highlighting the one in
+    view. A heading without an <code>id</code> gets one from its text.
   </dd>
   <dt><code>&lt;htmlpress-pager&gt;</code></dt>
   <dd>The previous and next pages in navigation order.</dd>

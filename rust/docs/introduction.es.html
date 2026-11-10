@@ -173,11 +173,12 @@ uvx htmlpress --version</code></pre>
     </p>
     <pre><code class="language-yaml">title: My docs
 description: Documentation for my project
-include: docs/**/*.html</code></pre>
+include: [docs/**/*.html, docs/**/*.md]</code></pre>
     <p>
-      Sin <code>include</code>, cada archivo <code>.html</code> del proyecto es una
-      página; con él, solo lo son los que coinciden, servidos sin la base del glob, así
-      que <code>docs/usage.html</code> queda en <code>/usage/</code>. Consulta
+      Sin <code>include</code>, cada archivo <code>.html</code> y <code>.md</code> del
+      proyecto es una página; con él, solo lo son los que coinciden, servidos sin la base
+      del glob, así que <code>docs/usage.html</code> queda en <code>/usage/</code>.
+      Consulta
       <a href="/es/customization/configuration-file/">Archivo de configuración</a>
       para ver todas las claves.
     </p>
@@ -282,7 +283,9 @@ htmlpress clear    # remove .htmlpress/build/</code></pre>
       Renderiza el proyecto en <code>root</code> (por defecto <code>.</code>) en
       <code>root/.htmlpress/build</code>, reemplazando lo que haya. <code>--out</code> /
       <code>-o</code> elige otra carpeta; se rechaza una que contenga el proyecto, o una
-      carpeta visible dentro de él, ya que sus páginas se volverían a leer como fuentes.
+      carpeta visible dentro de él, ya que sus páginas se volverían a leer como fuentes, y
+      también una carpeta con archivos que ninguna compilación escribió, como
+      <code>.git</code>, que de otro modo borraría.
     </p>
     <pre><code class="language-sh">$ htmlpress build docs
 built 6 pages and 0 files into docs/.htmlpress/build</code></pre>

@@ -14,7 +14,7 @@
     <h1>通过 escape 覆盖组件</h1>
     <p>
       Htmlpress
-      附带一个布局、一个主题、两个脚本和一个组件库，全部编译进二进制文件中。每个内置文件都可以被替换：在
+      附带一个布局、一个主题、五个脚本和一个组件库，全部编译进二进制文件中。每个内置文件都可以被替换：在
       <code>.htmlpress/</code> 下的相同路径放一个文件，构建就会改用它。
     </p>
     <table>
@@ -117,6 +117,18 @@
       <dd>代码块上的复制按钮，以及每个标题上的链接。</dd>
       <dt><code>scripts/hints.js</code></dt>
       <dd>缩写和脚注引用上的悬停提示。</dd>
+      <dt><code>scripts/keys.js</code></dt>
+      <dd>
+        <kbd>J</kbd>、<kbd>K</kbd> 和
+        <kbd>D</kbd> 键分别向下、向上滚动页面和滚动到底部，<kbd>H</kbd> 和
+        <kbd>L</kbd> 则跟随 htmlpress 写入 head 的 <code>&lt;link rel="prev"&gt;</code> 和
+        <code>rel="next"</code
+        >：从首页贯穿每个部分的同一阅读顺序，因此在分页器停止处继续。
+      </dd>
+      <dt><code>scripts/table.js</code></dt>
+      <dd>点击表头时，按该列对带 <code>&lt;thead&gt;</code> 的表格排序。</dd>
+      <dt><code>scripts/zoom.js</code></dt>
+      <dd>点击图片时全屏打开，除非图片被链接包裹。</dd>
       <dt><code>components/&lt;name&gt;/&lt;name&gt;.css</code> 和 <code>.js</code></dt>
       <dd>
         每个组件一组文件，包括布局框架中的元素，放在以其标签名（去掉

@@ -9,6 +9,8 @@ pub(crate) struct Selection {
     /// Served path to source path, both project-relative with `/` separators.
     pub pages: BTreeMap<String, String>,
     pub files: BTreeMap<String, String>,
+    /// A page's source to the `.md` beside it, published as the page's Markdown copy.
+    pub twins: BTreeMap<String, String>,
     /// The patterns, as written, that match no file: most likely typos.
     pub unused: Vec<String>,
 }
@@ -48,10 +50,11 @@ pub(crate) fn select_paths(
         (include.iter()).any(|(_, pattern)| pattern.matches_with(path, OPTIONS))
     };
     // An `.md` beside its `.html` page is the project's own Markdown copy of that page
-    let twins: Vec<String> = (paths.iter())
+    let twins: BTreeMap<String, String> = (paths.iter())
         .filter(|path| !excluded(path) && included(path))
-        .filter_map(|path| path.strip_suffix(".html"))
-        .map(|stem| format!("{stem}.md"))
+        .filter_map(|path| Some((format!("{}.md", path.strip_suffix(".html")?), path)))
+        .filter(|(twin, _)| paths.contains(twin))
+        .map(|(twin, page)| (twin, page.clone()))
         .collect();
     // A changelog section reads its file into pages of its own
     let sources: Vec<&str> = (config.sections.iter())
@@ -65,8 +68,12 @@ pub(crate) fn select_paths(
         if excluded(&path) {
             continue;
         }
+        if let Some(page) = twins.get(&path) {
+            selection.twins.insert(page.clone(), path);
+            continue;
+        }
         let source = is_page(&path)
-            && !twins.contains(&path)
+            && !twins.contains_key(&path)
             && !sources.contains(&path.as_str())
             && !(skills.iter()).any(|(_, pattern)| pattern.matches_with(&path, OPTIONS));
         let is_page = (include.iter())
