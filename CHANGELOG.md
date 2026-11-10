@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.2](https://github.com/datisthq/htmlpress/compare/v0.12.1...v0.12.2) (2026-11-10)
+
+
+### Bug Fixes
+
+* keep prices in Markdown pages text, reading $ math by Pandoc's rule as HTML pages do ([da618fd](https://github.com/datisthq/htmlpress/commit/da618fd5b1f13e8d27293259bfae15951b33b5dd))
+
 ## [0.12.1](https://github.com/datisthq/htmlpress/compare/v0.12.0...v0.12.1) (2026-11-10)
 
 
