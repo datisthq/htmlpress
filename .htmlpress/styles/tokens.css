@@ -46,7 +46,7 @@
     --htmlpress-border: oklch(0.269 0 0);
     --htmlpress-primary: oklch(0.585 0.233 277.117);
     --htmlpress-primary-foreground: oklch(0.985 0 0);
-    --htmlpress-banner: oklch(0.414 0.112 45.904);
+    --htmlpress-banner: oklch(0.269 0 0);
     --htmlpress-banner-foreground: oklch(0.985 0 0);
     --htmlpress-highlight: oklch(0.554 0.135 66.442);
     --htmlpress-highlight-foreground: oklch(0.985 0 0);
@@ -69,7 +69,7 @@
   --htmlpress-border: oklch(0.269 0 0);
   --htmlpress-primary: oklch(0.585 0.233 277.117);
   --htmlpress-primary-foreground: oklch(0.985 0 0);
-  --htmlpress-banner: oklch(0.414 0.112 45.904);
+  --htmlpress-banner: oklch(0.269 0 0);
   --htmlpress-banner-foreground: oklch(0.985 0 0);
   --htmlpress-highlight: oklch(0.554 0.135 66.442);
   --htmlpress-highlight-foreground: oklch(0.985 0 0);
