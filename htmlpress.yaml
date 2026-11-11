@@ -3,9 +3,9 @@ title: Htmlpress
 logo: /logo.svg
 favicon: /logo.png
 description:
-  en: HTML-first static site generator
-  es: Generador de sitios estáticos HTML-first
-  zh: HTML 优先的静态站点生成器
+  en: Static site generator
+  es: Generador de sitios estáticos
+  zh: 静态站点生成器
 banner:
   en: '<aside aria-label="Announcement"><p><span><span>Htmlpress is in technical preview</span><span>Technical preview</span></span><span aria-hidden="true">·</span><a href="https://github.com/datisthq/htmlpress/issues"><span>Share feedback</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg></a></p></aside>'
   es: '<aside aria-label="Announcement"><p><span><span>Htmlpress está en vista previa técnica</span><span>Vista previa técnica</span></span><span aria-hidden="true">·</span><a href="https://github.com/datisthq/htmlpress/issues"><span>Danos tu opinión</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg></a></p></aside>'
