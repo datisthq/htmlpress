@@ -1,6 +1,6 @@
 [package]
 name = "htmlpress"
-version = "0.12.3"
+version = "0.12.4"
 edition = "2024"
 rust-version = "1.89"
 description = "HTML-first static site generator: HTML pages, or Markdown, from anywhere in a project become one site with one layout, one theme and live reload, for humans and agents"

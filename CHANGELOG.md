@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.4](https://github.com/datisthq/htmlpress/compare/v0.12.3...v0.12.4) (2026-11-11)
+
+
+### Bug Fixes
+
+* align docs dark banner color with other projects ([9cdb828](https://github.com/datisthq/htmlpress/commit/9cdb828664dc51aee1a372dde9b14e167d65deb1))
+
 ## [0.12.3](https://github.com/datisthq/htmlpress/compare/v0.12.2...v0.12.3) (2026-11-10)
 
 
