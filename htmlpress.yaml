@@ -7,9 +7,9 @@ description:
   es: Generador de sitios estáticos
   zh: 静态站点生成器
 banner:
-  en: '<aside aria-label="Announcement"><p><span><span>Htmlpress is in technical preview</span><span>Technical preview</span></span><span aria-hidden="true">·</span><a href="https://github.com/datisthq/htmlpress/issues"><span>Share feedback</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg></a></p></aside>'
-  es: '<aside aria-label="Announcement"><p><span><span>Htmlpress está en vista previa técnica</span><span>Vista previa técnica</span></span><span aria-hidden="true">·</span><a href="https://github.com/datisthq/htmlpress/issues"><span>Danos tu opinión</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg></a></p></aside>'
-  zh: '<aside aria-label="Announcement"><p><span><span>Htmlpress 正处于技术预览阶段</span><span>技术预览</span></span><span aria-hidden="true">·</span><a href="https://github.com/datisthq/htmlpress/issues"><span>反馈意见</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg></a></p></aside>'
+  en: '<aside aria-label="Announcement"><p><span><span>Htmlpress is in technical preview</span><span>Technical preview</span></span><span aria-hidden="true">·</span><a href="https://github.com/datisthq/htmlpress/discussions"><span>Share feedback</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg></a></p></aside>'
+  es: '<aside aria-label="Announcement"><p><span><span>Htmlpress está en vista previa técnica</span><span>Vista previa técnica</span></span><span aria-hidden="true">·</span><a href="https://github.com/datisthq/htmlpress/discussions"><span>Danos tu opinión</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg></a></p></aside>'
+  zh: '<aside aria-label="Announcement"><p><span><span>Htmlpress 正处于技术预览阶段</span><span>技术预览</span></span><span aria-hidden="true">·</span><a href="https://github.com/datisthq/htmlpress/discussions"><span>反馈意见</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg></a></p></aside>'
 languages:
   - code: en
     label: English
