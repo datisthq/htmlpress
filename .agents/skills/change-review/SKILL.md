@@ -10,6 +10,14 @@ Read the diff, judge it, post findings as inline comments. Be useful, not thorou
 a review that flags twenty things teaches nothing, and the twenty-first — the real one — is lost
 in it.
 
+## Review in a fresh context
+
+A session that wrote a change reviews its own assumptions, not the code. If this session
+wrote or edited any part of the change, do not review it here: start a subagent with a
+fresh context, give it only this skill and where the change is (the PR number, or
+`git diff main...HEAD`), and report its findings unchanged. A session that has not touched
+the change reviews it directly.
+
 ## What to look for
 
 **Correctness**
