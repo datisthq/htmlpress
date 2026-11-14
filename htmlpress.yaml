@@ -49,4 +49,4 @@ head:
   scripts:
     - defer: ""
       data-site-id: "3"
-      src: https://counter.datist.io/api/script.js
+      src: https://analytics.datist.io/api/script.js
